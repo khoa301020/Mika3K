@@ -22,6 +22,6 @@ async def time(ctx):
     time_left = datetime.timedelta(minutes = 8*resin_left)
     datetime_to_login = datetime.datetime.now(tzinfo) + time_left
 
-    await ctx.send("Next login: " + str(datetime_to_login.strftime('%d/%m/%Y %H:%M:%S')))
+    await ctx.send("{} Next login: ".format(ctx.message.author.mention) + str(datetime_to_login.strftime('%d/%m/%Y %H:%M:%S')))
 
 bot.run('ODYwNDc0Nzk5ODQ3MTEyNzM1.YN7xmw.Dx2j_VDmG52omKVvqTUVlPl0KQs')

@@ -24,4 +24,4 @@ async def time(ctx):
 
     await ctx.send("Next login: " + str(datetime_to_login.strftime('%d/%m/%Y %H:%M:%S')))
 
-bot.run('ODYwNDc0Nzk5ODQ3MTEyNzM1.YN7xmw.mG4wfZ0J6eQFQcgQ8QFVjk_wR-E')
+bot.run('ODYwNDc0Nzk5ODQ3MTEyNzM1.YN7xmw.Dx2j_VDmG52omKVvqTUVlPl0KQs')

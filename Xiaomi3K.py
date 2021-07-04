@@ -23,6 +23,10 @@ async def time(ctx):
     time_left = datetime.timedelta(minutes = 8*resin_left)
     datetime_to_login = datetime.datetime.now(tzinfo) + time_left    
 
+    if (resin_now < 0) or (resin_needed < 0) or (resin_now >= resin_needed):
+        await ctx.send(f"{ctx.message.author.mention} syntax error!")
+        return
+
     if ctx.author.id == 680927590101286962:
         def check(reaction, user):
             return user == ctx.message.author and (str(reaction.emoji) == "<:Worry:844849143163256842>" or str(reaction.emoji) == "<:WorryBack:851770707998015508>")

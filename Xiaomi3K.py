@@ -6,6 +6,7 @@ tzinfo = timezone(timedelta(hours=timezone_offset))
 
 import discord
 import datetime
+from asyncio import sleep
 
 
 from discord.ext import commands
@@ -20,8 +21,40 @@ async def time(ctx):
     resin_needed = int(argv[1])
     resin_left = resin_needed - resin_now
     time_left = datetime.timedelta(minutes = 8*resin_left)
-    datetime_to_login = datetime.datetime.now(tzinfo) + time_left
+    datetime_to_login = datetime.datetime.now(tzinfo) + time_left    
 
-    await ctx.send("{} Next login: ".format(ctx.message.author.mention) + str(datetime_to_login.strftime('%d/%m/%Y %H:%M:%S')))
+    if ctx.author.id == 680927590101286962:
+        def check(reaction, user):
+            return user == ctx.message.author and (str(reaction.emoji) == "<:Worry:844849143163256842>" or str(reaction.emoji) == "<:WorryBack:851770707998015508>")
 
+        bot_msg = await ctx.send(f"{ctx.message.author.mention} Next login: {str(datetime_to_login.strftime('%d/%m/%Y %H:%M:%S'))}, wanna eat noodles?")
+        await bot_msg.add_reaction("<:Worry:844849143163256842>")
+        await bot_msg.add_reaction("<:WorryBack:851770707998015508>")
+        reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
+
+        if str(reaction.emoji) == "<:Worry:844849143163256842>":
+            await ctx.send(f'Kay, I\'m gonna boil some water then.')
+            await sleep((datetime_to_login-datetime.datetime.now(tzinfo)).total_seconds())
+            await ctx.send(f'{ctx.author.mention} time to eat noodles!')
+        else:
+            await ctx.send(f'Kay, I\'ll eat alone then.')
+    else:
+        def check(reaction, user):
+            return user == ctx.message.author and (str(reaction.emoji) == "<:NierOk:858307590215696404>" or str(reaction.emoji) == "<:NierUpupu:858311607524261919>")
+
+        bot_msg = await ctx.send(f"{ctx.message.author.mention} Next login: {str(datetime_to_login.strftime('%d/%m/%Y %H:%M:%S'))}, wanna ping?")
+        await bot_msg.add_reaction("<:NierOk:858307590215696404>")
+        await bot_msg.add_reaction("<:NierUpupu:858311607524261919>")
+        reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
+
+        if str(reaction.emoji) == "<:NierOk:858307590215696404>":
+            await ctx.send(f'Roger!')
+            await sleep((datetime_to_login-datetime.datetime.now(tzinfo)).total_seconds())
+            await ctx.send(f'{ctx.author.mention} time to login Genshin!') 
+        else:
+            await ctx.send(f'Kay, I won\'t ping you.')
+
+@bot.command()
+async def test(ctx):
+    await ctx.send(f'{ctx.author}')
 bot.run('ODYwNDc0Nzk5ODQ3MTEyNzM1.YN7xmw.Dx2j_VDmG52omKVvqTUVlPl0KQs')

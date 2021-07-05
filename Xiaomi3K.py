@@ -7,7 +7,7 @@ tzinfo = timezone(timedelta(hours=timezone_offset))
 import discord
 import datetime
 from asyncio import sleep
-
+import re
 
 from discord.ext import commands
 
@@ -63,10 +63,12 @@ async def time(ctx):
             await bot_msg.clear_reactions()
 
 @bot.command()
-async def math(ctx,*,message):
+async def math(ctx,*,message):    
+    message_desc = message.replace('\\','')
+    message_title = re.sub(r'([^a-zA-Z0-9_ ])',r'\\\1',message_desc)
     print(message)
     try:
-        embed_var = discord.Embed(title = message, description = f"= {eval(message)}", color=0x00ff00)
+        embed_var = discord.Embed(title = message_title, description = f"= {eval(message_desc)}", color=0x00ff00)
         await ctx.send(embed = embed_var)
     except:
         await ctx.send(f"{ctx.author.mention} Syntax error")

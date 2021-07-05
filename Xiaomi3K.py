@@ -63,6 +63,13 @@ async def time(ctx):
             await bot_msg.clear_reactions()
 
 @bot.command()
-async def test(ctx):
-    await ctx.send(f'{ctx.author}')
+async def math(ctx,*,message):
+    print(message)
+    try:
+        embed_var = discord.Embed(title = message, description = f"= {eval(message)}", color=0x00ff00)
+        await ctx.send(embed = embed_var)
+    except:
+        await ctx.send(f"{ctx.author.mention} Syntax error")
+
+
 bot.run('ODYwNDc0Nzk5ODQ3MTEyNzM1.YN7xmw.Dx2j_VDmG52omKVvqTUVlPl0KQs')

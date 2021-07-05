@@ -73,5 +73,17 @@ async def math(ctx,*,message):
     except:
         await ctx.send(f"{ctx.author.mention} Syntax error")
 
+@bot.command()
+async def ping(ctx):
+    ping = round(bot.latency*1000)
+    emo_dict = {range(1,50): "<:NierWow:858307590182141962>",
+                range(51,100): "<:NierOk:858307590215696404>",
+                range(101,200): "<:NierUpupu:858311607524261919>",
+                range(201,300): "<:NierSleep:858311608810864650>",
+                range(301,1000): "<:NierStare:858307590148980736>",
+                range(1001,10000): "<:NierCri:858311607302094870>"}
+    embed_var = discord.Embed(title = f"{[emo_dict[key] for key in emo_dict if ping in key][0]} Pong!", description = f"{ping} ms", color=0x00ff00)
+    await ctx.send(embed = embed_var)
+
 
 bot.run('ODYwNDc0Nzk5ODQ3MTEyNzM1.YN7xmw.Dx2j_VDmG52omKVvqTUVlPl0KQs')

@@ -38,10 +38,12 @@ async def time(ctx):
 
         if str(reaction.emoji) == "<:Worry:844849143163256842>":
             await ctx.send(f'Kay, I\'m gonna boil some water then.')
+            await bot_msg.clear_reactions()
             await sleep((datetime_to_login-datetime.datetime.now(tzinfo)).total_seconds())
             await ctx.send(f'{ctx.author.mention} time to eat noodles!')
         else:
             await ctx.send(f'Kay, I\'ll eat alone then.')
+            await bot_msg.clear_reactions()
     else:
         def check(reaction, user):
             return user == ctx.message.author and (str(reaction.emoji) == "<:NierOk:858307590215696404>" or str(reaction.emoji) == "<:NierUpupu:858311607524261919>")
@@ -53,10 +55,12 @@ async def time(ctx):
 
         if str(reaction.emoji) == "<:NierOk:858307590215696404>":
             await ctx.send(f'Roger!')
+            await bot_msg.clear_reactions()
             await sleep((datetime_to_login-datetime.datetime.now(tzinfo)).total_seconds())
             await ctx.send(f'{ctx.author.mention} time to login Genshin!') 
         else:
             await ctx.send(f'Kay, I won\'t ping you.')
+            await bot_msg.clear_reactions()
 
 @bot.command()
 async def test(ctx):

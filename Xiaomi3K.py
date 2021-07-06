@@ -6,11 +6,14 @@ tzinfo = timezone(timedelta(hours=timezone_offset))
 
 import discord
 import datetime
-from asyncio import sleep
 import re
 import random
+import scrapy
 
 from discord.ext import commands
+from asyncio import sleep
+from scrapy.crawler import CrawlerProcess
+
 
 bot = commands.Bot(command_prefix='$')
 
@@ -101,6 +104,15 @@ async def pick(ctx,*,message):
         await ctx.send(embed = embed)
     except:
         await ctx.send("There's nothing to choose...")
+
+@bot.command()
+async def say(ctx,*,message):
+    await ctx.send(f"{message}")
+
+@bot.command()
+async def sayd(ctx,*,message):
+    await ctx.message.delete()
+    await ctx.send(f"{message}")
 
 @bot.event
 async def on_command_error(ctx, error):

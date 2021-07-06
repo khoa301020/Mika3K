@@ -75,15 +75,21 @@ async def math(ctx,*,message):
 
 @bot.command()
 async def ping(ctx):
-    ping = round(bot.latency*1000)
     emo_dict = {range(1,50): "<:NierWow:858307590182141962>",
                 range(51,100): "<:NierOk:858307590215696404>",
                 range(101,200): "<:NierUpupu:858311607524261919>",
                 range(201,300): "<:NierSleep:858311608810864650>",
                 range(301,1000): "<:NierStare:858307590148980736>",
-                range(1001,10000): "<:NierCri:858311607302094870>"}
-    embed_var = discord.Embed(title = f"{[emo_dict[key] for key in emo_dict if ping in key][0]} Pong!", description = f"{ping} ms", color=0x00ff00)
-    await ctx.send(embed = embed_var)
+                range(1001,10000000): "<:NierCri:858311607302094870>"}
 
+    pinging_embed = discord.Embed(title = f"Pinging...", description = f"Chotto a minute...", color=0x00ff00)
+    t = await ctx.send(embed = pinging_embed)
+    ping = round((t.created_at-ctx.message.created_at).total_seconds() * 1000)
+    result_embed = discord.Embed(title = f"Pong! {[emo_dict[key] for key in emo_dict if ping in key][0]}", description = f"{ping}ms", color=0x00ff00)
+    await t.edit(embed = result_embed)
+
+@bot.command()
+async def pong(ctx):
+    await ctx.send(f'Pong! in {round(bot.latency * 1000)}ms')
 
 bot.run('ODYwNDc0Nzk5ODQ3MTEyNzM1.YN7xmw.Dx2j_VDmG52omKVvqTUVlPl0KQs')

@@ -8,6 +8,7 @@ import discord
 import datetime
 from asyncio import sleep
 import re
+import random
 
 from discord.ext import commands
 
@@ -91,5 +92,19 @@ async def ping(ctx):
 @bot.command()
 async def pong(ctx):
     await ctx.send(f'Pong! in {round(bot.latency * 1000)}ms')
+
+@bot.command()
+async def pick(ctx,*,message):
+    try:
+        list_choices = message.split(',')
+        embed = discord.Embed(title = "I pick...", description = f"{random.choice(list_choices)}", color=0x00ff00)
+        await ctx.send(embed = embed)
+    except:
+        await ctx.send("There's nothing to choose...")
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send(f"{ctx.author.mention} A parameter is missing!")
 
 bot.run('ODYwNDc0Nzk5ODQ3MTEyNzM1.YN7xmw.Dx2j_VDmG52omKVvqTUVlPl0KQs')

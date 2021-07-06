@@ -2,9 +2,6 @@ from NHentai.nhentai import NHentai
 from asyncio import sleep
 from discord.ext import commands
 from datetime import datetime, timezone, timedelta
-from NHentai import nhentai
-from discord import colour
-import NHentai
 import random
 import re
 import discord

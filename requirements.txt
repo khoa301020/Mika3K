@@ -1,2 +1,2 @@
 discord.py
-scrapy.py
+scrapy

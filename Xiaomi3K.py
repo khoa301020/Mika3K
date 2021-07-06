@@ -1,21 +1,23 @@
 from NHentai.nhentai import NHentai
 from asyncio import sleep
 from discord.ext import commands
+from datetime import datetime, timezone, timedelta
+from NHentai import nhentai
+from discord import colour
 import NHentai
 import random
 import re
 import discord
 import datetime
-from datetime import datetime, timezone, timedelta
-from NHentai import nhentai
-from discord import colour
+import os
+
 
 timezone_offset = +7.0
 tzinfo = timezone(timedelta(hours=timezone_offset))
 
 
 bot = commands.Bot(command_prefix='>')
-
+token = os.getenv("TOKEN")
 
 @bot.command()
 async def timelogin(ctx):
@@ -157,4 +159,4 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send(f"{ctx.author.mention} A parameter is missing!")
 
-bot.run('ODYxODk3MjMzNjM2NjU1MTI0.YOQeWQ.z2P1wuFK8La5VGsSg7udSkmv3g0')
+bot.run(token)

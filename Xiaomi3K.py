@@ -13,7 +13,7 @@ timezone_offset = +7.0
 tzinfo = timezone(timedelta(hours=timezone_offset))
 
 
-bot = commands.Bot(command_prefix='>')
+bot = commands.Bot(command_prefix='$')
 token = os.getenv("TOKEN")
 
 @bot.command()

@@ -1,1 +1,1 @@
-python Xiaomi3K.py
+worker: python Xiaomi3K.py

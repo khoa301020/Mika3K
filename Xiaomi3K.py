@@ -1,13 +1,15 @@
+import Xiaomi3K_functions
+import random
+import discord
+import datetime
+import re
+import os
 from NHentai.nhentai import NHentai
 from asyncio import sleep
 from discord.ext import commands
 from datetime import datetime, timezone, timedelta
-import random
-import re
-import discord
-import datetime
-import os
 
+nhentai = NHentai()
 
 timezone_offset = +7.0
 tzinfo = timezone(timedelta(hours=timezone_offset))
@@ -16,54 +18,33 @@ tzinfo = timezone(timedelta(hours=timezone_offset))
 bot = commands.Bot(command_prefix='$')
 token = os.getenv("TOKEN")
 
+
 @bot.command()
-async def timelogin(ctx):
-    msg = str(ctx.message.content).split(' ')
-    argv = msg[1:]
-    resin_now = int(argv[0])
-    resin_needed = int(argv[1])
+async def logintime(ctx, resin_now: int, resin_needed: int):
     resin_left = resin_needed - resin_now
-    time_left = datetime.timedelta(minutes=8*resin_left)
-    datetime_to_login = datetime.datetime.now(tzinfo) + time_left
+    time_left = timedelta(minutes=8*resin_left)
+    datetime_to_login = datetime.now(tzinfo) + time_left
 
     if (resin_now < 0) or (resin_needed < 0) or (resin_now >= resin_needed):
         await ctx.send(f"{ctx.message.author.mention} syntax error!")
         return
 
-    if ctx.author.id == 680927590101286962:
-        def check(reaction, user):
-            return user == ctx.message.author and (str(reaction.emoji) == "<:Worry:844849143163256842>" or str(reaction.emoji) == "<:WorryBack:851770707998015508>")
+    def check(reaction, user):
+        return user == ctx.message.author and (str(reaction.emoji) == "<:NierOk:858307590215696404>" or str(reaction.emoji) == "<:NierUpupu:858311607524261919>")
 
-        bot_msg = await ctx.send(f"{ctx.message.author.mention} Next login: {str(datetime_to_login.strftime('%d/%m/%Y %H:%M:%S'))}, wanna eat noodles?")
-        await bot_msg.add_reaction("<:Worry:844849143163256842>")
-        await bot_msg.add_reaction("<:WorryBack:851770707998015508>")
-        reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
+    bot_msg = await ctx.send(f"{ctx.message.author.mention} Next login: {str(datetime_to_login.strftime('%d/%m/%Y %H:%M:%S'))}, wanna ping?")
+    await bot_msg.add_reaction("<:NierOk:858307590215696404>")
+    await bot_msg.add_reaction("<:NierUpupu:858311607524261919>")
+    reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
 
-        if str(reaction.emoji) == "<:Worry:844849143163256842>":
-            await ctx.send(f'Kay, I\'m gonna boil some water then.')
-            await bot_msg.clear_reactions()
-            await sleep((datetime_to_login-datetime.datetime.now(tzinfo)).total_seconds())
-            await ctx.send(f'{ctx.author.mention} time to eat noodles!')
-        else:
-            await ctx.send(f'Kay, I\'ll eat alone then.')
-            await bot_msg.clear_reactions()
+    if str(reaction.emoji) == "<:NierOk:858307590215696404>":
+        await ctx.send(f'Roger!')
+        await bot_msg.clear_reactions()
+        await sleep((datetime_to_login-datetime.datetime.now(tzinfo)).total_seconds())
+        await ctx.send(f'{ctx.author.mention} time to login Genshin!')
     else:
-        def check(reaction, user):
-            return user == ctx.message.author and (str(reaction.emoji) == "<:NierOk:858307590215696404>" or str(reaction.emoji) == "<:NierUpupu:858311607524261919>")
-
-        bot_msg = await ctx.send(f"{ctx.message.author.mention} Next login: {str(datetime_to_login.strftime('%d/%m/%Y %H:%M:%S'))}, wanna ping?")
-        await bot_msg.add_reaction("<:NierOk:858307590215696404>")
-        await bot_msg.add_reaction("<:NierUpupu:858311607524261919>")
-        reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
-
-        if str(reaction.emoji) == "<:NierOk:858307590215696404>":
-            await ctx.send(f'Roger!')
-            await bot_msg.clear_reactions()
-            await sleep((datetime_to_login-datetime.datetime.now(tzinfo)).total_seconds())
-            await ctx.send(f'{ctx.author.mention} time to login Genshin!')
-        else:
-            await ctx.send(f'Kay, I won\'t ping you.')
-            await bot_msg.clear_reactions()
+        await ctx.send(f'Kay, I won\'t ping you.')
+        await bot_msg.clear_reactions()
 
 
 @bot.command()
@@ -126,29 +107,18 @@ async def sayd(ctx, *, message):
 
 @bot.command()
 async def nhcode(ctx, *, message):
-    nhentai = NHentai()
     list_hentoi = message.split(' ')
     for hentoi in list_hentoi:
         doujin = nhentai.get_doujin(id=hentoi)
-        title = "Title: [{0}](https://nhentai.net/g/{1})\n".format(
-            doujin.title, doujin.id)
-        parody = "Parodies: {0}\n".format(doujin.parodies)
-        char = "Characters: {0}\n".format(doujin.characters)
-        artist = "Artist: {0}\n".format(doujin.artists)
-        tag = "Tags: {0}\n".format(doujin.tags)
-        group = "Groups: {0}\n".format(doujin.groups)
-        category = "Categories: {0}\n".format(doujin.categories)
-        language = "Languages: {0}\n".format(doujin.languages)
-        page = "Pages: {0}\n".format(doujin.total_pages)
-
-        str = ''.join(title+parody+char+artist+tag+group+category+language+page).replace('[', '{', 1).replace(
-            ']', '}', 1).replace('[', '').replace(']', '').replace('\'', '').replace('{', '[').replace('}', ']')
-        embed = discord.Embed(
-            title=f"Nuke code: {doujin.id}", description=str, color=0x00ff00)
-        embed.set_thumbnail(url=doujin.images[0])
-        embed.set_footer(icon_url=ctx.author.avatar_url,
-                         text=f"{ctx.author} | {datetime.datetime.now(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}")
+        embed = Xiaomi3K_functions.create_embed_doujin(ctx, doujin)
         await ctx.send(embed=embed)
+
+
+@bot.command()
+async def nhrandom(ctx):
+    doujin = nhentai.get_random()
+    embed = Xiaomi3K_functions.create_embed_doujin(ctx, doujin)
+    await ctx.send(embed=embed)
 
 
 @bot.event

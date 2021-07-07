@@ -20,10 +20,11 @@ def get_doujin_info(doujin: Doujin):
     language = "Languages: {0}\n".format(doujin.languages)
     page = "Pages: {0}\n".format(doujin.total_pages)
 
-    str = ''.join(title+parody+char+artist+tag+group+category+language+page).replace('[', '{', 1).replace(
+    body = ''.join(parody+char+artist+tag+group+category+language+page).replace('[', '{', 1).replace(
         ']', '}', 1).replace('[', '').replace(']', '').replace('\'', '').replace('{', '[').replace('}', ']').replace('*', '\\*')
 
-    return str
+    desc = ''.join(title+body)
+    return desc
 
 
 def create_embed_doujin(ctx: commands.context.Context, doujin: Doujin) -> discord.Embed:

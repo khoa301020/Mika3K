@@ -31,5 +31,5 @@ def create_embed_doujin(ctx: commands.context.Context, doujin: Doujin) -> discor
         title=f"Nuke code: {doujin.id}", description=get_doujin_info(doujin), color=0x00ff00)
     embed.set_thumbnail(url=doujin.images[0])
     embed.set_footer(icon_url=ctx.author.avatar_url,
-                     text=f"{ctx.author} • {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}")
+                     text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}")
     return embed

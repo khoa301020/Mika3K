@@ -19,7 +19,7 @@ bot = commands.Bot(command_prefix='$')
 token = os.getenv("TOKEN")
 
 
-@bot.command()
+@bot.command(aliases=['lt'])
 async def logintime(ctx, resin_now: int, resin_needed: int):
     resin_left = resin_needed - resin_now
     time_left = timedelta(minutes=8*resin_left)
@@ -105,7 +105,7 @@ async def sayd(ctx, *, message):
     await ctx.send(f"{message}")
 
 
-@bot.command()
+@bot.command(aliases=['nhc'])
 async def nhcode(ctx, *, message):
     list_hentoi = message.split(' ')
     for hentoi in list_hentoi:
@@ -114,11 +114,62 @@ async def nhcode(ctx, *, message):
         await ctx.send(embed=embed)
 
 
-@bot.command()
+@bot.command(aliases=['nhr'])
 async def nhrandom(ctx):
     doujin = nhentai.get_random()
     embed = Xiaomi3K_functions.create_embed_doujin(ctx, doujin)
     await ctx.send(embed=embed)
+    
+
+@bot.command(aliases=['nhs'])
+async def nhsearch(ctx, *, message):
+    sort_dict = {'all': 'popular', 'day': 'popular-today', 'week': 'popular-week'}
+    page = message.split(
+        ' ')[-1].isnumeric() and int(message.split(' ')[-1]) or None
+    if page:
+        message = message.rsplit(' ', 1)[0]
+    sort = message.split(
+        ' ')[-1] in sort_dict and sort_dict.get(message.split(' ')[-1]) or None
+    if sort:
+        message = message.rsplit(' ', 1)[0]
+    query = message
+
+    doujin_list = nhentai.search(query=query, sort=sort, page=page)
+    id_list = [i.id for i in doujin_list.doujins]
+    index = 0
+    doujin = nhentai.get_doujin(id=id_list[index])
+    embed = Xiaomi3K_functions.create_embed_doujin(ctx, doujin)
+    embed.set_footer(
+        text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(id_list)}")
+    bot_msg = await ctx.send(embed=embed)
+    await bot_msg.add_reaction('⏪')
+    await bot_msg.add_reaction('⏩')
+
+    def check(reaction, user):
+        return user == ctx.message.author and (str(reaction.emoji) == '⏪' or str(reaction.emoji) == '⏩')
+    while True:
+        try:
+            reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
+            if reaction.emoji == '⏪':
+                index = index == 0 and 0 or index - 1
+                doujin = nhentai.get_doujin(id=id_list[index])
+                embed = Xiaomi3K_functions.create_embed_doujin(ctx, doujin)
+                embed.set_footer(
+                    text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(id_list)}")
+                await bot_msg.edit(embed=embed)
+                await bot_msg.remove_reaction('⏪', user)
+
+            if reaction.emoji == '⏩':
+                index = index == len(id_list)-1 and len(id_list)-1 or index + 1
+                doujin = nhentai.get_doujin(id=id_list[index])
+                embed = Xiaomi3K_functions.create_embed_doujin(ctx, doujin)
+                embed.set_footer(
+                    text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(id_list)}")
+                await bot_msg.edit(embed=embed)
+                await bot_msg.remove_reaction('⏩', user)
+        except:
+            await bot_msg.clear_reactions()
+            break
 
 
 @bot.event

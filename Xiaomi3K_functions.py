@@ -20,8 +20,7 @@ def get_doujin_info(doujin: Doujin):
     language = "Languages: {0}\n".format(doujin.languages)
     page = "Pages: {0}\n".format(doujin.total_pages)
 
-    body = ''.join(parody+char+artist+tag+group+category+language+page).replace('[', '{', 1).replace(
-        ']', '}', 1).replace('[', '').replace(']', '').replace('\'', '').replace('{', '[').replace('}', ']').replace('*', '\\*')
+    body = ''.join(parody+char+artist+tag+group+category+language+page).replace('[', '').replace(']', '').replace('\'', '').replace('*', '\\*')
 
     desc = ''.join(title+body)
     return desc

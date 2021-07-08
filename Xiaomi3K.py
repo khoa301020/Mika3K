@@ -32,7 +32,7 @@ async def logintime(ctx, resin_now: int, resin_needed: int):
     def check(reaction, user):
         return user == ctx.message.author and (str(reaction.emoji) == "<:NierOk:858307590215696404>" or str(reaction.emoji) == "<:NierUpupu:858311607524261919>")
 
-    bot_msg = await ctx.send(f"{ctx.message.author.mention} Next login: {str(datetime_to_login.strftime('%d/%m/%Y %H:%M:%S'))}, wanna ping?")
+    bot_msg = await ctx.send(f"{ctx.message.author.mention} Next login: {datetime_to_login.strftime('%d/%m/%Y %H:%M:%S')}, wanna ping?")
     await bot_msg.add_reaction("<:NierOk:858307590215696404>")
     await bot_msg.add_reaction("<:NierUpupu:858311607524261919>")
     reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
@@ -40,7 +40,7 @@ async def logintime(ctx, resin_now: int, resin_needed: int):
     if str(reaction.emoji) == "<:NierOk:858307590215696404>":
         await ctx.send(f'Roger!')
         await bot_msg.clear_reactions()
-        await sleep((datetime_to_login-datetime.datetime.now(tzinfo)).total_seconds())
+        await sleep((datetime_to_login-datetime.now(tzinfo)).total_seconds())
         await ctx.send(f'{ctx.author.mention} time to login Genshin!')
     else:
         await ctx.send(f'Kay, I won\'t ping you.')

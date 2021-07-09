@@ -119,11 +119,12 @@ async def nhrandom(ctx):
     doujin = nhentai.get_random()
     embed = Xiaomi3K_functions.create_embed_doujin(ctx, doujin)
     await ctx.send(embed=embed)
-    
+
 
 @bot.command(aliases=['nhs'])
 async def nhsearch(ctx, *, message):
-    sort_dict = {'all': 'popular', 'day': 'popular-today', 'week': 'popular-week'}
+    sort_dict = {'all': 'popular',
+                 'day': 'popular-today', 'week': 'popular-week'}
     page = message.split(
         ' ')[-1].isnumeric() and int(message.split(' ')[-1]) or None
     if page:
@@ -171,6 +172,7 @@ async def nhsearch(ctx, *, message):
             await bot_msg.clear_reactions()
             break
 
+
 @bot.command(aliases=['gs'])
 async def gelsearch(ctx, *, message):
     booru = await Xiaomi3K_functions.get_gelbooru(message)
@@ -194,7 +196,8 @@ async def gelsearch(ctx, *, message):
             reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
             if reaction.emoji == '⏪':
                 index = index == 0 and 0 or index - 1
-                embed = Xiaomi3K_functions.create_embed_gelbooru(ctx, booru[index])
+                embed = Xiaomi3K_functions.create_embed_gelbooru(
+                    ctx, booru[index])
                 embed.set_footer(
                     text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(booru)}")
                 await bot_msg.edit(embed=embed)
@@ -202,7 +205,8 @@ async def gelsearch(ctx, *, message):
 
             if reaction.emoji == '⏩':
                 index = index == len(booru)-1 and len(booru)-1 or index + 1
-                embed = Xiaomi3K_functions.create_embed_gelbooru(ctx, booru[index])
+                embed = Xiaomi3K_functions.create_embed_gelbooru(
+                    ctx, booru[index])
                 embed.set_footer(
                     text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(booru)}")
                 await bot_msg.edit(embed=embed)
@@ -210,6 +214,16 @@ async def gelsearch(ctx, *, message):
         except:
             await bot_msg.clear_reactions()
             break
+
+
+@bot.command(aliases=['ava'])
+async def avatar(ctx, member: discord.Member = None):
+    if not member:
+        member = ctx.author
+    userAvatarUrl = [member] and member.avatar_url or ctx.author.avatar_url
+    embed = discord.Embed(title=str(member), color=0x00ff00)
+    embed.set_image(url=userAvatarUrl)
+    await ctx.send(embed=embed)
 
 
 @bot.event

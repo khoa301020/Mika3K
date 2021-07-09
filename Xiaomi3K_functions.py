@@ -1,8 +1,10 @@
 import discord
+import pygelbooru
 from datetime import datetime, timezone, timedelta
 from NHentai.base_wrapper import Doujin
 
 from discord.ext import commands
+
 
 timezone_offset = +7.0
 tzinfo = timezone(timedelta(hours=timezone_offset))
@@ -20,7 +22,8 @@ def get_doujin_info(doujin: Doujin):
     language = "Languages: {0}\n".format(doujin.languages)
     page = "Pages: {0}\n".format(doujin.total_pages)
 
-    body = ''.join(parody+char+artist+tag+group+category+language+page).replace('[', '').replace(']', '').replace('\'', '').replace('*', '\\*')
+    body = ''.join(parody+char+artist+tag+group+category+language+page).replace(
+        '[', '').replace(']', '').replace('\'', '').replace('*', '\\*')
 
     desc = ''.join(title+body)
     return desc
@@ -30,6 +33,31 @@ def create_embed_doujin(ctx: commands.context.Context, doujin: Doujin) -> discor
     embed = discord.Embed(
         title=f"Nuke code: {doujin.id}", description=get_doujin_info(doujin), color=0x00ff00)
     embed.set_thumbnail(url=doujin.images[0])
+    embed.set_footer(icon_url=ctx.author.avatar_url,
+                     text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}")
+    return embed
+
+
+async def get_gelbooru(message: str):
+    rating_dict = {'e': 'rating:explicit',
+                   's': 'rating:safe',
+                   'q': 'rating:questionable'}
+    message = message.split(';')
+    rating = rating_dict.get(message[3])
+    limit = message[2].isnumeric() and int(message[2]) or 100
+    excluded = message[1]
+    tags = rating and message[0].split(',')+[rating] or message[0].split(',')
+    gelbooru = pygelbooru.Gelbooru(
+        '0f049087f90fcf2543c99f81b56588b21896a7545b6be7a2a5192643d7d90667', '810736')
+    results = await gelbooru.search_posts(tags=tags, exclude_tags=excluded, limit=limit)
+    return results
+
+
+def create_embed_gelbooru(ctx: commands.context.Context, booru: pygelbooru.gelbooru.GelbooruImage) -> discord.Embed:
+    embed = discord.Embed(
+        title=f"ID: {booru.id}", description=f"Tags: `{'` `'.join(booru.tags[1:-1])}`", color=0x00ff00)
+    embed.set_image(url=str(booru))
+    embed.add_field(name="Image Url", value=str(booru))
     embed.set_footer(icon_url=ctx.author.avatar_url,
                      text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}")
     return embed

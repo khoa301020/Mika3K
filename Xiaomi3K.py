@@ -171,6 +171,46 @@ async def nhsearch(ctx, *, message):
             await bot_msg.clear_reactions()
             break
 
+@bot.command(aliases=['gs'])
+async def gelsearch(ctx, *, message):
+    booru = await Xiaomi3K_functions.get_gelbooru(message)
+    if not booru:
+        await ctx.send("Found nothing...")
+        return
+
+    index = 0
+
+    embed = Xiaomi3K_functions.create_embed_gelbooru(ctx, booru[0])
+    embed.set_footer(
+        text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(booru)}")
+    bot_msg = await ctx.send(embed=embed)
+    await bot_msg.add_reaction('⏪')
+    await bot_msg.add_reaction('⏩')
+
+    def check(reaction, user):
+        return user == ctx.message.author and (str(reaction.emoji) == '⏪' or str(reaction.emoji) == '⏩') and reaction.message == bot_msg
+    while True:
+        try:
+            reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
+            if reaction.emoji == '⏪':
+                index = index == 0 and 0 or index - 1
+                embed = Xiaomi3K_functions.create_embed_gelbooru(ctx, booru[index])
+                embed.set_footer(
+                    text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(booru)}")
+                await bot_msg.edit(embed=embed)
+                await bot_msg.remove_reaction('⏪', user)
+
+            if reaction.emoji == '⏩':
+                index = index == len(booru)-1 and len(booru)-1 or index + 1
+                embed = Xiaomi3K_functions.create_embed_gelbooru(ctx, booru[index])
+                embed.set_footer(
+                    text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(booru)}")
+                await bot_msg.edit(embed=embed)
+                await bot_msg.remove_reaction('⏩', user)
+        except:
+            await bot_msg.clear_reactions()
+            break
+
 
 @bot.event
 async def on_command_error(ctx, error):

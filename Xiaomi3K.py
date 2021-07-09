@@ -3,6 +3,7 @@ import random
 import discord
 import datetime
 import re
+import requests
 import os
 from NHentai.nhentai import NHentai
 from asyncio import sleep
@@ -224,6 +225,19 @@ async def avatar(ctx, member: discord.Member = None):
     embed = discord.Embed(title=str(member), color=0x00ff00)
     embed.set_image(url=userAvatarUrl)
     await ctx.send(embed=embed)
+
+
+@bot.command(aliases=['2x'])
+async def waifu2x(ctx):
+    url = ctx.message.attachments[0].url
+    r = requests.post(
+        "https://api.deepai.org/api/waifu2x",
+        data={
+            'image': url,
+        },
+        headers={'api-key': '2d31a1a0-ce6c-4159-9363-ab8ee0264882'}
+    )
+    await ctx.send(r.json()['output_url'])
 
 
 @bot.event

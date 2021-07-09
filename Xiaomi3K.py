@@ -5,6 +5,7 @@ import datetime
 import re
 import requests
 import os
+import traceback
 from NHentai.nhentai import NHentai
 from saucenao_api import SauceNao
 from asyncio import sleep
@@ -53,7 +54,6 @@ async def logintime(ctx, resin_now: int, resin_needed: int):
 async def math(ctx, *, message):
     message_desc = message.replace('\\', '')
     message_title = re.sub(r'([^a-zA-Z0-9_ ])', r'\\\1', message_desc)
-    print(message)
     try:
         embed_var = discord.Embed(
             title=message_title, description=f"= {eval(message_desc)}", color=0x00ff00)
@@ -154,7 +154,7 @@ async def nhsearch(ctx, *, message):
         try:
             reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
             if reaction.emoji == '⏪':
-                index = index == 0 and 0 or index - 1
+                index -= 1 if index != 0 else 0
                 doujin = nhentai.get_doujin(id=id_list[index])
                 embed = Xiaomi3K_functions.create_embed_doujin(ctx, doujin)
                 embed.set_footer(
@@ -171,6 +171,7 @@ async def nhsearch(ctx, *, message):
                 await bot_msg.edit(embed=embed)
                 await bot_msg.remove_reaction('⏩', user)
         except:
+            print(traceback.format_exc())
             await bot_msg.clear_reactions()
             break
 
@@ -197,7 +198,7 @@ async def gelsearch(ctx, *, message):
         try:
             reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
             if reaction.emoji == '⏪':
-                index = index == 0 and 0 or index - 1
+                index -= 1 if index != 0 else 0
                 embed = Xiaomi3K_functions.create_embed_gelbooru(
                     ctx, booru[index])
                 embed.set_footer(
@@ -214,6 +215,7 @@ async def gelsearch(ctx, *, message):
                 await bot_msg.edit(embed=embed)
                 await bot_msg.remove_reaction('⏩', user)
         except:
+            print(traceback.format_exc())
             await bot_msg.clear_reactions()
             break
 
@@ -244,9 +246,7 @@ async def waifu2x(ctx):
 @bot.command(aliases=['sn'])
 async def saucenao(ctx):
     url = ctx.message.attachments[0].url
-    sauce = SauceNao(api_key='92917bad52b2af15cb878fa34ec419fa9d93b893')
-    response = sauce.from_url(url)
-    sauce = response.results
+    sauce = Xiaomi3K_functions.get_saucenao(url)
     if not sauce:
         await ctx.send("Found nothing...")
         return
@@ -266,7 +266,7 @@ async def saucenao(ctx):
         try:
             reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
             if reaction.emoji == '⏪':
-                index = index == 0 and 0 or index - 1
+                index -= 1 if index != 0 else 0
                 embed = Xiaomi3K_functions.create_embed_saucenao(
                     sauce[index])
                 embed.set_footer(
@@ -283,6 +283,7 @@ async def saucenao(ctx):
                 await bot_msg.edit(embed=embed)
                 await bot_msg.remove_reaction('⏩', user)
         except:
+            print(traceback.format_exc())
             await bot_msg.clear_reactions()
             break
 

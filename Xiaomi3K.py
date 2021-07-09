@@ -6,6 +6,7 @@ import re
 import requests
 import os
 from NHentai.nhentai import NHentai
+from saucenao_api import SauceNao
 from asyncio import sleep
 from discord.ext import commands
 from datetime import datetime, timezone, timedelta
@@ -240,9 +241,57 @@ async def waifu2x(ctx):
     await ctx.send(r.json()['output_url'])
 
 
+@bot.command(aliases=['sn'])
+async def saucenao(ctx):
+    url = ctx.message.attachments[0].url
+    sauce = SauceNao(api_key='92917bad52b2af15cb878fa34ec419fa9d93b893')
+    response = sauce.from_url(url)
+    sauce = response.results
+    if not sauce:
+        await ctx.send("Found nothing...")
+        return
+
+    index = 0
+
+    embed = Xiaomi3K_functions.create_embed_saucenao(sauce[0])
+    embed.set_footer(
+        text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(sauce)}")
+    bot_msg = await ctx.send(embed=embed)
+    await bot_msg.add_reaction('⏪')
+    await bot_msg.add_reaction('⏩')
+
+    def check(reaction, user):
+        return user == ctx.message.author and (str(reaction.emoji) == '⏪' or str(reaction.emoji) == '⏩') and reaction.message == bot_msg
+    while True:
+        try:
+            reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
+            if reaction.emoji == '⏪':
+                index = index == 0 and 0 or index - 1
+                embed = Xiaomi3K_functions.create_embed_saucenao(
+                    sauce[index])
+                embed.set_footer(
+                    text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(sauce)}")
+                await bot_msg.edit(embed=embed)
+                await bot_msg.remove_reaction('⏪', user)
+
+            if reaction.emoji == '⏩':
+                index = index == len(sauce)-1 and len(sauce)-1 or index + 1
+                embed = Xiaomi3K_functions.create_embed_saucenao(
+                    sauce[index])
+                embed.set_footer(
+                    text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(sauce)}")
+                await bot_msg.edit(embed=embed)
+                await bot_msg.remove_reaction('⏩', user)
+        except:
+            await bot_msg.clear_reactions()
+            break
+
+
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send(f"{ctx.author.mention} A parameter is missing!")
 
 bot.run(token)
+# bot.run('ODYxODk3MjMzNjM2NjU1MTI0.YOQeWQ.z2P1wuFK8La5VGsSg7udSkmv3g0')  # Klee
+# bot.run('ODYwNDc0Nzk5ODQ3MTEyNzM1.YN7xmw.Dx2j_VDmG52omKVvqTUVlPl0KQs') # Xiaomi3K

@@ -1,3 +1,4 @@
 discord.py
 NHentai-API
 pygelbooru
+saucenao_api

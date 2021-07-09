@@ -1,8 +1,10 @@
+import saucenao_api
+from Xiaomi3K import saucenao
 import discord
 import pygelbooru
 from datetime import datetime, timezone, timedelta
 from NHentai.base_wrapper import Doujin
-
+from saucenao_api import SauceNao
 from discord.ext import commands
 
 
@@ -60,4 +62,27 @@ def create_embed_gelbooru(ctx: commands.context.Context, booru: pygelbooru.gelbo
     embed.add_field(name="Image Url", value=str(booru))
     embed.set_footer(icon_url=ctx.author.avatar_url,
                      text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}")
+    return embed
+
+def get_saucenao_desc(sauce:saucenao_api.BasicSauce) -> str:
+    title = sauce.title + '\n'
+    similarity = str(sauce.similarity) + '%\n'
+    author = [sauce.author] and sauce.author + '\n' or ''
+    desc = ''.join(title+similarity+author)
+    return desc
+
+def get_saucenao_source(sauce:saucenao_api.BasicSauce) -> str:
+    urls = sauce.urls
+    if not urls:
+        return ''
+    list_source = [i.replace('www.','').split('/')[2].split('.')[0] for i in urls]
+    source = ''.join(["[{0}]({1})\n".format(list_source[i],urls[i]) for i in range(len(urls))])    
+    return source
+
+def create_embed_saucenao(sauce:saucenao_api.BasicSauce) -> discord.Embed:
+    print(sauce.urls)
+    embed = discord.Embed(title = sauce.index_name, description = get_saucenao_desc(sauce))
+    embed.set_image(url=sauce.thumbnail)
+    embed.add_field(name="Source:",value=get_saucenao_source(sauce))
+
     return embed

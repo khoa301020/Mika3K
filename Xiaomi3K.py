@@ -35,7 +35,7 @@ async def logintime(ctx, resin_now: int, resin_needed: int):
     def check(reaction, user):
         return user == ctx.message.author and (str(reaction.emoji) == "<:NierOk:858307590215696404>" or str(reaction.emoji) == "<:NierUpupu:858311607524261919>")
 
-    bot_msg = await ctx.send(f"{ctx.message.author.mention} Next login: {datetime_to_login.strftime('%d/%m/%Y %H:%M:%S')}, wanna ping?")
+    bot_msg = await ctx.reply(f"{ctx.message.author.mention} Next login: {datetime_to_login.strftime('%d/%m/%Y %H:%M:%S')}, wanna ping?")
     await bot_msg.add_reaction("<:NierOk:858307590215696404>")
     await bot_msg.add_reaction("<:NierUpupu:858311607524261919>")
     reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
@@ -140,10 +140,10 @@ async def nhsearch(ctx, *, message):
     id_list = [i.id for i in doujin_list.doujins]
     index = 0
     doujin = nhentai.get_doujin(id=id_list[index])
-    embed = Xiaomi3K_functions.create_embed_doujin(ctx, doujin)
+    embed = Xiaomi3K_functions.create_embed_doujin(doujin)
     embed.set_footer(
         text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(id_list)}")
-    bot_msg = await ctx.send(embed=embed)
+    bot_msg = await ctx.reply(embed=embed)
     await bot_msg.add_reaction('⏪')
     await bot_msg.add_reaction('⏩')
 
@@ -155,7 +155,7 @@ async def nhsearch(ctx, *, message):
             if reaction.emoji == '⏪':
                 index -= 1 if index != 0 else 0
                 doujin = nhentai.get_doujin(id=id_list[index])
-                embed = Xiaomi3K_functions.create_embed_doujin(ctx, doujin)
+                embed = Xiaomi3K_functions.create_embed_doujin(doujin)
                 embed.set_footer(
                     text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(id_list)}")
                 await bot_msg.edit(embed=embed)
@@ -164,7 +164,7 @@ async def nhsearch(ctx, *, message):
             if reaction.emoji == '⏩':
                 index = index == len(id_list)-1 and len(id_list)-1 or index + 1
                 doujin = nhentai.get_doujin(id=id_list[index])
-                embed = Xiaomi3K_functions.create_embed_doujin(ctx, doujin)
+                embed = Xiaomi3K_functions.create_embed_doujin(doujin)
                 embed.set_footer(
                     text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(id_list)}")
                 await bot_msg.edit(embed=embed)
@@ -184,10 +184,10 @@ async def gelsearch(ctx, *, message):
 
     index = 0
 
-    embed = Xiaomi3K_functions.create_embed_gelbooru(ctx, booru[0])
+    embed = Xiaomi3K_functions.create_embed_gelbooru(booru[0])
     embed.set_footer(
         text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(booru)}")
-    bot_msg = await ctx.send(embed=embed)
+    bot_msg = await ctx.reply(embed=embed)
     await bot_msg.add_reaction('⏪')
     await bot_msg.add_reaction('⏩')
 
@@ -198,8 +198,7 @@ async def gelsearch(ctx, *, message):
             reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
             if reaction.emoji == '⏪':
                 index -= 1 if index != 0 else 0
-                embed = Xiaomi3K_functions.create_embed_gelbooru(
-                    ctx, booru[index])
+                embed = Xiaomi3K_functions.create_embed_gelbooru(booru[index])
                 embed.set_footer(
                     text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(booru)}")
                 await bot_msg.edit(embed=embed)
@@ -207,8 +206,7 @@ async def gelsearch(ctx, *, message):
 
             if reaction.emoji == '⏩':
                 index = index == len(booru)-1 and len(booru)-1 or index + 1
-                embed = Xiaomi3K_functions.create_embed_gelbooru(
-                    ctx, booru[index])
+                embed = Xiaomi3K_functions.create_embed_gelbooru(booru[index])
                 embed.set_footer(
                     text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(booru)}")
                 await bot_msg.edit(embed=embed)
@@ -255,7 +253,7 @@ async def saucenao(ctx):
     embed = Xiaomi3K_functions.create_embed_saucenao(sauce[0])
     embed.set_footer(
         text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(sauce)}")
-    bot_msg = await ctx.send(embed=embed)
+    bot_msg = await ctx.reply(embed=embed)
     await bot_msg.add_reaction('⏪')
     await bot_msg.add_reaction('⏩')
 
@@ -266,8 +264,7 @@ async def saucenao(ctx):
             reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
             if reaction.emoji == '⏪':
                 index -= 1 if index != 0 else 0
-                embed = Xiaomi3K_functions.create_embed_saucenao(
-                    sauce[index])
+                embed = Xiaomi3K_functions.create_embed_saucenao(sauce[index])
                 embed.set_footer(
                     text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(sauce)}")
                 await bot_msg.edit(embed=embed)
@@ -275,8 +272,7 @@ async def saucenao(ctx):
 
             if reaction.emoji == '⏩':
                 index = index == len(sauce)-1 and len(sauce)-1 or index + 1
-                embed = Xiaomi3K_functions.create_embed_saucenao(
-                    sauce[index])
+                embed = Xiaomi3K_functions.create_embed_saucenao(sauce[index])
                 embed.set_footer(
                     text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(sauce)}")
                 await bot_msg.edit(embed=embed)
@@ -300,7 +296,7 @@ async def yandex(ctx):
     embed = Xiaomi3K_functions.create_embed_yandex(yandex[0])
     embed.set_footer(
         text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(yandex)}")
-    bot_msg = await ctx.send(embed=embed)
+    bot_msg = await ctx.reply(embed=embed)
     await bot_msg.add_reaction('⏪')
     await bot_msg.add_reaction('⏩')
 
@@ -311,8 +307,7 @@ async def yandex(ctx):
             reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
             if reaction.emoji == '⏪':
                 index -= 1 if index != 0 else 0
-                embed = Xiaomi3K_functions.create_embed_yandex(
-                    yandex[index])
+                embed = Xiaomi3K_functions.create_embed_yandex(yandex[index])
                 embed.set_footer(
                     text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(yandex)}")
                 await bot_msg.edit(embed=embed)
@@ -320,8 +315,7 @@ async def yandex(ctx):
 
             if reaction.emoji == '⏩':
                 index = index == len(yandex)-1 and len(yandex)-1 or index + 1
-                embed = Xiaomi3K_functions.create_embed_yandex(
-                    yandex[index])
+                embed = Xiaomi3K_functions.create_embed_yandex(yandex[index])
                 embed.set_footer(
                     text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(yandex)}")
                 await bot_msg.edit(embed=embed)
@@ -351,11 +345,55 @@ async def convert(ctx, input, output, *, msg):
             var_output = var_input
         else:
             var_output = str(hex(var_input))[2:]
-        await ctx.send(embed=discord.Embed(title="Convert succeed!", description="Input: {0}\nOutput: {1}".format(msg, var_output)))
+        await ctx.send(embed=discord.Embed(title="Convert succeed!", description="__Input:__ {0}\n__Output:__ {1}".format(msg, var_output)))
     except:
         print(traceback.format_exc())
         await ctx.send("Input invalid!")
         return
+
+
+@bot.command(aliases=['img'])
+async def image(ctx, *, msg):
+    images = Xiaomi3K_functions.google_image_search(msg)
+    if not images:
+        await ctx.send("Found nothing...")
+        return
+
+    index = 0
+
+    embed = Xiaomi3K_functions.create_google_img_embed(images[0])
+    embed.set_footer(
+        text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(images)}")
+    bot_msg = await ctx.reply(embed=embed)
+    await bot_msg.add_reaction('⏪')
+    await bot_msg.add_reaction('⏩')
+
+    def check(reaction, user):
+        return user == ctx.message.author and (str(reaction.emoji) == '⏪' or str(reaction.emoji) == '⏩') and reaction.message == bot_msg
+    while True:
+        try:
+            reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check)
+            if reaction.emoji == '⏪':
+                index -= 1 if index != 0 else 0
+                embed = Xiaomi3K_functions.create_google_img_embed(
+                    images[index])
+                embed.set_footer(
+                    text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(images)}")
+                await bot_msg.edit(embed=embed)
+                await bot_msg.remove_reaction('⏪', user)
+
+            if reaction.emoji == '⏩':
+                index = index == len(images)-1 and len(images)-1 or index + 1
+                embed = Xiaomi3K_functions.create_google_img_embed(
+                    images[index])
+                embed.set_footer(
+                    text=f"{ctx.author}  •  {datetime.strptime(str(ctx.message.created_at),'%Y-%m-%d %H:%M:%S.%f').astimezone(tzinfo).strftime('%d/%m/%Y %H:%M:%S')}  •  {index+1}/{len(images)}")
+                await bot_msg.edit(embed=embed)
+                await bot_msg.remove_reaction('⏩', user)
+        except:
+            print(traceback.format_exc())
+            await bot_msg.clear_reactions()
+            break
 
 
 @bot.event

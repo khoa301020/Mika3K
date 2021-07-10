@@ -6,7 +6,7 @@ import urllib.parse
 from bs4 import BeautifulSoup
 from NHentai.base_wrapper import Doujin
 from saucenao_api import SauceNao
-from discord.ext import commands
+from googleapiclient.discovery import build
 
 
 def get_doujin_info(doujin: Doujin):
@@ -28,7 +28,7 @@ def get_doujin_info(doujin: Doujin):
     return desc
 
 
-def create_embed_doujin(ctx: commands.context.Context, doujin: Doujin) -> discord.Embed:
+def create_embed_doujin(doujin: Doujin) -> discord.Embed:
     embed = discord.Embed(
         title=f"Nuke code: {doujin.id}", description=get_doujin_info(doujin), color=0x00ff00)
     embed.set_thumbnail(url=doujin.images[0])
@@ -50,7 +50,7 @@ async def get_gelbooru(message: str):
     return results
 
 
-def create_embed_gelbooru(ctx: commands.context.Context, booru: pygelbooru.gelbooru.GelbooruImage) -> discord.Embed:
+def create_embed_gelbooru(booru: pygelbooru.gelbooru.GelbooruImage) -> discord.Embed:
     embed = discord.Embed(
         title=f"ID: {booru.id}", description=f"Tags: `{'` `'.join(booru.tags[1:-1])}`", color=0x00ff00)
     embed.set_image(url=str(booru))
@@ -95,20 +95,25 @@ def create_embed_saucenao(sauce: saucenao_api.BasicSauce) -> discord.Embed:
 
     return embed
 
-def get_soup_yandex(url:str) -> list:
+
+def get_soup_yandex(url: str) -> list:
     req_url = f"https://yandex.com/images/search?rpt=imageview&url={urllib.parse.quote_plus(url)}"
     response = requests.get(req_url)
     soup = BeautifulSoup(response.content, 'html.parser')
 
     yandex = []
-    
-    for i in soup.find_all('li', class_= 'other-sites__item'):
+
+    for i in soup.find_all('li', class_='other-sites__item'):
         source = dict()
         source['thumbnail'] = i.a.get('href')
-        source['title'] =  i.find_all('div')[2].find_all('div',class_='other-sites__snippet-title')[0].a.get_text()
-        source['title_url'] = i.find_all('div')[2].find_all('div',class_='other-sites__snippet-title')[0].a.get('href')
-        source['site'] = i.find_all('div')[2].find_all('div',class_='other-sites__snippet-site')[0].a.get_text()
-        source['desc'] = i.find_all('div')[2].find_all('div',class_='other-sites__snippet-desc')[0].get_text()
+        source['title'] = i.find_all('div')[2].find_all(
+            'div', class_='other-sites__snippet-title')[0].a.get_text()
+        source['title_url'] = i.find_all('div')[2].find_all(
+            'div', class_='other-sites__snippet-title')[0].a.get('href')
+        source['site'] = i.find_all('div')[2].find_all(
+            'div', class_='other-sites__snippet-site')[0].a.get_text()
+        source['desc'] = i.find_all('div')[2].find_all(
+            'div', class_='other-sites__snippet-desc')[0].get_text()
         source['resolution'] = i.a.div.div.get_text()
         yandex.append(source)
     return yandex
@@ -116,7 +121,36 @@ def get_soup_yandex(url:str) -> list:
 
 def create_embed_yandex(soup) -> discord.Embed:
     embed = discord.Embed(title=f"Site: {soup['site']}",
-                          description="Title: [{0}]({1})\nDescription: {2}\nResolution: {3}".format(soup['title'],soup['title_url'],soup['desc'],soup['resolution']))
+                          description="Title: [{0}]({1})\nDescription: {2}\nResolution: {3}".format(soup['title'], soup['title_url'], soup['desc'], soup['resolution']))
     embed.set_image(url=soup['thumbnail'])
 
     return embed
+
+
+def google_image_search(query):
+    try:
+        amount = int(query.split(" ")[-1])
+        query = urllib.parse.quote_plus(query[:-2])
+    except:
+        amount = 10
+        query = urllib.parse.quote_plus(query)
+
+    service = build("customsearch", "v1",
+                    developerKey="AIzaSyCgfZ3N__9o5aMREby9GWHYW0HsylnJbL4")
+    images = service.cse().list(q=query, cx="c84ec29cbc8e1b019", num=amount,
+                                searchType="image", filter="1").execute()["items"]
+    return images
+
+def create_google_img_embed(img) -> discord.Embed:
+    embed = discord.Embed(title=f"Title: {get_site_title(img['displayLink'])} ({img['displayLink']})",
+                          description="[{0}]({1})".format(img['title'],img['image']['contextLink']))
+    embed.set_image(url=img['link'])
+    return embed
+
+def get_site_title(url):
+    try:
+        response = requests.get("https://" + url)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        return soup.title.string
+    except:
+        return url

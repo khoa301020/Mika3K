@@ -2,3 +2,4 @@ discord.py
 NHentai-API
 pygelbooru
 saucenao_api
+google-api-python-client

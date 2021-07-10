@@ -83,6 +83,9 @@ def get_saucenao_source(sauce: saucenao_api.BasicSauce) -> str:
         '/')[2].split('.')[0] for i in urls]
     source = ''.join(["[{0}]({1})\n".format(list_source[i], urls[i])
                      for i in range(len(urls))])
+    if sauce.index_id == 18:
+        id = sauce.thumbnail.split('/')[5].split('%20')[0]
+        source = f"NHentai: [{id}](https://nhentai.net/g/{id})"
     return source
 
 

@@ -1,4 +1,5 @@
 import Xiaomi3K_functions
+import Xiaomi3K_asyncio_sleep
 import random
 import discord
 import datetime
@@ -42,8 +43,7 @@ async def logintime(ctx, resin_now: int, resin_needed: int):
     if str(reaction.emoji) == "<:NierOk:858307590215696404>":
         await ctx.send(f'Roger!')
         await bot_msg.clear_reactions()
-        await sleep((datetime_to_login-datetime.now(tzinfo)).total_seconds())
-        await ctx.send(f'{ctx.author.mention} time to login Genshin!')
+        await Xiaomi3K_asyncio_sleep.genshin_sleep(ctx, (datetime_to_login-datetime.now(tzinfo)).total_seconds())
     else:
         await ctx.send(f'Kay, I won\'t ping you.')
         await bot_msg.clear_reactions()
@@ -286,6 +286,7 @@ async def saucenao(ctx):
             await bot_msg.clear_reactions()
             break
 
+
 @bot.command(aliases=['yd'])
 async def yandex(ctx):
     url = ctx.message.attachments[0].url
@@ -329,6 +330,33 @@ async def yandex(ctx):
             print(traceback.format_exc())
             await bot_msg.clear_reactions()
             break
+
+
+@bot.command(aliases=['cv'])
+async def convert(ctx, input, output, *, msg):
+    base_dict = {'bin': 2, 'oct': 8, 'dec': 10, 'hex': 16, 'text': 'ASCII'}
+    if input not in base_dict or output not in base_dict:
+        await ctx.send("Arguments invalid!")
+        return
+    try:
+        var_input = input != 'text' and int(msg, base_dict.get(
+            input)) or ''.join([str(ord(i)) for i in msg])
+        if output == 'text':
+            var_output = bytes.fromhex(str(hex(var_input))[2:]).decode('ASCII')
+        elif output == 'bin':
+            var_output = str(bin(var_input))[2:]
+        elif output == 'oct':
+            var_output = str(oct(var_input))[2:]
+        elif output == 'dec':
+            var_output = var_input
+        else:
+            var_output = str(hex(var_input))[2:]
+        await ctx.send(embed=discord.Embed(title="Convert succeed!", description="Input: {0}\nOutput: {1}".format(msg, var_output)))
+    except:
+        print(traceback.format_exc())
+        await ctx.send("Input invalid!")
+        return
+
 
 @bot.event
 async def on_command_error(ctx, error):

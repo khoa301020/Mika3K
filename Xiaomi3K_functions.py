@@ -2,6 +2,7 @@ import saucenao_api
 import discord
 import pygelbooru
 import requests
+import urllib.parse
 from bs4 import BeautifulSoup
 from NHentai.base_wrapper import Doujin
 from saucenao_api import SauceNao
@@ -95,7 +96,7 @@ def create_embed_saucenao(sauce: saucenao_api.BasicSauce) -> discord.Embed:
     return embed
 
 def get_soup_yandex(url:str) -> list:
-    req_url = f"https://yandex.com/images/search?rpt=imageview&url={url}"
+    req_url = f"https://yandex.com/images/search?rpt=imageview&url={urllib.parse.quote_plus(url)}"
     response = requests.get(req_url)
     soup = BeautifulSoup(response.content, 'html.parser')
 

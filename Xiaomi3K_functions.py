@@ -130,7 +130,7 @@ def create_embed_yandex(soup) -> discord.Embed:
 def google_image_search(query):
     try:
         amount = int(query.split(" ")[-1])
-        query = urllib.parse.quote_plus(query[:-2])
+        query = urllib.parse.quote_plus(query.replace(str(amount),''))
     except:
         amount = 10
         query = urllib.parse.quote_plus(query)

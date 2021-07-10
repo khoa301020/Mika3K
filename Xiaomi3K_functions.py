@@ -127,17 +127,11 @@ def create_embed_yandex(soup) -> discord.Embed:
     return embed
 
 
-def google_image_search(query):
-    try:
-        amount = int(query.split(" ")[-1])
-        query = urllib.parse.quote_plus(query.replace(str(amount),''))
-    except:
-        amount = 10
-        query = urllib.parse.quote_plus(query)
-
+def google_image_search(query):    
+    query = urllib.parse.quote_plus(query)
     service = build("customsearch", "v1",
                     developerKey="AIzaSyCgfZ3N__9o5aMREby9GWHYW0HsylnJbL4")
-    images = service.cse().list(q=query, cx="c84ec29cbc8e1b019", num=amount,
+    images = service.cse().list(q=query, cx="c84ec29cbc8e1b019", num=10,
                                 searchType="image", filter="1").execute()["items"]
     return images
 

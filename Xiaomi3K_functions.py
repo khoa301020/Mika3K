@@ -1,14 +1,11 @@
 import saucenao_api
 import discord
 import pygelbooru
-from datetime import datetime, timezone, timedelta
+import requests
+from bs4 import BeautifulSoup
 from NHentai.base_wrapper import Doujin
 from saucenao_api import SauceNao
 from discord.ext import commands
-
-
-timezone_offset = +7.0
-tzinfo = timezone(timedelta(hours=timezone_offset))
 
 
 def get_doujin_info(doujin: Doujin):
@@ -68,7 +65,7 @@ def get_saucenao(url: str) -> list:
 
 
 def get_saucenao_desc(sauce: saucenao_api.BasicSauce) -> str:
-    title = "Title: " + sauce.title + '\n'
+    title = "Title: `" + sauce.title + '`\n'
     similarity = "Similarity: " + str(sauce.similarity) + '%\n'
     author = sauce.author and "Author: " + sauce.author + '\n' or ''
     desc = ''.join(title+similarity+author)
@@ -94,5 +91,31 @@ def create_embed_saucenao(sauce: saucenao_api.BasicSauce) -> discord.Embed:
                           description=get_saucenao_desc(sauce))
     embed.set_image(url=sauce.thumbnail)
     embed.add_field(name="Source:", value=get_saucenao_source(sauce))
+
+    return embed
+
+def get_soup_yandex(url:str) -> list:
+    req_url = f"https://yandex.com/images/search?rpt=imageview&url={url}"
+    response = requests.get(req_url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+    yandex = []
+    
+    for i in soup.find_all('li', class_= 'other-sites__item'):
+        source = dict()
+        source['thumbnail'] = i.a.get('href')
+        source['title'] =  i.find_all('div')[2].find_all('div',class_='other-sites__snippet-title')[0].a.get_text()
+        source['title_url'] = i.find_all('div')[2].find_all('div',class_='other-sites__snippet-title')[0].a.get('href')
+        source['site'] = i.find_all('div')[2].find_all('div',class_='other-sites__snippet-site')[0].a.get_text()
+        source['desc'] = i.find_all('div')[2].find_all('div',class_='other-sites__snippet-desc')[0].get_text()
+        source['resolution'] = i.a.div.div.get_text()
+        yandex.append(source)
+    return yandex
+
+
+def create_embed_yandex(soup) -> discord.Embed:
+    embed = discord.Embed(title=f"Site: {soup['site']}",
+                          description="Title: [{0}]({1})\nDescription: {2}\nResolution: {3}".format(soup['title'],soup['title_url'],soup['desc'],soup['resolution']))
+    embed.set_image(url=soup['thumbnail'])
 
     return embed

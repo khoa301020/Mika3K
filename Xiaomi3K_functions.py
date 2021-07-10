@@ -77,7 +77,7 @@ def get_saucenao_desc(sauce: saucenao_api.BasicSauce) -> str:
 
 def get_saucenao_source(sauce: saucenao_api.BasicSauce) -> str:
     urls = sauce.urls
-    if not urls:
+    if not urls and sauce.index_id != 18:
         return "No source found..."
     list_source = [i.replace('www.', '').split(
         '/')[2].split('.')[0] for i in urls]

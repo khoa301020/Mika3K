@@ -3,6 +3,7 @@ import discord
 import pygelbooru
 import requests
 import urllib.parse
+import traceback
 from bs4 import BeautifulSoup
 from NHentai.base_wrapper import Doujin
 from saucenao_api import SauceNao

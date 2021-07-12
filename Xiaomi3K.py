@@ -111,14 +111,14 @@ async def nhcode(ctx, *, message):
     list_hentoi = message.split(' ')
     for hentoi in list_hentoi:
         doujin = nhentai.get_doujin(id=hentoi)
-        embed = Xiaomi3K_functions.create_embed_doujin(ctx, doujin)
+        embed = Xiaomi3K_functions.create_embed_doujin(doujin)
         await ctx.send(embed=embed)
 
 
 @bot.command(aliases=['nhr'])
 async def nhrandom(ctx):
     doujin = nhentai.get_random()
-    embed = Xiaomi3K_functions.create_embed_doujin(ctx, doujin)
+    embed = Xiaomi3K_functions.create_embed_doujin(doujin)
     await ctx.send(embed=embed)
 
 

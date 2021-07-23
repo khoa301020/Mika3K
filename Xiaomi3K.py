@@ -395,6 +395,10 @@ async def image(ctx, *, msg):
             await bot_msg.clear_reactions()
             break
 
+@bot.command()
+async def ip(ctx):
+    r = requests.get('https://ipinfo.io/json')
+    await ctx.send(embed = discord.Embed(title = f"Your public IP: {r.json()['ip']}", description = "Location: {0}, {1}\nTimezone: {2}".format(r.json()['city'],r.json()['country'],r.json()['timezone'])))
 
 @bot.event
 async def on_command_error(ctx, error):

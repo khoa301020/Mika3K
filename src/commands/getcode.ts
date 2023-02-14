@@ -77,15 +77,19 @@ class Example {
   ) {
     if (message.author.bot || !Number.isInteger(parseInt(message.content))) return false;
     if (parseInt(message.content) < 0 || parseInt(message.content) > 999999) return false;
-    const helloBtn = new ButtonBuilder().setLabel('	|_・)').setStyle(ButtonStyle.Primary).setCustomId('get-nuke');
+    const confirmBtn = new ButtonBuilder().setLabel('	|_・)').setStyle(ButtonStyle.Primary).setCustomId('get-nuke');
 
-    const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(helloBtn);
+    const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(confirmBtn);
 
-    message.reply({ content: 'Nuke?', components: [row] });
+    message.reply({ content: 'Nuke?', components: [row] }).then((msg) => {
+      confirmBtn.setDisabled(true);
+      const newRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(confirmBtn);
+      setTimeout(() => msg.edit({ content: 'Nuke?', components: [newRow] }), 60 * 1000);
+    });
   }
 
   @ButtonComponent({ id: 'get-nuke' })
-  async helloBtn(interaction: ButtonInteraction): Promise<void> {
+  async confirmBtn(interaction: ButtonInteraction): Promise<void> {
     const codeMessageId = interaction.message.reference?.messageId!;
     const message = await interaction.channel?.messages.fetch(codeMessageId)!;
 

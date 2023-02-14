@@ -14,9 +14,12 @@ import { ArgsOf, ButtonComponent, Client, Discord, On, Slash, SlashOption } from
 let config = {
   headers: {
     'user-agent':
-      'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
+    cookie: `cf_clearance=${process.env.COOKIE}`,
   },
 };
+
+const regexNum = /^\d+$/;
 
 @Discord()
 class Example {
@@ -75,7 +78,7 @@ class Example {
     client: Client, // Client instance injected here,
     guardPayload: any,
   ) {
-    if (message.author.bot || !Number.isInteger(parseInt(message.content))) return false;
+    if (message.author.bot || !regexNum.test(message.content)) return false;
     if (parseInt(message.content) < 0 || parseInt(message.content) > 999999) return false;
     const confirmBtn = new ButtonBuilder().setLabel('	|_・)').setStyle(ButtonStyle.Primary).setCustomId('get-nuke');
 
@@ -106,14 +109,12 @@ class Example {
             iconURL: message.author.displayAvatarURL(),
           })
           .setDescription(book.optional_title ? book.optional_title.english : 'No optional names.')
-          // .setThumbnail(book.image[0])
           .setThumbnail('https://archive.org/download/nhentai-logo-3/nhentai-logo-3.jpg')
           .addFields(
             { name: 'Parodies', value: book.parodies ? book.parodies : 'original' },
             { name: 'Characters', value: book.characters.length > 0 ? book.characters.join(', ') : 'original' },
             { name: 'Artists', value: book.artist?.join(', ') },
             { name: 'Tags', value: book.tags?.join(', ') },
-            // { name: '\u200B', value: '\u200B' },
             { name: 'Favorites', value: book.num_favorites.toString(), inline: true },
             { name: 'Page count', value: book.num_pages.toString(), inline: true },
             { name: 'Language', value: book.language, inline: true },

@@ -47,14 +47,12 @@ class Example {
             iconURL: interaction.user.displayAvatarURL(),
           })
           .setDescription(book.optional_title ? book.optional_title.english : 'No optional names.')
-          // .setThumbnail(book.image[0])
           .setThumbnail('https://archive.org/download/nhentai-logo-3/nhentai-logo-3.jpg')
           .addFields(
             { name: 'Parodies', value: book.parodies ? book.parodies : 'original' },
             { name: 'Characters', value: book.characters.length > 0 ? book.characters.join(', ') : 'original' },
             { name: 'Artists', value: book.artist?.join(', ') },
-            { name: 'Tags', value: book.tags?.join(', ') },
-            // { name: '\u200B', value: '\u200B' },
+            { name: 'Tags', value: book.tags.map((tag: string) => `\`${tag}\``).join(', ') },
             { name: 'Favorites', value: book.num_favorites.toString(), inline: true },
             { name: 'Page count', value: book.num_pages.toString(), inline: true },
             { name: 'Language', value: book.language, inline: true },
@@ -112,7 +110,7 @@ class Example {
             { name: 'Parodies', value: book.parodies ? book.parodies : 'original' },
             { name: 'Characters', value: book.characters.length > 0 ? book.characters.join(', ') : 'original' },
             { name: 'Artists', value: book.artist?.join(', ') },
-            { name: 'Tags', value: book.tags?.join(', ') },
+            { name: 'Tags', value: book.tags.map((tag: string) => `\`${tag}\``).join(', ') },
             { name: 'Favorites', value: book.num_favorites.toString(), inline: true },
             { name: 'Page count', value: book.num_pages.toString(), inline: true },
             { name: 'Language', value: book.language, inline: true },

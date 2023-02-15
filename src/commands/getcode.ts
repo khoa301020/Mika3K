@@ -85,9 +85,7 @@ class Example {
     const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(confirmBtn);
 
     message.reply({ content: 'Nuke?', components: [row] }).then((msg) => {
-      confirmBtn.setDisabled(true);
-      const newRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(confirmBtn);
-      setTimeout(() => msg.edit({ content: 'Nuke?', components: [newRow] }), 60 * 1000);
+      setTimeout(() => msg.edit({ content: 'Nuke?', components: [] }), 60 * 1000);
     });
   }
 

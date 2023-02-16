@@ -1,4 +1,4 @@
-import { UserInfoEmbed } from './commonEmbed';
-import { NHentaiBookEmbed } from './nhentaiEmbed';
+import { UserInfoEmbed } from './commonEmbed.js';
+import { NHentaiBookEmbed } from './nhentaiEmbed.js';
 
 export { NHentaiBookEmbed, UserInfoEmbed };

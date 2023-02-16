@@ -9,6 +9,7 @@ export class Constants {
   /* Jikan API constants */
   private static readonly JIKAN_API = 'https://api.jikan.moe';
   private static readonly JIKAN_VERSION = 'v4';
+  public static readonly MAL_LOGO = 'https://upload.wikimedia.org/wikipedia/commons/7/7a/MyAnimeList_Logo.png';
 
   public static readonly JIKAN_ANIME_SEARCH = `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime`;
   public static readonly ANIME = (id: number) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}`;

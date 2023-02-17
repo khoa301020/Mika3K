@@ -159,9 +159,9 @@ export class MAL_Manga {
 
         let names: string[] = [];
 
-        const pages = res.data.data.map((manga: IManga) => {
+        const pages = res.data.data.map((manga: IManga, index: number) => {
           names.push(manga.title);
-          const embed = MAL_MangaEmbed(manga, interaction.user);
+          const embed = MAL_MangaEmbed(manga, interaction.user, index + 1, res.data.data.length);
 
           return { embeds: [embed], name: manga.title, ephemeral: !display };
         });

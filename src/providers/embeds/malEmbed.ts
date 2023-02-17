@@ -4,7 +4,7 @@ import { EmbedBuilder } from 'discord.js';
 import { Constants } from '../../constants/constants.js';
 import { replaceEmpties } from '../../helpers/index.js';
 
-export const MAL_AnimeEmbed = (resAnime: IAnime, author: User): EmbedBuilder => {
+export const MAL_AnimeEmbed = (resAnime: IAnime, author: User, index?: number, total?: number): EmbedBuilder => {
   const anime = replaceEmpties(resAnime, 'name' as keyof Object, 'N/A');
 
   return (
@@ -41,11 +41,14 @@ export const MAL_AnimeEmbed = (resAnime: IAnime, author: User): EmbedBuilder => 
       // .addFields({ name: 'Synopsis', value: anime.synopsis })
       .setImage(anime.images.jpg.large_image_url)
       .setTimestamp()
-      .setFooter({ text: 'MyAnimeList', iconURL: Constants.MAL_LOGO })
+      .setFooter({
+        text: `MyAnimeList ${index !== null && total !== null && `(${index?.toString()}/${total?.toString()})`}`,
+        iconURL: Constants.MAL_LOGO,
+      })
   );
 };
 
-export const MAL_MangaEmbed = (resAnime: IManga, author: User): EmbedBuilder => {
+export const MAL_MangaEmbed = (resAnime: IManga, author: User, index?: number, total?: number): EmbedBuilder => {
   const manga = replaceEmpties(resAnime, 'name' as keyof Object, 'N/A');
 
   return (
@@ -77,6 +80,9 @@ export const MAL_MangaEmbed = (resAnime: IManga, author: User): EmbedBuilder => 
       // .addFields({ name: 'Synopsis', value: anime.synopsis })
       .setImage(manga.images.jpg.large_image_url)
       .setTimestamp()
-      .setFooter({ text: 'MyAnimeList', iconURL: Constants.MAL_LOGO })
+      .setFooter({
+        text: `MyAnimeList ${index !== null && total !== null && `(${index?.toString()}/${total?.toString()})`}`,
+        iconURL: Constants.MAL_LOGO,
+      })
   );
 };

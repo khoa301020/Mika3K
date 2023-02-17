@@ -168,9 +168,9 @@ export class MAL_Anime {
 
         let names: string[] = [];
 
-        const pages = res.data.data.map((anime: IAnime) => {
+        const pages = res.data.data.map((anime: IAnime, index: number) => {
           names.push(anime.title);
-          const embed = MAL_AnimeEmbed(anime, interaction.user);
+          const embed = MAL_AnimeEmbed(anime, interaction.user, index + 1, res.data.data.length);
 
           return { embeds: [embed], name: anime.title, ephemeral: !display };
         });

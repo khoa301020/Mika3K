@@ -11,7 +11,7 @@ import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../providers/pag
 @SlashGroup({ description: 'mal-commands', name: 'mal' })
 @SlashGroup({ description: 'mal-anime', name: 'anime', root: 'mal' })
 export class MAL_Anime {
-  @Slash({ description: 'search' })
+  @Slash({ description: 'Search MAL anime' })
   @SlashGroup('anime', 'mal')
   search(
     @SlashOption({

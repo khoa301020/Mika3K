@@ -1,5 +1,12 @@
-import { ApplicationCommandOptionType, CommandInteraction, GuildMember } from 'discord.js';
 import {
+  ApplicationCommandOptionType,
+  ApplicationCommandType,
+  CommandInteraction,
+  GuildMember,
+  MessageContextMenuCommandInteraction,
+} from 'discord.js';
+import {
+  ContextMenu,
   Discord,
   SimpleCommand,
   SimpleCommandMessage,
@@ -12,7 +19,7 @@ import { UserInfoEmbed } from '../providers/embeds/commonEmbed.js';
 
 @Discord()
 class CheckInfo {
-  @SimpleCommand({ aliases: ['info', 'userinfo'], description: 'Check info' })
+  @SimpleCommand({ aliases: ['info', 'userinfo'], description: 'Check user info' })
   infocommand(
     @SimpleCommandOption({ name: 'num1', type: SimpleCommandOptionType.User })
     user: GuildMember | undefined,
@@ -40,6 +47,17 @@ class CheckInfo {
 
     const embed = UserInfoEmbed(interaction.user, interaction.client.user, user);
 
+    interaction.reply({ embeds: [embed], ephemeral: true });
+  }
+
+  @ContextMenu({
+    name: 'Get user info',
+    type: ApplicationCommandType.User,
+  })
+  messageHandler(interaction: MessageContextMenuCommandInteraction): void {
+    const user = interaction.guild!.members.cache.get(interaction.targetId);
+
+    const embed = UserInfoEmbed(interaction.user, interaction.client.user, user);
     interaction.reply({ embeds: [embed], ephemeral: true });
   }
 }

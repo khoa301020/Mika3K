@@ -23,10 +23,8 @@ export const UserInfoEmbed = (author: User, client: User, user?: GuildMember): E
     })
     .addFields(
       {
-        name: 'Booster since',
-        value: user?.premiumSince
-          ? `${datetimeConverter(user?.premiumSince!).date} (${timeDiff(user?.premiumSince!)})`
-          : 'No boosting',
+        name: 'Create day',
+        value: `${datetimeConverter(user?.user.createdAt!).date} (${timeDiff(user?.user.createdAt!)})`,
         inline: true,
       },
       {
@@ -35,6 +33,12 @@ export const UserInfoEmbed = (author: User, client: User, user?: GuildMember): E
         inline: true,
       },
     )
+    .addFields({
+      name: 'Booster since',
+      value: user?.premiumSince
+        ? `${datetimeConverter(user?.premiumSince!).date} (${timeDiff(user?.premiumSince!)})`
+        : 'No boosting',
+    })
     .setTimestamp()
     .setFooter({ text: 'Xiaomi3K', iconURL: client.displayAvatarURL() });
 };

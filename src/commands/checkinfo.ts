@@ -32,7 +32,7 @@ class CheckInfo {
     command.message.reply({ embeds: [embed] });
   }
 
-  @Slash({ description: 'Check info', name: 'check-info' })
+  @Slash({ description: 'Check user info', name: 'check-info' })
   async infoslash(
     @SlashOption({
       description: 'User to check',
@@ -51,7 +51,7 @@ class CheckInfo {
   }
 
   @ContextMenu({
-    name: 'Get user info',
+    name: 'Check user info',
     type: ApplicationCommandType.User,
   })
   messageHandler(interaction: MessageContextMenuCommandInteraction): void {

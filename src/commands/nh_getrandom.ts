@@ -2,7 +2,7 @@ import axios from 'axios';
 import { CommandInteraction } from 'discord.js';
 import { Discord, SimpleCommand, SimpleCommandMessage, Slash } from 'discordx';
 import { Constants } from '../constants/constants.js';
-import { NHentaiBookEmbed } from '../providers/index.js';
+import { NHentaiBookEmbed } from '../providers/embeds/nhentaiEmbed.js';
 
 @Discord()
 class GetNHentaiRandom {

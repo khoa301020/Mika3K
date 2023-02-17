@@ -11,6 +11,10 @@ export class Constants {
   private static readonly JIKAN_VERSION = 'v4';
   public static readonly MAL_LOGO = 'https://upload.wikimedia.org/wikipedia/commons/7/7a/MyAnimeList_Logo.png';
 
+  public static readonly JIKAN_GENRES_TYPE = ['genres', 'explicit_genres', 'themes', 'demographics'];
+  public static readonly JIKAN_GENRES_ANIME = `${this.JIKAN_API}/${this.JIKAN_VERSION}/genres/anime`;
+  public static readonly JIKAN_GENRES_MANGA = `${this.JIKAN_API}/${this.JIKAN_VERSION}/genres/manga`;
+
   public static readonly JIKAN_ANIME_SEARCH = `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime`;
   public static readonly ANIME = (id: number) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}`;
   public static readonly ANIME_FULL = (id: number) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}/full`;

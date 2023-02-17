@@ -1,7 +1,7 @@
 import type { AxiosResponse } from 'axios';
 import type { User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
-import { Constants } from '../constants/constants.js';
+import { Constants } from '../../constants/constants.js';
 
 export const NHentaiBookEmbed = (res: AxiosResponse, author: User): EmbedBuilder => {
   const book = res.data.data;

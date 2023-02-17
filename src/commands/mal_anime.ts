@@ -1,9 +1,11 @@
+import type { IAnime } from '@shineiichijo/marika';
 import axios from 'axios';
 import type { CommandInteraction } from 'discord.js';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { Constants } from '../constants/constants.js';
-import { MAL_AnimeEmbed } from '../providers/index.js';
+import { MAL_AnimeEmbed } from '../providers/embeds/malEmbed.js';
+import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../providers/paginations/malPagination.js';
 
 @Discord()
 @SlashGroup({ description: 'mal-commands', name: 'mal' })
@@ -12,6 +14,22 @@ export class MAL_Anime {
   @Slash({ description: 'search' })
   @SlashGroup('anime', 'mal')
   search(
+    @SlashOption({
+      description: 'Public display?',
+      name: 'display',
+      required: true,
+      type: ApplicationCommandOptionType.Boolean,
+    })
+    display: Boolean,
+    @SlashChoice({ name: 'Button navigation', value: 'button' })
+    @SlashChoice({ name: 'Select menu', value: 'select-menu' })
+    @SlashOption({
+      description: 'Navigation type',
+      name: 'navigation',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    navigation: String,
     @SlashOption({
       description: 'Query to search',
       name: 'query',
@@ -94,8 +112,6 @@ export class MAL_Anime {
       type: ApplicationCommandOptionType.Number,
     })
     max_score: Number,
-    @SlashChoice({ name: 'true', value: true })
-    @SlashChoice({ name: 'false', value: false })
     @SlashOption({
       description: 'Is sfw?',
       name: 'sfw',
@@ -119,7 +135,7 @@ export class MAL_Anime {
     end_date: String,
     interaction: CommandInteraction,
   ): void {
-    sfw === undefined && (sfw = false);
+    sfw === undefined && (sfw = true);
 
     let request = Object.assign(
       { sfw },
@@ -144,19 +160,43 @@ export class MAL_Anime {
 
     axios
       .get(queryUrl)
-      .then((res) => {
+      .then(async (res) => {
         if (res.data.data.length === 0) {
-          interaction.reply({ content: 'No anime found.', ephemeral: true });
+          interaction.reply({ content: 'No anime found.', ephemeral: !display });
           return;
         }
 
-        const embed = MAL_AnimeEmbed(res, interaction.user);
+        let names: string[] = [];
 
-        interaction.reply({ embeds: [embed], ephemeral: true });
+        const pages = res.data.data.map((anime: IAnime) => {
+          names.push(anime.title);
+          const embed = MAL_AnimeEmbed(anime, interaction.user);
+
+          return { embeds: [embed], name: anime.title, ephemeral: !display };
+        });
+
+        switch (navigation) {
+          case 'button':
+            {
+              const pagination = MAL_ButtonPagination(interaction, pages, !!display);
+              await pagination.send();
+            }
+            break;
+          case 'select-menu':
+            {
+              const pagination = MAL_SelectMenuPagination(interaction, pages, !!display, names);
+              await pagination.send();
+            }
+            break;
+
+          default:
+            interaction.reply({ content: 'Invalid navigation type', ephemeral: !display });
+            break;
+        }
       })
       .catch((err) => {
         console.log(err);
-        interaction.reply({ content: err.message, ephemeral: true });
+        interaction.reply({ content: err.message, ephemeral: !display });
       });
   }
 }

@@ -3,6 +3,7 @@ import { Koa } from '@discordx/koa';
 import type { Interaction, Message } from 'discord.js';
 import { IntentsBitField } from 'discord.js';
 import { Client } from 'discordx';
+import mongoose from 'mongoose';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -88,6 +89,16 @@ async function run() {
   });
 
   // ************* rest api section: end **********
+
+  // ************* mongodb section: start **********
+
+  mongoose.set('strictQuery', true);
+
+  const mongoUri = process.env.MONGO_URI;
+
+  mongoose.connect(mongoUri!).then(() => console.log('MongoDB connected'));
+
+  // ************* mongodb section: end **********
 }
 
 run();

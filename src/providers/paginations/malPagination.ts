@@ -1,5 +1,5 @@
 import { Pagination, PaginationItem, PaginationType } from '@discordx/pagination';
-import { ButtonStyle, CommandInteraction, Message } from 'discord.js';
+import { ButtonStyle, CommandInteraction } from 'discord.js';
 
 export const MAL_ButtonPagination = (
   interaction: CommandInteraction,
@@ -16,9 +16,6 @@ export const MAL_ButtonPagination = (
     next: { label: '▶️' },
     end: { label: '⏩' },
     exit: { label: '❌', style: ButtonStyle.Danger },
-    onTimeout(page, message) {
-      message.reply({ embeds: message.embeds, components: [] });
-    },
   });
 };
 
@@ -35,9 +32,6 @@ export const MAL_SelectMenuPagination = (
       enableExit: display,
       ephemeral: !display,
       placeholder: 'Select anime...',
-      onTimeout(page: number, message: Message) {
-        message.reply({ embeds: message.embeds, components: [] });
-      },
     },
     names.length > 0 && { pageText: names },
   );

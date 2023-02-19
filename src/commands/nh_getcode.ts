@@ -56,7 +56,7 @@ class GetNHentaiCode {
   @ButtonComponent({ id: 'get-nuke' })
   async confirmBtn(interaction: ButtonInteraction): Promise<void> {
     const codeMessageId = interaction.message.reference?.messageId!;
-    const message = await interaction.channel?.messages.fetch(codeMessageId)!;
+    const message = await interaction.channel!.messages.fetch(codeMessageId)!;
 
     axios
       .get(`${Constants.NHENTAI_API}/get?book=${message.content}`)

@@ -22,7 +22,8 @@
     "discordx": "^11.7.0",
     "dotenv": "^16.0.3",
     "koa": "^2.14.1",
-    "mongoose": "^6.9.2"
+    "mongoose": "^6.9.2",
+    "table": "^6.8.1"
   },
   "devDependencies": {
     "@types/koa": "^2.13.5",

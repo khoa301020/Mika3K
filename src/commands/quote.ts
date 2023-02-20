@@ -6,6 +6,7 @@ import {
   Message,
 } from 'discord.js';
 import {
+  Client,
   Discord,
   SimpleCommand,
   SimpleCommandMessage,
@@ -15,8 +16,10 @@ import {
   SlashGroup,
   SlashOption,
 } from 'discordx';
-import { randomArray } from '../helpers/helper.js';
-import { createQuote, getQuote } from '../services/quote.js';
+import { randomArray, splitToChunks } from '../helpers/helper.js';
+import { ListQuoteEmbed } from '../providers/embeds/quoteEmbed.js';
+import { QuoteCommandPagination, QuoteSlashPagination } from '../providers/paginations/quotePagination.js';
+import { createQuote, getListQuote, getQuote } from '../services/quote.js';
 import { IUserQuote } from '../types/quote.js';
 
 @Discord()
@@ -80,6 +83,31 @@ class Quote {
     if (quotes.length === 0) return command.message.reply('No quote found.');
 
     return command.message.reply({ content: randomArray(quotes).quote?.value });
+  }
+
+  @SimpleCommand({ aliases: ['lq', 'listquote'], description: 'Get list quote', argSplitter: ' ' })
+  async getListQuoteCommand(command: SimpleCommandMessage): Promise<any> {
+    const guildId = command.message.guildId;
+    let quotes: IUserQuote[] = await getListQuote(guildId!);
+
+    if (quotes.length === 0) return command.message.reply('No quote found.');
+
+    let splitedQuotes = splitToChunks(quotes, 2);
+
+    const pages = splitedQuotes.map((chunk: IUserQuote[], index: number) => {
+      const embed = ListQuoteEmbed(
+        command.message.author,
+        command.message.client as Client,
+        chunk,
+        index + 1,
+        splitedQuotes.length,
+      );
+
+      return { embeds: [embed] };
+    });
+
+    const pagination = QuoteCommandPagination(command, pages);
+    return await pagination.send();
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -152,5 +180,31 @@ class Quote {
     if (quotes.length === 0) return interaction.reply('No quote found.');
 
     return interaction.reply({ content: randomArray(quotes).quote?.value, ephemeral: true });
+  }
+
+  @Slash({ description: 'List quote' })
+  @SlashGroup('quote')
+  async list(interaction: CommandInteraction): Promise<any> {
+    const guildId = interaction.guildId;
+    let quotes: IUserQuote[] = await getListQuote(guildId!);
+
+    if (quotes.length === 0) return interaction.reply('No quote found.');
+
+    let splitedQuotes = splitToChunks(quotes, 2);
+
+    const pages = splitedQuotes.map((chunk: IUserQuote[], index: number) => {
+      const embed = ListQuoteEmbed(
+        interaction.user,
+        interaction.client as Client,
+        chunk,
+        index + 1,
+        splitedQuotes.length,
+      );
+
+      return { embeds: [embed] };
+    });
+
+    const pagination = QuoteSlashPagination(interaction, pages);
+    return await pagination.send();
   }
 }

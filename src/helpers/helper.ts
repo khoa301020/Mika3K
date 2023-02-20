@@ -1,3 +1,4 @@
+import { BaseUserConfig, table } from 'table';
 /**
  * Return a random element from an array.
  * @param array - The array you want to get a random element from.
@@ -67,3 +68,41 @@ export const replaceEmpties = (obj: Object, field: keyof Object, replace: String
       return [key, value];
     }),
   );
+
+export function splitToChunks<T>(array: T[], chunkSize: number): T[][] {
+  const R = [];
+  for (let i = 0, len = array.length; i < len; i += chunkSize) R.push(array.slice(i, i + chunkSize));
+  return R;
+}
+
+export const tableConverter = (data: Array<any>): string => {
+  const config = {
+    border: {
+      topBody: `─`,
+      topJoin: `┬`,
+      topLeft: `┌`,
+      topRight: `┐`,
+
+      bottomBody: `─`,
+      bottomJoin: `┴`,
+      bottomLeft: `└`,
+      bottomRight: `┘`,
+
+      bodyLeft: `│`,
+      bodyRight: `│`,
+      bodyJoin: `│`,
+
+      joinBody: `─`,
+      joinLeft: `├`,
+      joinRight: `┤`,
+      joinJoin: `┼`,
+    },
+    columns: [{ alignment: 'left' }, { alignment: 'right' }, { alignment: 'right' }],
+  };
+
+  const keys = Object.keys(data[0]);
+  const values = data.map((obj) => Object.values(obj));
+  const result = [keys, ...values];
+
+  return table(result, config as BaseUserConfig);
+};

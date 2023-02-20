@@ -8,3 +8,7 @@ export async function createQuote(userQuote: IUserQuote): Promise<any> {
 export async function getQuote(keyword: String, guildId: String): Promise<Array<any>> {
   return await Quote.find({ 'quote.key': keyword, guild: guildId }).lean();
 }
+
+export async function getListQuote(guildId: String): Promise<Array<any>> {
+  return await Quote.find({ guild: guildId }).sort({ 'quote.key': 1 }).lean();
+}

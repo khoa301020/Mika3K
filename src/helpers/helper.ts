@@ -1,5 +1,15 @@
+/**
+ * Return a random element from an array.
+ * @param array - The array you want to get a random element from.
+ * @returns The random element from the array.
+ */
 export const randomArray = (array: Array<any>) => array[Math.floor(Math.random() * array.length)];
 
+/**
+ * It takes a timestamp and returns an object with three properties: date, time, and datetime
+ * @param {Date} timestamp - Date - The timestamp you want to convert
+ * @returns An object with three properties: date, time, and datetime.
+ */
 export const datetimeConverter = (timestamp: Date) => {
   const date = new Date(timestamp);
   const day = date.getDate();
@@ -15,6 +25,12 @@ export const datetimeConverter = (timestamp: Date) => {
   };
 };
 
+/**
+ * It takes a timestamp and returns a string that says how long ago that timestamp was
+ * @param {Date} timestamp - The timestamp you want to convert to a human readable format.
+ * @returns A string that represents the time difference between the current time and the timestamp
+ * passed in.
+ */
 export const timeDiff = (timestamp: Date): String => {
   const now = new Date();
   const date = new Date(timestamp);
@@ -30,6 +46,13 @@ export const timeDiff = (timestamp: Date): String => {
   return 'Just now';
 };
 
+/**
+ * It takes an object, a field, and a replacement string, and returns a new object with all the empty
+ * values replaced with the replacement string
+ * @param {Object} obj - Object - The object you want to replace the empty values in
+ * @param {keyof Object} field - keyof Object - The field you want to replace
+ * @param {String} replace - The value to replace the empty values with
+ */
 export const replaceEmpties = (obj: Object, field: keyof Object, replace: String): any =>
   Object.fromEntries(
     Object.entries(obj).map(([key, value]) => {

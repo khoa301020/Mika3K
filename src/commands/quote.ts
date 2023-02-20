@@ -19,7 +19,7 @@ import {
 import { randomArray, splitToChunks } from '../helpers/helper.js';
 import { ListQuoteEmbed } from '../providers/embeds/quoteEmbed.js';
 import { QuoteCommandPagination, QuoteSlashPagination } from '../providers/paginations/quotePagination.js';
-import { createQuote, getListQuote, getQuote } from '../services/quote.js';
+import { createQuote, editQuote, getListQuote, getQuote } from '../services/quote.js';
 import { IUserQuote } from '../types/quote.js';
 
 @Discord()
@@ -109,6 +109,27 @@ class Quote {
     const pagination = QuoteCommandPagination(command, pages);
     return await pagination.send();
   }
+  @SimpleCommand({ aliases: ['eq', 'editquote'], description: 'Edit quote', argSplitter: ' ' })
+  async editQuoteCommand(
+    // @SimpleCommandOption({ name: 'command', type: SimpleCommandOptionType.String })
+    // cmd: string,
+    @SimpleCommandOption({ name: 'id', type: SimpleCommandOptionType.String })
+    id: string,
+    command: SimpleCommandMessage,
+  ): Promise<any> {
+    if (!id) return command.message.reply('Keyword required.');
+
+    const content = command.message.content.split(' ').slice(2).join(' ').trim();
+    const attachments = command.message.attachments.map((a) => a.url).join(', ');
+
+    if (!content && !attachments) return command.message.reply('Content required.');
+
+    const user = command.message.guild!.members.cache.get(command.message.author.id);
+
+    const result = await editQuote(user!, id, `${content} ${attachments}`.trim());
+
+    return command.message.reply(result);
+  }
 
   ////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////     Slash Command   //////////////////////////////
@@ -146,7 +167,7 @@ class Quote {
       user: interaction.user.id,
       quote: {
         key: keyword,
-        value: `${content} ${attachment.url}`.trim(),
+        value: `${content} ${attachment ? attachment.url : ''}`.trim(),
       },
       createdAt: new Date(),
     };
@@ -206,5 +227,40 @@ class Quote {
 
     const pagination = QuoteSlashPagination(interaction, pages);
     return await pagination.send();
+  }
+
+  @Slash({ description: 'Edit quote' })
+  @SlashGroup('quote')
+  async edit(
+    @SlashOption({
+      description: 'ID of the quote',
+      name: 'id',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    id: string,
+    @SlashOption({
+      description: 'Content of the quote',
+      name: 'content',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    content: string,
+    @SlashOption({
+      description: 'Attachment of the quote',
+      name: 'attachment',
+      required: false,
+      type: ApplicationCommandOptionType.Attachment,
+    })
+    attachment: APIAttachment,
+    interaction: CommandInteraction,
+  ): Promise<any> {
+    if (!content && !attachment) return interaction.reply('Content required.');
+
+    const user = interaction.guild?.members.cache.get(interaction.user.id);
+
+    const result = await editQuote(user!, id, `${content} ${attachment ? attachment.url : ''}`.trim());
+
+    return interaction.reply({ content: result, ephemeral: true });
   }
 }

@@ -1,7 +1,7 @@
 import type { User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { Constants } from '../../constants/constants.js';
-import { replaceEmpties } from '../../helpers/index.js';
+import { replaceEmpties } from '../../helpers/helper.js';
 import { IAnime, IManga } from '../../types/mal';
 
 export const MAL_AnimeEmbed = (resAnime: IAnime, author: User, index?: number, total?: number): EmbedBuilder => {

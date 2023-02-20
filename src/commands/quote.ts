@@ -1,9 +1,8 @@
 import { Message } from 'discord.js';
 import { Discord, SimpleCommand, SimpleCommandMessage, SimpleCommandOption, SimpleCommandOptionType } from 'discordx';
+import { randomArray } from '../helpers/helper.js';
 import { createQuote, getQuote } from '../services/quote.js';
 import { IUserQuote } from '../types/quote.js';
-
-const randomQuote = (quotes: IUserQuote[]) => quotes[Math.floor(Math.random() * quotes.length)];
 
 @Discord()
 class Quote {
@@ -54,10 +53,10 @@ class Quote {
     if (!key) return command.message.reply('Keyword required.');
     const keyword = key.trim();
     const guildId = command.message.guildId;
-    let quotes: IUserQuote[] = await getQuote(key.trim(), guildId!);
+    let quotes: IUserQuote[] = await getQuote(keyword, guildId!);
 
     if (quotes.length === 0) return command.message.reply('No quote found.');
 
-    return command.message.reply({ content: randomQuote(quotes).quote?.value });
+    return command.message.reply({ content: randomArray(quotes).quote?.value });
   }
 }

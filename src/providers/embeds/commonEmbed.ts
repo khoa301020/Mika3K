@@ -1,6 +1,6 @@
 import type { GuildMember, User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
-import { datetimeConverter, timeDiff } from '../../helpers/index.js';
+import { datetimeConverter, timeDiff } from '../../helpers/helper.js';
 
 export const UserInfoEmbed = (author: User, client: User, user?: GuildMember): EmbedBuilder => {
   return new EmbedBuilder()

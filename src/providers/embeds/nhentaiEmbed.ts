@@ -5,7 +5,7 @@ import { Constants } from '../../constants/constants.js';
 
 export const NHentaiBookEmbed = (res: AxiosResponse, author: User): EmbedBuilder => {
   const book = res.data.data;
-  if (!Array.isArray(book.parodies)) book.parodies = book.parodies.split('');
+  if (typeof book.parodies === 'string' || book.parodies instanceof String) book.parodies = book.parodies.split('');
 
   return new EmbedBuilder()
     .setColor(0x0099ff)

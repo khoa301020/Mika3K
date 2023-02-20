@@ -4,6 +4,7 @@ export interface IQuote {
 }
 
 export interface IUserQuote {
+  guild?: string;
   user?: string;
   quote?: IQuote;
   private?: Boolean;

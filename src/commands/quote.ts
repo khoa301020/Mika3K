@@ -23,6 +23,7 @@ class Quote {
     if (!value && !attachments) return command.message.reply('Content required.');
 
     const quote: IUserQuote = {
+      guild: command.message.guildId!,
       user: command.message.author.id,
       quote: {
         key: key,
@@ -51,8 +52,9 @@ class Quote {
     command: SimpleCommandMessage,
   ): Promise<Message<boolean>> {
     if (!key) return command.message.reply('Keyword required.');
-
-    let quotes: IUserQuote[] = await getQuote(key.trim());
+    const keyword = key.trim();
+    const guildId = command.message.guildId;
+    let quotes: IUserQuote[] = await getQuote(key.trim(), guildId!);
 
     if (quotes.length === 0) return command.message.reply('No quote found.');
 

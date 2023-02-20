@@ -5,6 +5,7 @@ import { Constants } from '../../constants/constants.js';
 
 export const NHentaiBookEmbed = (res: AxiosResponse, author: User): EmbedBuilder => {
   const book = res.data.data;
+  if (!Array.isArray(book.parodies)) book.parodies = book.parodies.split('');
 
   return new EmbedBuilder()
     .setColor(0x0099ff)
@@ -17,7 +18,7 @@ export const NHentaiBookEmbed = (res: AxiosResponse, author: User): EmbedBuilder
     .setDescription(book.optional_title ? book.optional_title.english : 'No optional names.')
     .setThumbnail(Constants.NHENTAI_LOGO)
     .addFields(
-      { name: 'Parodies', value: book.parodies ? book.parodies : 'original' },
+      { name: 'Parodies', value: book.parodies ? book.parodies.join('\n') : 'original' },
       { name: 'Characters', value: book.characters.length > 0 ? book.characters.join(', ') : 'original' },
       { name: 'Artists', value: book.artist?.join(', ') },
       { name: 'Tags', value: book.tags.map((tag: string) => `\`${tag}\``).join(', ') },

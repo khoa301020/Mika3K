@@ -1,4 +1,3 @@
-import type { IManga } from '@shineiichijo/marika';
 import axios from 'axios';
 import type { CommandInteraction } from 'discord.js';
 import { ApplicationCommandOptionType } from 'discord.js';
@@ -6,6 +5,7 @@ import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { Constants } from '../constants/constants.js';
 import { MAL_MangaEmbed } from '../providers/embeds/malEmbed.js';
 import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../providers/paginations/malPagination.js';
+import type { IManga } from '../types/mal';
 
 @Discord()
 @SlashGroup({ description: 'mal-commands', name: 'mal' })

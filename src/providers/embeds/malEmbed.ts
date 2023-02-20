@@ -1,8 +1,8 @@
-import { IAnime, IManga } from '@shineiichijo/marika';
 import type { User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { Constants } from '../../constants/constants.js';
 import { replaceEmpties } from '../../helpers/index.js';
+import { IAnime, IManga } from '../../types/mal';
 
 export const MAL_AnimeEmbed = (resAnime: IAnime, author: User, index?: number, total?: number): EmbedBuilder => {
   const anime = replaceEmpties(resAnime, 'name' as keyof Object, 'N/A');

@@ -20,7 +20,7 @@ import { Constants } from '../constants/constants.js';
 import { randomArray, splitToChunks } from '../helpers/helper.js';
 import { ListQuoteEmbed } from '../providers/embeds/commonEmbed.js';
 import { QuoteCommandPagination, QuoteSlashPagination } from '../providers/paginations/quotePagination.js';
-import { createQuote, editQuote, getListQuotes, getQuote, getUserQuotes } from '../services/quote.js';
+import { createQuote, deleteQuote, editQuote, getListQuotes, getQuote, getUserQuotes } from '../services/quote.js';
 import { IUserQuote } from '../types/quote.js';
 
 @Discord()
@@ -135,13 +135,11 @@ class Quote {
 
   @SimpleCommand({ aliases: ['eq', 'editquote'], description: 'Edit quote', argSplitter: ' ' })
   async editQuoteCommand(
-    // @SimpleCommandOption({ name: 'command', type: SimpleCommandOptionType.String })
-    // cmd: string,
     @SimpleCommandOption({ name: 'id', type: SimpleCommandOptionType.String })
     id: string,
     command: SimpleCommandMessage,
   ): Promise<any> {
-    if (!id) return command.message.reply('Keyword required.');
+    if (!id) return command.message.reply('ID required.');
 
     const content = command.message.content.split(' ').slice(2).join(' ').trim();
     const attachments = command.message.attachments.map((a) => a.url).join(', ');
@@ -155,6 +153,21 @@ class Quote {
     return command.message.reply(result);
   }
 
+  @SimpleCommand({ aliases: ['dq', 'deletequote'], description: 'Edit quote', argSplitter: ' ' })
+  async deleteQuoteCommand(
+    @SimpleCommandOption({ name: 'id', type: SimpleCommandOptionType.String })
+    id: string,
+    command: SimpleCommandMessage,
+  ): Promise<any> {
+    if (!id) return command.message.reply('ID required.');
+
+    const user = command.message.guild!.members.cache.get(command.message.author.id);
+
+    const result = await deleteQuote(user!, id);
+
+    return command.message.reply(result);
+  }
+
   ////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////     Slash Command   //////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////
@@ -162,21 +175,21 @@ class Quote {
   @SlashGroup('quote')
   async createquote(
     @SlashOption({
-      description: 'Keyword of the quote',
+      description: "Quote's keyword",
       name: 'keyword',
       required: true,
       type: ApplicationCommandOptionType.String,
     })
     keyword: string,
     @SlashOption({
-      description: 'Content of the quote',
+      description: "Quote 's content",
       name: 'content',
       required: false,
       type: ApplicationCommandOptionType.String,
     })
     content: string,
     @SlashOption({
-      description: 'Attachment of the quote',
+      description: "Quote 's attachment (only 1 for slash)",
       name: 'attachment',
       required: false,
       type: ApplicationCommandOptionType.Attachment,
@@ -211,7 +224,7 @@ class Quote {
   @SlashGroup('quote')
   async getquote(
     @SlashOption({
-      description: 'Keyword of the quote',
+      description: "Quote's keyword",
       name: 'keyword',
       required: true,
       type: ApplicationCommandOptionType.String,
@@ -282,23 +295,23 @@ class Quote {
 
   @Slash({ description: 'Edit quote' })
   @SlashGroup('quote')
-  async editquotes(
+  async editquote(
     @SlashOption({
-      description: 'ID of the quote',
+      description: "Quote 's ID",
       name: 'id',
       required: true,
       type: ApplicationCommandOptionType.String,
     })
     id: string,
     @SlashOption({
-      description: 'Content of the quote',
+      description: "Quote 's content",
       name: 'content',
       required: false,
       type: ApplicationCommandOptionType.String,
     })
     content: string,
     @SlashOption({
-      description: 'Attachment of the quote',
+      description: "Quote's attachment (only 1 for slash)",
       name: 'attachment',
       required: false,
       type: ApplicationCommandOptionType.Attachment,
@@ -310,6 +323,24 @@ class Quote {
 
     const user = interaction.guild?.members.cache.get(interaction.user.id);
     const result = await editQuote(user!, id, `${content} ${attachment ? attachment.url : ''}`.trim());
+
+    return interaction.reply({ content: result, ephemeral: true });
+  }
+
+  @Slash({ description: 'Delete quote' })
+  @SlashGroup('quote')
+  async deletequote(
+    @SlashOption({
+      description: "Quote's ID",
+      name: 'id',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    id: string,
+    interaction: CommandInteraction,
+  ): Promise<any> {
+    const user = interaction.guild?.members.cache.get(interaction.user.id);
+    const result = await deleteQuote(user!, id);
 
     return interaction.reply({ content: result, ephemeral: true });
   }

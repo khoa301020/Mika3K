@@ -7,7 +7,7 @@ export async function createQuote(userQuote: IUserQuote): Promise<any> {
 }
 
 export async function getQuote(keyword: string, guildId: string): Promise<Array<IUserQuote>> {
-  return await Quote.find({ 'quote.key': keyword, guild: guildId }).lean();
+  return await Quote.find({ $or: [{ _id: keyword }, { 'quote.key': keyword }], guild: guildId }).lean();
 }
 
 export async function getUserQuotes(user: GuildMember): Promise<Array<IUserQuote>> {

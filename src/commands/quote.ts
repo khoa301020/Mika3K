@@ -271,7 +271,7 @@ class Quote {
   @SlashGroup('quote')
   async getquote(
     @SlashOption({
-      description: "Quote's keyword",
+      description: "Quote's keyword or ID",
       name: 'keyword',
       required: true,
       type: ApplicationCommandOptionType.String,

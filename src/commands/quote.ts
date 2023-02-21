@@ -20,19 +20,16 @@ import { Constants } from '../constants/constants.js';
 import { randomArray, splitToChunks } from '../helpers/helper.js';
 import { ListQuoteEmbed } from '../providers/embeds/commonEmbed.js';
 import { QuoteCommandPagination, QuoteSlashPagination } from '../providers/paginations/quotePagination.js';
-import { createQuote, editQuote, getListQuote, getQuote } from '../services/quote.js';
+import { createQuote, editQuote, getListQuotes, getQuote, getUserQuotes } from '../services/quote.js';
 import { IUserQuote } from '../types/quote.js';
 
 @Discord()
 @SlashGroup({ description: 'Quote commands', name: 'quote' })
-// @SlashGroup({ description: 'List all quote command', name: 'list', root: 'quote' })
-// @SlashGroup({ description: 'Create command', name: 'create', root: 'quote' })
-// @SlashGroup({ description: 'Get command', name: 'get', root: 'quote' })
 class Quote {
   ////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////     Message Command   /////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////
-  @SimpleCommand({ aliases: ['$', 'addquote'], description: 'Create new quote', argSplitter: ' ' })
+  @SimpleCommand({ aliases: ['$', 'createquote'], description: 'Create new quote', argSplitter: ' ' })
   async createQuoteCommand(
     @SimpleCommandOption({ name: 'command', type: SimpleCommandOptionType.String })
     cmd: string,
@@ -86,10 +83,10 @@ class Quote {
     return command.message.reply({ content: randomArray(quotes).quote?.value });
   }
 
-  @SimpleCommand({ aliases: ['lq', 'listquote'], description: 'Get list quote', argSplitter: ' ' })
-  async getListQuoteCommand(command: SimpleCommandMessage): Promise<any> {
+  @SimpleCommand({ aliases: ['lq', 'listquotes'], description: 'Get list quote', argSplitter: ' ' })
+  async getListQuotesCommand(command: SimpleCommandMessage): Promise<any> {
     const guildId = command.message.guildId;
-    let quotes: IUserQuote[] = await getListQuote(guildId!);
+    let quotes: IUserQuote[] = await getListQuotes(guildId!);
 
     if (quotes.length === 0) return command.message.reply('No quote found.');
 
@@ -110,6 +107,32 @@ class Quote {
     const pagination = QuoteCommandPagination(command, pages);
     return await pagination.send();
   }
+
+  @SimpleCommand({ aliases: ['mq', 'myquotes'], description: 'Get list quote', argSplitter: ' ' })
+  async getMyQuotesCommand(command: SimpleCommandMessage): Promise<any> {
+    const user = command.message.guild!.members.cache.get(command.message.author.id);
+    let quotes: IUserQuote[] = await getUserQuotes(user!);
+
+    if (quotes.length === 0) return command.message.reply('No quote found.');
+
+    let splitedQuotes = splitToChunks(quotes, Constants.QUOTES_PER_PAGE);
+
+    const pages = splitedQuotes.map((chunk: IUserQuote[], index: number) => {
+      const embed = ListQuoteEmbed(
+        command.message.author,
+        command.message.client as Client,
+        chunk,
+        index + 1,
+        splitedQuotes.length,
+      );
+
+      return { embeds: [embed] };
+    });
+
+    const pagination = QuoteCommandPagination(command, pages);
+    return await pagination.send();
+  }
+
   @SimpleCommand({ aliases: ['eq', 'editquote'], description: 'Edit quote', argSplitter: ' ' })
   async editQuoteCommand(
     // @SimpleCommandOption({ name: 'command', type: SimpleCommandOptionType.String })
@@ -137,7 +160,7 @@ class Quote {
   ////////////////////////////////////////////////////////////////////////////////
   @Slash({ description: 'Create quote' })
   @SlashGroup('quote')
-  async create(
+  async createquote(
     @SlashOption({
       description: 'Keyword of the quote',
       name: 'keyword',
@@ -186,7 +209,7 @@ class Quote {
 
   @Slash({ description: 'Get quote' })
   @SlashGroup('quote')
-  async get(
+  async getquote(
     @SlashOption({
       description: 'Keyword of the quote',
       name: 'keyword',
@@ -204,11 +227,38 @@ class Quote {
     return interaction.reply({ content: randomArray(quotes).quote?.value, ephemeral: true });
   }
 
-  @Slash({ description: 'List quote' })
+  @Slash({ description: 'List quotes' })
   @SlashGroup('quote')
-  async list(interaction: CommandInteraction): Promise<any> {
+  async listquotes(interaction: CommandInteraction): Promise<any> {
     const guildId = interaction.guildId;
-    let quotes: IUserQuote[] = await getListQuote(guildId!);
+    let quotes: IUserQuote[] = await getListQuotes(guildId!);
+
+    if (quotes.length === 0) return interaction.reply('No quote found.');
+
+    let splitedQuotes = splitToChunks(quotes, Constants.QUOTES_PER_PAGE);
+
+    const pages = splitedQuotes.map((chunk: IUserQuote[], index: number) => {
+      const embed = ListQuoteEmbed(
+        interaction.user,
+        interaction.client as Client,
+        chunk,
+        index + 1,
+        splitedQuotes.length,
+      );
+
+      return { embeds: [embed] };
+    });
+
+    const pagination = QuoteSlashPagination(interaction, pages);
+    return await pagination.send();
+  }
+
+  @Slash({ description: 'My quotes' })
+  @SlashGroup('quote')
+  async myquotes(interaction: CommandInteraction): Promise<any> {
+    const user = interaction.guild!.members.cache.get(interaction.user.id);
+
+    let quotes: IUserQuote[] = await getUserQuotes(user!);
 
     if (quotes.length === 0) return interaction.reply('No quote found.');
 
@@ -232,7 +282,7 @@ class Quote {
 
   @Slash({ description: 'Edit quote' })
   @SlashGroup('quote')
-  async edit(
+  async editquotes(
     @SlashOption({
       description: 'ID of the quote',
       name: 'id',
@@ -259,7 +309,6 @@ class Quote {
     if (!content && !attachment) return interaction.reply('Content required.');
 
     const user = interaction.guild?.members.cache.get(interaction.user.id);
-
     const result = await editQuote(user!, id, `${content} ${attachment ? attachment.url : ''}`.trim());
 
     return interaction.reply({ content: result, ephemeral: true });

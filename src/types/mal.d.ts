@@ -806,6 +806,128 @@ export interface ITopCharacter {
   data: ICharacter[];
 }
 
+/* Typings for MAL People */
+
+export interface IPeople {
+  mal_id: number;
+  url: string;
+  website_url: string;
+  images: {
+    jpg: {
+      image_url: string;
+    };
+  };
+  name: string;
+  given_name: string;
+  family_name: string;
+  alternate_names: string[];
+  birthday: number;
+  favorites: number;
+  about: string;
+}
+export interface IPeopleAnime {
+  data: {
+    position: string;
+    anime: {
+      mal_id: number;
+      url: string;
+      images: {
+        jpg: {
+          image_url: string;
+          small_image_url: string;
+          large_image_url: string;
+        };
+        webp: {
+          image_url: string;
+          small_image_url: string;
+          large_image_url: string;
+        };
+      };
+      title: string;
+    };
+  }[];
+}
+export interface IPeopleManga {
+  data: {
+    position: string;
+    manga: {
+      mal_id: number;
+      url: string;
+      images: {
+        jpg: {
+          image_url: string;
+          small_image_url: string;
+          large_image_url: string;
+        };
+        webp: {
+          image_url: string;
+          small_image_url: string;
+          large_image_url: string;
+        };
+      };
+      title: string;
+    };
+  }[];
+}
+export interface IPeopleVoices {
+  data: {
+    role: string;
+    anime: {
+      mal_id: number;
+      url: string;
+      images: {
+        jpg: {
+          image_url: string;
+          small_image_url: string;
+          large_image_url: string;
+        };
+        webp: {
+          image_url: string;
+          small_image_url: string;
+          large_image_url: string;
+        };
+      };
+      title: string;
+    };
+    character: {
+      mal_id: number;
+      url: string;
+      images: {
+        jpg: {
+          image_url: string;
+          small_image_url: string;
+        };
+        webp: {
+          image_url: string;
+          small_image_url: string;
+        };
+      };
+      name: string;
+    };
+  }[];
+}
+export interface IPeoplePictures {
+  data: {
+    jpg: {
+      image_url: string;
+    };
+  }[];
+}
+export interface IPeopleSearch {
+  pagination: {
+    last_visible_page: number;
+    has_next_page: boolean;
+  };
+  data: IPeople[];
+}
+export interface ITopPeople {
+  pagination: {
+    last_visible_page: number;
+    has_next_page: boolean;
+  };
+  data: IPeople[];
+}
+
 /* Typings for search options */
 
 export interface IAnimeSearchOptions {

@@ -54,7 +54,7 @@ export const timeDiff = (timestamp: Date): String => {
  * @param {keyof Object} field - keyof Object - The field you want to replace
  * @param {String} replace - The value to replace the empty values with
  */
-export const replaceEmpties = (obj: Object, field: keyof Object, replace: String): any =>
+export const replaceEmpties = (obj: Object, replace: String, field?: keyof Object): any =>
   Object.fromEntries(
     Object.entries(obj).map(([key, value]) => {
       if (Array.isArray(value) && value.every((v) => v === undefined || v === null)) {
@@ -63,7 +63,8 @@ export const replaceEmpties = (obj: Object, field: keyof Object, replace: String
       if (value === undefined || value === null) {
         return [key, replace];
       }
-      if (Array.isArray(value)) return [key, value.map((e: any) => e[field]).join(', ')];
+      if (Array.isArray(value) && field) return [key, value.map((e: any) => e[field]).join(', ')];
+      if (Array.isArray(value)) return [key, value.map((e: any) => e).join(', ')];
 
       return [key, value];
     }),

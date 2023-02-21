@@ -30,9 +30,31 @@ export async function editQuote(user: GuildMember, quoteId: string, content: str
     { 'quote.value': content },
   );
 
-  if (!quote) return "Quote not found or it's not your quote.";
+  if (!quote) return "❌ Quote not found or it's not your quote.";
 
-  return '✅ Quote updated successfully.';
+  return '✅ Quote updated.';
+}
+
+export async function publishQuote(user: GuildMember, quoteId: string): Promise<string> {
+  const userId = user.user.id;
+  const guildId = user.guild.id;
+
+  const quote = await Quote.findOneAndUpdate({ _id: quoteId, user: userId, guild: guildId }, { private: false });
+
+  if (!quote) return "❌ Quote not found or it's not your quote.";
+
+  return '✅ Quote published.';
+}
+
+export async function privateQuote(user: GuildMember, quoteId: string): Promise<string> {
+  const userId = user.user.id;
+  const guildId = user.guild.id;
+
+  const quote = await Quote.findOneAndUpdate({ _id: quoteId, user: userId, guild: guildId }, { private: true });
+
+  if (!quote) return "❌ Quote not found or it's not your quote.";
+
+  return '✅ Quote privated.';
 }
 
 export async function deleteQuote(user: GuildMember, quoteId: string): Promise<string> {
@@ -43,5 +65,5 @@ export async function deleteQuote(user: GuildMember, quoteId: string): Promise<s
 
   if (!quote) return "❌ Quote not found or it's not your quote.";
 
-  return '✅ Quote deleted successfully.';
+  return '✅ Quote deleted.';
 }

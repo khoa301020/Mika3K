@@ -9,7 +9,7 @@ export const MAL_ButtonPagination = (
   return new Pagination(interaction, pages, {
     type: PaginationType.Button,
     showStartEnd: true,
-    enableExit: !!display,
+    enableExit: display,
     ephemeral: !display,
     start: { label: '⏮️' },
     previous: { label: '◀️' },

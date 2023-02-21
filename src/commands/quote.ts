@@ -20,7 +20,16 @@ import { Constants } from '../constants/constants.js';
 import { randomArray, splitToChunks } from '../helpers/helper.js';
 import { ListQuoteEmbed } from '../providers/embeds/commonEmbed.js';
 import { QuoteCommandPagination, QuoteSlashPagination } from '../providers/paginations/quotePagination.js';
-import { createQuote, deleteQuote, editQuote, getListQuotes, getQuote, getUserQuotes } from '../services/quote.js';
+import {
+  createQuote,
+  deleteQuote,
+  editQuote,
+  getListQuotes,
+  getQuote,
+  getUserQuotes,
+  privateQuote,
+  publishQuote,
+} from '../services/quote.js';
 import { IUserQuote } from '../types/quote.js';
 
 @Discord()
@@ -135,6 +144,34 @@ class Quote {
     return await pagination.send();
   }
 
+  @SimpleCommand({ aliases: ['plq', 'publishquote'], description: 'Publish quote', argSplitter: ' ' })
+  async publishQuoteCommand(
+    @SimpleCommandOption({ name: 'id', type: SimpleCommandOptionType.String })
+    id: string,
+    command: SimpleCommandMessage,
+  ): Promise<any> {
+    if (!id) return command.message.reply('❌ ID required.');
+
+    const user = command.message.guild!.members.cache.get(command.message.author.id);
+
+    const response = await publishQuote(user!, id);
+
+    return command.message.reply(response);
+  }
+
+  @SimpleCommand({ aliases: ['prq', 'privatequote'], description: 'Private quote', argSplitter: ' ' })
+  async privateQuoteCommand(
+    @SimpleCommandOption({ name: 'id', type: SimpleCommandOptionType.String })
+    id: string,
+    command: SimpleCommandMessage,
+  ): Promise<any> {
+    const user = command.message.guild!.members.cache.get(command.message.author.id);
+
+    const response = await privateQuote(user!, id);
+
+    return command.message.reply(response);
+  }
+
   @SimpleCommand({ aliases: ['eq', 'editquote'], description: 'Edit quote', argSplitter: ' ' })
   async editQuoteCommand(
     @SimpleCommandOption({ name: 'id', type: SimpleCommandOptionType.String })
@@ -150,9 +187,9 @@ class Quote {
 
     const user = command.message.guild!.members.cache.get(command.message.author.id);
 
-    const result = await editQuote(user!, id, `${content} ${attachments}`.trim());
+    const response = await editQuote(user!, id, `${content} ${attachments}`.trim());
 
-    return command.message.reply(result);
+    return command.message.reply(response);
   }
 
   @SimpleCommand({ aliases: ['dq', 'deletequote'], description: 'Edit quote', argSplitter: ' ' })
@@ -165,9 +202,9 @@ class Quote {
 
     const user = command.message.guild!.members.cache.get(command.message.author.id);
 
-    const result = await deleteQuote(user!, id);
+    const response = await deleteQuote(user!, id);
 
-    return command.message.reply(result);
+    return command.message.reply(response);
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -334,9 +371,45 @@ class Quote {
     if (!content && !attachment) return interaction.reply('❌ Content required.');
 
     const user = interaction.guild?.members.cache.get(interaction.user.id);
-    const result = await editQuote(user!, id, `${content} ${attachment ? attachment.url : ''}`.trim());
+    const response = await editQuote(user!, id, `${content} ${attachment ? attachment.url : ''}`.trim());
 
-    return interaction.reply({ content: result, ephemeral: true });
+    return interaction.reply({ content: response, ephemeral: true });
+  }
+
+  @Slash({ description: 'Publish your quote' })
+  @SlashGroup('quote')
+  async publishquote(
+    @SlashOption({
+      description: "Quote 's ID",
+      name: 'id',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    id: string,
+    interaction: CommandInteraction,
+  ): Promise<any> {
+    const user = interaction.guild?.members.cache.get(interaction.user.id);
+    const response = await publishQuote(user!, id);
+
+    return interaction.reply({ content: response, ephemeral: true });
+  }
+
+  @Slash({ description: 'Private your quote' })
+  @SlashGroup('quote')
+  async privatequote(
+    @SlashOption({
+      description: "Quote 's ID",
+      name: 'id',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    id: string,
+    interaction: CommandInteraction,
+  ): Promise<any> {
+    const user = interaction.guild?.members.cache.get(interaction.user.id);
+    const response = await privateQuote(user!, id);
+
+    return interaction.reply({ content: response, ephemeral: true });
   }
 
   @Slash({ description: 'Delete quote' })
@@ -352,8 +425,8 @@ class Quote {
     interaction: CommandInteraction,
   ): Promise<any> {
     const user = interaction.guild?.members.cache.get(interaction.user.id);
-    const result = await deleteQuote(user!, id);
+    const response = await deleteQuote(user!, id);
 
-    return interaction.reply({ content: result, ephemeral: true });
+    return interaction.reply({ content: response, ephemeral: true });
   }
 }

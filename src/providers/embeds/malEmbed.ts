@@ -8,7 +8,7 @@ export const MAL_AnimeEmbed = (resAnime: IAnime, author: User, index?: number, t
   const anime = replaceEmpties(resAnime, 'N/A', 'name' as keyof Object);
 
   return new EmbedBuilder()
-    .setColor(0x0099ff)
+    .setColor(Constants.COLOR_BY_APPROVED(anime.approved))
     .setTitle(anime.title)
     .setURL(anime.url)
     .setAuthor({
@@ -53,7 +53,7 @@ export const MAL_MangaEmbed = (resAnime: IManga, author: User, index?: number, t
   const manga = replaceEmpties(resAnime, 'N/A', 'name' as keyof Object);
 
   return new EmbedBuilder()
-    .setColor(0x0099ff)
+    .setColor(Constants.COLOR_BY_APPROVED(manga.approved))
     .setTitle(manga.title)
     .setURL(manga.url)
     .setAuthor({

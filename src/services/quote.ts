@@ -32,7 +32,7 @@ export async function editQuote(user: GuildMember, quoteId: string, content: str
 
   if (!quote) return "Quote not found or it's not your quote.";
 
-  return 'Quote updated successfully.';
+  return '✅ Quote updated successfully.';
 }
 
 export async function deleteQuote(user: GuildMember, quoteId: string): Promise<string> {
@@ -41,7 +41,7 @@ export async function deleteQuote(user: GuildMember, quoteId: string): Promise<s
 
   const quote = await Quote.findOneAndDelete({ _id: quoteId, user: userId, guild: guildId });
 
-  if (!quote) return "Quote not found or it's not your quote.";
+  if (!quote) return "❌ Quote not found or it's not your quote.";
 
-  return 'Quote deleted successfully.';
+  return '✅ Quote deleted successfully.';
 }

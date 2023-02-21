@@ -37,7 +37,7 @@ class Quote {
     key: string,
     command: SimpleCommandMessage,
   ): Promise<Message<boolean>> {
-    if (!key) return command.message.reply('Keyword required.');
+    if (!key) return command.message.reply('❌ Keyword required.');
 
     const value = command.message.content.split(' ').slice(2).join(' ').trim();
     const attachments = command.message.attachments.map((a) => a.url).join(', ');
@@ -56,13 +56,13 @@ class Quote {
 
     try {
       createQuote(quote).then((quoteResponse) => {
-        if (!quoteResponse) return command.message.reply('Error occured.');
+        if (!quoteResponse) return command.message.reply('❌ Error occured.');
       });
     } catch (error) {
-      return command.message.reply('Error occured.');
+      return command.message.reply('❌ Error occured.');
     }
 
-    return command.message.reply('Quote added successfully.');
+    return command.message.reply('✅ Quote added successfully.');
   }
 
   @SimpleCommand({ aliases: ['$$', 'getquote'], description: 'Get quote', argSplitter: ' ' })
@@ -77,8 +77,10 @@ class Quote {
     const keyword = key.trim();
     const guildId = command.message.guildId;
     let quotes: IUserQuote[] = await getQuote(keyword, guildId!);
+    if (quotes.length === 0) return command.message.reply('❌ No quote found.');
 
-    if (quotes.length === 0) return command.message.reply('No quote found.');
+    quotes = quotes.filter((quote) => command.message.author.id === quote.user || quote.private === false);
+    if (quotes.length === 0) return command.message.reply('❌ Quote privated.');
 
     return command.message.reply({ content: randomArray(quotes).quote?.value });
   }
@@ -88,7 +90,7 @@ class Quote {
     const guildId = command.message.guildId;
     let quotes: IUserQuote[] = await getListQuotes(guildId!);
 
-    if (quotes.length === 0) return command.message.reply('No quote found.');
+    if (quotes.length === 0) return command.message.reply('❌ No quote found.');
 
     let splitedQuotes = splitToChunks(quotes, Constants.QUOTES_PER_PAGE);
 
@@ -113,7 +115,7 @@ class Quote {
     const user = command.message.guild!.members.cache.get(command.message.author.id);
     let quotes: IUserQuote[] = await getUserQuotes(user!);
 
-    if (quotes.length === 0) return command.message.reply('No quote found.');
+    if (quotes.length === 0) return command.message.reply('❌ No quote found.');
 
     let splitedQuotes = splitToChunks(quotes, Constants.QUOTES_PER_PAGE);
 
@@ -139,7 +141,7 @@ class Quote {
     id: string,
     command: SimpleCommandMessage,
   ): Promise<any> {
-    if (!id) return command.message.reply('ID required.');
+    if (!id) return command.message.reply('❌ ID required.');
 
     const content = command.message.content.split(' ').slice(2).join(' ').trim();
     const attachments = command.message.attachments.map((a) => a.url).join(', ');
@@ -159,7 +161,7 @@ class Quote {
     id: string,
     command: SimpleCommandMessage,
   ): Promise<any> {
-    if (!id) return command.message.reply('ID required.');
+    if (!id) return command.message.reply('❌ ID required.');
 
     const user = command.message.guild!.members.cache.get(command.message.author.id);
 
@@ -182,6 +184,13 @@ class Quote {
     })
     keyword: string,
     @SlashOption({
+      description: 'Private?',
+      name: 'is-private',
+      required: true,
+      type: ApplicationCommandOptionType.Boolean,
+    })
+    isPrivate: Boolean,
+    @SlashOption({
       description: "Quote 's content",
       name: 'content',
       required: false,
@@ -197,7 +206,7 @@ class Quote {
     attachment: APIAttachment,
     interaction: CommandInteraction,
   ): Promise<InteractionResponse<boolean>> {
-    if (!content && !attachment) return interaction.reply('Content required.');
+    if (!content && !attachment) return interaction.reply('❌ Content required.');
 
     const quote: IUserQuote = {
       guild: interaction.guildId!,
@@ -206,18 +215,19 @@ class Quote {
         key: keyword,
         value: `${content} ${attachment ? attachment.url : ''}`.trim(),
       },
+      private: isPrivate,
       createdAt: new Date(),
     };
 
     try {
       createQuote(quote).then((quoteResponse) => {
-        if (!quoteResponse) return interaction.reply({ content: 'Error occured.', ephemeral: true });
+        if (!quoteResponse) return interaction.reply({ content: '❌ Error occured.', ephemeral: true });
       });
     } catch (error) {
-      return interaction.reply({ content: 'Error occured.', ephemeral: true });
+      return interaction.reply({ content: '❌ Error occured.', ephemeral: true });
     }
 
-    return interaction.reply({ content: 'Quote added successfully.', ephemeral: true });
+    return interaction.reply({ content: '✅ Quote added successfully.', ephemeral: true });
   }
 
   @Slash({ description: 'Get quote' })
@@ -234,8 +244,10 @@ class Quote {
   ): Promise<InteractionResponse<boolean>> {
     const guildId = interaction.guildId;
     let quotes: IUserQuote[] = await getQuote(keyword, guildId!);
+    if (quotes.length === 0) return interaction.reply('❌ No quote found.');
 
-    if (quotes.length === 0) return interaction.reply('No quote found.');
+    quotes = quotes.filter((quote) => interaction.user.id === quote.user || quote.private === false);
+    if (quotes.length === 0) return interaction.reply('❌ Quote privated.');
 
     return interaction.reply({ content: randomArray(quotes).quote?.value, ephemeral: true });
   }
@@ -246,7 +258,7 @@ class Quote {
     const guildId = interaction.guildId;
     let quotes: IUserQuote[] = await getListQuotes(guildId!);
 
-    if (quotes.length === 0) return interaction.reply('No quote found.');
+    if (quotes.length === 0) return interaction.reply('❌ No quote found.');
 
     let splitedQuotes = splitToChunks(quotes, Constants.QUOTES_PER_PAGE);
 
@@ -273,7 +285,7 @@ class Quote {
 
     let quotes: IUserQuote[] = await getUserQuotes(user!);
 
-    if (quotes.length === 0) return interaction.reply('No quote found.');
+    if (quotes.length === 0) return interaction.reply('❌ No quote found.');
 
     let splitedQuotes = splitToChunks(quotes, Constants.QUOTES_PER_PAGE);
 
@@ -319,7 +331,7 @@ class Quote {
     attachment: APIAttachment,
     interaction: CommandInteraction,
   ): Promise<any> {
-    if (!content && !attachment) return interaction.reply('Content required.');
+    if (!content && !attachment) return interaction.reply('❌ Content required.');
 
     const user = interaction.guild?.members.cache.get(interaction.user.id);
     const result = await editQuote(user!, id, `${content} ${attachment ? attachment.url : ''}`.trim());

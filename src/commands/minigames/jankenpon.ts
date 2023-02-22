@@ -7,7 +7,7 @@ import {
   MessageActionRowComponentBuilder,
 } from 'discord.js';
 import { ButtonComponent, Discord, SimpleCommand, SimpleCommandMessage, Slash } from 'discordx';
-import { randomArray } from '../helpers/helper.js';
+import { randomArray } from '../../helpers/helper.js';
 
 const truthTable = {
   Rock: { Rock: '🗿', Scissor: '🎉', Paper: '🚮' },

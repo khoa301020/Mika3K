@@ -2,10 +2,10 @@ import axios from 'axios';
 import type { CommandInteraction } from 'discord.js';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
-import { Constants } from '../constants/constants.js';
-import { MAL_CharacterEmbed } from '../providers/embeds/malEmbed.js';
-import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../providers/paginations/malPagination.js';
-import type { ICharacter } from '../types/mal';
+import { Constants } from '../../constants/constants.js';
+import { MAL_CharacterEmbed } from '../../providers/embeds/malEmbed.js';
+import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../../providers/paginations/malPagination.js';
+import type { ICharacter } from '../../types/mal';
 
 @Discord()
 @SlashGroup({ description: 'mal-commands', name: 'mal' })

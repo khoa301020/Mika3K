@@ -16,10 +16,10 @@ import {
   SlashGroup,
   SlashOption,
 } from 'discordx';
-import { Constants } from '../constants/constants.js';
-import { randomArray, splitToChunks } from '../helpers/helper.js';
-import { ListQuoteEmbed } from '../providers/embeds/commonEmbed.js';
-import { QuoteCommandPagination, QuoteSlashPagination } from '../providers/paginations/quotePagination.js';
+import { Constants } from '../../constants/constants.js';
+import { randomArray, splitToChunks } from '../../helpers/helper.js';
+import { ListQuoteEmbed } from '../../providers/embeds/commonEmbed.js';
+import { QuoteCommandPagination, QuoteSlashPagination } from '../../providers/paginations/quotePagination.js';
 import {
   createQuote,
   deleteQuote,
@@ -29,8 +29,8 @@ import {
   getUserQuotes,
   privateQuote,
   publishQuote,
-} from '../services/quote.js';
-import { IUserQuote } from '../types/quote.js';
+} from '../../services/quote.js';
+import { IUserQuote } from '../../types/quote.js';
 
 @Discord()
 @SlashGroup({ description: 'Quote commands', name: 'quote' })

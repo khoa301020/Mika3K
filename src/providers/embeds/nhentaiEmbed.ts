@@ -8,7 +8,7 @@ export const NHentaiBookEmbed = (res: AxiosResponse, author: User): EmbedBuilder
 
   return new EmbedBuilder()
     .setColor(0x0099ff)
-    .setTitle(book.title)
+    .setTitle(`[${book.id}] ${book.title}`)
     .setURL(res.data.source)
     .setAuthor({
       name: `${author.username}#${author.discriminator}`,
@@ -19,7 +19,7 @@ export const NHentaiBookEmbed = (res: AxiosResponse, author: User): EmbedBuilder
     .addFields(
       { name: 'Parodies', value: book.parodies.length > 0 ? book.parodies.join('\n') : 'original' },
       { name: 'Characters', value: book.characters.length > 0 ? book.characters.join(', ') : 'original' },
-      { name: 'Artists', value: book.artist?.join(', ') },
+      { name: 'Artists', value: book.artist.length > 0 ? book.artist?.join(', ') : 'N/A' },
       { name: 'Tags', value: book.tags.map((tag: string) => `\`${tag}\``).join(', ') },
       { name: 'Favorites', value: book.num_favorites.toString(), inline: true },
       { name: 'Pages count', value: book.num_pages.toString(), inline: true },

@@ -15,7 +15,7 @@ import {
   Slash,
   SlashOption,
 } from 'discordx';
-import { UserInfoEmbed } from '../providers/embeds/commonEmbed.js';
+import { UserInfoEmbed } from '../../providers/embeds/commonEmbed.js';
 
 @Discord()
 class CheckInfo {

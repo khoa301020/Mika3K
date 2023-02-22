@@ -14,9 +14,10 @@ export class Constants {
   private static readonly JIKAN_VERSION = 'v4';
   public static readonly MAL_LOGO = 'https://upload.wikimedia.org/wikipedia/commons/7/7a/MyAnimeList_Logo.png';
 
-  public static readonly JIKAN_GENRES_TYPE = ['genres', 'explicit_genres', 'themes', 'demographics'];
+  public static readonly JIKAN_GENRES_FILTER = ['genres', 'explicit_genres', 'themes', 'demographics'];
   public static readonly JIKAN_GENRES_ANIME = `${this.JIKAN_API}/${this.JIKAN_VERSION}/genres/anime`;
   public static readonly JIKAN_GENRES_MANGA = `${this.JIKAN_API}/${this.JIKAN_VERSION}/genres/manga`;
+  public static readonly GENRES_PER_PAGE = 10;
 
   public static readonly JIKAN_ANIME_SEARCH = `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime`;
   public static readonly ANIME = (id: number) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}`;
@@ -114,9 +115,6 @@ export class Constants {
 
   /* People search constants */
   public static readonly PEOPLE_QUERY_ORDER_BY = ['mal_id', 'name', 'birthday', 'favorites'];
-
-  /* Genres search constants */
-  public static readonly GENRES_FILTER = ['genres', 'explicit_genres', 'themes', 'demographics'];
 
   /* Common constants */
   public static readonly SORT = ['desc', 'asc'];

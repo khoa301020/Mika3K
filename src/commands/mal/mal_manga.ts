@@ -2,10 +2,11 @@ import type { CommandInteraction } from 'discord.js';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { Constants } from '../../constants/constants.js';
-import { MAL_MangaEmbed } from '../../providers/embeds/malEmbed.js';
+import { sortArray, splitToChunks } from '../../helpers/helper.js';
+import { MAL_GenresEmbed, MAL_MangaEmbed } from '../../providers/embeds/malEmbed.js';
 import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../../providers/paginations/malPagination.js';
 import { mangaApi } from '../../services/mal.js';
-import type { IManga } from '../../types/mal';
+import type { IGenre, IManga } from '../../types/mal';
 
 @Discord()
 @SlashGroup({ description: 'mal-commands', name: 'mal' })
@@ -167,6 +168,54 @@ export class MAL_Manga {
         navigation === 'button'
           ? MAL_ButtonPagination(interaction, pages, !!display)
           : MAL_SelectMenuPagination(interaction, pages, !!display, names);
+
+      await pagination.send();
+    } catch (err: any) {
+      console.log(err);
+      interaction.reply({ content: err.message, ephemeral: !display });
+    }
+  }
+
+  @Slash({ description: 'Get MAL manga genres' })
+  @SlashGroup('manga', 'mal')
+  async genres(
+    @SlashOption({
+      description: 'Public display?',
+      name: 'display',
+      required: true,
+      type: ApplicationCommandOptionType.Boolean,
+    })
+    display: Boolean,
+    @SlashChoice(...Constants.JIKAN_GENRES_FILTER)
+    @SlashOption({
+      description: 'Select filter',
+      name: 'filter',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    filter: String,
+    interaction: CommandInteraction,
+  ): Promise<void> {
+    const queryString = filter ? `filter=${filter}` : '';
+
+    try {
+      const res = await mangaApi.genres(queryString);
+      if (res.data.data.length === 0) {
+        interaction.reply({ content: 'No genres found.', ephemeral: !display });
+        return;
+      }
+
+      const genres: Array<IGenre> = sortArray.desc(res.data.data, 'count');
+
+      let genreChunks = splitToChunks(genres, Constants.QUOTES_PER_PAGE);
+
+      const pages = genreChunks.map((genres: Array<IGenre>, index: number) => {
+        const embed = MAL_GenresEmbed(genres, interaction.user, index + 1, genreChunks.length);
+
+        return { embeds: [embed], ephemeral: !display };
+      });
+
+      const pagination = MAL_ButtonPagination(interaction, pages, !!display);
 
       await pagination.send();
     } catch (err: any) {

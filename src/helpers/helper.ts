@@ -109,3 +109,8 @@ export const tableConverter = (data: Array<any>): string => {
 
   return table(result, config as BaseUserConfig);
 };
+
+export const sortArray = {
+  asc: (array: Array<any>, field: string) => array?.sort((a, b) => (a[field] > b[field] ? 1 : -1)),
+  desc: (array: Array<any>, field: string) => array?.sort((a, b) => (a[field] > b[field] ? -1 : 1)),
+};

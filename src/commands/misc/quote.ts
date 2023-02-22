@@ -326,7 +326,7 @@ class Quote {
 
     let splitedQuotes = splitToChunks(quotes, Constants.QUOTES_PER_PAGE);
 
-    const pages = splitedQuotes.map((chunk: IUserQuote[], index: number) => {
+    const pages = splitedQuotes.map((chunk: Array<IUserQuote>, index: number) => {
       const embed = ListQuoteEmbed(
         interaction.user,
         interaction.client as Client,

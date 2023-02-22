@@ -1,10 +1,10 @@
 import type { User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { Constants } from '../../constants/constants.js';
-import { datetimeConverter, replaceEmpties } from '../../helpers/helper.js';
-import { IAnime, ICharacter, IManga, IPeople } from '../../types/mal';
+import { datetimeConverter, replaceEmpties, tableConverter } from '../../helpers/helper.js';
+import { IAnime, ICharacter, IGenre, IManga, IPeople } from '../../types/mal';
 
-export const MAL_AnimeEmbed = (resAnime: IAnime, author: User, index?: number, total?: number): EmbedBuilder => {
+export const MAL_AnimeEmbed = (resAnime: IAnime, author: User, page?: number, total?: number): EmbedBuilder => {
   const anime = replaceEmpties(resAnime, 'N/A', 'name' as keyof Object, true);
 
   return new EmbedBuilder()
@@ -44,12 +44,12 @@ export const MAL_AnimeEmbed = (resAnime: IAnime, author: User, index?: number, t
     .setImage(anime.images.jpg.large_image_url)
     .setTimestamp()
     .setFooter({
-      text: `MyAnimeList ${index !== null && total !== null && `(${index?.toString()}/${total?.toString()})`}`,
+      text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
       iconURL: Constants.MAL_LOGO,
     });
 };
 
-export const MAL_MangaEmbed = (resManga: IManga, author: User, index?: number, total?: number): EmbedBuilder => {
+export const MAL_MangaEmbed = (resManga: IManga, author: User, page?: number, total?: number): EmbedBuilder => {
   const manga = replaceEmpties(resManga, 'N/A', 'name' as keyof Object, true);
 
   return new EmbedBuilder()
@@ -84,7 +84,7 @@ export const MAL_MangaEmbed = (resManga: IManga, author: User, index?: number, t
     .setImage(manga.images.jpg.large_image_url)
     .setTimestamp()
     .setFooter({
-      text: `MyAnimeList ${index !== null && total !== null && `(${index?.toString()}/${total?.toString()})`}`,
+      text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
       iconURL: Constants.MAL_LOGO,
     });
 };
@@ -92,7 +92,7 @@ export const MAL_MangaEmbed = (resManga: IManga, author: User, index?: number, t
 export const MAL_CharacterEmbed = (
   resCharacter: ICharacter,
   author: User,
-  index?: number,
+  page?: number,
   total?: number,
 ): EmbedBuilder => {
   const character = replaceEmpties(resCharacter, 'N/A');
@@ -116,12 +116,12 @@ export const MAL_CharacterEmbed = (
     .setImage(character.images.jpg.image_url)
     .setTimestamp()
     .setFooter({
-      text: `MyAnimeList ${index !== null && total !== null && `(${index?.toString()}/${total?.toString()})`}`,
+      text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
       iconURL: Constants.MAL_LOGO,
     });
 };
 
-export const MAL_PeopleEmbed = (resPeople: IPeople, author: User, index?: number, total?: number): EmbedBuilder => {
+export const MAL_PeopleEmbed = (resPeople: IPeople, author: User, page?: number, total?: number): EmbedBuilder => {
   const people = replaceEmpties(resPeople, 'N/A');
 
   return new EmbedBuilder()
@@ -147,7 +147,36 @@ export const MAL_PeopleEmbed = (resPeople: IPeople, author: User, index?: number
     .setImage(people.images.jpg.image_url)
     .setTimestamp()
     .setFooter({
-      text: `MyAnimeList ${index !== null && total !== null && `(${index?.toString()}/${total?.toString()})`}`,
+      text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
       iconURL: Constants.MAL_LOGO,
     });
+};
+
+export const MAL_GenresEmbed = (genres: Array<IGenre>, author: User, page?: number, total?: number): EmbedBuilder => {
+  let list = genres.map((genre: IGenre) =>
+    Object({
+      id: genre.mal_id,
+      name: genre.name,
+      count: genre.count,
+    }),
+  );
+
+  return (
+    new EmbedBuilder()
+      .setColor(0x0099ff)
+      .setTitle('Server quotes list')
+      .setAuthor({
+        name: `${author.username}#${author.discriminator}`,
+        iconURL: author.displayAvatarURL(),
+      })
+      .setDescription(`\`${tableConverter(list)}\``)
+      // .setDescription(tableConverter(list))
+      // .setThumbnail()
+      // .addFields({})
+      .setTimestamp()
+      .setFooter({
+        text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
+        iconURL: Constants.MAL_LOGO,
+      })
+  );
 };

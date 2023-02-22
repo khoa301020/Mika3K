@@ -928,6 +928,15 @@ export interface ITopPeople {
   data: IPeople[];
 }
 
+/* Typings for genres search */
+
+export interface IGenre {
+  mal_id: number;
+  name: string;
+  url: string;
+  count: number;
+}
+
 /* Typings for search options */
 
 export interface IAnimeSearchOptions {

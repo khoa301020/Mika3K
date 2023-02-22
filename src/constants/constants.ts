@@ -88,6 +88,7 @@ export class Constants {
     'members',
     'favorites',
   ];
+  public static readonly ANIME_TOP_QUERY_FILTER = ['airing', 'upcoming', 'bypopularity', 'favorite'];
 
   /* Manga search constants */
   public static readonly MANGA_QUERY_TYPE = ['manga', 'novel', 'lightnovel', 'oneshot', 'doujin', 'manhwa', 'manhua'];
@@ -106,12 +107,17 @@ export class Constants {
     'members',
     'favorites',
   ];
+  public static readonly MANGA_TOP_QUERY_FILTER = ['publishing', 'upcoming', 'bypopularity', 'favorite'];
 
   /* Character search constants */
   public static readonly CHARACTER_QUERY_ORDER_BY = ['mal_id', 'name', 'favorites'];
 
-  /* Character search constants */
+  /* People search constants */
   public static readonly PEOPLE_QUERY_ORDER_BY = ['mal_id', 'name', 'birthday', 'favorites'];
 
+  /* Genres search constants */
+  public static readonly GENRES_FILTER = ['genres', 'explicit_genres', 'themes', 'demographics'];
+
+  /* Common constants */
   public static readonly SORT = ['desc', 'asc'];
 }

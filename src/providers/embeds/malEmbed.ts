@@ -96,7 +96,6 @@ export const MAL_CharacterEmbed = (
   total?: number,
 ): EmbedBuilder => {
   const character = replaceEmpties(resCharacter, 'N/A');
-  console.log(character);
 
   return new EmbedBuilder()
     .setColor(0x0099ff)

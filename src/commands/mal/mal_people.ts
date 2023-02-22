@@ -1,10 +1,10 @@
-import axios from 'axios';
 import type { CommandInteraction } from 'discord.js';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { Constants } from '../../constants/constants.js';
 import { MAL_PeopleEmbed } from '../../providers/embeds/malEmbed.js';
 import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../../providers/paginations/malPagination.js';
+import { peopleApi } from '../../services/mal.js';
 import type { IPeople } from '../../types/mal';
 
 @Discord()
@@ -13,7 +13,7 @@ import type { IPeople } from '../../types/mal';
 export class MAL_People {
   @Slash({ description: 'Search MAL people' })
   @SlashGroup('people', 'mal')
-  search(
+  async search(
     @SlashOption({
       description: 'Public display?',
       name: 'display',
@@ -54,52 +54,37 @@ export class MAL_People {
     })
     sort: String,
     interaction: CommandInteraction,
-  ): void {
+  ): Promise<void> {
     let request: any = Object.assign(q && { q }, order_by && { order_by }, sort && { sort });
 
     const queryString = new URLSearchParams(request).toString();
-    const queryUrl = `${Constants.JIKAN_PEOPLE_SEARCH}?${queryString}`;
-    console.log(queryUrl);
 
-    axios
-      .get(queryUrl)
-      .then(async (res) => {
-        if (res.data.data.length === 0) {
-          interaction.reply({ content: 'No people found.', ephemeral: !display });
-          return;
-        }
+    try {
+      const res = await peopleApi.search(queryString);
 
-        let names: string[] = [];
+      if (res.data.data.length === 0) {
+        interaction.reply({ content: 'No people found.', ephemeral: !display });
+        return;
+      }
 
-        const pages = res.data.data.map((people: IPeople, index: number) => {
-          names.push(people.name);
-          const embed = MAL_PeopleEmbed(people, interaction.user, index + 1, res.data.data.length);
+      let names: string[] = [];
 
-          return { embeds: [embed], name: people.name, ephemeral: !display };
-        });
+      const pages = res.data.data.map((people: IPeople, index: number) => {
+        names.push(people.name);
+        const embed = MAL_PeopleEmbed(people, interaction.user, index + 1, res.data.data.length);
 
-        switch (navigation) {
-          case 'button':
-            {
-              const pagination = MAL_ButtonPagination(interaction, pages, !!display);
-              await pagination.send();
-            }
-            break;
-          case 'select-menu':
-            {
-              const pagination = MAL_SelectMenuPagination(interaction, pages, !!display, names);
-              await pagination.send();
-            }
-            break;
-
-          default:
-            interaction.reply({ content: 'Invalid navigation type', ephemeral: !display });
-            break;
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        interaction.reply({ content: err.message, ephemeral: !display });
+        return { embeds: [embed], name: people.name, ephemeral: !display };
       });
+
+      const pagination =
+        navigation === 'button'
+          ? MAL_ButtonPagination(interaction, pages, !!display)
+          : MAL_SelectMenuPagination(interaction, pages, !!display, names);
+
+      await pagination.send();
+    } catch (err: any) {
+      console.log(err);
+      interaction.reply({ content: err.message, ephemeral: !display });
+    }
   }
 }

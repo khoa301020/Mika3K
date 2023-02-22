@@ -1,10 +1,10 @@
-import axios from 'axios';
 import type { CommandInteraction } from 'discord.js';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { Constants } from '../../constants/constants.js';
 import { MAL_AnimeEmbed } from '../../providers/embeds/malEmbed.js';
 import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../../providers/paginations/malPagination.js';
+import { animeApi } from '../../services/mal.js';
 import type { IAnime } from '../../types/mal';
 
 @Discord()
@@ -13,7 +13,7 @@ import type { IAnime } from '../../types/mal';
 export class MAL_Anime {
   @Slash({ description: 'Search MAL anime' })
   @SlashGroup('anime', 'mal')
-  search(
+  async search(
     @SlashOption({
       description: 'Public display?',
       name: 'display',
@@ -134,7 +134,7 @@ export class MAL_Anime {
     })
     end_date: String,
     interaction: CommandInteraction,
-  ): void {
+  ): Promise<void> {
     sfw === undefined && (sfw = true);
 
     let request = Object.assign(
@@ -155,48 +155,32 @@ export class MAL_Anime {
     );
 
     const queryString = new URLSearchParams(request).toString();
-    const queryUrl = `${Constants.JIKAN_ANIME_SEARCH}?${queryString}`;
-    console.log(queryUrl);
 
-    axios
-      .get(queryUrl)
-      .then(async (res) => {
-        if (res.data.data.length === 0) {
-          interaction.reply({ content: 'No anime found.', ephemeral: !display });
-          return;
-        }
+    try {
+      const res = await animeApi.search(queryString);
+      if (res.data.data.length === 0) {
+        interaction.reply({ content: 'No anime found.', ephemeral: !display });
+        return;
+      }
 
-        let names: string[] = [];
+      let names: string[] = [];
 
-        const pages = res.data.data.map((anime: IAnime, index: number) => {
-          names.push(anime.title);
-          const embed = MAL_AnimeEmbed(anime, interaction.user, index + 1, res.data.data.length);
+      const pages = res.data.data.map((anime: IAnime, index: number) => {
+        names.push(anime.title);
+        const embed = MAL_AnimeEmbed(anime, interaction.user, index + 1, res.data.data.length);
 
-          return { embeds: [embed], name: anime.title, ephemeral: !display };
-        });
-
-        switch (navigation) {
-          case 'button':
-            {
-              const pagination = MAL_ButtonPagination(interaction, pages, !!display);
-              await pagination.send();
-            }
-            break;
-          case 'select-menu':
-            {
-              const pagination = MAL_SelectMenuPagination(interaction, pages, !!display, names);
-              await pagination.send();
-            }
-            break;
-
-          default:
-            interaction.reply({ content: 'Invalid navigation type', ephemeral: !display });
-            break;
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        interaction.reply({ content: err.message, ephemeral: !display });
+        return { embeds: [embed], name: anime.title, ephemeral: !display };
       });
+
+      const pagination =
+        navigation === 'button'
+          ? MAL_ButtonPagination(interaction, pages, !!display)
+          : MAL_SelectMenuPagination(interaction, pages, !!display, names);
+
+      await pagination.send();
+    } catch (err: any) {
+      console.log(err);
+      interaction.reply({ content: err.message, ephemeral: !display });
+    }
   }
 }

@@ -5,11 +5,11 @@ import { datetimeConverter, replaceEmpties } from '../../helpers/helper.js';
 import { IAnime, ICharacter, IManga, IPeople } from '../../types/mal';
 
 export const MAL_AnimeEmbed = (resAnime: IAnime, author: User, index?: number, total?: number): EmbedBuilder => {
-  const anime = replaceEmpties(resAnime, 'N/A', 'name' as keyof Object);
+  const anime = replaceEmpties(resAnime, 'N/A', 'name' as keyof Object, true);
 
   return new EmbedBuilder()
     .setColor(Constants.COLOR_BY_APPROVED(anime.approved))
-    .setTitle(anime.title)
+    .setTitle(`[${anime.mal_id}] ${anime.title}`)
     .setURL(anime.url)
     .setAuthor({
       name: `${author.username}#${author.discriminator}`,
@@ -49,12 +49,12 @@ export const MAL_AnimeEmbed = (resAnime: IAnime, author: User, index?: number, t
     });
 };
 
-export const MAL_MangaEmbed = (resAnime: IManga, author: User, index?: number, total?: number): EmbedBuilder => {
-  const manga = replaceEmpties(resAnime, 'N/A', 'name' as keyof Object);
+export const MAL_MangaEmbed = (resManga: IManga, author: User, index?: number, total?: number): EmbedBuilder => {
+  const manga = replaceEmpties(resManga, 'N/A', 'name' as keyof Object, true);
 
   return new EmbedBuilder()
     .setColor(Constants.COLOR_BY_APPROVED(manga.approved))
-    .setTitle(manga.title)
+    .setTitle(`[${manga.mal_id}] ${manga.title}`)
     .setURL(manga.url)
     .setAuthor({
       name: `${author.username}#${author.discriminator}`,
@@ -100,7 +100,7 @@ export const MAL_CharacterEmbed = (
 
   return new EmbedBuilder()
     .setColor(0x0099ff)
-    .setTitle(character.name)
+    .setTitle(`[${character.mal_id}] ${character.name}`)
     .setURL(character.url)
     .setAuthor({
       name: `${author.username}#${author.discriminator}`,
@@ -127,7 +127,7 @@ export const MAL_PeopleEmbed = (resPeople: IPeople, author: User, index?: number
 
   return new EmbedBuilder()
     .setColor(0x0099ff)
-    .setTitle(people.name)
+    .setTitle(`[${people.mal_id}] ${people.name}`)
     .setURL(people.url)
     .setAuthor({
       name: `${author.username}#${author.discriminator}`,

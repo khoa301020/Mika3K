@@ -1,6 +1,6 @@
 # Introduction
 
-A discord bot created with [Discordx](https://discordx.js.org/docs).
+My self-use discord bot created with [Discordx](https://discordx.js.org/docs).
 
 # Resources
 

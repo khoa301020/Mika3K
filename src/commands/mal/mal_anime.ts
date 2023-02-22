@@ -1,12 +1,39 @@
-import type { CommandInteraction } from 'discord.js';
-import { ApplicationCommandOptionType } from 'discord.js';
-import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
+import {
+  ActionRowBuilder,
+  ApplicationCommandOptionType,
+  ButtonBuilder,
+  ButtonInteraction,
+  ButtonStyle,
+  CommandInteraction,
+  MessageActionRowComponentBuilder,
+} from 'discord.js';
+import { ButtonComponent, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { Constants } from '../../constants/constants.js';
 import { sortArray, splitToChunks } from '../../helpers/helper.js';
-import { MAL_AnimeEmbed, MAL_GenresEmbed } from '../../providers/embeds/malEmbed.js';
+import { MAL_AnimeCharacterEmbed, MAL_AnimeEmbed, MAL_GenresEmbed } from '../../providers/embeds/malEmbed.js';
 import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../../providers/paginations/malPagination.js';
 import { animeApi } from '../../services/mal.js';
 import type { IAnime, IGenre } from '../../types/mal';
+
+const episodesBtn = new ButtonBuilder().setLabel('🎞 Episodes').setStyle(ButtonStyle.Primary).setCustomId('episodes');
+const charactersBtn = new ButtonBuilder()
+  .setLabel('👤 Characters')
+  .setStyle(ButtonStyle.Primary)
+  .setCustomId('characters');
+const picturesBtn = new ButtonBuilder().setLabel('🖼 Pictures').setStyle(ButtonStyle.Primary).setCustomId('pictures');
+const statisticsBtn = new ButtonBuilder()
+  .setLabel('📊 Statistics')
+  .setStyle(ButtonStyle.Primary)
+  .setCustomId('statistics');
+const staffBtn = new ButtonBuilder().setLabel('👥 Staff').setStyle(ButtonStyle.Primary).setCustomId('staff');
+
+const animeRow = new ActionRowBuilder<MessageActionRowComponentBuilder>()
+  .addComponents(charactersBtn)
+  .addComponents(episodesBtn)
+  .addComponents(staffBtn)
+  .addComponents(picturesBtn)
+  .addComponents(statisticsBtn);
+// const finishRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(restartBtn);
 
 @Discord()
 @SlashGroup({ description: 'mal-commands', name: 'mal' })
@@ -170,7 +197,12 @@ export class MAL_Anime {
         names.push(anime.title);
         const embed = MAL_AnimeEmbed(anime, interaction.user, index + 1, res.data.data.length);
 
-        return { embeds: [embed], name: anime.title, ephemeral: !display };
+        return {
+          embeds: [embed],
+          components: [animeRow],
+          name: anime.title,
+          ephemeral: !display,
+        };
       });
 
       const pagination =
@@ -231,5 +263,67 @@ export class MAL_Anime {
       console.log(err);
       interaction.reply({ content: err.message, ephemeral: !display });
     }
+  }
+
+  @ButtonComponent({ id: 'characters' })
+  async episodesBtnComponent(interaction: ButtonInteraction): Promise<void> {
+    const user = `${interaction.user.username}#${interaction.user.discriminator}`;
+
+    const mal_id = interaction.message.embeds[0].data.title?.match(Constants.REGEX_GET_ID)![1];
+    const isEphemeral = interaction.ephemeral;
+
+    try {
+      const res = await animeApi.characters(mal_id!);
+      if (res.data.data.length === 0) {
+        interaction.reply({ content: 'No character found.', ephemeral: isEphemeral! });
+        return;
+      }
+
+      let names: string[] = [];
+
+      const pages = res.data.data.map((animeCharacter: any, index: number) => {
+        names.push(animeCharacter.character.name);
+        const embed = MAL_AnimeCharacterEmbed(animeCharacter, interaction.user, index + 1, res.data.data.length);
+
+        return {
+          embeds: [embed],
+          name: animeCharacter.character.name,
+          ephemeral: isEphemeral,
+        };
+      });
+
+      const pagination = MAL_SelectMenuPagination(interaction, pages, !isEphemeral!, names);
+
+      await pagination.send();
+    } catch (err: any) {
+      console.log(err);
+      interaction.reply({ content: err.message, ephemeral: isEphemeral! });
+    }
+  }
+  @ButtonComponent({ id: 'episodes' })
+  async charactersBtnComponent(interaction: ButtonInteraction): Promise<void> {
+    const user = `${interaction.user.username}#${interaction.user.discriminator}`;
+
+    const id = interaction.message.embeds[0].data.title?.match(Constants.REGEX_GET_ID)![1];
+
+    // interaction.reply({ content: `[${id}] Episodes button clicked`, ephemeral: true });
+  }
+  @ButtonComponent({ id: 'pictures' })
+  async picturesBtnComponent(interaction: ButtonInteraction): Promise<void> {
+    const user = `${interaction.user.username}#${interaction.user.discriminator}`;
+
+    // interaction.reply({ content: 'Pictures button clicked', ephemeral: true });
+  }
+  @ButtonComponent({ id: 'statistics' })
+  async statisticsBtnComponent(interaction: ButtonInteraction): Promise<void> {
+    const user = `${interaction.user.username}#${interaction.user.discriminator}`;
+
+    // interaction.reply({ content: 'Statistics button clicked', ephemeral: true });
+  }
+  @ButtonComponent({ id: 'staff' })
+  async staffBtnComponent(interaction: ButtonInteraction): Promise<void> {
+    const user = `${interaction.user.username}#${interaction.user.discriminator}`;
+
+    // interaction.reply({ content: 'Staff button clicked', ephemeral: true });
   }
 }

@@ -180,3 +180,43 @@ export const MAL_GenresEmbed = (genres: Array<IGenre>, author: User, page?: numb
       })
   );
 };
+
+export const MAL_AnimeCharacterEmbed = (
+  resAnimeCharacter: any,
+  author: User,
+  page?: number,
+  total?: number,
+): EmbedBuilder => {
+  const animeCharacter = replaceEmpties(resAnimeCharacter, 'N/A');
+  // const voiceActors: Array<any> = animeCharacter.voice_actors;
+  // console.log(typeof voiceActors);
+
+  // const voices: APIEmbedField = Object.assign(
+  //   voiceActors.map((voiceActor: any) =>
+  //     Object({
+  //       name: voiceActor.language,
+  //       value: `[${voiceActor.person.name}](${voiceActor.person.url})`,
+  //     }),
+  //   ),
+  // );
+
+  return (
+    new EmbedBuilder()
+      .setColor(0x0099ff)
+      .setTitle(animeCharacter.character.name)
+      .setURL(animeCharacter.character.url)
+      .setAuthor({
+        name: `${author.username}#${author.discriminator}`,
+        iconURL: author.displayAvatarURL(),
+      })
+      .setDescription(animeCharacter.role)
+      .setThumbnail(Constants.MAL_LOGO)
+      // .addFields(voices)
+      .setImage(animeCharacter.character.images.jpg.image_url)
+      .setTimestamp()
+      .setFooter({
+        text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
+        iconURL: Constants.MAL_LOGO,
+      })
+  );
+};

@@ -3,6 +3,7 @@ export class Constants {
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36';
 
   public static readonly QUOTES_PER_PAGE = 10;
+  public static readonly REGEX_GET_ID = /\[(\d+)\]/;
   public static readonly COLOR_BY_APPROVED = (isApproved: Boolean) => (isApproved ? 0x00ff00 : 0x484a48);
 
   /* NHentai constants */
@@ -20,54 +21,54 @@ export class Constants {
   public static readonly GENRES_PER_PAGE = 10;
 
   public static readonly JIKAN_ANIME_SEARCH = `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime`;
-  public static readonly ANIME = (id: number) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}`;
-  public static readonly ANIME_FULL = (id: number) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}/full`;
-  public static readonly ANIME_CHARACTERS = (id: number) =>
+  public static readonly ANIME = (id: string) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}`;
+  public static readonly ANIME_FULL = (id: string) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}/full`;
+  public static readonly ANIME_CHARACTERS = (id: string) =>
     `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}/characters`;
-  public static readonly ANIME_STAFF = (id: number) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}/staff`;
-  public static readonly ANIME_EPISODES = (id: number) =>
+  public static readonly ANIME_STAFF = (id: string) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}/staff`;
+  public static readonly ANIME_EPISODES = (id: string) =>
     `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}/episodes`;
-  public static readonly ANIME_PICTURES = (id: number) =>
+  public static readonly ANIME_PICTURES = (id: string) =>
     `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}/pictures`;
-  public static readonly ANIME_STATISTICS = (id: number) =>
+  public static readonly ANIME_STATISTICS = (id: string) =>
     `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}/statistics`;
-  public static readonly ANIME_RECOMMENDATIONS = (id: number) =>
+  public static readonly ANIME_RECOMMENDATIONS = (id: string) =>
     `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}/recommendations`;
-  public static readonly ANIME_REVIEWS = (id: number) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}/reviews`;
+  public static readonly ANIME_REVIEWS = (id: string) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}/reviews`;
 
   public static readonly JIKAN_MANGA_SEARCH = `${this.JIKAN_API}/${this.JIKAN_VERSION}/manga`;
-  public static readonly MANGA = (id: number) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/manga/${id}`;
-  public static readonly MANGA_FULL = (id: number) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/manga/${id}/full`;
-  public static readonly MANGA_CHARACTERS = (id: number) =>
+  public static readonly MANGA = (id: string) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/manga/${id}`;
+  public static readonly MANGA_FULL = (id: string) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/manga/${id}/full`;
+  public static readonly MANGA_CHARACTERS = (id: string) =>
     `${this.JIKAN_API}/${this.JIKAN_VERSION}/manga/${id}/characters`;
-  public static readonly MANGA_PICTURES = (id: number) =>
+  public static readonly MANGA_PICTURES = (id: string) =>
     `${this.JIKAN_API}/${this.JIKAN_VERSION}/manga/${id}/pictures`;
-  public static readonly MANGA_STATISTICS = (id: number) =>
+  public static readonly MANGA_STATISTICS = (id: string) =>
     `${this.JIKAN_API}/${this.JIKAN_VERSION}/manga/${id}/statistics`;
-  public static readonly MANGA_RECOMMENDATIONS = (id: number) =>
+  public static readonly MANGA_RECOMMENDATIONS = (id: string) =>
     `${this.JIKAN_API}/${this.JIKAN_VERSION}/manga/${id}/recommendations`;
-  public static readonly MANGA_REVIEWS = (id: number) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/manga/${id}/reviews`;
+  public static readonly MANGA_REVIEWS = (id: string) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/manga/${id}/reviews`;
 
   public static readonly JIKAN_CHARACTER_SEARCH = `${this.JIKAN_API}/${this.JIKAN_VERSION}/characters`;
-  public static readonly CHARACTER = (id: number) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/characters/${id}`;
-  public static readonly CHARACTER_FULL = (id: number) =>
+  public static readonly CHARACTER = (id: string) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/characters/${id}`;
+  public static readonly CHARACTER_FULL = (id: string) =>
     `${this.JIKAN_API}/${this.JIKAN_VERSION}/characters/${id}/full`;
-  public static readonly CHARACTER_ANIME = (id: number) =>
+  public static readonly CHARACTER_ANIME = (id: string) =>
     `${this.JIKAN_API}/${this.JIKAN_VERSION}/characters/${id}/anime`;
-  public static readonly CHARACTER_MANGA = (id: number) =>
+  public static readonly CHARACTER_MANGA = (id: string) =>
     `${this.JIKAN_API}/${this.JIKAN_VERSION}/characters/${id}/manga`;
-  public static readonly CHARACTER_VOICES = (id: number) =>
+  public static readonly CHARACTER_VOICES = (id: string) =>
     `${this.JIKAN_API}/${this.JIKAN_VERSION}/characters/${id}/voices`;
-  public static readonly CHARACTER_PICTURES = (id: number) =>
+  public static readonly CHARACTER_PICTURES = (id: string) =>
     `${this.JIKAN_API}/${this.JIKAN_VERSION}/characters/${id}/pictures`;
 
   public static readonly JIKAN_PEOPLE_SEARCH = `${this.JIKAN_API}/${this.JIKAN_VERSION}/people`;
-  public static readonly PEOPLE = (id: number) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/people/${id}`;
-  public static readonly PEOPLE_FULL = (id: number) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/people/${id}/full`;
-  public static readonly PEOPLE_ANIME = (id: number) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/people/${id}/anime`;
-  public static readonly PEOPLE_MANGA = (id: number) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/people/${id}/manga`;
-  public static readonly PEOPLE_VOICES = (id: number) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/people/${id}/voices`;
-  public static readonly PEOPLE_PICTURES = (id: number) =>
+  public static readonly PEOPLE = (id: string) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/people/${id}`;
+  public static readonly PEOPLE_FULL = (id: string) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/people/${id}/full`;
+  public static readonly PEOPLE_ANIME = (id: string) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/people/${id}/anime`;
+  public static readonly PEOPLE_MANGA = (id: string) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/people/${id}/manga`;
+  public static readonly PEOPLE_VOICES = (id: string) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/people/${id}/voices`;
+  public static readonly PEOPLE_PICTURES = (id: string) =>
     `${this.JIKAN_API}/${this.JIKAN_VERSION}/people/${id}/pictures`;
 
   /* Anime search constants */

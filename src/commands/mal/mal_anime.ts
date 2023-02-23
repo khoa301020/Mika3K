@@ -21,24 +21,41 @@ import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../../providers/
 import { animeApi } from '../../services/mal.js';
 import type { IAnime, IGenre } from '../../types/mal';
 
-const charactersBtn = new ButtonBuilder()
-  .setLabel('👤 Characters')
-  .setStyle(ButtonStyle.Primary)
-  .setCustomId('characters');
-const episodesBtn = new ButtonBuilder().setLabel('🎞 Episodes').setStyle(ButtonStyle.Primary).setCustomId('episodes');
-const themesBtn = new ButtonBuilder().setLabel('🎼 Themes').setStyle(ButtonStyle.Primary).setCustomId('themes');
-const statisticsBtn = new ButtonBuilder()
-  .setLabel('📊 Statistics')
-  .setStyle(ButtonStyle.Primary)
-  .setCustomId('statistics');
-const staffBtn = new ButtonBuilder().setLabel('👥 Staff').setStyle(ButtonStyle.Primary).setCustomId('staff');
+const charactersBtn = (isDisable: boolean) =>
+  new ButtonBuilder()
+    .setLabel('👤 Characters')
+    .setStyle(ButtonStyle.Primary)
+    .setCustomId('characters')
+    .setDisabled(isDisable);
 
-const animeRow = new ActionRowBuilder<MessageActionRowComponentBuilder>()
-  .addComponents(charactersBtn)
-  .addComponents(episodesBtn)
-  .addComponents(themesBtn)
-  .addComponents(staffBtn)
-  .addComponents(statisticsBtn);
+const episodesBtn = (isDisable: boolean) =>
+  new ButtonBuilder()
+    .setLabel('🎞 Episodes')
+    .setStyle(ButtonStyle.Primary)
+    .setCustomId('episodes')
+    .setDisabled(isDisable);
+
+const themesBtn = (isDisable: boolean) =>
+  new ButtonBuilder().setLabel('🎼 Themes').setStyle(ButtonStyle.Primary).setCustomId('themes').setDisabled(isDisable);
+
+const statisticsBtn = (isDisable: boolean) =>
+  new ButtonBuilder()
+    .setLabel('📊 Statistics')
+    .setStyle(ButtonStyle.Primary)
+    .setCustomId('statistics')
+    .setDisabled(isDisable);
+
+const staffBtn = (isDisable: boolean) =>
+  new ButtonBuilder().setLabel('👥 Staff').setStyle(ButtonStyle.Primary).setCustomId('staff').setDisabled(isDisable);
+
+const animeRow = (isDisable: boolean = false) =>
+  new ActionRowBuilder<MessageActionRowComponentBuilder>()
+    .addComponents(charactersBtn(isDisable))
+    .addComponents(episodesBtn(isDisable))
+    .addComponents(themesBtn(isDisable))
+    .addComponents(staffBtn(isDisable))
+    .addComponents(statisticsBtn(isDisable));
+
 // const finishRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(restartBtn);
 
 @Discord()
@@ -202,10 +219,11 @@ export class MAL_Anime {
       const pages = res.data.data.map((anime: IAnime, index: number) => {
         names.push(anime.title);
         const embed = MAL_AnimeEmbed(anime, interaction.user, index + 1, res.data.data.length);
+        const row = animeRow;
 
         return {
           embeds: [embed],
-          components: [animeRow],
+          components: [row(!anime.approved)],
           name: anime.title,
           ephemeral: !display,
         };

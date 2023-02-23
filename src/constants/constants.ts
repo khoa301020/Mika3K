@@ -19,6 +19,7 @@ export class Constants {
   public static readonly JIKAN_GENRES_ANIME = `${this.JIKAN_API}/${this.JIKAN_VERSION}/genres/anime`;
   public static readonly JIKAN_GENRES_MANGA = `${this.JIKAN_API}/${this.JIKAN_VERSION}/genres/manga`;
   public static readonly GENRES_PER_PAGE = 10;
+  public static readonly EPISODES_PER_PAGE = 10;
 
   public static readonly JIKAN_ANIME_SEARCH = `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime`;
   public static readonly ANIME = (id: string) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}`;
@@ -28,6 +29,7 @@ export class Constants {
   public static readonly ANIME_STAFF = (id: string) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}/staff`;
   public static readonly ANIME_EPISODES = (id: string) =>
     `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}/episodes`;
+  public static readonly ANIME_THEMES = (id: string) => `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}/themes`;
   public static readonly ANIME_PICTURES = (id: string) =>
     `${this.JIKAN_API}/${this.JIKAN_VERSION}/anime/${id}/pictures`;
   public static readonly ANIME_STATISTICS = (id: string) =>

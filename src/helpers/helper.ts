@@ -78,7 +78,7 @@ export function splitToChunks<T>(array: T[], chunkSize: number): T[][] {
   return R;
 }
 
-export const tableConverter = (data: Array<any>): string => {
+export const tableConverter = (data: Array<any>, columnConfigs: Array<any>): string => {
   const config = {
     border: {
       topBody: `─`,
@@ -100,7 +100,7 @@ export const tableConverter = (data: Array<any>): string => {
       joinRight: `┤`,
       joinJoin: `┼`,
     },
-    columns: [{ alignment: 'left' }, { alignment: 'right' }, { alignment: 'right' }],
+    columns: columnConfigs,
   };
 
   const keys = Object.keys(data[0]);

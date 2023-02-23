@@ -6,20 +6,25 @@ export const MAL_ButtonPagination = (
   pages: Array<PaginationItem>,
   display = true,
 ): Pagination => {
-  return new Pagination(interaction, pages, {
-    type: PaginationType.Button,
-    showStartEnd: true,
-    enableExit: display,
-    ephemeral: !display,
-    start: { label: '⏮️' },
-    previous: { label: '◀️' },
-    next: { label: '▶️' },
-    end: { label: '⏩' },
-    exit: { label: '❌', style: ButtonStyle.Danger },
-    onTimeout(page: number, message: Message) {
-      message.edit({ components: [] });
+  const options: PaginationOptions = Object.assign(
+    {
+      type: PaginationType.Button,
+      showStartEnd: true,
+      enableExit: display,
+      ephemeral: !display,
+      start: { label: '⏮️' },
+      previous: { label: '◀️' },
+      next: { label: '▶️' },
+      end: { label: '⏩' },
+      exit: { label: '❌', style: ButtonStyle.Danger },
     },
-  });
+    display && {
+      async onTimeout(page: number, message: Message) {
+        await message.edit({ components: [] });
+      },
+    },
+  );
+  return new Pagination(interaction, pages, options);
 };
 
 export const MAL_SelectMenuPagination = (
@@ -37,6 +42,11 @@ export const MAL_SelectMenuPagination = (
       placeholder: 'Please select...',
     },
     names.length > 0 && { pageText: names },
+    display && {
+      async onTimeout(page: number, message: Message) {
+        await message.edit({ components: [] });
+      },
+    },
   );
   return new Pagination(interaction, pages, options);
 };

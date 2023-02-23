@@ -1,4 +1,4 @@
-import type { User } from 'discord.js';
+import type { APIEmbedField, User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { Constants } from '../../constants/constants.js';
 import { datetimeConverter, replaceEmpties, tableConverter } from '../../helpers/helper.js';
@@ -161,6 +161,8 @@ export const MAL_GenresEmbed = (genres: Array<IGenre>, author: User, page?: numb
     }),
   );
 
+  const columnConfigs: Array<any> = [{ alignment: 'left' }, { alignment: 'right' }, { alignment: 'right' }];
+
   return (
     new EmbedBuilder()
       .setColor(0x0099ff)
@@ -169,7 +171,7 @@ export const MAL_GenresEmbed = (genres: Array<IGenre>, author: User, page?: numb
         name: `${author.username}#${author.discriminator}`,
         iconURL: author.displayAvatarURL(),
       })
-      .setDescription(`\`${tableConverter(list)}\``)
+      .setDescription(`\`${tableConverter(list, columnConfigs)}\``)
       // .setDescription(tableConverter(list))
       // .setThumbnail()
       // .addFields({})
@@ -182,41 +184,177 @@ export const MAL_GenresEmbed = (genres: Array<IGenre>, author: User, page?: numb
 };
 
 export const MAL_AnimeCharacterEmbed = (
-  resAnimeCharacter: any,
+  animeCharacter: any,
   author: User,
   page?: number,
   total?: number,
 ): EmbedBuilder => {
-  const animeCharacter = replaceEmpties(resAnimeCharacter, 'N/A');
-  // const voiceActors: Array<any> = animeCharacter.voice_actors;
-  // console.log(typeof voiceActors);
+  const voiceActors: Array<any> = animeCharacter.voice_actors;
 
-  // const voices: APIEmbedField = Object.assign(
-  //   voiceActors.map((voiceActor: any) =>
-  //     Object({
-  //       name: voiceActor.language,
-  //       value: `[${voiceActor.person.name}](${voiceActor.person.url})`,
-  //     }),
-  //   ),
-  // );
+  const voices: APIEmbedField = Object.assign(
+    voiceActors.map((voiceActor: any) =>
+      Object({
+        name: voiceActor.language,
+        value: `[${voiceActor.person.name}](${voiceActor.person.url})`,
+      }),
+    ),
+  );
+
+  return new EmbedBuilder()
+    .setColor(0x0099ff)
+    .setTitle(animeCharacter.character.name)
+    .setURL(animeCharacter.character.url)
+    .setAuthor({
+      name: `${author.username}#${author.discriminator}`,
+      iconURL: author.displayAvatarURL(),
+    })
+    .setDescription(animeCharacter.role)
+    .setThumbnail(Constants.MAL_LOGO)
+    .addFields(voices)
+    .setImage(animeCharacter.character.images.jpg.image_url)
+    .setTimestamp()
+    .setFooter({
+      text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
+      iconURL: Constants.MAL_LOGO,
+    });
+};
+
+export const MAL_AnimeEpisodeEmbed = (
+  animeEpisodes: Array<any>,
+  author: User,
+  page?: number,
+  total?: number,
+): EmbedBuilder => {
+  let list = animeEpisodes.map((genre: any) =>
+    Object({
+      id: genre.mal_id,
+      title: genre.title,
+      score: genre.score,
+      aired: datetimeConverter(genre.aired).date,
+    }),
+  );
+
+  const columnConfigs: Array<any> = [
+    { alignment: 'center' },
+    { alignment: 'left', width: 20, wrapWord: true },
+    { alignment: 'right' },
+    { alignment: 'right' },
+  ];
 
   return (
     new EmbedBuilder()
       .setColor(0x0099ff)
-      .setTitle(animeCharacter.character.name)
-      .setURL(animeCharacter.character.url)
+      .setTitle('Anime episodes')
       .setAuthor({
         name: `${author.username}#${author.discriminator}`,
         iconURL: author.displayAvatarURL(),
       })
-      .setDescription(animeCharacter.role)
-      .setThumbnail(Constants.MAL_LOGO)
-      // .addFields(voices)
-      .setImage(animeCharacter.character.images.jpg.image_url)
+      .setDescription(`\`${tableConverter(list, columnConfigs)}\``)
+      // .setDescription(tableConverter(list))
+      // .setThumbnail()
+      // .addFields({})
       .setTimestamp()
       .setFooter({
         text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
         iconURL: Constants.MAL_LOGO,
       })
   );
+};
+
+export const MAL_AnimeThemeEmbed = (animeTheme: any, author: User, page?: number, total?: number): EmbedBuilder => {
+  const voiceActors: Array<any> = animeTheme.voice_actors;
+
+  const voices: APIEmbedField = Object.assign(
+    voiceActors.map((voiceActor: any) =>
+      Object({
+        name: voiceActor.language,
+        value: `[${voiceActor.person.name}](${voiceActor.person.url})`,
+      }),
+    ),
+  );
+
+  return new EmbedBuilder()
+    .setColor(0x0099ff)
+    .setTitle(animeTheme.character.name)
+    .setURL(animeTheme.character.url)
+    .setAuthor({
+      name: `${author.username}#${author.discriminator}`,
+      iconURL: author.displayAvatarURL(),
+    })
+    .setDescription(animeTheme.role)
+    .setThumbnail(Constants.MAL_LOGO)
+    .addFields(voices)
+    .setImage(animeTheme.character.images.jpg.image_url)
+    .setTimestamp()
+    .setFooter({
+      text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
+      iconURL: Constants.MAL_LOGO,
+    });
+};
+
+export const MAL_AnimeStaffEmbed = (animeStaff: any, author: User, page?: number, total?: number): EmbedBuilder => {
+  const voiceActors: Array<any> = animeStaff.voice_actors;
+
+  const voices: APIEmbedField = Object.assign(
+    voiceActors.map((voiceActor: any) =>
+      Object({
+        name: voiceActor.language,
+        value: `[${voiceActor.person.name}](${voiceActor.person.url})`,
+      }),
+    ),
+  );
+
+  return new EmbedBuilder()
+    .setColor(0x0099ff)
+    .setTitle(animeStaff.character.name)
+    .setURL(animeStaff.character.url)
+    .setAuthor({
+      name: `${author.username}#${author.discriminator}`,
+      iconURL: author.displayAvatarURL(),
+    })
+    .setDescription(animeStaff.role)
+    .setThumbnail(Constants.MAL_LOGO)
+    .addFields(voices)
+    .setImage(animeStaff.character.images.jpg.image_url)
+    .setTimestamp()
+    .setFooter({
+      text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
+      iconURL: Constants.MAL_LOGO,
+    });
+};
+
+export const MAL_AnimeStatisticsEmbed = (
+  animeStatistics: any,
+  author: User,
+  page?: number,
+  total?: number,
+): EmbedBuilder => {
+  const voiceActors: Array<any> = animeStatistics.voice_actors;
+
+  const voices: APIEmbedField = Object.assign(
+    voiceActors.map((voiceActor: any) =>
+      Object({
+        name: voiceActor.language,
+        value: `[${voiceActor.person.name}](${voiceActor.person.url})`,
+      }),
+    ),
+  );
+
+  return new EmbedBuilder()
+    .setColor(0x0099ff)
+    .setTitle(animeStatistics.character.name)
+    .setURL(animeStatistics.character.url)
+    .setAuthor({
+      name: `${author.username}#${author.discriminator}`,
+      iconURL: author.displayAvatarURL(),
+    })
+    .setDescription(animeStatistics.role)
+    .setThumbnail(Constants.MAL_LOGO)
+    .addFields(voices)
+    .setImage(animeStatistics.character.images.jpg.image_url)
+    .setTimestamp()
+    .setFooter({
+      text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
+      iconURL: Constants.MAL_LOGO,
+    });
 };

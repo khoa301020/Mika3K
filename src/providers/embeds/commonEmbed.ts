@@ -60,6 +60,8 @@ export const ListQuoteEmbed = (
     }),
   );
 
+  const columnConfigs: Array<any> = [{ alignment: 'left' }, { alignment: 'right' }, { alignment: 'right' }];
+
   return (
     new EmbedBuilder()
       .setColor(0x0099ff)
@@ -68,7 +70,7 @@ export const ListQuoteEmbed = (
         name: `${author.username}#${author.discriminator}`,
         iconURL: author.displayAvatarURL(),
       })
-      .setDescription(`\`${tableConverter(list)}\``)
+      .setDescription(`\`${tableConverter(list, columnConfigs)}\``)
       // .setDescription(tableConverter(list))
       // .setThumbnail()
       // .addFields({})

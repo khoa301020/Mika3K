@@ -21,8 +21,12 @@ export const MAL_AnimeEmbed = (resAnime: IAnime, author: User, page?: number, to
       { name: 'Episodes', value: anime.episodes.toString(), inline: true },
       { name: 'Duration', value: anime.duration, inline: true },
       { name: 'Status', value: anime.status, inline: true },
-      { name: 'Year', value: anime.year?.toString() ?? 'N/A', inline: true },
-      { name: 'Season', value: anime.season ?? 'N/A', inline: true },
+      { name: 'Type', value: anime.type, inline: true },
+      {
+        name: 'Season',
+        value: anime.season !== 'N/A' || anime.year !== 'N/A' ? `${anime.season} - ${anime.year?.toString()}` : 'N/A',
+        inline: true,
+      },
       { name: 'Aired', value: anime.aired.string, inline: true },
       { name: 'Rating', value: anime.rating, inline: true },
       { name: 'Score', value: anime.score.toString(), inline: true },
@@ -287,34 +291,25 @@ export const MAL_AnimeThemeEmbed = (animeTheme: any, author: User): EmbedBuilder
 };
 
 export const MAL_AnimeStaffEmbed = (animeStaff: any, author: User, page?: number, total?: number): EmbedBuilder => {
-  const voiceActors: Array<any> = animeStaff.voice_actors;
-
-  const voices: APIEmbedField = Object.assign(
-    voiceActors.map((voiceActor: any) =>
-      Object({
-        name: voiceActor.language,
-        value: `[${voiceActor.person.name}](${voiceActor.person.url})`,
-      }),
-    ),
+  return (
+    new EmbedBuilder()
+      .setColor(0x0099ff)
+      .setTitle(animeStaff.person.name)
+      .setURL(animeStaff.person.url)
+      .setAuthor({
+        name: `${author.username}#${author.discriminator}`,
+        iconURL: author.displayAvatarURL(),
+      })
+      .setDescription(animeStaff.positions.map((position: string) => `- ${position}`).join('\n'))
+      .setThumbnail(Constants.MAL_LOGO)
+      // .addFields(voices)
+      .setImage(animeStaff.person.images.jpg.image_url)
+      .setTimestamp()
+      .setFooter({
+        text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
+        iconURL: Constants.MAL_LOGO,
+      })
   );
-
-  return new EmbedBuilder()
-    .setColor(0x0099ff)
-    .setTitle(animeStaff.character.name)
-    .setURL(animeStaff.character.url)
-    .setAuthor({
-      name: `${author.username}#${author.discriminator}`,
-      iconURL: author.displayAvatarURL(),
-    })
-    .setDescription(animeStaff.role)
-    .setThumbnail(Constants.MAL_LOGO)
-    .addFields(voices)
-    .setImage(animeStaff.character.images.jpg.image_url)
-    .setTimestamp()
-    .setFooter({
-      text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
-      iconURL: Constants.MAL_LOGO,
-    });
 };
 
 export const MAL_AnimeStatisticsEmbed = (
@@ -323,32 +318,19 @@ export const MAL_AnimeStatisticsEmbed = (
   page?: number,
   total?: number,
 ): EmbedBuilder => {
-  const voiceActors: Array<any> = animeStatistics.voice_actors;
-
-  const voices: APIEmbedField = Object.assign(
-    voiceActors.map((voiceActor: any) =>
-      Object({
-        name: voiceActor.language,
-        value: `[${voiceActor.person.name}](${voiceActor.person.url})`,
-      }),
-    ),
-  );
+  const columnConfigs: Array<any> = [{ alignment: 'left' }, { alignment: 'right' }];
+  const convertedAllStat = Object.entries(animeStatistics.overAllStat);
 
   return new EmbedBuilder()
     .setColor(0x0099ff)
-    .setTitle(animeStatistics.character.name)
-    .setURL(animeStatistics.character.url)
+    .setTitle('Anime statistics')
     .setAuthor({
       name: `${author.username}#${author.discriminator}`,
       iconURL: author.displayAvatarURL(),
     })
-    .setDescription(animeStatistics.role)
+    .setDescription(`\`${tableConverter(convertedAllStat, columnConfigs, false)}\``)
     .setThumbnail(Constants.MAL_LOGO)
-    .addFields(voices)
-    .setImage(animeStatistics.character.images.jpg.image_url)
+    .setImage(animeStatistics.chart)
     .setTimestamp()
-    .setFooter({
-      text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
-      iconURL: Constants.MAL_LOGO,
-    });
+    .setFooter({ text: `MyAnimeList`, iconURL: Constants.MAL_LOGO });
 };

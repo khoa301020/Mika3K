@@ -1,3 +1,4 @@
+import QuickChart from 'quickchart-js';
 import { BaseUserConfig, table } from 'table';
 /**
  * Return a random element from an array.
@@ -78,7 +79,7 @@ export function splitToChunks<T>(array: T[], chunkSize: number): T[][] {
   return R;
 }
 
-export const tableConverter = (data: Array<any>, columnConfigs: Array<any>): string => {
+export const tableConverter = (data: Array<any>, columnConfigs: Array<any>, isHorizontal: boolean = false): string => {
   const config = {
     border: {
       topBody: `─`,
@@ -103,14 +104,21 @@ export const tableConverter = (data: Array<any>, columnConfigs: Array<any>): str
     columns: columnConfigs,
   };
 
-  const keys = Object.keys(data[0]);
-  const values = data.map((obj) => Object.values(obj));
-  const result = [keys, ...values];
+  if (isHorizontal) {
+    const keys = Object.keys(data[0]);
+    const values = data.map((obj) => Object.values(obj));
+    const result = [keys, ...values];
 
-  return table(result, config as BaseUserConfig);
+    return table(result, config as BaseUserConfig);
+  } else {
+    return table(data, config as BaseUserConfig);
+  }
 };
 
 export const sortArray = {
   asc: (array: Array<any>, field: string) => array?.sort((a, b) => (a[field] > b[field] ? 1 : -1)),
   desc: (array: Array<any>, field: string) => array?.sort((a, b) => (a[field] > b[field] ? -1 : 1)),
 };
+
+export const createChart = (configs: any, width: number, height: number): string =>
+  new QuickChart().setConfig(configs).setWidth(width).setHeight(height).getUrl();

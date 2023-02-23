@@ -10,11 +10,13 @@ import {
 } from 'discord.js';
 import { ButtonComponent, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { Constants } from '../../constants/constants.js';
-import { sortArray, splitToChunks } from '../../helpers/helper.js';
+import { createChart, sortArray, splitToChunks } from '../../helpers/helper.js';
 import {
   MAL_AnimeCharacterEmbed,
   MAL_AnimeEmbed,
   MAL_AnimeEpisodeEmbed,
+  MAL_AnimeStaffEmbed,
+  MAL_AnimeStatisticsEmbed,
   MAL_AnimeThemeEmbed,
   MAL_GenresEmbed,
 } from '../../providers/embeds/malEmbed.js';
@@ -382,22 +384,20 @@ export class MAL_Anime {
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
 
     try {
-      const res = await animeApi.characters(mal_id!);
+      const res = await animeApi.staff(mal_id!);
       if (res.data.data.length === 0) {
-        interaction.reply({ content: 'No character found.', ephemeral: isEphemeral! });
+        interaction.reply({ content: 'No staff found.', ephemeral: isEphemeral! });
         return;
       }
 
       let names: string[] = [];
 
-      const pages = res.data.data.map((animeCharacter: any, index: number) => {
-        names.push(animeCharacter.character.name);
-        const embed = MAL_AnimeCharacterEmbed(animeCharacter, interaction.user, index + 1, res.data.data.length);
+      const pages = res.data.data.map((animeStaff: any, index: number) => {
+        names.push(animeStaff.person.name);
+        const embed = MAL_AnimeStaffEmbed(animeStaff, interaction.user, index + 1, res.data.data.length);
 
         return {
           embeds: [embed],
-          name: animeCharacter.character.name,
-          ephemeral: isEphemeral,
         };
       });
 
@@ -416,26 +416,55 @@ export class MAL_Anime {
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
 
     try {
-      const res = await animeApi.characters(mal_id!);
-      if (res.data.data.length === 0) {
-        interaction.reply({ content: 'No character found.', ephemeral: isEphemeral! });
-        return;
-      }
+      const res = await animeApi.statistics(mal_id!);
+      const resStatistics: any = res.data.data;
 
-      let names: string[] = [];
+      const overAllStat = {
+        watching: resStatistics.watching,
+        completed: resStatistics.completed,
+        on_hold: resStatistics.on_hold,
+        dropped: resStatistics.dropped,
+        plan_to_watch: resStatistics.plan_to_watch,
+        total: resStatistics.total,
+      };
 
-      const pages = res.data.data.map((animeCharacter: any, index: number) => {
-        names.push(animeCharacter.character.name);
-        const embed = MAL_AnimeCharacterEmbed(animeCharacter, interaction.user, index + 1, res.data.data.length);
+      const chartConfigs = {
+        type: 'doughnut',
+        data: {
+          labels: resStatistics.scores.map((score: any) => score.score),
+          datasets: [
+            {
+              data: resStatistics.scores.map((score: any) => score.votes),
+              percentage: resStatistics.scores.map((score: any) => score.percentage),
+            },
+          ],
+        },
+        options: {
+          plugins: {
+            doughnutlabel: {
+              labels: [{ text: resStatistics.total, font: { size: 20 } }, { text: 'Total votes' }],
+            },
+            datalabels: {
+              formatter: (value: string, context: any) => {
+                const p = context.chart.data.datasets[0].percentage[context.dataIndex];
+                if (p < 5) return '';
+                return p + '%';
+              },
+            },
+          },
+        },
+      };
 
-        return {
-          embeds: [embed],
-        };
-      });
+      const chart = createChart(chartConfigs, 800, 400);
 
-      const pagination = MAL_SelectMenuPagination(interaction, pages, !isEphemeral!, names);
+      const statistics = {
+        overAllStat,
+        chart,
+      };
 
-      await pagination.send();
+      const embed = MAL_AnimeStatisticsEmbed(statistics, interaction.user);
+
+      interaction.reply({ embeds: [embed], ephemeral: isEphemeral! });
     } catch (err: any) {
       console.log(err);
       interaction.reply({ content: err.message, ephemeral: isEphemeral! });

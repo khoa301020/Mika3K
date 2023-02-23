@@ -79,7 +79,7 @@ export function splitToChunks<T>(array: T[], chunkSize: number): T[][] {
   return R;
 }
 
-export const tableConverter = (data: Array<any>, columnConfigs: Array<any>, isHorizontal: boolean = false): string => {
+export const tableConverter = (data: Array<any>, columnConfigs: Array<any>, isHorizontal: boolean = true): string => {
   const config = {
     border: {
       topBody: `─`,

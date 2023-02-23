@@ -238,6 +238,8 @@ export const MAL_AnimeEpisodeEmbed = (
     }),
   );
 
+  console.log(list);
+
   const columnConfigs: Array<any> = [
     { alignment: 'center' },
     { alignment: 'left', width: 20, wrapWord: true },
@@ -268,7 +270,7 @@ export const MAL_AnimeEpisodeEmbed = (
 export const MAL_AnimeThemeEmbed = (animeTheme: any, author: User): EmbedBuilder => {
   return new EmbedBuilder()
     .setColor(0x0099ff)
-    .setTitle('Anime themes')
+    .setTitle(`[${animeTheme.mal_id}] Anime themes`)
     .setAuthor({
       name: `${author.username}#${author.discriminator}`,
       iconURL: author.displayAvatarURL(),
@@ -323,7 +325,7 @@ export const MAL_AnimeStatisticsEmbed = (
 
   return new EmbedBuilder()
     .setColor(0x0099ff)
-    .setTitle('Anime statistics')
+    .setTitle(`[${animeStatistics.mal_id}] Anime statistics`)
     .setAuthor({
       name: `${author.username}#${author.discriminator}`,
       iconURL: author.displayAvatarURL(),

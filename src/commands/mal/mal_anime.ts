@@ -306,6 +306,7 @@ export class MAL_Anime {
 
       const pages = res.data.data.map((animeCharacter: any, index: number) => {
         names.push(animeCharacter.character.name);
+        animeCharacter.mal_id = mal_id;
         const embed = MAL_AnimeCharacterEmbed(animeCharacter, interaction.user, index + 1, res.data.data.length);
 
         return {
@@ -368,6 +369,7 @@ export class MAL_Anime {
         interaction.reply({ content: 'No theme found.', ephemeral: isEphemeral! });
         return;
       }
+      themes.mal_id = mal_id;
 
       const embed = MAL_AnimeThemeEmbed(themes, interaction.user);
 
@@ -394,6 +396,7 @@ export class MAL_Anime {
 
       const pages = res.data.data.map((animeStaff: any, index: number) => {
         names.push(animeStaff.person.name);
+        animeStaff.mal_id = mal_id;
         const embed = MAL_AnimeStaffEmbed(animeStaff, interaction.user, index + 1, res.data.data.length);
 
         return {
@@ -412,8 +415,9 @@ export class MAL_Anime {
 
   @ButtonComponent({ id: 'statistics' })
   async statisticsBtnComponent(interaction: ButtonInteraction): Promise<void> {
-    const mal_id = interaction.message.embeds[0].data.title?.match(Constants.REGEX_GET_ID)![1];
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
+    interaction.deferReply({ ephemeral: isEphemeral });
+    const mal_id = interaction.message.embeds[0].data.title?.match(Constants.REGEX_GET_ID)![1];
 
     try {
       const res = await animeApi.statistics(mal_id!);
@@ -460,11 +464,12 @@ export class MAL_Anime {
       const statistics = {
         overAllStat,
         chart,
+        mal_id,
       };
 
       const embed = MAL_AnimeStatisticsEmbed(statistics, interaction.user);
 
-      interaction.reply({ embeds: [embed], ephemeral: isEphemeral! });
+      interaction.editReply({ embeds: [embed]! });
     } catch (err: any) {
       console.log(err);
       interaction.reply({ content: err.message, ephemeral: isEphemeral! });

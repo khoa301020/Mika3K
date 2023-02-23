@@ -15,6 +15,7 @@ import {
   MAL_AnimeCharacterEmbed,
   MAL_AnimeEmbed,
   MAL_AnimeEpisodeEmbed,
+  MAL_AnimeThemeEmbed,
   MAL_GenresEmbed,
 } from '../../providers/embeds/malEmbed.js';
 import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../../providers/paginations/malPagination.js';
@@ -28,12 +29,12 @@ const charactersBtn = (isDisable: boolean) =>
     .setCustomId('characters')
     .setDisabled(isDisable);
 
-const episodesBtn = (isDisable: boolean) =>
+const episodesBtn = (isDisable: boolean, hasManyEpisode?: boolean) =>
   new ButtonBuilder()
     .setLabel('🎞 Episodes')
     .setStyle(ButtonStyle.Primary)
     .setCustomId('episodes')
-    .setDisabled(isDisable);
+    .setDisabled(isDisable || !hasManyEpisode);
 
 const themesBtn = (isDisable: boolean) =>
   new ButtonBuilder().setLabel('🎼 Themes').setStyle(ButtonStyle.Primary).setCustomId('themes').setDisabled(isDisable);
@@ -48,10 +49,10 @@ const statisticsBtn = (isDisable: boolean) =>
 const staffBtn = (isDisable: boolean) =>
   new ButtonBuilder().setLabel('👥 Staff').setStyle(ButtonStyle.Primary).setCustomId('staff').setDisabled(isDisable);
 
-const animeRow = (isDisable: boolean = false) =>
+const animeRow = (isDisable: boolean = false, hasManyEpisode?: boolean) =>
   new ActionRowBuilder<MessageActionRowComponentBuilder>()
     .addComponents(charactersBtn(isDisable))
-    .addComponents(episodesBtn(isDisable))
+    .addComponents(episodesBtn(isDisable, hasManyEpisode))
     .addComponents(themesBtn(isDisable))
     .addComponents(staffBtn(isDisable))
     .addComponents(statisticsBtn(isDisable));
@@ -223,9 +224,7 @@ export class MAL_Anime {
 
         return {
           embeds: [embed],
-          components: [row(!anime.approved)],
-          name: anime.title,
-          ephemeral: !display,
+          components: [row(!anime.approved, anime.episodes > 1)],
         };
       });
 
@@ -277,7 +276,7 @@ export class MAL_Anime {
       const pages = genreChunks.map((genres: Array<IGenre>, index: number) => {
         const embed = MAL_GenresEmbed(genres, interaction.user, index + 1, genreChunks.length);
 
-        return { embeds: [embed], ephemeral: !display };
+        return { embeds: [embed] };
       });
 
       const pagination = MAL_ButtonPagination(interaction, pages, !!display);
@@ -309,8 +308,6 @@ export class MAL_Anime {
 
         return {
           embeds: [embed],
-          name: animeCharacter.character.name,
-          ephemeral: isEphemeral,
         };
       });
 
@@ -322,6 +319,7 @@ export class MAL_Anime {
       interaction.reply({ content: err.message, ephemeral: isEphemeral! });
     }
   }
+
   @ButtonComponent({ id: 'episodes' })
   async episodesBtnComponent(interaction: ButtonInteraction): Promise<void> {
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
@@ -331,7 +329,7 @@ export class MAL_Anime {
     try {
       const episodes: Array<any> = await animeApi.episodes(mal_id!);
       if (episodes.length === 0) {
-        interaction.editReply({ content: 'No character found.' });
+        interaction.editReply({ content: 'No episode found.' });
         return;
       }
 
@@ -344,7 +342,6 @@ export class MAL_Anime {
 
         return {
           embeds: [embed],
-          ephemeral: isEphemeral,
         };
       });
 
@@ -363,28 +360,16 @@ export class MAL_Anime {
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
 
     try {
-      const res = await animeApi.characters(mal_id!);
-      if (res.data.data.length === 0) {
-        interaction.reply({ content: 'No character found.', ephemeral: isEphemeral! });
+      const res = await animeApi.themes(mal_id!);
+      const themes: any = res.data.data;
+      if (themes.openings.length === 0 && themes.endings.length === 0) {
+        interaction.reply({ content: 'No theme found.', ephemeral: isEphemeral! });
         return;
       }
 
-      let names: string[] = [];
+      const embed = MAL_AnimeThemeEmbed(themes, interaction.user);
 
-      const pages = res.data.data.map((animeCharacter: any, index: number) => {
-        names.push(animeCharacter.character.name);
-        const embed = MAL_AnimeCharacterEmbed(animeCharacter, interaction.user, index + 1, res.data.data.length);
-
-        return {
-          embeds: [embed],
-          name: animeCharacter.character.name,
-          ephemeral: isEphemeral,
-        };
-      });
-
-      const pagination = MAL_SelectMenuPagination(interaction, pages, !isEphemeral!, names);
-
-      await pagination.send();
+      interaction.reply({ embeds: [embed], ephemeral: isEphemeral! });
     } catch (err: any) {
       console.log(err);
       interaction.reply({ content: err.message, ephemeral: isEphemeral! });
@@ -445,8 +430,6 @@ export class MAL_Anime {
 
         return {
           embeds: [embed],
-          name: animeCharacter.character.name,
-          ephemeral: isEphemeral,
         };
       });
 

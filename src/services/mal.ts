@@ -22,7 +22,7 @@ export const animeApi = {
   },
   themes: (id: string) => axios.get(`${Constants.ANIME_THEMES(id)}`),
   staff: (id: string) => axios.get(`${Constants.ANIME_STAFF(id)}`),
-  pictures: (id: string) => axios.get(`${Constants.ANIME_PICTURES(id)}`),
+  // pictures: (id: string) => axios.get(`${Constants.ANIME_PICTURES(id)}`),
   statistics: (id: string) => axios.get(`${Constants.ANIME_STATISTICS(id)}`),
 };
 

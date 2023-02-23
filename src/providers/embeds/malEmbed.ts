@@ -261,33 +261,27 @@ export const MAL_AnimeEpisodeEmbed = (
   );
 };
 
-export const MAL_AnimeThemeEmbed = (animeTheme: any, author: User, page?: number, total?: number): EmbedBuilder => {
-  const voiceActors: Array<any> = animeTheme.voice_actors;
-
-  const voices: APIEmbedField = Object.assign(
-    voiceActors.map((voiceActor: any) =>
-      Object({
-        name: voiceActor.language,
-        value: `[${voiceActor.person.name}](${voiceActor.person.url})`,
-      }),
-    ),
-  );
-
+export const MAL_AnimeThemeEmbed = (animeTheme: any, author: User): EmbedBuilder => {
   return new EmbedBuilder()
     .setColor(0x0099ff)
-    .setTitle(animeTheme.character.name)
-    .setURL(animeTheme.character.url)
+    .setTitle('Anime themes')
     .setAuthor({
       name: `${author.username}#${author.discriminator}`,
       iconURL: author.displayAvatarURL(),
     })
-    .setDescription(animeTheme.role)
+    .setDescription(`Openings: ${animeTheme.openings.length}\nEndings: ${animeTheme.endings.length}`)
     .setThumbnail(Constants.MAL_LOGO)
-    .addFields(voices)
-    .setImage(animeTheme.character.images.jpg.image_url)
+    .addFields({
+      name: 'Openings',
+      value: animeTheme.openings.length > 0 ? `- ${animeTheme.openings.join('\n- ')}` : 'N/A',
+    })
+    .addFields({
+      name: 'Endings',
+      value: animeTheme.endings.length > 0 ? `- ${animeTheme.endings.join('\n- ')}` : 'N/A',
+    })
     .setTimestamp()
     .setFooter({
-      text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
+      text: `MyAnimeList`,
       iconURL: Constants.MAL_LOGO,
     });
 };

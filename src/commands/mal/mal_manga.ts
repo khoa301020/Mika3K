@@ -1,13 +1,38 @@
-import type { CommandInteraction } from 'discord.js';
-import { ApplicationCommandOptionType } from 'discord.js';
-import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
+import {
+  ActionRowBuilder,
+  ApplicationCommandOptionType,
+  ButtonBuilder,
+  ButtonInteraction,
+  ButtonStyle,
+  CommandInteraction,
+  MessageActionRowComponentBuilder,
+  MessageFlags,
+} from 'discord.js';
+import { ButtonComponent, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { Constants } from '../../constants/constants.js';
-import { sortArray, splitToChunks } from '../../helpers/helper.js';
-import { MAL_GenresEmbed, MAL_MangaEmbed } from '../../providers/embeds/malEmbed.js';
+import { createChart, sortArray, splitToChunks } from '../../helpers/helper.js';
+import {
+  MAL_GenresEmbed,
+  MAL_MangaCharacterEmbed,
+  MAL_MangaEmbed,
+  MAL_MangaStatisticsEmbed,
+} from '../../providers/embeds/malEmbed.js';
 import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../../providers/paginations/malPagination.js';
 import { mangaApi } from '../../services/mal.js';
-import type { IGenre, IManga } from '../../types/mal';
+import type { IGenre, IManga, IMangaStats } from '../../types/mal';
 
+const mangaCharactersBtn = new ButtonBuilder()
+  .setLabel('👤 Characters')
+  .setStyle(ButtonStyle.Primary)
+  .setCustomId('mangaCharacters');
+const mangaStatisticsBtn = new ButtonBuilder()
+  .setLabel('📊 Statistics')
+  .setStyle(ButtonStyle.Primary)
+  .setCustomId('mangaStatistics');
+const mangaRow = new ActionRowBuilder<MessageActionRowComponentBuilder>()
+  .addComponents(mangaCharactersBtn)
+
+  .addComponents(mangaStatisticsBtn);
 @Discord()
 @SlashGroup({ description: 'mal-commands', name: 'mal' })
 @SlashGroup({ description: 'mal-manga', name: 'manga', root: 'mal' })
@@ -161,7 +186,7 @@ export class MAL_Manga {
         names.push(manga.title);
         const embed = MAL_MangaEmbed(manga, interaction.user, index + 1, res.data.data.length);
 
-        return { embeds: [embed], name: manga.title, ephemeral: !display };
+        return { embeds: [embed], components: [mangaRow] };
       });
 
       const pagination =
@@ -221,6 +246,102 @@ export class MAL_Manga {
     } catch (err: any) {
       console.log(err);
       interaction.reply({ content: err.message, ephemeral: !display });
+    }
+  }
+
+  @ButtonComponent({ id: 'mangaCharacters' })
+  async charactersBtnComponent(interaction: ButtonInteraction): Promise<void> {
+    const mal_id = interaction.message.embeds[0].data.title?.match(Constants.REGEX_GET_ID)![1];
+    const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
+
+    try {
+      const res = await mangaApi.characters(mal_id!);
+      if (res.data.data.length === 0) {
+        interaction.reply({ content: 'No character found.', ephemeral: isEphemeral! });
+        return;
+      }
+
+      let names: string[] = [];
+
+      const pages = res.data.data.map((mangaCharacter: any, index: number) => {
+        names.push(mangaCharacter.character.name);
+        mangaCharacter.mal_id = mal_id;
+        const embed = MAL_MangaCharacterEmbed(mangaCharacter, interaction.user, index + 1, res.data.data.length);
+
+        return {
+          embeds: [embed],
+        };
+      });
+
+      const pagination = MAL_SelectMenuPagination(interaction, pages, !isEphemeral!, names);
+
+      await pagination.send();
+    } catch (err: any) {
+      console.log(err);
+      interaction.reply({ content: err.message, ephemeral: isEphemeral! });
+    }
+  }
+
+  @ButtonComponent({ id: 'mangaStatistics' })
+  async statisticsBtnComponent(interaction: ButtonInteraction): Promise<void> {
+    const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
+    interaction.deferReply({ ephemeral: isEphemeral });
+    const mal_id = interaction.message.embeds[0].data.title?.match(Constants.REGEX_GET_ID)![1];
+
+    try {
+      const res = await mangaApi.statistics(mal_id!);
+      const resStatistics: IMangaStats = res.data.data;
+
+      const overAllStat = {
+        reading: resStatistics.reading,
+        completed: resStatistics.completed,
+        on_hold: resStatistics.on_hold,
+        dropped: resStatistics.dropped,
+        plan_to_read: resStatistics.plan_to_read,
+        total: resStatistics.total,
+      };
+
+      const chartConfigs = {
+        type: 'doughnut',
+        data: {
+          labels: resStatistics.scores.map((score: any) => score.score),
+          datasets: [
+            {
+              data: resStatistics.scores.map((score: any) => score.votes),
+              percentage: resStatistics.scores.map((score: any) => score.percentage),
+            },
+          ],
+        },
+        options: {
+          plugins: {
+            doughnutlabel: {
+              labels: [{ text: resStatistics.total, font: { size: 20 } }, { text: 'Total votes' }],
+            },
+            datalabels: {
+              formatter: (value: string, context: any) => {
+                const p = context.chart.data.datasets[0].percentage[context.dataIndex];
+                if (p < 5) return '';
+                return p + '%';
+              },
+            },
+          },
+        },
+      };
+
+      const chart = createChart(chartConfigs, 800, 400);
+
+      const statistics = {
+        overAllStat,
+        chart,
+        mal_id,
+      };
+
+      const embed = MAL_MangaStatisticsEmbed(statistics, interaction.user);
+
+      interaction.editReply({ embeds: [embed]! });
+    } catch (err: any) {
+      console.log(err);
+      interaction.editReply({ content: err.message });
     }
   }
 }

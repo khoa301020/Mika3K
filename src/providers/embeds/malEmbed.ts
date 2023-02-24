@@ -187,42 +187,6 @@ export const MAL_GenresEmbed = (genres: Array<IGenre>, author: User, page?: numb
   );
 };
 
-export const MAL_AnimeCharacterEmbed = (
-  animeCharacter: any,
-  author: User,
-  page?: number,
-  total?: number,
-): EmbedBuilder => {
-  const voiceActors: Array<any> = animeCharacter.voice_actors;
-
-  const voices: APIEmbedField = Object.assign(
-    voiceActors.map((voiceActor: any) =>
-      Object({
-        name: voiceActor.language,
-        value: `[${voiceActor.person.name}](${voiceActor.person.url})`,
-      }),
-    ),
-  );
-
-  return new EmbedBuilder()
-    .setColor(0x0099ff)
-    .setTitle(animeCharacter.character.name)
-    .setURL(animeCharacter.character.url)
-    .setAuthor({
-      name: `${author.username}#${author.discriminator}`,
-      iconURL: author.displayAvatarURL(),
-    })
-    .setDescription(animeCharacter.role)
-    .setThumbnail(Constants.MAL_LOGO)
-    .addFields(voices)
-    .setImage(animeCharacter.character.images.jpg.image_url)
-    .setTimestamp()
-    .setFooter({
-      text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
-      iconURL: Constants.MAL_LOGO,
-    });
-};
-
 export const MAL_AnimeEpisodeEmbed = (
   animeEpisodes: Array<any>,
   author: User,
@@ -333,6 +297,89 @@ export const MAL_AnimeStatisticsEmbed = (
     .setDescription(`\`${tableConverter(convertedAllStat, columnConfigs, false)}\``)
     .setThumbnail(Constants.MAL_LOGO)
     .setImage(animeStatistics.chart)
+    .setTimestamp()
+    .setFooter({ text: `MyAnimeList`, iconURL: Constants.MAL_LOGO });
+};
+
+export const MAL_AnimeCharacterEmbed = (
+  animeCharacter: any,
+  author: User,
+  page?: number,
+  total?: number,
+): EmbedBuilder => {
+  const voiceActors: Array<any> = animeCharacter.voice_actors;
+
+  const voices: APIEmbedField = Object.assign(
+    voiceActors.map((voiceActor: any) =>
+      Object({
+        name: voiceActor.language,
+        value: `[${voiceActor.person.name}](${voiceActor.person.url})`,
+      }),
+    ),
+  );
+
+  return new EmbedBuilder()
+    .setColor(0x0099ff)
+    .setTitle(animeCharacter.character.name)
+    .setURL(animeCharacter.character.url)
+    .setAuthor({
+      name: `${author.username}#${author.discriminator}`,
+      iconURL: author.displayAvatarURL(),
+    })
+    .setDescription(animeCharacter.role)
+    .setThumbnail(Constants.MAL_LOGO)
+    .addFields(voices)
+    .setImage(animeCharacter.character.images.jpg.image_url)
+    .setTimestamp()
+    .setFooter({
+      text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
+      iconURL: Constants.MAL_LOGO,
+    });
+};
+
+export const MAL_MangaCharacterEmbed = (
+  mangaCharacter: any,
+  author: User,
+  page?: number,
+  total?: number,
+): EmbedBuilder => {
+  return new EmbedBuilder()
+    .setColor(0x0099ff)
+    .setTitle(mangaCharacter.character.name)
+    .setURL(mangaCharacter.character.url)
+    .setAuthor({
+      name: `${author.username}#${author.discriminator}`,
+      iconURL: author.displayAvatarURL(),
+    })
+    .setDescription(mangaCharacter.role)
+    .setThumbnail(Constants.MAL_LOGO)
+    .setImage(mangaCharacter.character.images.jpg.image_url)
+    .setTimestamp()
+    .setFooter({
+      text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
+      iconURL: Constants.MAL_LOGO,
+    });
+};
+
+export const MAL_MangaStatisticsEmbed = (
+  mangaStatistics: any,
+  author: User,
+  page?: number,
+  total?: number,
+): EmbedBuilder => {
+  const columnConfigs: Array<any> = [{ alignment: 'left' }, { alignment: 'right' }];
+  const convertedAllStat = Object.entries(mangaStatistics.overAllStat);
+
+  return new EmbedBuilder()
+    .setColor(0x0099ff)
+    .setTitle(`[${mangaStatistics.mal_id}] Manga statistics`)
+    .setAuthor({
+      name: `${author.username}#${author.discriminator}`,
+      iconURL: author.displayAvatarURL(),
+    })
+    .setDescription(`\`${tableConverter(convertedAllStat, columnConfigs, false)}\``)
+    .setThumbnail(Constants.MAL_LOGO)
+    .setImage(mangaStatistics.chart)
     .setTimestamp()
     .setFooter({ text: `MyAnimeList`, iconURL: Constants.MAL_LOGO });
 };

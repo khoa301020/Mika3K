@@ -22,44 +22,50 @@ import {
 } from '../../providers/embeds/malEmbed.js';
 import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../../providers/paginations/malPagination.js';
 import { animeApi } from '../../services/mal.js';
-import type { IAnime, IGenre } from '../../types/mal';
+import type { IAnime, IAnimeStats, IGenre } from '../../types/mal';
 
-const charactersBtn = (isDisable: boolean) =>
+const animeCharactersBtn = (isDisable: boolean) =>
   new ButtonBuilder()
     .setLabel('👤 Characters')
     .setStyle(ButtonStyle.Primary)
-    .setCustomId('characters')
+    .setCustomId('animeCharacters')
     .setDisabled(isDisable);
 
-const episodesBtn = (isDisable: boolean, hasManyEpisode?: boolean) =>
+const animeEpisodesBtn = (isDisable: boolean, hasManyEpisode?: boolean) =>
   new ButtonBuilder()
     .setLabel('🎞 Episodes')
     .setStyle(ButtonStyle.Primary)
-    .setCustomId('episodes')
+    .setCustomId('animeEpisodes')
     .setDisabled(isDisable || !hasManyEpisode);
 
-const themesBtn = (isDisable: boolean) =>
-  new ButtonBuilder().setLabel('🎼 Themes').setStyle(ButtonStyle.Primary).setCustomId('themes').setDisabled(isDisable);
+const animeThemesBtn = (isDisable: boolean) =>
+  new ButtonBuilder()
+    .setLabel('🎼 Themes')
+    .setStyle(ButtonStyle.Primary)
+    .setCustomId('animeThemes')
+    .setDisabled(isDisable);
 
-const statisticsBtn = (isDisable: boolean) =>
+const animeStatisticsBtn = (isDisable: boolean) =>
   new ButtonBuilder()
     .setLabel('📊 Statistics')
     .setStyle(ButtonStyle.Primary)
-    .setCustomId('statistics')
+    .setCustomId('animeStatistics')
     .setDisabled(isDisable);
 
-const staffBtn = (isDisable: boolean) =>
-  new ButtonBuilder().setLabel('👥 Staff').setStyle(ButtonStyle.Primary).setCustomId('staff').setDisabled(isDisable);
+const animeStaffBtn = (isDisable: boolean) =>
+  new ButtonBuilder()
+    .setLabel('👥 Staff')
+    .setStyle(ButtonStyle.Primary)
+    .setCustomId('animeStaff')
+    .setDisabled(isDisable);
 
 const animeRow = (isDisable: boolean = false, hasManyEpisode?: boolean) =>
   new ActionRowBuilder<MessageActionRowComponentBuilder>()
-    .addComponents(charactersBtn(isDisable))
-    .addComponents(episodesBtn(isDisable, hasManyEpisode))
-    .addComponents(themesBtn(isDisable))
-    .addComponents(staffBtn(isDisable))
-    .addComponents(statisticsBtn(isDisable));
-
-// const finishRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(restartBtn);
+    .addComponents(animeCharactersBtn(isDisable))
+    .addComponents(animeEpisodesBtn(isDisable, hasManyEpisode))
+    .addComponents(animeThemesBtn(isDisable))
+    .addComponents(animeStaffBtn(isDisable))
+    .addComponents(animeStatisticsBtn(isDisable));
 
 @Discord()
 @SlashGroup({ description: 'mal-commands', name: 'mal' })
@@ -290,7 +296,7 @@ export class MAL_Anime {
     }
   }
 
-  @ButtonComponent({ id: 'characters' })
+  @ButtonComponent({ id: 'animeCharacters' })
   async charactersBtnComponent(interaction: ButtonInteraction): Promise<void> {
     const mal_id = interaction.message.embeds[0].data.title?.match(Constants.REGEX_GET_ID)![1];
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
@@ -323,7 +329,7 @@ export class MAL_Anime {
     }
   }
 
-  @ButtonComponent({ id: 'episodes' })
+  @ButtonComponent({ id: 'animeEpisodes' })
   async episodesBtnComponent(interaction: ButtonInteraction): Promise<void> {
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
     interaction.deferReply({ ephemeral: isEphemeral });
@@ -357,7 +363,7 @@ export class MAL_Anime {
     }
   }
 
-  @ButtonComponent({ id: 'themes' })
+  @ButtonComponent({ id: 'animeThemes' })
   async themesBtnComponent(interaction: ButtonInteraction): Promise<void> {
     const mal_id = interaction.message.embeds[0].data.title?.match(Constants.REGEX_GET_ID)![1];
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
@@ -380,7 +386,7 @@ export class MAL_Anime {
     }
   }
 
-  @ButtonComponent({ id: 'staff' })
+  @ButtonComponent({ id: 'animeStaff' })
   async staffBtnComponent(interaction: ButtonInteraction): Promise<void> {
     const mal_id = interaction.message.embeds[0].data.title?.match(Constants.REGEX_GET_ID)![1];
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
@@ -413,7 +419,7 @@ export class MAL_Anime {
     }
   }
 
-  @ButtonComponent({ id: 'statistics' })
+  @ButtonComponent({ id: 'animeStatistics' })
   async statisticsBtnComponent(interaction: ButtonInteraction): Promise<void> {
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
     interaction.deferReply({ ephemeral: isEphemeral });
@@ -421,7 +427,7 @@ export class MAL_Anime {
 
     try {
       const res = await animeApi.statistics(mal_id!);
-      const resStatistics: any = res.data.data;
+      const resStatistics: IAnimeStats = res.data.data;
 
       const overAllStat = {
         watching: resStatistics.watching,
@@ -472,7 +478,7 @@ export class MAL_Anime {
       interaction.editReply({ embeds: [embed]! });
     } catch (err: any) {
       console.log(err);
-      interaction.reply({ content: err.message, ephemeral: isEphemeral! });
+      interaction.editReply({ content: err.message });
     }
   }
 }

@@ -433,6 +433,7 @@ export interface IManga {
       large_image_url: string;
     };
   };
+  approved: boolean;
   title: string;
   title_english: string;
   title_japanese: string;

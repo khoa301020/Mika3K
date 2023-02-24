@@ -4,7 +4,7 @@ import { Client } from 'discordx';
 import { datetimeConverter, tableConverter, timeDiff } from '../../helpers/helper.js';
 import { IUserQuote } from '../../types/quote.js';
 
-export const UserInfoEmbed = (author: User, client: User, user: GuildMember): EmbedBuilder => {
+export const UserInfoEmbed = (author: User, client: Client, user: GuildMember): EmbedBuilder => {
   return new EmbedBuilder()
     .setColor(0x0099ff)
     .setTitle(`${user.user.username}#${user.user.discriminator}`)
@@ -42,7 +42,7 @@ export const UserInfoEmbed = (author: User, client: User, user: GuildMember): Em
         : 'No boosting',
     })
     .setTimestamp()
-    .setFooter({ text: 'Xiaomi3K', iconURL: client.displayAvatarURL() });
+    .setFooter({ text: 'Xiaomi3K', iconURL: client.user!.displayAvatarURL() });
 };
 
 export const ListQuoteEmbed = (
@@ -77,4 +77,14 @@ export const ListQuoteEmbed = (
       .setTimestamp()
       .setFooter({ text: `Xiaomi3K (${page}/${total})`, iconURL: client.user!.displayAvatarURL() })
   );
+};
+
+export const MathEmbed = (expression: string, result: string, client: Client): EmbedBuilder => {
+  return new EmbedBuilder()
+    .setColor(0x0099ff)
+    .setTitle('Calculated result')
+    .addFields({ name: 'Expression', value: `\`${expression}\`` })
+    .addFields({ name: 'Result', value: result })
+    .setTimestamp()
+    .setFooter({ text: 'Xiaomi3K', iconURL: client.user!.displayAvatarURL() });
 };

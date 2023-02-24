@@ -8,6 +8,14 @@ My self-use discord bot created with [Discordx](https://discordx.js.org/docs).
 - MyAnimeList API by [Jikan](https://github.com/jikan-me/jikan)
 - MyAnimeList typings from [@shineiichijo/marika](https://github.com/LuckyYam/Marika)
 
+# Libraries
+
+- [Axios](https://axios-http.com)
+- [Mongoose](https://mongoosejs.com)
+- [Table](https://github.com/gajus/table)
+- [Quickchart-JS](https://github.com/typpo/quickchart-js)
+- [MathJS](https://github.com/josdejong/mathjs)
+
 # Documentations
 
 - [Discord.js](https://discordx.js.org/docs)

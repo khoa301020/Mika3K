@@ -5,6 +5,8 @@ export class Constants {
   public static readonly QUOTES_PER_PAGE = 10;
   public static readonly REGEX_GET_ID = /\[(\d+)\]/;
   public static readonly COLOR_BY_APPROVED = (isApproved: Boolean) => (isApproved ? 0x00ff00 : 0x484a48);
+  public static readonly CHART_WIDTH = 800;
+  public static readonly CHART_HEIGHT = 800;
 
   /* NHentai constants */
   public static readonly NHENTAI_API = 'https://janda.mod.land/nhentai';

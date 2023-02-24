@@ -4,7 +4,7 @@ import { MathEmbed } from '../../providers/embeds/commonEmbed.js';
 
 @Discord()
 class MathCalculation {
-  @SimpleCommand({ aliases: ['m', 'math'], description: 'Calculate' })
+  @SimpleCommand({ aliases: ['m', 'math'], description: 'Math calculate' })
   mathCommand(command: SimpleCommandMessage): Promise<Message<boolean>> {
     const content = command.message.content.split(' ').slice(1).join(' ').trim();
 

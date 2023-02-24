@@ -465,7 +465,7 @@ export class MAL_Anime {
         },
       };
 
-      const chart = createChart(chartConfigs, 800, 400);
+      const chart = createChart(chartConfigs, Constants.CHART_WIDTH, Constants.CHART_HEIGHT);
 
       const statistics = {
         overAllStat,

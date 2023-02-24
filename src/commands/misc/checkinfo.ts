@@ -3,6 +3,7 @@ import {
   ApplicationCommandType,
   CommandInteraction,
   GuildMember,
+  Message,
   MessageContextMenuCommandInteraction,
 } from 'discord.js';
 import {
@@ -21,20 +22,21 @@ import { UserInfoEmbed } from '../../providers/embeds/commonEmbed.js';
 @Discord()
 class CheckInfo {
   @SimpleCommand({ aliases: ['info', 'userinfo'], description: 'Check user info' })
-  infocommand(
-    @SimpleCommandOption({ name: 'num1', type: SimpleCommandOptionType.User })
+  async infocommand(
+    @SimpleCommandOption({ name: 'user', type: SimpleCommandOptionType.User })
     user: GuildMember | undefined,
     command: SimpleCommandMessage,
-  ): void {
+  ): Promise<Message<boolean>> {
     if (!user) user = command.message.guild!.members.cache.get(command.message.author.id);
+    if (!user?.id) return command.message.reply({ content: 'Invalid user' });
 
     const embed = UserInfoEmbed(command.message.author, command.message.client as Client, user!);
 
-    command.message.reply({ embeds: [embed] });
+    return command.message.reply({ embeds: [embed] });
   }
 
   @Slash({ description: 'Check user info', name: 'check-info' })
-  async infoslash(
+  infoslash(
     @SlashOption({
       description: 'User to check',
       name: 'user',
@@ -43,7 +45,7 @@ class CheckInfo {
     })
     user: GuildMember | undefined,
     interaction: CommandInteraction,
-  ): Promise<void> {
+  ): void {
     if (!user) user = interaction.guild!.members.cache.get(interaction.user.id);
 
     const embed = UserInfoEmbed(interaction.user, interaction.client as Client, user!);

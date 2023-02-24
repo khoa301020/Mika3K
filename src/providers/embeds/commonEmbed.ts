@@ -83,8 +83,8 @@ export const MathEmbed = (expression: string, result: string, client: Client): E
   return new EmbedBuilder()
     .setColor(0x0099ff)
     .setTitle('Calculated result')
-    .addFields({ name: 'Expression', value: `\`${expression}\`` })
-    .addFields({ name: 'Result', value: result })
+    .addFields({ name: 'Expression', value: `\`\`\`${expression}\`\`\`` })
+    .addFields({ name: 'Result', value: `\`\`\`${result}\`\`\`` })
     .setTimestamp()
     .setFooter({ text: 'Xiaomi3K', iconURL: client.user!.displayAvatarURL() });
 };

@@ -1,5 +1,7 @@
+import { randomBytes } from 'crypto';
 import QuickChart from 'quickchart-js';
 import { BaseUserConfig, table } from 'table';
+
 /**
  * Return a random element from an array.
  * @param array - The array you want to get a random element from.
@@ -122,3 +124,11 @@ export const sortArray = {
 
 export const createChart = (configs: any, width: number, height: number): string =>
   new QuickChart().setConfig(configs).setWidth(width).setHeight(height).getUrl();
+
+// Create the code challenge from the code verifier
+export const codeChallenge = () => {
+  // Generate a random string of the desired length
+  const codeChallenge = randomBytes(32).toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+
+  return codeChallenge;
+};

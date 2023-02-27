@@ -1,11 +1,17 @@
-import { Get, Router } from "@discordx/koa";
-import type { Context } from "koa";
+import { Get, Router } from '@discordx/koa';
+import { RouterContext } from '@koa/router';
+import type { Context, Next } from 'koa';
+import { bot } from '../main.js';
 
-import { bot } from "../main.js";
+function Log(ctx: RouterContext, next: Next) {
+  console.log('request: ' + ctx.URL);
+  return next();
+}
 
 @Router()
+// @Middleware(Log)
 export class API {
-  @Get("/")
+  @Get('/')
   index(context: Context): void {
     context.body = `
       <div style="text-align: center">
@@ -20,7 +26,7 @@ export class API {
     `;
   }
 
-  @Get()
+  @Get('/guilds')
   guilds(context: Context): void {
     context.body = `${bot.guilds.cache.map((g) => `${g.id}: ${g.name}\n`)}`;
   }

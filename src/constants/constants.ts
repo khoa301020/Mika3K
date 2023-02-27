@@ -2,15 +2,20 @@ export class Constants {
   public static readonly USER_AGENT =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36';
 
-  public static readonly QUOTES_PER_PAGE = 10;
   public static readonly REGEX_GET_ID = /\[(\d+)\]/;
   public static readonly COLOR_BY_APPROVED = (isApproved: Boolean) => (isApproved ? 0x00ff00 : 0x484a48);
   public static readonly CHART_WIDTH = 800;
-  public static readonly CHART_HEIGHT = 800;
+  public static readonly CHART_HEIGHT = 400;
+  public static readonly QUOTES_PER_PAGE = 10;
 
   /* NHentai constants */
   public static readonly NHENTAI_API = 'https://janda.mod.land/nhentai';
   public static readonly NHENTAI_LOGO = 'https://archive.org/download/nhentai-logo-3/nhentai-logo-3.jpg';
+
+  /* MAL API constants */
+
+  public static readonly MAL_API = 'https://api.myanimelist.net/v2';
+  public static readonly MAL_AUTH_API = 'https://myanimelist.net/v1/oauth2';
 
   /* Jikan API constants */
   private static readonly JIKAN_API = 'https://api.jikan.moe';

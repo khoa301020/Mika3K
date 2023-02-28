@@ -1,5 +1,4 @@
 import axios, { AxiosResponse } from 'axios';
-import { GuildMember } from 'discord.js';
 import qs from 'qs';
 import { Constants } from '../constants/constants.js';
 import MAL from '../models/MAL.js';
@@ -46,19 +45,11 @@ export const peopleApi = {
 };
 
 export const authApi = {
-  savePKCE: async (user: GuildMember, code_challenge: string) => {
-    const userId = user.user.id;
-    const guildId = user.guild.id;
-    return await MAL.findOneAndUpdate(
-      { user: userId, guild: guildId },
-      { codeChallenge: code_challenge },
-      { new: true, upsert: true },
-    );
+  savePKCE: async (userId: string, code_challenge: string) => {
+    return await MAL.findOneAndUpdate({ userId }, { codeChallenge: code_challenge }, { new: true, upsert: true });
   },
-  getPKCE: async (user: GuildMember) => {
-    const userId = user.user.id;
-    const guildId = user.guild.id;
-    return await MAL.findOne({ user: userId, guild: guildId }).select('codeChallenge');
+  getPKCE: async (userId: string) => {
+    return await MAL.findOne({ user: userId }).select('codeChallenge');
   },
   getToken: async (data: any): Promise<AxiosResponse> => {
     return await axios({
@@ -68,13 +59,7 @@ export const authApi = {
       url: `${Constants.MAL_AUTH_API}/token`,
     });
   },
-  saveToken: async (user: GuildMember, accessToken: string, refreshToken: string, expiresDate: Date) => {
-    const userId = user.user.id;
-    const guildId = user.guild.id;
-    return await MAL.findOneAndUpdate(
-      { user: userId, guild: guildId },
-      { accessToken, refreshToken, expiresAt: expiresDate },
-      { new: true },
-    );
+  saveToken: async (userId: string, accessToken: string, refreshToken: string, expiresDate: Date) => {
+    return await MAL.findOneAndUpdate({ userId }, { accessToken, refreshToken, expiresAt: expiresDate }, { new: true });
   },
 };

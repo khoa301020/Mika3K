@@ -1,11 +1,7 @@
 import mongoose from 'mongoose';
 
 const MALSchema = new mongoose.Schema({
-  guild: {
-    type: String,
-    require: true,
-  },
-  user: {
+  userId: {
     type: String,
     require: true,
   },

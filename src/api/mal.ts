@@ -14,16 +14,16 @@ export class MAL_API {
     const guildId = state!.split('_')[0].trim();
     const userId = state!.split('_')[1].trim();
 
-    if (!auth_code) return context.throw(400, 'invalid auth code');
+    if (!auth_code) return context.throw(400, 'Auth code required in url.');
 
     const guild: Guild | undefined = bot.guilds.cache.get(guildId);
     const user: GuildMember | undefined = guild?.members.cache.get(userId);
 
-    if (!user) return context.throw(400, 'invalid user/guild');
+    if (!user) return context.throw(400, 'Invalid user/guild');
 
-    const pkce = await authApi.getPKCE(user);
+    const pkce = await authApi.getPKCE(userId);
 
-    const data = {
+    const params = {
       client_id: process.env.MAL_CLIENT_ID,
       client_secret: process.env.MAL_CLIENT_SECRET,
       grant_type: 'authorization_code',
@@ -32,18 +32,20 @@ export class MAL_API {
       redirect_uri: process.env.MAL_CALLBACK_URL,
     };
 
-    const resToken = await authApi.getToken(data);
+    const resToken = await authApi.getToken(params);
 
-    const access_token = resToken.data.access_token;
-    const refresh_token = resToken.data.refresh_token;
-    const expires_date = expireDate(resToken.data.expires_in);
+    if (resToken.status === 401) return context.throw(401, 'Invalid auth code.');
 
-    const userAuth = await authApi.saveToken(user!, access_token, refresh_token, expires_date);
+    const accessToken = resToken.data.access_token;
+    const refreshToken = resToken.data.refresh_token;
+    const expiresDate = expireDate(resToken.data.expires_in);
+
+    const userAuth = await authApi.saveToken(userId!, accessToken, refreshToken, expiresDate);
 
     if (!userAuth) return (context.body = 'Login failed, please close this tab and try again.');
 
     user.send(
-      `MAL login successfully!\nYour login session will expire at **${datetimeConverter(expires_date).datetime}**.`,
+      `MAL login successfully!\nYour login session will expire at **${datetimeConverter(expiresDate).datetime}**.`,
     );
 
     return (context.body = 'Login succeed, you can close this tab now.');

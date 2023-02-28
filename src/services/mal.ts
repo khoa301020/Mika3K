@@ -45,6 +45,9 @@ export const peopleApi = {
 };
 
 export const authApi = {
+  checkAuthorized: async (userId: string) => {
+    return await MAL.findOne({ userId, expiresAt: { $gt: new Date() } });
+  },
   savePKCE: async (userId: string, code_challenge: string) => {
     return await MAL.findOneAndUpdate({ userId }, { codeChallenge: code_challenge }, { new: true, upsert: true });
   },
@@ -62,4 +65,15 @@ export const authApi = {
   saveToken: async (userId: string, accessToken: string, refreshToken: string, expiresDate: Date) => {
     return await MAL.findOneAndUpdate({ userId }, { accessToken, refreshToken, expiresAt: expiresDate }, { new: true });
   },
+};
+
+export const userApi = {
+  getSelf: (token: string) =>
+    axios.get(`${Constants.MAL_API}/users/@me?fields=anime_statistics,time_zone,is_supporter`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
+  getUser: (userId: string, token: string) =>
+    axios.get(`${Constants.MAL_API}/users/@${userId}?fields=anime_statistics,time_zone,is_supporter`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
 };

@@ -1,8 +1,8 @@
 import type { APIEmbedField, User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { Constants } from '../../constants/constants.js';
-import { datetimeConverter, replaceEmpties, tableConverter } from '../../helpers/helper.js';
-import { IAnime, ICharacter, IGenre, IManga, IPeople } from '../../types/mal';
+import { datetimeConverter, replaceEmpties, tableConverter, timeDiff } from '../../helpers/helper.js';
+import { IAnime, ICharacter, IGenre, IManga, IPeople, IUser } from '../../types/mal';
 
 export const MAL_AnimeEmbed = (resAnime: IAnime, author: User, page?: number, total?: number): EmbedBuilder => {
   const anime = replaceEmpties(resAnime, 'N/A', 'name' as keyof Object, true);
@@ -361,12 +361,7 @@ export const MAL_MangaCharacterEmbed = (
     });
 };
 
-export const MAL_MangaStatisticsEmbed = (
-  mangaStatistics: any,
-  author: User,
-  page?: number,
-  total?: number,
-): EmbedBuilder => {
+export const MAL_MangaStatisticsEmbed = (mangaStatistics: any, author: User): EmbedBuilder => {
   const columnConfigs: Array<any> = [{ alignment: 'left' }, { alignment: 'right' }];
   const convertedAllStat = Object.entries(mangaStatistics.overAllStat);
 
@@ -382,4 +377,48 @@ export const MAL_MangaStatisticsEmbed = (
     .setImage(mangaStatistics.chart)
     .setTimestamp()
     .setFooter({ text: `MyAnimeList`, iconURL: Constants.MAL_LOGO });
+};
+
+export const MAL_UserEmbed = (userData: IUser, author: User): EmbedBuilder => {
+  let table: string = '';
+
+  if (userData.anime_statistics) {
+    let convertedAllStat: Array<any> = [];
+    let columnConfigs: Array<any> = [];
+    columnConfigs = [{ alignment: 'left' }, { alignment: 'right' }];
+    convertedAllStat = Object.entries(userData.anime_statistics).map(([key, value]) => [
+      key.replace('num_', ''),
+      value,
+    ]);
+    table = `\`${tableConverter(convertedAllStat, columnConfigs, false)}\``;
+  }
+
+  userData = replaceEmpties(userData, 'N/A');
+
+  return (
+    new EmbedBuilder()
+      .setColor(0x0099ff)
+      .setTitle(`[${userData.id}] ${userData.name}`)
+      .setURL(`https://myanimelist.net/profile/${userData.name}`)
+      .setAuthor({
+        name: `${author.username}#${author.discriminator}`,
+        iconURL: author.displayAvatarURL(),
+      })
+      .setDescription(userData.gender ?? 'Gender unknown')
+      .addFields(
+        { name: 'Birthday', value: userData.birthday!, inline: true },
+        { name: 'Location', value: userData.location!, inline: true },
+        { name: 'Time zone', value: userData.time_zone!, inline: true },
+        {
+          name: 'Joined at',
+          value: `${datetimeConverter(userData.joined_at!).date} (${timeDiff(userData.joined_at!)})`,
+          inline: true,
+        },
+        { name: 'Anime statistics', value: table },
+      )
+      .setThumbnail(userData.picture)
+      // .setImage(userData.picture)
+      .setTimestamp()
+      .setFooter({ text: `MyAnimeList`, iconURL: Constants.MAL_LOGO })
+  );
 };

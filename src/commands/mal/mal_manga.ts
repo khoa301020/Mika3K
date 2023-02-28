@@ -285,7 +285,7 @@ export class MAL_Manga {
   @ButtonComponent({ id: 'mangaStatistics' })
   async statisticsBtnComponent(interaction: ButtonInteraction): Promise<void> {
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
-    interaction.deferReply({ ephemeral: isEphemeral });
+    await interaction.deferReply({ ephemeral: isEphemeral });
     const mal_id = interaction.message.embeds[0].data.title?.match(Constants.REGEX_GET_ID)![1];
 
     try {

@@ -1,6 +1,7 @@
 import { Get, Router } from '@discordx/koa';
 import { Guild, GuildMember } from 'discord.js';
 import type { Context } from 'koa';
+import { datetimeConverter, expireDate } from '../helpers/helper.js';
 import { bot } from '../main.js';
 import { authApi } from '../services/mal.js';
 
@@ -33,11 +34,17 @@ export class MAL_API {
 
     const resToken = await authApi.getToken(data);
 
-    const userAuth = await authApi.saveToken(user!, resToken.data.access_token, resToken.data.refresh_token);
+    const access_token = resToken.data.access_token;
+    const refresh_token = resToken.data.refresh_token;
+    const expires_date = expireDate(resToken.data.expires_in);
+
+    const userAuth = await authApi.saveToken(user!, access_token, refresh_token, expires_date);
 
     if (!userAuth) return (context.body = 'Login failed, please close this tab and try again.');
 
-    user.send('MAL login successfully!');
+    user.send(
+      `MAL login successfully!\nYour login session will expire at **${datetimeConverter(expires_date).datetime}**.`,
+    );
 
     return (context.body = 'Login succeed, you can close this tab now.');
   }

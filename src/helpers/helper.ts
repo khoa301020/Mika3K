@@ -134,3 +134,6 @@ export const codeChallenge = randomBytes(32)
   .replace(/=/g, '')
   .replace(/\+/g, '-')
   .replace(/\//g, '_');
+
+export const expireDate = (expires_in_second: number): Date =>
+  new Date(new Date().getTime() + expires_in_second * 1000);

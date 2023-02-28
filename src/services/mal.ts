@@ -68,13 +68,13 @@ export const authApi = {
       url: `${Constants.MAL_AUTH_API}/token`,
     });
   },
-  saveToken: async (user: GuildMember, accessToken: string, refreshToken: string) => {
+  saveToken: async (user: GuildMember, accessToken: string, refreshToken: string, expiresDate: Date) => {
     const userId = user.user.id;
     const guildId = user.guild.id;
     return await MAL.findOneAndUpdate(
       { user: userId, guild: guildId },
-      { accessToken, refreshToken },
-      { new: true, upsert: true },
+      { accessToken, refreshToken, expiresAt: expiresDate },
+      { new: true },
     );
   },
 };

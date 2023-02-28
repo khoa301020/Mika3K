@@ -21,6 +21,11 @@ const MALSchema = new mongoose.Schema({
     type: String,
     require: false,
   },
+  expiresAt: {
+    type: Date,
+    reqire: false,
+    default: null,
+  },
   followingAnimes: {
     type: [String],
     require: false,

@@ -1,9 +1,6 @@
 import { Get, Router } from '@discordx/koa';
-import axios from 'axios';
 import { Guild, GuildMember } from 'discord.js';
 import type { Context } from 'koa';
-import qs from 'qs';
-import { Constants } from '../constants/constants.js';
 import { bot } from '../main.js';
 import { authApi } from '../services/mal.js';
 
@@ -31,14 +28,10 @@ export class MAL_API {
       grant_type: 'authorization_code',
       code: auth_code,
       code_verifier: pkce?.codeChallenge,
+      redirect_uri: process.env.MAL_CALLBACK_URL,
     };
 
-    const resToken = await axios({
-      method: 'POST',
-      headers: { 'content-type': 'application/x-www-form-urlencoded' },
-      data: qs.stringify(data),
-      url: `${Constants.MAL_AUTH_API}/token`,
-    });
+    const resToken = await authApi.getToken(data);
 
     const userAuth = await authApi.saveToken(user!, resToken.data.access_token, resToken.data.refresh_token);
 

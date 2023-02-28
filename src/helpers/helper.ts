@@ -81,7 +81,11 @@ export function splitToChunks<T>(array: T[], chunkSize: number): T[][] {
   return R;
 }
 
-export const tableConverter = (data: Array<any>, columnConfigs: Array<any>, isHorizontal: boolean = true): string => {
+export const tableConverter = (
+  data: Array<any>,
+  columnConfigs: Array<any> = [],
+  isHorizontal: boolean = true,
+): string => {
   const config = {
     border: {
       topBody: `─`,
@@ -125,10 +129,8 @@ export const sortArray = {
 export const createChart = (configs: any, width: number, height: number): string =>
   new QuickChart().setConfig(configs).setWidth(width).setHeight(height).getUrl();
 
-// Create the code challenge from the code verifier
-export const codeChallenge = () => {
-  // Generate a random string of the desired length
-  const codeChallenge = randomBytes(32).toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
-
-  return codeChallenge;
-};
+export const codeChallenge = randomBytes(32)
+  .toString('base64')
+  .replace(/=/g, '')
+  .replace(/\+/g, '-')
+  .replace(/\//g, '_');

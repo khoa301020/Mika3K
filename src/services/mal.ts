@@ -1,5 +1,6 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { GuildMember } from 'discord.js';
+import qs from 'qs';
 import { Constants } from '../constants/constants.js';
 import MAL from '../models/MAL.js';
 
@@ -58,6 +59,14 @@ export const authApi = {
     const userId = user.user.id;
     const guildId = user.guild.id;
     return await MAL.findOne({ user: userId, guild: guildId }).select('codeChallenge');
+  },
+  getToken: async (data: any): Promise<AxiosResponse> => {
+    return await axios({
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      data: qs.stringify(data),
+      url: `${Constants.MAL_AUTH_API}/token`,
+    });
   },
   saveToken: async (user: GuildMember, accessToken: string, refreshToken: string) => {
     const userId = user.user.id;

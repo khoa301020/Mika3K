@@ -19,7 +19,7 @@ export class MAL_Login {
   @Slash({ description: 'Login MAL', name: 'login' })
   async login(interaction: CommandInteraction): Promise<InteractionResponse<boolean>> {
     const user = interaction.guild?.members.cache.get(interaction.user.id);
-    const PKCE = codeChallenge();
+    const PKCE = codeChallenge;
     const clientId = process.env.MAL_CLIENT_ID;
     const state = `${interaction.guildId}_${interaction.user.id}`;
 
@@ -28,7 +28,7 @@ export class MAL_Login {
       response_type: 'code',
       state: state,
       code_challenge: PKCE,
-      // redirect_uri: process.env.MAL_CALLBACK_URL,
+      redirect_uri: process.env.MAL_CALLBACK_URL,
     };
 
     const authUrl = `${Constants.MAL_AUTH_API}/authorize?${qs.stringify(data)}`;

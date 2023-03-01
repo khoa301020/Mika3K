@@ -9,15 +9,17 @@ import {
   MessageActionRowComponentBuilder,
   TextChannel,
 } from 'discord.js';
-import { ArgsOf, ButtonComponent, Discord, On, Slash, SlashOption } from 'discordx';
+import { ArgsOf, ButtonComponent, Discord, On, Slash, SlashGroup, SlashOption } from 'discordx';
 import { Constants } from '../../constants/constants.js';
 import { NHentaiBookEmbed } from '../../providers/embeds/nhentaiEmbed.js';
 
 const regexNum = /^\d+$/;
 
+@SlashGroup({ description: 'nhentai-commands', name: 'nhentai' })
 @Discord()
 class GetNHentaiCode {
-  @Slash({ description: 'Check NHentai nuke code', name: 'check-nuke' })
+  @SlashGroup('nhentai')
+  @Slash({ description: 'Check NHentai nuke code', name: 'check' })
   async checkCode(
     @SlashOption({
       description: 'NHentai code',

@@ -1,12 +1,14 @@
 import axios from 'axios';
 import { CommandInteraction } from 'discord.js';
-import { Discord, SimpleCommand, SimpleCommandMessage, Slash } from 'discordx';
+import { Discord, SimpleCommand, SimpleCommandMessage, Slash, SlashGroup } from 'discordx';
 import { Constants } from '../../constants/constants.js';
 import { NHentaiBookEmbed } from '../../providers/embeds/nhentaiEmbed.js';
 
+@SlashGroup({ description: 'nhentai-commands', name: 'nhentai' })
 @Discord()
 class GetNHentaiRandom {
-  @Slash({ description: 'Get random NHentai nuke code', name: 'random-nuke' })
+  @SlashGroup('nhentai')
+  @Slash({ description: 'Get random NHentai nuke code', name: 'random' })
   async getRandomSlash(interaction: CommandInteraction): Promise<void> {
     axios
       .get(`${Constants.NHENTAI_API}/random`)

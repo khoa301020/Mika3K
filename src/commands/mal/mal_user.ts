@@ -10,7 +10,7 @@ import {
 import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
 import qs from 'qs';
 import { Constants } from '../../constants/constants.js';
-import { codeChallenge } from '../../helpers/helper.js';
+import { codeChallenge, createChart } from '../../helpers/helper.js';
 import { MAL_UserEmbed } from '../../providers/embeds/malEmbed.js';
 import { authApi, userApi } from '../../services/mal.js';
 import { IUser } from '../../types/mal.js';
@@ -70,7 +70,48 @@ export class MAL_User {
     const response = await userApi.getSelf(user.accessToken!);
     const userData: IUser = response.data;
 
-    const embed = MAL_UserEmbed(userData, interaction.user);
+    const chartConfigs = {
+      type: 'doughnut',
+      data: {
+        labels: ['Watching', 'Completed', 'On hold', 'Dropped', 'Plan to watch'],
+        datasets: [
+          {
+            data: [
+              userData.anime_statistics?.num_items_watching,
+              userData.anime_statistics?.num_items_completed,
+              userData.anime_statistics?.num_items_on_hold,
+              userData.anime_statistics?.num_items_dropped,
+              userData.anime_statistics?.num_items_plan_to_watch,
+            ],
+            total: userData.anime_statistics?.num_items,
+          },
+        ],
+      },
+      options: {
+        plugins: {
+          doughnutlabel: {
+            labels: [
+              { text: userData.anime_statistics?.num_items.toString(), font: { size: 20 } },
+              { text: 'Total animes' },
+            ],
+          },
+          datalabels: {
+            formatter: (value: string, context: any) => {
+              const p =
+                (context.chart.data.datasets[0].data[context.dataIndex] / context.chart.data.datasets[0].total!) * 100;
+              if (p < 5) return '';
+              return p + '%';
+            },
+          },
+        },
+      },
+    };
+
+    const chart = userData.anime_statistics?.num_items
+      ? createChart(chartConfigs, Constants.CHART_WIDTH, Constants.CHART_HEIGHT)
+      : undefined;
+
+    const embed = MAL_UserEmbed(userData, interaction.user, chart);
 
     return interaction.editReply({ embeds: [embed] });
   }

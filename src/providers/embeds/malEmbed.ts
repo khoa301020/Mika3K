@@ -379,46 +379,31 @@ export const MAL_MangaStatisticsEmbed = (mangaStatistics: any, author: User): Em
     .setFooter({ text: `MyAnimeList`, iconURL: Constants.MAL_LOGO });
 };
 
-export const MAL_UserEmbed = (userData: IUser, author: User): EmbedBuilder => {
-  let table: string = '';
-
-  if (userData.anime_statistics) {
-    let convertedAllStat: Array<any> = [];
-    let columnConfigs: Array<any> = [];
-    columnConfigs = [{ alignment: 'left' }, { alignment: 'right' }];
-    convertedAllStat = Object.entries(userData.anime_statistics).map(([key, value]) => [
-      key.replace('num_', ''),
-      value,
-    ]);
-    table = `\`${tableConverter(convertedAllStat, columnConfigs, false)}\``;
-  }
-
+export const MAL_UserEmbed = (userData: IUser, author: User, chart?: string): EmbedBuilder => {
   userData = replaceEmpties(userData, 'N/A');
 
-  return (
-    new EmbedBuilder()
-      .setColor(0x0099ff)
-      .setTitle(`[${userData.id}] ${userData.name}`)
-      .setURL(`https://myanimelist.net/profile/${userData.name}`)
-      .setAuthor({
-        name: `${author.username}#${author.discriminator}`,
-        iconURL: author.displayAvatarURL(),
-      })
-      .setDescription(userData.gender ?? 'Gender unknown')
-      .addFields(
-        { name: 'Birthday', value: userData.birthday!, inline: true },
-        { name: 'Location', value: userData.location!, inline: true },
-        { name: 'Time zone', value: userData.time_zone!, inline: true },
-        {
-          name: 'Joined at',
-          value: `${datetimeConverter(userData.joined_at!).date} (${timeDiff(userData.joined_at!)})`,
-          inline: true,
-        },
-        { name: 'Anime statistics', value: table },
-      )
-      .setThumbnail(userData.picture)
-      // .setImage(userData.picture)
-      .setTimestamp()
-      .setFooter({ text: `MyAnimeList`, iconURL: Constants.MAL_LOGO })
-  );
+  return new EmbedBuilder()
+    .setColor(0x0099ff)
+    .setTitle(`[${userData.id}] ${userData.name}`)
+    .setURL(`https://myanimelist.net/profile/${userData.name}`)
+    .setAuthor({
+      name: `${author.username}#${author.discriminator}`,
+      iconURL: author.displayAvatarURL(),
+    })
+    .setDescription(userData.gender ?? 'Gender unknown')
+    .addFields(
+      // { name: 'Birthday', value: userData.birthday!, inline: true },
+      { name: 'Location', value: userData.location!, inline: true },
+      { name: 'Time zone', value: userData.time_zone!, inline: true },
+      {
+        name: 'Joined at',
+        value: `${datetimeConverter(userData.joined_at!).date} (${timeDiff(userData.joined_at!)})`,
+        inline: true,
+      },
+      // { name: 'Anime statistics', value: table },
+    )
+    .setThumbnail(userData.picture)
+    .setImage(chart ?? null)
+    .setTimestamp()
+    .setFooter({ text: `MyAnimeList`, iconURL: Constants.MAL_LOGO });
 };

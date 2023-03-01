@@ -13,8 +13,6 @@ import { ArgsOf, ButtonComponent, Discord, On, Slash, SlashGroup, SlashOption } 
 import { Constants } from '../../constants/constants.js';
 import { NHentaiBookEmbed } from '../../providers/embeds/nhentaiEmbed.js';
 
-const regexNum = /^\d+$/;
-
 @SlashGroup({ description: 'nhentai-commands', name: 'nhentai' })
 @Discord()
 class GetNHentaiCode {
@@ -45,7 +43,7 @@ class GetNHentaiCode {
 
   @On({ event: 'messageCreate' })
   async onMessage([message]: ArgsOf<'messageCreate'>) {
-    if (message.author.bot || !regexNum.test(message.content)) return false;
+    if (message.author.bot || !Constants.REGEX_NUM.test(message.content)) return false;
     if (parseInt(message.content) < 0 || parseInt(message.content) > 999999) return false;
     const confirmBtn = new ButtonBuilder().setLabel('	|_・)').setStyle(ButtonStyle.Primary).setCustomId('get-nuke');
 

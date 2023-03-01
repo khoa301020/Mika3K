@@ -6,7 +6,7 @@ import {
   CommandInteraction,
   MessageActionRowComponentBuilder,
 } from 'discord.js';
-import { ButtonComponent, Discord, SimpleCommand, SimpleCommandMessage, Slash } from 'discordx';
+import { ButtonComponent, Discord, SimpleCommand, SimpleCommandMessage, Slash, SlashGroup } from 'discordx';
 import { randomArray } from '../../helpers/helper.js';
 
 const truthTable = {
@@ -28,7 +28,7 @@ const playRow = new ActionRowBuilder<MessageActionRowComponentBuilder>()
   .addComponents(paperBtn);
 
 const finishRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(restartBtn);
-
+@SlashGroup({ description: 'minigames', name: 'minigame' })
 @Discord()
 class JanKenPon {
   @SimpleCommand({ aliases: ['jankenpon', 'jkp'], description: 'Play Jankenpon' })
@@ -47,6 +47,7 @@ class JanKenPon {
     });
   }
 
+  @SlashGroup('minigame')
   @Slash({ description: 'Rock, Scissor, Paper!', name: 'jankenpon' })
   async jankenponSlash(interaction: CommandInteraction): Promise<void> {
     interaction.reply({ content: 'Rock, Scissor, Paper!', components: [playRow] }).then((_) => {

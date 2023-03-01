@@ -392,7 +392,6 @@ export const MAL_UserEmbed = (userData: IUser, author: User, chart?: string): Em
     })
     .setDescription(userData.gender ?? 'Gender unknown')
     .addFields(
-      // { name: 'Birthday', value: userData.birthday!, inline: true },
       { name: 'Location', value: userData.location!, inline: true },
       { name: 'Time zone', value: userData.time_zone!, inline: true },
       {
@@ -400,9 +399,8 @@ export const MAL_UserEmbed = (userData: IUser, author: User, chart?: string): Em
         value: `${datetimeConverter(userData.joined_at!).date} (${timeDiff(userData.joined_at!)})`,
         inline: true,
       },
-      // { name: 'Anime statistics', value: table },
     )
-    .setThumbnail(userData.picture)
+    .setThumbnail(userData.picture ?? null)
     .setImage(chart ?? null)
     .setTimestamp()
     .setFooter({ text: `MyAnimeList`, iconURL: Constants.MAL_LOGO });

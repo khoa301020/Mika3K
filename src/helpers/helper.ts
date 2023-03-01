@@ -63,7 +63,7 @@ export const replaceEmpties = (obj: Object, replace: String, field?: keyof Objec
       if (Array.isArray(value) && value.every((v) => v === undefined || v === null)) {
         return [key, replace];
       }
-      if (value === undefined || value === null) {
+      if (value === undefined || value === null || value === '') {
         return [key, replace];
       }
       if (Array.isArray(value) && field && useHyperlink)

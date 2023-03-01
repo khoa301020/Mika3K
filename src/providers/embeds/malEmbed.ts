@@ -390,7 +390,7 @@ export const MAL_UserEmbed = (userData: IUser, author: User, chart?: string): Em
       name: `${author.username}#${author.discriminator}`,
       iconURL: author.displayAvatarURL(),
     })
-    .setDescription(userData.gender ?? 'Gender unknown')
+    .setDescription(`Gender: ${userData.gender ? Constants.GENDER_MAP[userData.gender as keyof Object] : 'unknown'}`)
     .addFields(
       { name: 'Location', value: userData.location!, inline: true },
       { name: 'Time zone', value: userData.time_zone!, inline: true },

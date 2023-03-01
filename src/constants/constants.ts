@@ -7,6 +7,10 @@ export class Constants {
   public static readonly CHART_WIDTH = 800;
   public static readonly CHART_HEIGHT = 400;
   public static readonly QUOTES_PER_PAGE = 10;
+  public static readonly GENDER_MAP = {
+    male: 'Male ♂',
+    female: 'Female ♀',
+  };
 
   /* NHentai constants */
   public static readonly NHENTAI_API = 'https://janda.mod.land/nhentai';

@@ -100,7 +100,7 @@ export class MAL_User {
               const p =
                 (context.chart.data.datasets[0].data[context.dataIndex] / context.chart.data.datasets[0].total!) * 100;
               if (p < 5) return '';
-              return p + '%';
+              return p.toFixed(2) + '%';
             },
           },
         },

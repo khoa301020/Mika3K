@@ -12,9 +12,9 @@ export const SauceNAOResultEmbed = (
   return new EmbedBuilder()
     .setColor(0x0099ff)
     .setTitle(
-      `[${Constants.SAUCENAO_SOURCES[result.header?.index_id!.toString() as keyof Object]}] ${result.data?.title} \`${
-        result.header?.similarity
-      }%\``,
+      `[${Constants.SAUCENAO_SOURCES[result.header?.index_id!.toString() as keyof Object]}] ${
+        result.data?.title ?? ''
+      } \`${result.header?.similarity}%\``,
     )
     .setURL(result.header?.thumbnail ?? null)
     .setAuthor({

@@ -10,7 +10,7 @@ import {
   TextChannel,
 } from 'discord.js';
 import { ArgsOf, ButtonComponent, Discord, On, Slash, SlashGroup, SlashOption } from 'discordx';
-import { Constants } from '../../constants/constants.js';
+import { CommonConstants, NHentaiConstants } from '../../constants/index.js';
 import { NHentaiBookEmbed } from '../../providers/embeds/nhentaiEmbed.js';
 
 @SlashGroup({ description: 'nhentai-commands', name: 'nhentai' })
@@ -29,7 +29,7 @@ class GetNHentaiCode {
     interaction: CommandInteraction,
   ): Promise<void> {
     axios
-      .get(`${Constants.NHENTAI_API}/get?book=${code}`)
+      .get(`${NHentaiConstants.NHENTAI_API}/get?book=${code}`)
       .then((res) => {
         const embed = NHentaiBookEmbed(res, interaction.user);
 
@@ -43,7 +43,7 @@ class GetNHentaiCode {
 
   @On({ event: 'messageCreate' })
   async onMessage([message]: ArgsOf<'messageCreate'>) {
-    if (message.author.bot || !Constants.REGEX_NUM.test(message.content)) return false;
+    if (message.author.bot || !CommonConstants.REGEX_NUM.test(message.content)) return false;
     if (parseInt(message.content) < 0 || parseInt(message.content) > 999999) return false;
     const confirmBtn = new ButtonBuilder().setLabel('	|_・)').setStyle(ButtonStyle.Primary).setCustomId('get-nuke');
 
@@ -60,7 +60,7 @@ class GetNHentaiCode {
     const message = await (interaction.channel as TextChannel)?.messages.fetch(codeMessageId)!;
 
     axios
-      .get(`${Constants.NHENTAI_API}/get?book=${message.content}`)
+      .get(`${NHentaiConstants.NHENTAI_API}/get?book=${message.content}`)
       .then((res) => {
         const embed = NHentaiBookEmbed(res, message.author);
         interaction.reply({ embeds: [embed], ephemeral: true });

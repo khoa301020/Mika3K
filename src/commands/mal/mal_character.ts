@@ -1,7 +1,7 @@
 import type { CommandInteraction } from 'discord.js';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
-import { Constants } from '../../constants/constants.js';
+import { MALConstants } from '../../constants/mal.js';
 import { MAL_CharacterEmbed } from '../../providers/embeds/malEmbed.js';
 import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../../providers/paginations/malPagination.js';
 import { characterApi } from '../../services/mal.js';
@@ -37,7 +37,7 @@ export class MAL_Character {
       type: ApplicationCommandOptionType.String,
     })
     q: String,
-    @SlashChoice(...Constants.CHARACTER_QUERY_ORDER_BY)
+    @SlashChoice(...MALConstants.CHARACTER_QUERY_ORDER_BY)
     @SlashOption({
       description: 'Select order-by',
       name: 'order_by',
@@ -45,7 +45,7 @@ export class MAL_Character {
       type: ApplicationCommandOptionType.String,
     })
     order_by: String,
-    @SlashChoice(...Constants.SORT)
+    @SlashChoice(...MALConstants.SORT)
     @SlashOption({
       description: 'Select sort',
       name: 'sort',

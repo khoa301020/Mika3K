@@ -1,7 +1,7 @@
 import type { AxiosResponse } from 'axios';
 import type { User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
-import { Constants } from '../../constants/constants.js';
+import { NHentaiConstants } from '../../constants/index.js';
 
 export const NHentaiBookEmbed = (res: AxiosResponse, author: User): EmbedBuilder => {
   const book = res.data.data;
@@ -15,7 +15,7 @@ export const NHentaiBookEmbed = (res: AxiosResponse, author: User): EmbedBuilder
       iconURL: author.displayAvatarURL(),
     })
     .setDescription(book.optional_title ? book.optional_title.english : 'No optional names.')
-    .setThumbnail(Constants.NHENTAI_LOGO)
+    .setThumbnail(NHentaiConstants.NHENTAI_LOGO)
     .addFields(
       { name: 'Parodies', value: book.parodies.length > 0 ? book.parodies.join('\n') : 'original' },
       { name: 'Characters', value: book.characters.length > 0 ? book.characters.join(', ') : 'original' },
@@ -28,5 +28,5 @@ export const NHentaiBookEmbed = (res: AxiosResponse, author: User): EmbedBuilder
     .setImage(book.image[0])
     .setTimestamp()
     .addFields({ name: 'Upload date', value: book.upload_date })
-    .setFooter({ text: 'NHentai', iconURL: Constants.NHENTAI_LOGO });
+    .setFooter({ text: 'NHentai', iconURL: NHentaiConstants.NHENTAI_LOGO });
 };

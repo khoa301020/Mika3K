@@ -1,6 +1,6 @@
 import type { User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
-import { Constants } from '../../constants/constants.js';
+import { SauceNAOConstants } from '../../constants/index.js';
 import { convertedFields } from '../../services/saucenao.js';
 import { ISaucenaoSearchResponseResult } from '../../types/saucenao.js';
 export const SauceNAOResultEmbed = (
@@ -12,7 +12,7 @@ export const SauceNAOResultEmbed = (
   return new EmbedBuilder()
     .setColor(0x0099ff)
     .setTitle(
-      `[${Constants.SAUCENAO_SOURCES[result.header?.index_id!.toString() as keyof Object]}] ${
+      `[${SauceNAOConstants.SAUCENAO_SOURCES[result.header?.index_id!.toString() as keyof Object]}] ${
         result.data?.title ?? ''
       } \`${result.header?.similarity}%\``,
     )
@@ -23,8 +23,8 @@ export const SauceNAOResultEmbed = (
     })
     .setDescription(`${result.header?.index_name}`)
     .addFields(convertedFields(result.data))
-    .setThumbnail(Constants.SAUCENAO_LOGO)
+    .setThumbnail(SauceNAOConstants.SAUCENAO_LOGO)
     .setImage(result.header?.thumbnail ?? null)
     .setTimestamp()
-    .setFooter({ text: `SauceNAO (${page}/${total})`, iconURL: Constants.SAUCENAO_LOGO });
+    .setFooter({ text: `SauceNAO (${page}/${total})`, iconURL: SauceNAOConstants.SAUCENAO_LOGO });
 };

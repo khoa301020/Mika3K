@@ -9,7 +9,7 @@ import {
   MessageFlags,
 } from 'discord.js';
 import { ButtonComponent, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
-import { Constants } from '../../constants/constants.js';
+import { MALConstants } from '../../constants/index.js';
 import { createChart, sortArray, splitToChunks } from '../../helpers/helper.js';
 import {
   MAL_GenresEmbed,
@@ -63,7 +63,7 @@ export class MAL_Manga {
       type: ApplicationCommandOptionType.String,
     })
     q: String,
-    @SlashChoice(...Constants.MANGA_QUERY_TYPE)
+    @SlashChoice(...MALConstants.MANGA_QUERY_TYPE)
     @SlashOption({
       description: 'Select type',
       name: 'type',
@@ -71,7 +71,7 @@ export class MAL_Manga {
       type: ApplicationCommandOptionType.String,
     })
     type: String,
-    @SlashChoice(...Constants.MANGA_QUERY_STATUS)
+    @SlashChoice(...MALConstants.MANGA_QUERY_STATUS)
     @SlashOption({
       description: 'Select status',
       name: 'status',
@@ -79,7 +79,7 @@ export class MAL_Manga {
       type: ApplicationCommandOptionType.String,
     })
     status: String,
-    @SlashChoice(...Constants.MANGA_QUERY_ORDER_BY)
+    @SlashChoice(...MALConstants.MANGA_QUERY_ORDER_BY)
     @SlashOption({
       description: 'Select order-by',
       name: 'order_by',
@@ -87,7 +87,7 @@ export class MAL_Manga {
       type: ApplicationCommandOptionType.String,
     })
     order_by: String,
-    @SlashChoice(...Constants.SORT)
+    @SlashChoice(...MALConstants.SORT)
     @SlashOption({
       description: 'Select sort',
       name: 'sort',
@@ -211,7 +211,7 @@ export class MAL_Manga {
       type: ApplicationCommandOptionType.Boolean,
     })
     display: Boolean,
-    @SlashChoice(...Constants.JIKAN_GENRES_FILTER)
+    @SlashChoice(...MALConstants.JIKAN_GENRES_FILTER)
     @SlashOption({
       description: 'Select filter',
       name: 'filter',
@@ -232,7 +232,7 @@ export class MAL_Manga {
 
       const genres: Array<IGenre> = sortArray.desc(res.data.data, 'count');
 
-      let genreChunks = splitToChunks(genres, Constants.QUOTES_PER_PAGE);
+      let genreChunks = splitToChunks(genres, MALConstants.GENRES_PER_PAGE);
 
       const pages = genreChunks.map((genres: Array<IGenre>, index: number) => {
         const embed = MAL_GenresEmbed(genres, interaction.user, index + 1, genreChunks.length);
@@ -251,7 +251,7 @@ export class MAL_Manga {
 
   @ButtonComponent({ id: 'mangaCharacters' })
   async charactersBtnComponent(interaction: ButtonInteraction): Promise<void> {
-    const mal_id = interaction.message.embeds[0].data.title?.match(Constants.REGEX_GET_ID)![1];
+    const mal_id = interaction.message.embeds[0].data.title?.match(MALConstants.REGEX_GET_ID)![1];
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
 
     try {
@@ -286,7 +286,7 @@ export class MAL_Manga {
   async statisticsBtnComponent(interaction: ButtonInteraction): Promise<void> {
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
     await interaction.deferReply({ ephemeral: isEphemeral });
-    const mal_id = interaction.message.embeds[0].data.title?.match(Constants.REGEX_GET_ID)![1];
+    const mal_id = interaction.message.embeds[0].data.title?.match(MALConstants.REGEX_GET_ID)![1];
 
     try {
       const res = await mangaApi.statistics(mal_id!);

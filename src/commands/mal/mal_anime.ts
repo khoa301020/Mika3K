@@ -9,7 +9,7 @@ import {
   MessageFlags,
 } from 'discord.js';
 import { ButtonComponent, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
-import { Constants } from '../../constants/constants.js';
+import { CommonConstants, MALConstants } from '../../constants/index.js';
 import { createChart, sortArray, splitToChunks } from '../../helpers/helper.js';
 import {
   MAL_AnimeCharacterEmbed,
@@ -105,7 +105,7 @@ export class MAL_Anime {
       type: ApplicationCommandOptionType.String,
     })
     q: String,
-    @SlashChoice(...Constants.ANIME_QUERY_TYPE)
+    @SlashChoice(...MALConstants.ANIME_QUERY_TYPE)
     @SlashOption({
       description: 'Select type',
       name: 'type',
@@ -113,7 +113,7 @@ export class MAL_Anime {
       type: ApplicationCommandOptionType.String,
     })
     type: String,
-    @SlashChoice(...Constants.ANIME_QUERY_STATUS)
+    @SlashChoice(...MALConstants.ANIME_QUERY_STATUS)
     @SlashOption({
       description: 'Select status',
       name: 'status',
@@ -121,7 +121,7 @@ export class MAL_Anime {
       type: ApplicationCommandOptionType.String,
     })
     status: String,
-    @SlashChoice(...Constants.ANIME_QUERY_RATING)
+    @SlashChoice(...MALConstants.ANIME_QUERY_RATING)
     @SlashOption({
       description: 'Select rating',
       name: 'rating',
@@ -129,7 +129,7 @@ export class MAL_Anime {
       type: ApplicationCommandOptionType.String,
     })
     rating: String,
-    @SlashChoice(...Constants.ANIME_QUERY_ORDER_BY)
+    @SlashChoice(...MALConstants.ANIME_QUERY_ORDER_BY)
     @SlashOption({
       description: 'Select order-by',
       name: 'order_by',
@@ -137,7 +137,7 @@ export class MAL_Anime {
       type: ApplicationCommandOptionType.String,
     })
     order_by: String,
-    @SlashChoice(...Constants.SORT)
+    @SlashChoice(...MALConstants.SORT)
     @SlashOption({
       description: 'Select sort',
       name: 'sort',
@@ -266,7 +266,7 @@ export class MAL_Anime {
       type: ApplicationCommandOptionType.Boolean,
     })
     display: Boolean,
-    @SlashChoice(...Constants.JIKAN_GENRES_FILTER)
+    @SlashChoice(...MALConstants.JIKAN_GENRES_FILTER)
     @SlashOption({
       description: 'Select filter',
       name: 'filter',
@@ -287,7 +287,7 @@ export class MAL_Anime {
 
       const genres: Array<IGenre> = sortArray.desc(res.data.data, 'count');
 
-      let genreChunks = splitToChunks(genres, Constants.QUOTES_PER_PAGE);
+      let genreChunks = splitToChunks(genres, MALConstants.GENRES_PER_PAGE);
 
       const pages = genreChunks.map((genres: Array<IGenre>, index: number) => {
         const embed = MAL_GenresEmbed(genres, interaction.user, index + 1, genreChunks.length);
@@ -306,7 +306,7 @@ export class MAL_Anime {
 
   @ButtonComponent({ id: 'animeCharacters' })
   async charactersBtnComponent(interaction: ButtonInteraction): Promise<void> {
-    const mal_id = interaction.message.embeds[0].data.title?.match(Constants.REGEX_GET_ID)![1];
+    const mal_id = interaction.message.embeds[0].data.title?.match(MALConstants.REGEX_GET_ID)![1];
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
 
     try {
@@ -341,7 +341,7 @@ export class MAL_Anime {
   async episodesBtnComponent(interaction: ButtonInteraction): Promise<void> {
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
     await interaction.deferReply({ ephemeral: isEphemeral });
-    const mal_id = interaction.message.embeds[0].data.title?.match(Constants.REGEX_GET_ID)![1];
+    const mal_id = interaction.message.embeds[0].data.title?.match(MALConstants.REGEX_GET_ID)![1];
 
     try {
       const episodes: Array<IAnimeEpisode> = await animeApi.episodes(mal_id!);
@@ -351,7 +351,7 @@ export class MAL_Anime {
       }
 
       let titles: Array<string> = [];
-      let episodeChunks: Array<Array<IAnimeEpisode>> = splitToChunks(episodes, Constants.EPISODES_PER_PAGE);
+      let episodeChunks: Array<Array<IAnimeEpisode>> = splitToChunks(episodes, MALConstants.EPISODES_PER_PAGE);
 
       const pages = episodeChunks.map((episodes: Array<IAnimeEpisode>, index: number) => {
         titles.push(`Page ${index + 1}`);
@@ -373,7 +373,7 @@ export class MAL_Anime {
 
   @ButtonComponent({ id: 'animeThemes' })
   async themesBtnComponent(interaction: ButtonInteraction): Promise<void> {
-    const mal_id = interaction.message.embeds[0].data.title?.match(Constants.REGEX_GET_ID)![1];
+    const mal_id = interaction.message.embeds[0].data.title?.match(MALConstants.REGEX_GET_ID)![1];
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
 
     try {
@@ -396,7 +396,7 @@ export class MAL_Anime {
 
   @ButtonComponent({ id: 'animeStaff' })
   async staffBtnComponent(interaction: ButtonInteraction): Promise<void> {
-    const mal_id = interaction.message.embeds[0].data.title?.match(Constants.REGEX_GET_ID)![1];
+    const mal_id = interaction.message.embeds[0].data.title?.match(MALConstants.REGEX_GET_ID)![1];
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
 
     try {
@@ -430,7 +430,7 @@ export class MAL_Anime {
   async statisticsBtnComponent(interaction: ButtonInteraction): Promise<void> {
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
     await interaction.deferReply({ ephemeral: isEphemeral });
-    const mal_id = interaction.message.embeds[0].data.title?.match(Constants.REGEX_GET_ID)![1];
+    const mal_id = interaction.message.embeds[0].data.title?.match(MALConstants.REGEX_GET_ID)![1];
 
     try {
       const res = await animeApi.statistics(mal_id!);
@@ -472,7 +472,7 @@ export class MAL_Anime {
         },
       };
 
-      const chart = createChart(chartConfigs, Constants.CHART_WIDTH, Constants.CHART_HEIGHT);
+      const chart = createChart(chartConfigs, CommonConstants.CHART_WIDTH, CommonConstants.CHART_HEIGHT);
 
       const statistics = {
         overAllStat,

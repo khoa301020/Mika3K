@@ -16,7 +16,7 @@ import {
   SlashGroup,
   SlashOption,
 } from 'discordx';
-import { Constants } from '../../constants/constants.js';
+import { CommonConstants } from '../../constants/index.js';
 import { randomArray, splitToChunks } from '../../helpers/helper.js';
 import { ListQuoteEmbed } from '../../providers/embeds/commonEmbed.js';
 import { QuoteCommandPagination, QuoteSlashPagination } from '../../providers/paginations/quotePagination.js';
@@ -101,7 +101,7 @@ class QuoteCommand {
 
     if (quotes.length === 0) return command.message.reply('❌ No quote found.');
 
-    let splitedQuotes = splitToChunks(quotes, Constants.QUOTES_PER_PAGE);
+    let splitedQuotes = splitToChunks(quotes, CommonConstants.QUOTES_PER_PAGE);
 
     const pages = splitedQuotes.map((chunk: IUserQuote[], index: number) => {
       const embed = ListQuoteEmbed(
@@ -126,7 +126,7 @@ class QuoteCommand {
 
     if (quotes.length === 0) return command.message.reply('❌ No quote found.');
 
-    let splitedQuotes = splitToChunks(quotes, Constants.QUOTES_PER_PAGE);
+    let splitedQuotes = splitToChunks(quotes, CommonConstants.QUOTES_PER_PAGE);
 
     const pages = splitedQuotes.map((chunk: IUserQuote[], index: number) => {
       const embed = ListQuoteEmbed(
@@ -299,7 +299,7 @@ class QuoteSlash {
 
     if (quotes.length === 0) return interaction.reply('❌ No quote found.');
 
-    let splitedQuotes = splitToChunks(quotes, Constants.QUOTES_PER_PAGE);
+    let splitedQuotes = splitToChunks(quotes, CommonConstants.QUOTES_PER_PAGE);
 
     const pages = splitedQuotes.map((chunk: IUserQuote[], index: number) => {
       const embed = ListQuoteEmbed(
@@ -326,7 +326,7 @@ class QuoteSlash {
 
     if (quotes.length === 0) return interaction.reply('❌ No quote found.');
 
-    let splitedQuotes = splitToChunks(quotes, Constants.QUOTES_PER_PAGE);
+    let splitedQuotes = splitToChunks(quotes, CommonConstants.QUOTES_PER_PAGE);
 
     const pages = splitedQuotes.map((chunk: Array<IUserQuote>, index: number) => {
       const embed = ListQuoteEmbed(

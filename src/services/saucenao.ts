@@ -1,10 +1,10 @@
 import axios, { AxiosResponse } from 'axios';
 import qs from 'qs';
-import { Constants } from '../constants/constants.js';
+import { SauceNAOConstants } from '../constants/index.js';
 import { ISaucenaoSearchRequest } from '../types/saucenao.js';
 
 export async function saucenao(params: ISaucenaoSearchRequest): Promise<AxiosResponse> {
-  return await axios.get(`${Constants.SAUCENAO_API}?${qs.stringify(params)}`);
+  return await axios.get(`${SauceNAOConstants.SAUCENAO_API}?${qs.stringify(params)}`);
 }
 
 export const convertedFields = (data: any) =>
@@ -18,7 +18,7 @@ export const convertedFields = (data: any) =>
     if (Array.isArray(value) && key === 'ext_urls' && value.length > 0)
       return {
         name: key,
-        value: value.map((e: any) => `- [${Constants.REGEX_DOMAIN_NAME_ONLY.exec(e)![1]}](${e})`).join('\n- '),
+        value: value.map((e: any) => `- [${SauceNAOConstants.REGEX_DOMAIN_NAME_ONLY.exec(e)![1]}](${e})`).join('\n- '),
       };
 
     return { name: key, value: value.toString() };

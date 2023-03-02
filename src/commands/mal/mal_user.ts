@@ -9,7 +9,7 @@ import {
 } from 'discord.js';
 import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
 import qs from 'qs';
-import { Constants } from '../../constants/constants.js';
+import { CommonConstants, MALConstants } from '../../constants/index.js';
 import { codeChallenge, createChart } from '../../helpers/helper.js';
 import { MAL_UserEmbed } from '../../providers/embeds/malEmbed.js';
 import { authApi, userApi } from '../../services/mal.js';
@@ -34,7 +34,7 @@ export class MAL_User {
       redirect_uri: process.env.MAL_CALLBACK_URL,
     };
 
-    const authUrl = `${Constants.MAL_AUTH_API}/authorize?${qs.stringify(data)}`;
+    const authUrl = `${MALConstants.MAL_AUTH_API}/authorize?${qs.stringify(data)}`;
 
     const authBtn = new ButtonBuilder().setLabel('Authorization URL').setStyle(ButtonStyle.Link).setURL(authUrl);
 
@@ -108,7 +108,7 @@ export class MAL_User {
     };
 
     const chart = userData.anime_statistics?.num_items
-      ? createChart(chartConfigs, Constants.CHART_WIDTH, Constants.CHART_HEIGHT)
+      ? createChart(chartConfigs, CommonConstants.CHART_WIDTH, CommonConstants.CHART_HEIGHT)
       : undefined;
 
     const embed = MAL_UserEmbed(userData, interaction.user, chart);

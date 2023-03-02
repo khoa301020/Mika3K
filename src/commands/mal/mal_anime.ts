@@ -22,7 +22,15 @@ import {
 } from '../../providers/embeds/malEmbed.js';
 import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../../providers/paginations/malPagination.js';
 import { animeApi } from '../../services/mal.js';
-import type { IAnime, IAnimeStats, IGenre } from '../../types/mal';
+import type {
+  IAnime,
+  IAnimeCharacter,
+  IAnimeEpisode,
+  IAnimeStaff,
+  IAnimeStats,
+  IAnimeThemes,
+  IGenre,
+} from '../../types/mal';
 
 const animeCharactersBtn = (isDisable: boolean) =>
   new ButtonBuilder()
@@ -310,9 +318,9 @@ export class MAL_Anime {
 
       let names: string[] = [];
 
-      const pages = res.data.data.map((animeCharacter: any, index: number) => {
+      const pages = res.data.data.map((animeCharacter: IAnimeCharacter, index: number) => {
         names.push(animeCharacter.character.name);
-        animeCharacter.mal_id = mal_id;
+        animeCharacter.anime_mal_id = parseInt(mal_id!);
         const embed = MAL_AnimeCharacterEmbed(animeCharacter, interaction.user, index + 1, res.data.data.length);
 
         return {
@@ -336,16 +344,16 @@ export class MAL_Anime {
     const mal_id = interaction.message.embeds[0].data.title?.match(Constants.REGEX_GET_ID)![1];
 
     try {
-      const episodes: Array<any> = await animeApi.episodes(mal_id!);
+      const episodes: Array<IAnimeEpisode> = await animeApi.episodes(mal_id!);
       if (episodes.length === 0) {
         interaction.editReply({ content: 'No episode found.' });
         return;
       }
 
-      let titles: Array<any> = [];
-      let episodeChunks: Array<any> = splitToChunks(episodes, Constants.EPISODES_PER_PAGE);
+      let titles: Array<string> = [];
+      let episodeChunks: Array<Array<IAnimeEpisode>> = splitToChunks(episodes, Constants.EPISODES_PER_PAGE);
 
-      const pages = episodeChunks.map((episodes: any, index: number) => {
+      const pages = episodeChunks.map((episodes: Array<IAnimeEpisode>, index: number) => {
         titles.push(`Page ${index + 1}`);
         const embed = MAL_AnimeEpisodeEmbed(episodes, interaction.user, index + 1, episodeChunks.length);
 
@@ -370,12 +378,12 @@ export class MAL_Anime {
 
     try {
       const res = await animeApi.themes(mal_id!);
-      const themes: any = res.data.data;
+      const themes: IAnimeThemes = res.data.data;
       if (themes.openings.length === 0 && themes.endings.length === 0) {
         interaction.reply({ content: 'No theme found.', ephemeral: isEphemeral! });
         return;
       }
-      themes.mal_id = mal_id;
+      themes.anime_mal_id = parseInt(mal_id!);
 
       const embed = MAL_AnimeThemeEmbed(themes, interaction.user);
 
@@ -400,9 +408,8 @@ export class MAL_Anime {
 
       let names: string[] = [];
 
-      const pages = res.data.data.map((animeStaff: any, index: number) => {
+      const pages = res.data.data.map((animeStaff: IAnimeStaff, index: number) => {
         names.push(animeStaff.person.name);
-        animeStaff.mal_id = mal_id;
         const embed = MAL_AnimeStaffEmbed(animeStaff, interaction.user, index + 1, res.data.data.length);
 
         return {

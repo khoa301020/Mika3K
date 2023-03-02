@@ -1,5 +1,9 @@
 /* Typings for MAL Anime */
 
+export interface IPagination {
+  last_visible_page: number;
+  has_next_page: boolean;
+}
 export interface IAnime {
   mal_id: number;
   url: string;
@@ -126,86 +130,75 @@ export interface IAnimeFull extends IAnime {
   streaming: IAnimeExternal['data'];
 }
 export interface IAnimeCharacters {
-  data: {
-    character: {
-      mal_id: number;
-      url: string;
-      images: {
-        jpg: {
-          image_url: string;
-        };
-        webp: {
-          image_url: string;
-          small_image_url: string;
-        };
-      };
-      name: string;
-    };
-    role: string;
-    voice_actors: {
-      person: {
-        mal_id: number;
-        url: string;
-        images: {
-          jpg: {
-            image_url: string;
-          };
-        };
-        name: string;
-      };
-      language: string;
-    }[];
-  }[];
+  data: Array<IAnimeCharacter>;
 }
-export interface IAnimeStaff {
-  data: {
-    person: {
-      mal_id: number;
-      url: string;
-      images: {
-        jpg: {
-          image_url: string;
-        };
-      };
-      name: string;
-    };
-    positions: string[];
-  }[];
+export interface IAnimeCharacter {
+  anime_mal_id?: number;
+  character: IAnimeCharacterCharacter;
+  role: string;
+  favorites: number;
+  voice_actors: Array<IAnimeCharacterVoiceActor>;
 }
-export interface IAnimeEpisodes {
-  pagination: {
-    last_visible_page: number;
-    has_next_page: boolean;
+export interface IAnimeCharacterCharacter {
+  mal_id: number;
+  url: string;
+  images: {
+    jpg: {
+      image_url: string;
+    };
+    webp: {
+      image_url: string;
+      small_image_url: string;
+    };
   };
-  data: {
+  name: string;
+}
+export interface IAnimeCharacterVoiceActor {
+  person: {
     mal_id: number;
     url: string;
-    title: string;
-    title_japanese: string;
-    title_romanji: string;
-    aired: string;
-    filler: boolean;
-    recap: boolean;
-    forum_url: string;
-  }[];
+    images: {
+      jpg: {
+        image_url: string;
+      };
+    };
+    name: string;
+  };
+  language: string;
 }
-export interface IAnimeEpisodeById {
+export interface IAnimeStaffs {
+  data: Array<IAnimeStaff>;
+}
+export interface IAnimeStaff {
+  person: {
+    mal_id: number;
+    url: string;
+    images: {
+      jpg: {
+        image_url: string;
+      };
+    };
+    name: string;
+  };
+  positions: string[];
+}
+export interface IAnimeEpisodes {
+  pagination: IPagination;
+  data: Array<IAnimeEpisode>;
+}
+export interface IAnimeEpisode {
   mal_id: number;
   url: string;
   title: string;
   title_japanese: string;
   title_romanji: string;
-  duration: number;
-  aired: string;
+  score: number;
+  aired: Date | string;
   filler: boolean;
   recap: boolean;
-  synopsis: string;
 }
 export interface IAnimeNews {
-  pagination: {
-    last_visible_page: number;
-    has_next_page: boolean;
-  };
+  pagination: IPagination;
   data: {
     mal_id: number;
     url: string;
@@ -322,10 +315,7 @@ export interface IAnimeRecommendations {
   }[];
 }
 export interface IAnimeUserUpdates {
-  pagination: {
-    last_visible_page: number;
-    has_next_page: boolean;
-  };
+  pagination: IPagination;
   data: {
     user: {
       username: string;
@@ -347,10 +337,7 @@ export interface IAnimeUserUpdates {
   }[];
 }
 export interface IAnimeReviews {
-  pagination: {
-    last_visible_page: number;
-    has_next_page: boolean;
-  };
+  pagination: IPagination;
   data: {
     mal_id: number;
     url: string;
@@ -393,6 +380,7 @@ export interface IAnimeRelations {
   }[];
 }
 export interface IAnimeThemes {
+  anime_mal_id: number;
   openings: string[];
   endings: string[];
 }
@@ -403,17 +391,11 @@ export interface IAnimeExternal {
   }[];
 }
 export interface IAnimeSearch {
-  pagination: {
-    last_visible_page: number;
-    has_next_page: boolean;
-  };
+  pagination: IPagination;
   data: IAnime[];
 }
 export interface ITopAnime {
-  pagination: {
-    last_visible_page: number;
-    has_next_page: boolean;
-  };
+  pagination: IPagination;
   data: IAnime[];
 }
 
@@ -524,10 +506,7 @@ export interface IMangaCharacters {
   }[];
 }
 export interface IMangaNews {
-  pagination: {
-    last_visible_page: number;
-    has_next_page: boolean;
-  };
+  pagination: IPagination;
   data: {
     mal_id: number;
     url: string;
@@ -616,10 +595,7 @@ export interface IMangaRecommendations {
   }[];
 }
 export interface IMangaUserUpdates {
-  pagination: {
-    last_visible_page: number;
-    has_next_page: boolean;
-  };
+  pagination: IPagination;
   data: {
     user: {
       username: string;
@@ -643,10 +619,7 @@ export interface IMangaUserUpdates {
   }[];
 }
 export interface IMangaReviews {
-  pagination: {
-    last_visible_page: number;
-    has_next_page: boolean;
-  };
+  pagination: IPagination;
   data: {
     mal_id: number;
     url: string;
@@ -694,17 +667,11 @@ export interface IMangaExternals {
   }[];
 }
 export interface IMangaSearch {
-  pagination: {
-    last_visible_page: number;
-    has_next_page: boolean;
-  };
+  pagination: IPagination;
   data: IManga[];
 }
 export interface ITopManga {
-  pagination: {
-    last_visible_page: number;
-    has_next_page: boolean;
-  };
+  pagination: IPagination;
   data: IManga[];
 }
 
@@ -793,17 +760,11 @@ export interface ICharacterPictures {
   }[];
 }
 export interface ICharacterSearch {
-  pagination: {
-    last_visible_page: number;
-    has_next_page: boolean;
-  };
+  pagination: IPagination;
   data: ICharacter[];
 }
 export interface ITopCharacter {
-  pagination: {
-    last_visible_page: number;
-    has_next_page: boolean;
-  };
+  pagination: IPagination;
   data: ICharacter[];
 }
 
@@ -915,17 +876,11 @@ export interface IPeoplePictures {
   }[];
 }
 export interface IPeopleSearch {
-  pagination: {
-    last_visible_page: number;
-    has_next_page: boolean;
-  };
+  pagination: IPagination;
   data: IPeople[];
 }
 export interface ITopPeople {
-  pagination: {
-    last_visible_page: number;
-    has_next_page: boolean;
-  };
+  pagination: IPagination;
   data: IPeople[];
 }
 

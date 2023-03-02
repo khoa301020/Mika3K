@@ -2,12 +2,13 @@ import axios, { AxiosResponse } from 'axios';
 import qs from 'qs';
 import { Constants } from '../constants/constants.js';
 import MAL from '../models/MAL.js';
+import { IAnimeEpisode } from '../types/mal.js';
 
 export const animeApi = {
   search: (queryString: string) => axios.get(`${Constants.JIKAN_ANIME_SEARCH}?${queryString}`),
   genres: (queryString: string) => axios.get(`${Constants.JIKAN_GENRES_ANIME}?${queryString}`),
   characters: (id: string) => axios.get(`${Constants.ANIME_CHARACTERS(id)}`),
-  episodes: async (id: string): Promise<Array<any>> => {
+  episodes: async (id: string): Promise<Array<IAnimeEpisode>> => {
     let page: number = 1;
 
     const res = await axios.get(`${Constants.ANIME_EPISODES(id)}?$page=${page}`);

@@ -2,7 +2,7 @@ import type { APIEmbedField, User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { Constants } from '../../constants/constants.js';
 import { datetimeConverter, replaceEmpties, tableConverter, timeDiff } from '../../helpers/helper.js';
-import { IAnime, ICharacter, IGenre, IManga, IPeople, IUser } from '../../types/mal';
+import { IAnime, IAnimeCharacter, IAnimeEpisode, ICharacter, IGenre, IManga, IPeople, IUser } from '../../types/mal';
 
 export const MAL_AnimeEmbed = (resAnime: IAnime, author: User, page?: number, total?: number): EmbedBuilder => {
   const anime = replaceEmpties(resAnime, 'N/A', 'name' as keyof Object, true);
@@ -188,21 +188,19 @@ export const MAL_GenresEmbed = (genres: Array<IGenre>, author: User, page?: numb
 };
 
 export const MAL_AnimeEpisodeEmbed = (
-  animeEpisodes: Array<any>,
+  animeEpisodes: Array<IAnimeEpisode>,
   author: User,
   page?: number,
   total?: number,
 ): EmbedBuilder => {
-  let list = animeEpisodes.map((genre: any) =>
+  let list = animeEpisodes.map((episode: IAnimeEpisode) =>
     Object({
-      id: genre.mal_id,
-      title: genre.title,
-      score: genre.score,
-      aired: datetimeConverter(genre.aired).date,
+      id: episode.mal_id,
+      title: episode.title,
+      score: episode.score,
+      aired: datetimeConverter(episode.aired).date,
     }),
   );
-
-  console.log(list);
 
   const columnConfigs: Array<any> = [
     { alignment: 'center' },
@@ -234,7 +232,7 @@ export const MAL_AnimeEpisodeEmbed = (
 export const MAL_AnimeThemeEmbed = (animeTheme: any, author: User): EmbedBuilder => {
   return new EmbedBuilder()
     .setColor(0x0099ff)
-    .setTitle(`[${animeTheme.mal_id}] Anime themes`)
+    .setTitle(`[${animeTheme.anime_mal_id}] Anime themes`)
     .setAuthor({
       name: `${author.username}#${author.discriminator}`,
       iconURL: author.displayAvatarURL(),
@@ -302,14 +300,14 @@ export const MAL_AnimeStatisticsEmbed = (
 };
 
 export const MAL_AnimeCharacterEmbed = (
-  animeCharacter: any,
+  animeCharacter: IAnimeCharacter,
   author: User,
   page?: number,
   total?: number,
 ): EmbedBuilder => {
   const voiceActors: Array<any> = animeCharacter.voice_actors;
 
-  const voices: APIEmbedField = Object.assign(
+  const voices: Array<APIEmbedField> = Object.assign(
     voiceActors.map((voiceActor: any) =>
       Object({
         name: voiceActor.language,
@@ -328,7 +326,7 @@ export const MAL_AnimeCharacterEmbed = (
     })
     .setDescription(animeCharacter.role)
     .setThumbnail(Constants.MAL_LOGO)
-    .addFields(voices)
+    .addFields([{ name: 'Favorites', value: animeCharacter.favorites.toString() }, ...voices])
     .setImage(animeCharacter.character.images.jpg.image_url)
     .setTimestamp()
     .setFooter({

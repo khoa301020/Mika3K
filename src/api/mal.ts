@@ -8,7 +8,7 @@ import { authApi } from '../services/mal.js';
 @Router()
 export class MAL_API {
   @Get('/mal-callback')
-  async auth(context: Context): Promise<any> {
+  async auth(context: Context): Promise<string> {
     const auth_code = context.query.code as string;
     const state = context.query.state as string | undefined;
     const guildId = state!.split('_')[0].trim();

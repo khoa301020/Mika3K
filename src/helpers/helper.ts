@@ -14,7 +14,7 @@ export const randomArray = (array: Array<any>) => array[Math.floor(Math.random()
  * @param {Date} timestamp - Date - The timestamp you want to convert
  * @returns An object with three properties: date, time, and datetime.
  */
-export const datetimeConverter = (timestamp: Date) => {
+export const datetimeConverter = (timestamp: Date | string) => {
   const date = new Date(timestamp);
   const day = date.getDate();
   const month = date.getMonth() + 1;

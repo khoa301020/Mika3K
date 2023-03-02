@@ -10,7 +10,7 @@ import {
 import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
 import qs from 'qs';
 import { CommonConstants, MALConstants } from '../../constants/index.js';
-import { codeChallenge, createChart } from '../../helpers/helper.js';
+import { codeChallenge, createChart, datetimeConverter } from '../../helpers/helper.js';
 import { MAL_UserEmbed } from '../../providers/embeds/malEmbed.js';
 import { authApi, userApi } from '../../services/mal.js';
 import { IUser } from '../../types/mal.js';
@@ -44,7 +44,20 @@ export class MAL_User {
 
     return interaction.reply({ content: 'Please authorize:', components: [authRow], ephemeral: true });
   }
+  @SlashGroup('mal')
+  @Slash({ description: 'Refresh my access token', name: 'refresh-token' })
+  async refreshToken(interaction: CommandInteraction): Promise<any> {
+    await interaction.deferReply({ ephemeral: true });
+    const userId = interaction.user.id;
 
+    const expireDate = await authApi.refreshToken(userId!);
+
+    if (!expireDate) return interaction.editReply({ content: 'User invalid or your token is still valid.' });
+
+    return interaction.editReply({
+      content: `Token refreshed. Your login session will expire at : **${datetimeConverter(expireDate!).datetime}**`,
+    });
+  }
   @SlashGroup('mal')
   @Slash({ description: 'MAL my info', name: 'my-info' })
   async myinfo(

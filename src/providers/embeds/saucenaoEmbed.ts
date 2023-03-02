@@ -1,7 +1,7 @@
 import type { User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { SauceNAOConstants } from '../../constants/index.js';
-import { convertedFields } from '../../services/saucenao.js';
+import { resultsToEmbedFields } from '../../services/saucenao.js';
 import { ISaucenaoSearchResponseResult } from '../../types/saucenao.js';
 export const SauceNAOResultEmbed = (
   author: User,
@@ -22,7 +22,7 @@ export const SauceNAOResultEmbed = (
       iconURL: author.displayAvatarURL(),
     })
     .setDescription(`${result.header?.index_name}`)
-    .addFields(convertedFields(result.data))
+    .addFields(resultsToEmbedFields(result.data))
     .setThumbnail(SauceNAOConstants.SAUCENAO_LOGO)
     .setImage(result.header?.thumbnail ?? null)
     .setTimestamp()

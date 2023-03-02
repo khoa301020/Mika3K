@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import qs from 'qs';
 import { MALConstants } from '../constants/index.js';
+import { expireDate } from '../helpers/helper.js';
 import MAL from '../models/MAL.js';
 import { IAnimeEpisode } from '../types/mal.js';
 
@@ -61,6 +62,32 @@ export const authApi = {
   },
   saveToken: async (userId: string, accessToken: string, refreshToken: string, expiresDate: Date) => {
     return await MAL.findOneAndUpdate({ userId }, { accessToken, refreshToken, expiresAt: expiresDate }, { new: true });
+  },
+  refreshToken: async (userId: string): Promise<Date | null> => {
+    const user = await MAL.findOne({ userId }).select('refreshToken expiresAt');
+    if (!user || new Date().getTime() <= new Date(user!.expiresAt).getTime()) return null;
+
+    const response: AxiosResponse = await axios({
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      data: qs.stringify({
+        client_id: process.env.MAL_CLIENT_ID,
+        client_secret: process.env.MAL_CLIENT_SECRET,
+        grant_type: 'refresh_token',
+        refresh_token: user?.refreshToken,
+      }),
+      url: `${MALConstants.MAL_AUTH_API}/token`,
+    });
+
+    const { refresh_token, access_token, expires_in } = response.data;
+
+    await MAL.findOneAndUpdate(
+      { userId },
+      { refreshToken: refresh_token, accessToken: access_token, expiresAt: expireDate(expires_in) },
+      { new: true },
+    );
+
+    return expireDate(expires_in);
   },
 };
 export const userApi = {

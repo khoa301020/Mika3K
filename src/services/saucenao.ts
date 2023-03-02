@@ -7,7 +7,7 @@ export async function saucenao(params: ISaucenaoSearchRequest): Promise<AxiosRes
   return await axios.get(`${SauceNAOConstants.SAUCENAO_API}?${qs.stringify(params)}`);
 }
 
-export const convertedFields = (data: any) =>
+export const resultsToEmbedFields = (data: any) =>
   Object.entries(data).map(([key, value]) => {
     if (Array.isArray(value) && value.every((v) => v === undefined || v === null)) {
       return { name: key, value: 'N/A' };

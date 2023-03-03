@@ -17,8 +17,8 @@ import { authApi, userApi } from '../../services/mal.js';
 import { IUser, IUserAnime, IUserManga } from '../../types/mal.js';
 
 @Discord()
-@SlashGroup({ description: 'mal-commands', name: 'mal' })
-@SlashGroup({ description: 'mal-user-commands', name: 'user', root: 'mal' })
+@SlashGroup({ description: 'MyAnimeList commands', name: 'mal' })
+@SlashGroup({ description: 'User commands', name: 'user', root: 'mal' })
 export class MAL_User {
   @SlashGroup('user', 'mal')
   @Slash({ description: 'Login MAL', name: 'login' })

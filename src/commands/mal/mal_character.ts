@@ -8,8 +8,8 @@ import { characterApi } from '../../services/mal.js';
 import type { ICharacter } from '../../types/mal';
 
 @Discord()
-@SlashGroup({ description: 'mal-commands', name: 'mal' })
-@SlashGroup({ description: 'mal-character', name: 'character', root: 'mal' })
+@SlashGroup({ description: 'MyAnimeList commands', name: 'mal' })
+@SlashGroup({ description: 'Character commands', name: 'character', root: 'mal' })
 export class MAL_Character {
   @Slash({ description: 'Search MAL character' })
   @SlashGroup('character', 'mal')

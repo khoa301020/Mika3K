@@ -34,8 +34,8 @@ const mangaRow = new ActionRowBuilder<MessageActionRowComponentBuilder>()
 
   .addComponents(mangaStatisticsBtn);
 @Discord()
-@SlashGroup({ description: 'mal-commands', name: 'mal' })
-@SlashGroup({ description: 'mal-manga', name: 'manga', root: 'mal' })
+@SlashGroup({ description: 'MyAnimeList commands', name: 'mal' })
+@SlashGroup({ description: 'Manga commands', name: 'manga', root: 'mal' })
 export class MAL_Manga {
   @Slash({ description: 'Search MAL manga' })
   @SlashGroup('manga', 'mal')

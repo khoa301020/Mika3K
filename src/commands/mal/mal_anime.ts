@@ -76,8 +76,8 @@ const animeRow = (isDisable: boolean = false, hasManyEpisode?: boolean) =>
     .addComponents(animeStatisticsBtn(isDisable));
 
 @Discord()
-@SlashGroup({ description: 'mal-commands', name: 'mal' })
-@SlashGroup({ description: 'mal-anime', name: 'anime', root: 'mal' })
+@SlashGroup({ description: 'MyAnimeList commands', name: 'mal' })
+@SlashGroup({ description: 'Anime commands', name: 'anime', root: 'mal' })
 export class MAL_Anime {
   @Slash({ description: 'Search MAL anime' })
   @SlashGroup('anime', 'mal')

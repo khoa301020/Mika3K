@@ -15,6 +15,7 @@ My self-use discord bot created with [Discordx](https://discordx.js.org/docs).
 - [Table](https://github.com/gajus/table)
 - [Quickchart-JS](https://github.com/typpo/quickchart-js)
 - [MathJS](https://github.com/josdejong/mathjs)
+- [QS](https://github.com/ljharb/qs)
 
 # Documentations
 

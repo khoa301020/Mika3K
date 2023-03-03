@@ -137,3 +137,18 @@ export const codeChallenge = randomBytes(32)
 
 export const expireDate = (expires_in_second: number): Date =>
   new Date(new Date().getTime() + expires_in_second * 1000);
+
+export const parseCookies = (cookieStr: string): { [key: string]: string } => {
+  const cookies: { [key: string]: string } = {};
+
+  if (cookieStr) {
+    const cookiePairs = cookieStr.split(';');
+
+    for (const cookiePair of cookiePairs) {
+      const [key, value] = cookiePair.trim().split('=');
+      cookies[key] = decodeURIComponent(value);
+    }
+  }
+
+  return cookies;
+};

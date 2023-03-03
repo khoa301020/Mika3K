@@ -13,7 +13,7 @@ import { ArgsOf, ButtonComponent, Discord, On, Slash, SlashGroup, SlashOption } 
 import { CommonConstants, NHentaiConstants } from '../../constants/index.js';
 import { NHentaiBookEmbed } from '../../providers/embeds/nhentaiEmbed.js';
 
-@SlashGroup({ description: 'nhentai-commands', name: 'nhentai' })
+@SlashGroup({ description: 'NHentai commands', name: 'nhentai' })
 @Discord()
 class GetNHentaiCode {
   @SlashGroup('nhentai')

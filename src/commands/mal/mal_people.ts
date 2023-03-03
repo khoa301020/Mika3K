@@ -8,8 +8,8 @@ import { peopleApi } from '../../services/mal.js';
 import type { IPeople } from '../../types/mal';
 
 @Discord()
-@SlashGroup({ description: 'mal-commands', name: 'mal' })
-@SlashGroup({ description: 'mal-people', name: 'people', root: 'mal' })
+@SlashGroup({ description: 'MyAnimeList commands', name: 'mal' })
+@SlashGroup({ description: 'People commands', name: 'people', root: 'mal' })
 export class MAL_People {
   @Slash({ description: 'Search MAL people' })
   @SlashGroup('people', 'mal')

@@ -1,0 +1,1489 @@
+[
+  {
+    "defaultMemberPermissions": null,
+    "description": "Check user info",
+    "descriptionLocalizations": null,
+    "dmPermission": true,
+    "name": "check-info",
+    "nameLocalizations": null,
+    "options": [
+      {
+        "description": "User to check",
+        "descriptionLocalizations": null,
+        "name": "user",
+        "nameLocalizations": null,
+        "required": false,
+        "type": 6
+      }
+    ],
+    "type": 1
+  },
+  {
+    "defaultMemberPermissions": null,
+    "description": "Math calculate",
+    "descriptionLocalizations": null,
+    "dmPermission": true,
+    "name": "math",
+    "nameLocalizations": null,
+    "options": [
+      {
+        "description": "Math expression",
+        "descriptionLocalizations": null,
+        "name": "expression",
+        "nameLocalizations": null,
+        "required": true,
+        "type": 3
+      }
+    ],
+    "type": 1
+  },
+  {
+    "defaultMemberPermissions": null,
+    "description": "Pagination for all slash command",
+    "descriptionLocalizations": null,
+    "dmPermission": true,
+    "name": "all-commands",
+    "nameLocalizations": null,
+    "options": [],
+    "type": 1
+  },
+  {
+    "defaultMemberPermissions": null,
+    "description": "SauceNAO search",
+    "descriptionLocalizations": null,
+    "dmPermission": true,
+    "name": "saucenao",
+    "nameLocalizations": null,
+    "options": [
+      {
+        "description": "Public result?",
+        "descriptionLocalizations": null,
+        "name": "is-public",
+        "nameLocalizations": null,
+        "required": true,
+        "type": 5
+      },
+      {
+        "description": "Image's URL",
+        "descriptionLocalizations": null,
+        "name": "url",
+        "nameLocalizations": null,
+        "required": false,
+        "type": 3
+      },
+      {
+        "description": "Quote 's attachment (only 1 for slash)",
+        "descriptionLocalizations": null,
+        "name": "attachment",
+        "nameLocalizations": null,
+        "required": false,
+        "type": 11
+      }
+    ],
+    "type": 1
+  },
+  {
+    "defaultMemberPermissions": null,
+    "description": "minigames",
+    "descriptionLocalizations": null,
+    "dmPermission": true,
+    "name": "minigame",
+    "nameLocalizations": null,
+    "options": [
+      {
+        "description": "Rock, Scissor, Paper!",
+        "descriptionLocalizations": null,
+        "name": "jankenpon",
+        "nameLocalizations": null,
+        "type": 1
+      }
+    ],
+    "type": 1
+  },
+  {
+    "defaultMemberPermissions": null,
+    "description": "Quote commands",
+    "descriptionLocalizations": null,
+    "dmPermission": true,
+    "name": "quote",
+    "nameLocalizations": null,
+    "options": [
+      {
+        "description": "Create quote",
+        "descriptionLocalizations": null,
+        "name": "createquote",
+        "nameLocalizations": null,
+        "options": [
+          {
+            "description": "Quote's keyword",
+            "descriptionLocalizations": null,
+            "name": "keyword",
+            "nameLocalizations": null,
+            "required": true,
+            "type": 3
+          },
+          {
+            "description": "Private?",
+            "descriptionLocalizations": null,
+            "name": "is-private",
+            "nameLocalizations": null,
+            "required": true,
+            "type": 5
+          },
+          {
+            "description": "Quote 's content",
+            "descriptionLocalizations": null,
+            "name": "content",
+            "nameLocalizations": null,
+            "required": false,
+            "type": 3
+          },
+          {
+            "description": "Quote 's attachment (only 1 for slash)",
+            "descriptionLocalizations": null,
+            "name": "attachment",
+            "nameLocalizations": null,
+            "required": false,
+            "type": 11
+          }
+        ],
+        "type": 1
+      },
+      {
+        "description": "Delete quote",
+        "descriptionLocalizations": null,
+        "name": "deletequote",
+        "nameLocalizations": null,
+        "options": [
+          {
+            "description": "Quote's ID",
+            "descriptionLocalizations": null,
+            "name": "id",
+            "nameLocalizations": null,
+            "required": true,
+            "type": 3
+          }
+        ],
+        "type": 1
+      },
+      {
+        "description": "Edit quote",
+        "descriptionLocalizations": null,
+        "name": "editquote",
+        "nameLocalizations": null,
+        "options": [
+          {
+            "description": "Quote 's ID",
+            "descriptionLocalizations": null,
+            "name": "id",
+            "nameLocalizations": null,
+            "required": true,
+            "type": 3
+          },
+          {
+            "description": "Quote 's content",
+            "descriptionLocalizations": null,
+            "name": "content",
+            "nameLocalizations": null,
+            "required": false,
+            "type": 3
+          },
+          {
+            "description": "Quote's attachment (only 1 for slash)",
+            "descriptionLocalizations": null,
+            "name": "attachment",
+            "nameLocalizations": null,
+            "required": false,
+            "type": 11
+          }
+        ],
+        "type": 1
+      },
+      {
+        "description": "Get quote",
+        "descriptionLocalizations": null,
+        "name": "getquote",
+        "nameLocalizations": null,
+        "options": [
+          {
+            "description": "Quote's keyword or ID",
+            "descriptionLocalizations": null,
+            "name": "keyword",
+            "nameLocalizations": null,
+            "required": true,
+            "type": 3
+          }
+        ],
+        "type": 1
+      },
+      {
+        "description": "List quotes",
+        "descriptionLocalizations": null,
+        "name": "listquotes",
+        "nameLocalizations": null,
+        "type": 1
+      },
+      {
+        "description": "My quotes",
+        "descriptionLocalizations": null,
+        "name": "myquotes",
+        "nameLocalizations": null,
+        "type": 1
+      },
+      {
+        "description": "Private your quote",
+        "descriptionLocalizations": null,
+        "name": "privatequote",
+        "nameLocalizations": null,
+        "options": [
+          {
+            "description": "Quote 's ID",
+            "descriptionLocalizations": null,
+            "name": "id",
+            "nameLocalizations": null,
+            "required": true,
+            "type": 3
+          }
+        ],
+        "type": 1
+      },
+      {
+        "description": "Publish your quote",
+        "descriptionLocalizations": null,
+        "name": "publishquote",
+        "nameLocalizations": null,
+        "options": [
+          {
+            "description": "Quote 's ID",
+            "descriptionLocalizations": null,
+            "name": "id",
+            "nameLocalizations": null,
+            "required": true,
+            "type": 3
+          }
+        ],
+        "type": 1
+      }
+    ],
+    "type": 1
+  },
+  {
+    "defaultMemberPermissions": null,
+    "description": "nhentai-commands",
+    "descriptionLocalizations": null,
+    "dmPermission": true,
+    "name": "nhentai",
+    "nameLocalizations": null,
+    "options": [
+      {
+        "description": "Check NHentai nuke code",
+        "descriptionLocalizations": null,
+        "name": "check",
+        "nameLocalizations": null,
+        "options": [
+          {
+            "description": "NHentai code",
+            "descriptionLocalizations": null,
+            "name": "code",
+            "nameLocalizations": null,
+            "required": true,
+            "type": 4
+          }
+        ],
+        "type": 1
+      },
+      {
+        "description": "Get random NHentai nuke code",
+        "descriptionLocalizations": null,
+        "name": "random",
+        "nameLocalizations": null,
+        "type": 1
+      }
+    ],
+    "type": 1
+  },
+  {
+    "defaultMemberPermissions": null,
+    "description": "mal-commands",
+    "descriptionLocalizations": null,
+    "dmPermission": true,
+    "name": "mal",
+    "nameLocalizations": null,
+    "options": [
+      {
+        "description": "mal-anime",
+        "descriptionLocalizations": null,
+        "name": "anime",
+        "nameLocalizations": null,
+        "options": [
+          {
+            "description": "Get MAL anime genres",
+            "descriptionLocalizations": null,
+            "name": "genres",
+            "nameLocalizations": null,
+            "options": [
+              {
+                "description": "Public display?",
+                "descriptionLocalizations": null,
+                "name": "display",
+                "nameLocalizations": null,
+                "required": true,
+                "type": 5
+              },
+              {
+                "choices": [
+                  {
+                    "name": "genres",
+                    "nameLocalizations": null,
+                    "value": "genres"
+                  },
+                  {
+                    "name": "explicit_genres",
+                    "nameLocalizations": null,
+                    "value": "explicit_genres"
+                  },
+                  {
+                    "name": "themes",
+                    "nameLocalizations": null,
+                    "value": "themes"
+                  },
+                  {
+                    "name": "demographics",
+                    "nameLocalizations": null,
+                    "value": "demographics"
+                  }
+                ],
+                "description": "Select filter",
+                "descriptionLocalizations": null,
+                "name": "filter",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              }
+            ],
+            "type": 1
+          },
+          {
+            "description": "Search MAL anime",
+            "descriptionLocalizations": null,
+            "name": "search",
+            "nameLocalizations": null,
+            "options": [
+              {
+                "description": "Public display?",
+                "descriptionLocalizations": null,
+                "name": "display",
+                "nameLocalizations": null,
+                "required": true,
+                "type": 5
+              },
+              {
+                "choices": [
+                  {
+                    "name": "Button navigation",
+                    "nameLocalizations": null,
+                    "value": "button"
+                  },
+                  {
+                    "name": "Select menu",
+                    "nameLocalizations": null,
+                    "value": "select-menu"
+                  }
+                ],
+                "description": "Navigation type",
+                "descriptionLocalizations": null,
+                "name": "navigation",
+                "nameLocalizations": null,
+                "required": true,
+                "type": 3
+              },
+              {
+                "description": "Query to search",
+                "descriptionLocalizations": null,
+                "name": "query",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "choices": [
+                  {
+                    "name": "tv",
+                    "nameLocalizations": null,
+                    "value": "tv"
+                  },
+                  {
+                    "name": "movie",
+                    "nameLocalizations": null,
+                    "value": "movie"
+                  },
+                  {
+                    "name": "ova",
+                    "nameLocalizations": null,
+                    "value": "ova"
+                  },
+                  {
+                    "name": "special",
+                    "nameLocalizations": null,
+                    "value": "special"
+                  },
+                  {
+                    "name": "ona",
+                    "nameLocalizations": null,
+                    "value": "ona"
+                  },
+                  {
+                    "name": "music",
+                    "nameLocalizations": null,
+                    "value": "music"
+                  }
+                ],
+                "description": "Select type",
+                "descriptionLocalizations": null,
+                "name": "type",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "choices": [
+                  {
+                    "name": "airing",
+                    "nameLocalizations": null,
+                    "value": "airing"
+                  },
+                  {
+                    "name": "complete",
+                    "nameLocalizations": null,
+                    "value": "complete"
+                  },
+                  {
+                    "name": "upcoming",
+                    "nameLocalizations": null,
+                    "value": "upcoming"
+                  }
+                ],
+                "description": "Select status",
+                "descriptionLocalizations": null,
+                "name": "status",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "choices": [
+                  {
+                    "name": "g",
+                    "nameLocalizations": null,
+                    "value": "g"
+                  },
+                  {
+                    "name": "pg",
+                    "nameLocalizations": null,
+                    "value": "pg"
+                  },
+                  {
+                    "name": "pg13",
+                    "nameLocalizations": null,
+                    "value": "pg13"
+                  },
+                  {
+                    "name": "r17",
+                    "nameLocalizations": null,
+                    "value": "r17"
+                  },
+                  {
+                    "name": "r",
+                    "nameLocalizations": null,
+                    "value": "r"
+                  },
+                  {
+                    "name": "rx",
+                    "nameLocalizations": null,
+                    "value": "rx"
+                  }
+                ],
+                "description": "Select rating",
+                "descriptionLocalizations": null,
+                "name": "rating",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "choices": [
+                  {
+                    "name": "mal_id",
+                    "nameLocalizations": null,
+                    "value": "mal_id"
+                  },
+                  {
+                    "name": "title",
+                    "nameLocalizations": null,
+                    "value": "title"
+                  },
+                  {
+                    "name": "type",
+                    "nameLocalizations": null,
+                    "value": "type"
+                  },
+                  {
+                    "name": "rating",
+                    "nameLocalizations": null,
+                    "value": "rating"
+                  },
+                  {
+                    "name": "start_date",
+                    "nameLocalizations": null,
+                    "value": "start_date"
+                  },
+                  {
+                    "name": "end_date",
+                    "nameLocalizations": null,
+                    "value": "end_date"
+                  },
+                  {
+                    "name": "episodes",
+                    "nameLocalizations": null,
+                    "value": "episodes"
+                  },
+                  {
+                    "name": "score",
+                    "nameLocalizations": null,
+                    "value": "score"
+                  },
+                  {
+                    "name": "scored_by",
+                    "nameLocalizations": null,
+                    "value": "scored_by"
+                  },
+                  {
+                    "name": "rank",
+                    "nameLocalizations": null,
+                    "value": "rank"
+                  },
+                  {
+                    "name": "popularity",
+                    "nameLocalizations": null,
+                    "value": "popularity"
+                  },
+                  {
+                    "name": "members",
+                    "nameLocalizations": null,
+                    "value": "members"
+                  },
+                  {
+                    "name": "favorites",
+                    "nameLocalizations": null,
+                    "value": "favorites"
+                  }
+                ],
+                "description": "Select order-by",
+                "descriptionLocalizations": null,
+                "name": "order_by",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "choices": [
+                  {
+                    "name": "desc",
+                    "nameLocalizations": null,
+                    "value": "desc"
+                  },
+                  {
+                    "name": "asc",
+                    "nameLocalizations": null,
+                    "value": "asc"
+                  }
+                ],
+                "description": "Select sort",
+                "descriptionLocalizations": null,
+                "name": "sort",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "description": "Filter by genre(s) IDs. Can pass multiple with a comma as a delimiter. e.g 1,2,3",
+                "descriptionLocalizations": null,
+                "name": "genres",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "description": "Exclude genre(s) IDs. Can pass multiple with a comma as a delimiter. e.g 1,2,3",
+                "descriptionLocalizations": null,
+                "name": "genres_exclude",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "description": "Search score",
+                "descriptionLocalizations": null,
+                "name": "score",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 10
+              },
+              {
+                "description": "Search min score",
+                "descriptionLocalizations": null,
+                "name": "min_score",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 10
+              },
+              {
+                "description": "Search max score",
+                "descriptionLocalizations": null,
+                "name": "max_score",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 10
+              },
+              {
+                "description": "Is sfw?",
+                "descriptionLocalizations": null,
+                "name": "sfw",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 5
+              },
+              {
+                "description": "Starting date. Format: YYYY-MM-DD. e.g 2000, 2000-10, 2000-10-30",
+                "descriptionLocalizations": null,
+                "name": "start_date",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "description": "Ending date. Format: YYYY-MM-DD. e.g 2000, 2000-10, 2000-10-30",
+                "descriptionLocalizations": null,
+                "name": "end_date",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              }
+            ],
+            "type": 1
+          }
+        ],
+        "type": 2
+      },
+      {
+        "description": "mal-character",
+        "descriptionLocalizations": null,
+        "name": "character",
+        "nameLocalizations": null,
+        "options": [
+          {
+            "description": "Search MAL character",
+            "descriptionLocalizations": null,
+            "name": "search",
+            "nameLocalizations": null,
+            "options": [
+              {
+                "description": "Public display?",
+                "descriptionLocalizations": null,
+                "name": "display",
+                "nameLocalizations": null,
+                "required": true,
+                "type": 5
+              },
+              {
+                "choices": [
+                  {
+                    "name": "Button navigation",
+                    "nameLocalizations": null,
+                    "value": "button"
+                  },
+                  {
+                    "name": "Select menu",
+                    "nameLocalizations": null,
+                    "value": "select-menu"
+                  }
+                ],
+                "description": "Navigation type",
+                "descriptionLocalizations": null,
+                "name": "navigation",
+                "nameLocalizations": null,
+                "required": true,
+                "type": 3
+              },
+              {
+                "description": "Query to search",
+                "descriptionLocalizations": null,
+                "name": "query",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "choices": [
+                  {
+                    "name": "mal_id",
+                    "nameLocalizations": null,
+                    "value": "mal_id"
+                  },
+                  {
+                    "name": "name",
+                    "nameLocalizations": null,
+                    "value": "name"
+                  },
+                  {
+                    "name": "favorites",
+                    "nameLocalizations": null,
+                    "value": "favorites"
+                  }
+                ],
+                "description": "Select order-by",
+                "descriptionLocalizations": null,
+                "name": "order_by",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "choices": [
+                  {
+                    "name": "desc",
+                    "nameLocalizations": null,
+                    "value": "desc"
+                  },
+                  {
+                    "name": "asc",
+                    "nameLocalizations": null,
+                    "value": "asc"
+                  }
+                ],
+                "description": "Select sort",
+                "descriptionLocalizations": null,
+                "name": "sort",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              }
+            ],
+            "type": 1
+          }
+        ],
+        "type": 2
+      },
+      {
+        "description": "mal-manga",
+        "descriptionLocalizations": null,
+        "name": "manga",
+        "nameLocalizations": null,
+        "options": [
+          {
+            "description": "Get MAL manga genres",
+            "descriptionLocalizations": null,
+            "name": "genres",
+            "nameLocalizations": null,
+            "options": [
+              {
+                "description": "Public display?",
+                "descriptionLocalizations": null,
+                "name": "display",
+                "nameLocalizations": null,
+                "required": true,
+                "type": 5
+              },
+              {
+                "choices": [
+                  {
+                    "name": "genres",
+                    "nameLocalizations": null,
+                    "value": "genres"
+                  },
+                  {
+                    "name": "explicit_genres",
+                    "nameLocalizations": null,
+                    "value": "explicit_genres"
+                  },
+                  {
+                    "name": "themes",
+                    "nameLocalizations": null,
+                    "value": "themes"
+                  },
+                  {
+                    "name": "demographics",
+                    "nameLocalizations": null,
+                    "value": "demographics"
+                  }
+                ],
+                "description": "Select filter",
+                "descriptionLocalizations": null,
+                "name": "filter",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              }
+            ],
+            "type": 1
+          },
+          {
+            "description": "Search MAL manga",
+            "descriptionLocalizations": null,
+            "name": "search",
+            "nameLocalizations": null,
+            "options": [
+              {
+                "description": "Public display?",
+                "descriptionLocalizations": null,
+                "name": "display",
+                "nameLocalizations": null,
+                "required": true,
+                "type": 5
+              },
+              {
+                "choices": [
+                  {
+                    "name": "Button navigation",
+                    "nameLocalizations": null,
+                    "value": "button"
+                  },
+                  {
+                    "name": "Select menu",
+                    "nameLocalizations": null,
+                    "value": "select-menu"
+                  }
+                ],
+                "description": "Navigation type",
+                "descriptionLocalizations": null,
+                "name": "navigation",
+                "nameLocalizations": null,
+                "required": true,
+                "type": 3
+              },
+              {
+                "description": "Query to search",
+                "descriptionLocalizations": null,
+                "name": "query",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "choices": [
+                  {
+                    "name": "manga",
+                    "nameLocalizations": null,
+                    "value": "manga"
+                  },
+                  {
+                    "name": "novel",
+                    "nameLocalizations": null,
+                    "value": "novel"
+                  },
+                  {
+                    "name": "lightnovel",
+                    "nameLocalizations": null,
+                    "value": "lightnovel"
+                  },
+                  {
+                    "name": "oneshot",
+                    "nameLocalizations": null,
+                    "value": "oneshot"
+                  },
+                  {
+                    "name": "doujin",
+                    "nameLocalizations": null,
+                    "value": "doujin"
+                  },
+                  {
+                    "name": "manhwa",
+                    "nameLocalizations": null,
+                    "value": "manhwa"
+                  },
+                  {
+                    "name": "manhua",
+                    "nameLocalizations": null,
+                    "value": "manhua"
+                  }
+                ],
+                "description": "Select type",
+                "descriptionLocalizations": null,
+                "name": "type",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "choices": [
+                  {
+                    "name": "publishing",
+                    "nameLocalizations": null,
+                    "value": "publishing"
+                  },
+                  {
+                    "name": "complete",
+                    "nameLocalizations": null,
+                    "value": "complete"
+                  },
+                  {
+                    "name": "hiatus",
+                    "nameLocalizations": null,
+                    "value": "hiatus"
+                  },
+                  {
+                    "name": "discontinued",
+                    "nameLocalizations": null,
+                    "value": "discontinued"
+                  },
+                  {
+                    "name": "upcoming",
+                    "nameLocalizations": null,
+                    "value": "upcoming"
+                  }
+                ],
+                "description": "Select status",
+                "descriptionLocalizations": null,
+                "name": "status",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "choices": [
+                  {
+                    "name": "mal_id",
+                    "nameLocalizations": null,
+                    "value": "mal_id"
+                  },
+                  {
+                    "name": "title",
+                    "nameLocalizations": null,
+                    "value": "title"
+                  },
+                  {
+                    "name": "start_date",
+                    "nameLocalizations": null,
+                    "value": "start_date"
+                  },
+                  {
+                    "name": "end_date",
+                    "nameLocalizations": null,
+                    "value": "end_date"
+                  },
+                  {
+                    "name": "chapters",
+                    "nameLocalizations": null,
+                    "value": "chapters"
+                  },
+                  {
+                    "name": "volumes",
+                    "nameLocalizations": null,
+                    "value": "volumes"
+                  },
+                  {
+                    "name": "score",
+                    "nameLocalizations": null,
+                    "value": "score"
+                  },
+                  {
+                    "name": "scored_by",
+                    "nameLocalizations": null,
+                    "value": "scored_by"
+                  },
+                  {
+                    "name": "rank",
+                    "nameLocalizations": null,
+                    "value": "rank"
+                  },
+                  {
+                    "name": "popularity",
+                    "nameLocalizations": null,
+                    "value": "popularity"
+                  },
+                  {
+                    "name": "members",
+                    "nameLocalizations": null,
+                    "value": "members"
+                  },
+                  {
+                    "name": "favorites",
+                    "nameLocalizations": null,
+                    "value": "favorites"
+                  }
+                ],
+                "description": "Select order-by",
+                "descriptionLocalizations": null,
+                "name": "order_by",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "choices": [
+                  {
+                    "name": "desc",
+                    "nameLocalizations": null,
+                    "value": "desc"
+                  },
+                  {
+                    "name": "asc",
+                    "nameLocalizations": null,
+                    "value": "asc"
+                  }
+                ],
+                "description": "Select sort",
+                "descriptionLocalizations": null,
+                "name": "sort",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "description": "Filter by genre(s) IDs. Can pass multiple with a comma as a delimiter. e.g 1,2,3",
+                "descriptionLocalizations": null,
+                "name": "genres",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "description": "Exclude genre(s) IDs. Can pass multiple with a comma as a delimiter. e.g 1,2,3",
+                "descriptionLocalizations": null,
+                "name": "genres_exclude",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "description": "Search score",
+                "descriptionLocalizations": null,
+                "name": "score",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 10
+              },
+              {
+                "description": "Search min score",
+                "descriptionLocalizations": null,
+                "name": "min_score",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 10
+              },
+              {
+                "description": "Search max score",
+                "descriptionLocalizations": null,
+                "name": "max_score",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 10
+              },
+              {
+                "description": "Is sfw?",
+                "descriptionLocalizations": null,
+                "name": "sfw",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 5
+              },
+              {
+                "description": "Starting date. Format: YYYY-MM-DD. e.g 2000, 2000-10, 2000-10-30",
+                "descriptionLocalizations": null,
+                "name": "start_date",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "description": "Ending date. Format: YYYY-MM-DD. e.g 2000, 2000-10, 2000-10-30",
+                "descriptionLocalizations": null,
+                "name": "end_date",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              }
+            ],
+            "type": 1
+          }
+        ],
+        "type": 2
+      },
+      {
+        "description": "mal-people",
+        "descriptionLocalizations": null,
+        "name": "people",
+        "nameLocalizations": null,
+        "options": [
+          {
+            "description": "Search MAL people",
+            "descriptionLocalizations": null,
+            "name": "search",
+            "nameLocalizations": null,
+            "options": [
+              {
+                "description": "Public display?",
+                "descriptionLocalizations": null,
+                "name": "display",
+                "nameLocalizations": null,
+                "required": true,
+                "type": 5
+              },
+              {
+                "choices": [
+                  {
+                    "name": "Button navigation",
+                    "nameLocalizations": null,
+                    "value": "button"
+                  },
+                  {
+                    "name": "Select menu",
+                    "nameLocalizations": null,
+                    "value": "select-menu"
+                  }
+                ],
+                "description": "Navigation type",
+                "descriptionLocalizations": null,
+                "name": "navigation",
+                "nameLocalizations": null,
+                "required": true,
+                "type": 3
+              },
+              {
+                "description": "Query to search",
+                "descriptionLocalizations": null,
+                "name": "query",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "choices": [
+                  {
+                    "name": "mal_id",
+                    "nameLocalizations": null,
+                    "value": "mal_id"
+                  },
+                  {
+                    "name": "name",
+                    "nameLocalizations": null,
+                    "value": "name"
+                  },
+                  {
+                    "name": "birthday",
+                    "nameLocalizations": null,
+                    "value": "birthday"
+                  },
+                  {
+                    "name": "favorites",
+                    "nameLocalizations": null,
+                    "value": "favorites"
+                  }
+                ],
+                "description": "Select order-by",
+                "descriptionLocalizations": null,
+                "name": "order_by",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "choices": [
+                  {
+                    "name": "desc",
+                    "nameLocalizations": null,
+                    "value": "desc"
+                  },
+                  {
+                    "name": "asc",
+                    "nameLocalizations": null,
+                    "value": "asc"
+                  }
+                ],
+                "description": "Select sort",
+                "descriptionLocalizations": null,
+                "name": "sort",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              }
+            ],
+            "type": 1
+          }
+        ],
+        "type": 2
+      },
+      {
+        "description": "mal-user-commands",
+        "descriptionLocalizations": null,
+        "name": "user",
+        "nameLocalizations": null,
+        "options": [
+          {
+            "description": "Check my manga list",
+            "descriptionLocalizations": null,
+            "name": "my-manga-list",
+            "nameLocalizations": null,
+            "options": [
+              {
+                "description": "Public display?",
+                "descriptionLocalizations": null,
+                "name": "display",
+                "nameLocalizations": null,
+                "required": true,
+                "type": 5
+              },
+              {
+                "choices": [
+                  {
+                    "name": "Button navigation",
+                    "nameLocalizations": null,
+                    "value": "button"
+                  },
+                  {
+                    "name": "Select menu",
+                    "nameLocalizations": null,
+                    "value": "select-menu"
+                  }
+                ],
+                "description": "Navigation type",
+                "descriptionLocalizations": null,
+                "name": "navigation",
+                "nameLocalizations": null,
+                "required": true,
+                "type": 3
+              },
+              {
+                "choices": [
+                  {
+                    "name": "reading",
+                    "nameLocalizations": null,
+                    "value": "reading"
+                  },
+                  {
+                    "name": "completed",
+                    "nameLocalizations": null,
+                    "value": "completed"
+                  },
+                  {
+                    "name": "on_hold",
+                    "nameLocalizations": null,
+                    "value": "on_hold"
+                  },
+                  {
+                    "name": "dropped",
+                    "nameLocalizations": null,
+                    "value": "dropped"
+                  },
+                  {
+                    "name": "plan_to_read",
+                    "nameLocalizations": null,
+                    "value": "plan_to_read"
+                  }
+                ],
+                "description": "Select status",
+                "descriptionLocalizations": null,
+                "name": "status",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "choices": [
+                  {
+                    "name": "list_score",
+                    "nameLocalizations": null,
+                    "value": "list_score"
+                  },
+                  {
+                    "name": "list_updated_at",
+                    "nameLocalizations": null,
+                    "value": "list_updated_at"
+                  },
+                  {
+                    "name": "manga_title",
+                    "nameLocalizations": null,
+                    "value": "manga_title"
+                  },
+                  {
+                    "name": "manga_start_date",
+                    "nameLocalizations": null,
+                    "value": "manga_start_date"
+                  }
+                ],
+                "description": "Select sort",
+                "descriptionLocalizations": null,
+                "name": "sort",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "description": "Select result limit (default: 10, max: 1000)",
+                "descriptionLocalizations": null,
+                "name": "limit",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 10
+              }
+            ],
+            "type": 1
+          },
+          {
+            "description": "Check my anime list",
+            "descriptionLocalizations": null,
+            "name": "my-anime-list",
+            "nameLocalizations": null,
+            "options": [
+              {
+                "description": "Public display?",
+                "descriptionLocalizations": null,
+                "name": "display",
+                "nameLocalizations": null,
+                "required": true,
+                "type": 5
+              },
+              {
+                "choices": [
+                  {
+                    "name": "Button navigation",
+                    "nameLocalizations": null,
+                    "value": "button"
+                  },
+                  {
+                    "name": "Select menu",
+                    "nameLocalizations": null,
+                    "value": "select-menu"
+                  }
+                ],
+                "description": "Navigation type",
+                "descriptionLocalizations": null,
+                "name": "navigation",
+                "nameLocalizations": null,
+                "required": true,
+                "type": 3
+              },
+              {
+                "choices": [
+                  {
+                    "name": "watching",
+                    "nameLocalizations": null,
+                    "value": "watching"
+                  },
+                  {
+                    "name": "completed",
+                    "nameLocalizations": null,
+                    "value": "completed"
+                  },
+                  {
+                    "name": "on_hold",
+                    "nameLocalizations": null,
+                    "value": "on_hold"
+                  },
+                  {
+                    "name": "dropped",
+                    "nameLocalizations": null,
+                    "value": "dropped"
+                  },
+                  {
+                    "name": "plan_to_watch",
+                    "nameLocalizations": null,
+                    "value": "plan_to_watch"
+                  }
+                ],
+                "description": "Select status",
+                "descriptionLocalizations": null,
+                "name": "status",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "choices": [
+                  {
+                    "name": "list_score",
+                    "nameLocalizations": null,
+                    "value": "list_score"
+                  },
+                  {
+                    "name": "list_updated_at",
+                    "nameLocalizations": null,
+                    "value": "list_updated_at"
+                  },
+                  {
+                    "name": "anime_title",
+                    "nameLocalizations": null,
+                    "value": "anime_title"
+                  },
+                  {
+                    "name": "anime_start_date",
+                    "nameLocalizations": null,
+                    "value": "anime_start_date"
+                  }
+                ],
+                "description": "Select sort",
+                "descriptionLocalizations": null,
+                "name": "sort",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 3
+              },
+              {
+                "description": "Select result limit (default: 10, max: 1000)",
+                "descriptionLocalizations": null,
+                "name": "limit",
+                "nameLocalizations": null,
+                "required": false,
+                "type": 10
+              }
+            ],
+            "type": 1
+          },
+          {
+            "description": "MAL my info",
+            "descriptionLocalizations": null,
+            "name": "my-info",
+            "nameLocalizations": null,
+            "options": [
+              {
+                "description": "Public display?",
+                "descriptionLocalizations": null,
+                "name": "display",
+                "nameLocalizations": null,
+                "required": true,
+                "type": 5
+              }
+            ],
+            "type": 1
+          },
+          {
+            "description": "Refresh my access token",
+            "descriptionLocalizations": null,
+            "name": "refresh-token",
+            "nameLocalizations": null,
+            "type": 1
+          },
+          {
+            "description": "Login MAL",
+            "descriptionLocalizations": null,
+            "name": "login",
+            "nameLocalizations": null,
+            "type": 1
+          }
+        ],
+        "type": 2
+      }
+    ],
+    "type": 1
+  },
+  {
+    "defaultMemberPermissions": null,
+    "description": "",
+    "descriptionLocalizations": null,
+    "dmPermission": true,
+    "name": "Check user info",
+    "nameLocalizations": null,
+    "options": [],
+    "type": 2
+  }
+]

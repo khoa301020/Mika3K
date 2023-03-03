@@ -91,12 +91,27 @@ export const authApi = {
   },
 };
 export const userApi = {
-  getSelf: (token: string) =>
-    axios.get(`${MALConstants.MAL_API}/users/@me?fields=anime_statistics,time_zone,is_supporter`, {
+  getSelf: async (token: string) =>
+    await axios.get(`${MALConstants.MAL_API}/users/@me?fields=anime_statistics,time_zone,is_supporter`, {
       headers: { Authorization: `Bearer ${token}` },
     }),
-  getUser: (userId: string, token: string) =>
-    axios.get(`${MALConstants.MAL_API}/users/@${userId}?fields=anime_statistics,time_zone,is_supporter`, {
+  getUser: async (userId: string, token: string) =>
+    await axios.get(`${MALConstants.MAL_API}/users/${userId}?fields=anime_statistics,time_zone,is_supporter`, {
       headers: { Authorization: `Bearer ${token}` },
     }),
+  getMyAnimeList: async (userId: string, params: any) => {
+    const user = await MAL.findOne({ userId }).select('accessToken');
+    const query = qs.stringify(params);
+    return await axios.get(`${MALConstants.MAL_API}/users/@me/animelist?${query}`, {
+      headers: { Authorization: `Bearer ${user?.accessToken}` },
+    });
+  },
+
+  getMyMangaList: async (userId: string, params: any) => {
+    const user = await MAL.findOne({ userId }).select('accessToken');
+    const query = qs.stringify(params);
+    return await axios.get(`${MALConstants.MAL_API}/users/@me/mangalist?${query}`, {
+      headers: { Authorization: `Bearer ${user?.accessToken}` },
+    });
+  },
 };

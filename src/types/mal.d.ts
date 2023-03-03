@@ -926,6 +926,52 @@ export interface IUserAnimeStats {
   mean_score: number;
 }
 
+export interface IUserAnime {
+  node: IUserAnimeNode;
+  list_status: IUserAnimeStatus;
+}
+
+export interface IUserAnimeNode {
+  id: number;
+  title: string;
+  main_picture: {
+    medium: string;
+    large: string;
+  };
+}
+export interface IUserAnimeStatus {
+  status: TAnimeStatusUser;
+  score: number;
+  num_episodes_watched: number;
+  is_rewatching: boolean;
+  updated_at?: Date;
+  start_date?: Date;
+  finish_date?: Date;
+}
+export interface IUserManga {
+  node: IUserMangaNode;
+  list_status: IUserMangaStatus;
+}
+
+export interface IUserMangaNode {
+  id: number;
+  title: string;
+  main_picture: {
+    medium: string;
+    large: string;
+  };
+}
+export interface IUserMangaStatus {
+  status: TMangaStatusUser;
+  is_rereading: boolean;
+  num_volumes_read: number;
+  num_chapters_read: number;
+  score: number;
+  updated_at?: Date;
+  start_date?: Date;
+  finish_date?: Date;
+}
+
 /* Typings for search options */
 
 export interface IAnimeSearchOptions {
@@ -974,7 +1020,9 @@ export interface ISimpleOption {
 export declare type TAnimeType = 'tv' | 'movie' | 'ova' | 'special' | 'ona' | 'music';
 export declare type TMangaType = 'manga' | 'novel' | 'doujin' | 'manhwa' | 'manhua' | 'lightnovel' | 'oneshot';
 export declare type TAnimeStatus = 'airing' | 'complete' | 'upcoming';
+export declare type TAnimeStatusUser = 'watching' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_watch';
 export declare type TMangaStatus = 'publishing' | 'complete' | 'hiatus' | 'discontinued' | 'upcoming';
+export declare type TMangaStatusUser = 'reading' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_read';
 export declare type TAnimeRating = 'g' | 'pg' | 'pg13' | 'r' | 'r17' | 'r' | 'rx';
 export declare type TAnimeOrder =
   | 'mal_id'

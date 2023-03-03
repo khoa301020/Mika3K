@@ -2,7 +2,18 @@ import type { APIEmbedField, User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { CommonConstants, MALConstants } from '../../constants/index.js';
 import { datetimeConverter, replaceEmpties, tableConverter, timeDiff } from '../../helpers/helper.js';
-import { IAnime, IAnimeCharacter, IAnimeEpisode, ICharacter, IGenre, IManga, IPeople, IUser } from '../../types/mal';
+import {
+  IAnime,
+  IAnimeCharacter,
+  IAnimeEpisode,
+  ICharacter,
+  IGenre,
+  IManga,
+  IPeople,
+  IUser,
+  IUserAnime,
+  IUserManga,
+} from '../../types/mal';
 
 export const MAL_AnimeEmbed = (resAnime: IAnime, author: User, page?: number, total?: number): EmbedBuilder => {
   const anime = replaceEmpties(resAnime, 'N/A', 'name' as keyof Object, true);
@@ -404,4 +415,101 @@ export const MAL_UserEmbed = (userData: IUser, author: User, chart?: string): Em
     .setImage(chart ?? null)
     .setTimestamp()
     .setFooter({ text: `MyAnimeList`, iconURL: MALConstants.MAL_LOGO });
+};
+
+export const MAL_UserAnimeEmbed = (
+  userAnime: IUserAnime,
+  author: User,
+  page?: number,
+  total?: number,
+): EmbedBuilder => {
+  // const anime = replaceEmpties(userAnime, 'N/A', 'name' as keyof Object, true);
+
+  const watchStatus: Array<APIEmbedField> = [];
+
+  userAnime.list_status.start_date &&
+    watchStatus.push({
+      name: 'Start date',
+      value: datetimeConverter(userAnime.list_status.start_date).date,
+    });
+  userAnime.list_status.finish_date &&
+    watchStatus.push({
+      name: 'Finish date',
+      value: datetimeConverter(userAnime.list_status.finish_date).date,
+    });
+  userAnime.list_status.updated_at &&
+    watchStatus.push({
+      name: 'Last update',
+      value: datetimeConverter(userAnime.list_status.updated_at as Date).datetime,
+    });
+
+  return new EmbedBuilder()
+    .setColor(MALConstants.MAL_ANIME_STATUS_COLORS[userAnime.list_status.status])
+    .setTitle(`[${userAnime.node.id}] ${userAnime.node.title} \`${userAnime.list_status.status}\``)
+    .setURL(`${MALConstants.MAL_ANIME_URL}/${userAnime.node.id}`)
+    .setAuthor({
+      name: `${author.username}#${author.discriminator}`,
+      iconURL: author.displayAvatarURL(),
+    })
+    .setDescription(userAnime.list_status.is_rewatching ? 'Rewatching' : null)
+    .setThumbnail(MALConstants.MAL_LOGO)
+    .addFields(
+      { name: 'Score', value: userAnime.list_status.score.toString(), inline: true },
+      { name: 'Episodes watched', value: userAnime.list_status.num_episodes_watched.toString(), inline: true },
+      ...watchStatus,
+    )
+    .setImage(userAnime.node.main_picture?.large ?? userAnime.node.main_picture?.medium)
+    .setTimestamp()
+    .setFooter({
+      text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
+      iconURL: MALConstants.MAL_LOGO,
+    });
+};
+export const MAL_UserMangaEmbed = (
+  userManga: IUserManga,
+  author: User,
+  page?: number,
+  total?: number,
+): EmbedBuilder => {
+  // const manga = replaceEmpties(userManga, 'N/A', 'name' as keyof Object, true);
+  const readStatus: Array<APIEmbedField> = [];
+
+  userManga.list_status.start_date &&
+    readStatus.push({
+      name: 'Start date',
+      value: datetimeConverter(userManga.list_status.start_date).date,
+    });
+  userManga.list_status.finish_date &&
+    readStatus.push({
+      name: 'Finish date',
+      value: datetimeConverter(userManga.list_status.finish_date).date,
+    });
+  userManga.list_status.updated_at &&
+    readStatus.push({
+      name: 'Last update',
+      value: datetimeConverter(userManga.list_status.updated_at as Date).datetime,
+    });
+
+  return new EmbedBuilder()
+    .setColor(MALConstants.MAL_MANGA_STATUS_COLORS[userManga.list_status.status])
+    .setTitle(`[${userManga.node.id}] ${userManga.node.title} \`${userManga.list_status.status}\``)
+    .setURL(`${MALConstants.MAL_MANGA_URL}/${userManga.node.id}`)
+    .setAuthor({
+      name: `${author.username}#${author.discriminator}`,
+      iconURL: author.displayAvatarURL(),
+    })
+    .setDescription(userManga.list_status.is_rereading ? 'Rewatching' : null)
+    .setThumbnail(MALConstants.MAL_LOGO)
+    .addFields(
+      { name: 'Volumes read', value: userManga.list_status.num_volumes_read.toString(), inline: true },
+      { name: 'Chapters read', value: userManga.list_status.num_chapters_read.toString(), inline: true },
+      { name: 'Score', value: userManga.list_status.score.toString(), inline: true },
+      ...readStatus,
+    )
+    .setImage(userManga.node.main_picture?.large ?? userManga.node.main_picture?.medium)
+    .setTimestamp()
+    .setFooter({
+      text: `MyAnimeList ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
+      iconURL: MALConstants.MAL_LOGO,
+    });
 };

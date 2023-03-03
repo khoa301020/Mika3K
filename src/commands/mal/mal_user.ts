@@ -7,18 +7,20 @@ import {
   InteractionResponse,
   MessageActionRowComponentBuilder,
 } from 'discord.js';
-import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
+import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import qs from 'qs';
 import { CommonConstants, MALConstants } from '../../constants/index.js';
 import { codeChallenge, createChart, datetimeConverter } from '../../helpers/helper.js';
-import { MAL_UserEmbed } from '../../providers/embeds/malEmbed.js';
+import { MAL_UserAnimeEmbed, MAL_UserEmbed, MAL_UserMangaEmbed } from '../../providers/embeds/malEmbed.js';
+import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../../providers/paginations/malPagination.js';
 import { authApi, userApi } from '../../services/mal.js';
-import { IUser } from '../../types/mal.js';
+import { IUser, IUserAnime, IUserManga } from '../../types/mal.js';
 
 @Discord()
 @SlashGroup({ description: 'mal-commands', name: 'mal' })
+@SlashGroup({ description: 'mal-user-commands', name: 'user', root: 'mal' })
 export class MAL_User {
-  @SlashGroup('mal')
+  @SlashGroup('user', 'mal')
   @Slash({ description: 'Login MAL', name: 'login' })
   async login(interaction: CommandInteraction): Promise<InteractionResponse<boolean>> {
     const userId = interaction.user.id;
@@ -44,7 +46,7 @@ export class MAL_User {
 
     return interaction.reply({ content: 'Please authorize:', components: [authRow], ephemeral: true });
   }
-  @SlashGroup('mal')
+  @SlashGroup('user', 'mal')
   @Slash({ description: 'Refresh my access token', name: 'refresh-token' })
   async refreshToken(interaction: CommandInteraction): Promise<any> {
     await interaction.deferReply({ ephemeral: true });
@@ -58,7 +60,7 @@ export class MAL_User {
       content: `Token refreshed. Your login session will expire at : **${datetimeConverter(expireDate!).datetime}**`,
     });
   }
-  @SlashGroup('mal')
+  @SlashGroup('user', 'mal')
   @Slash({ description: 'MAL my info', name: 'my-info' })
   async myinfo(
     @SlashOption({
@@ -127,5 +129,160 @@ export class MAL_User {
     const embed = MAL_UserEmbed(userData, interaction.user, chart);
 
     return interaction.editReply({ embeds: [embed] });
+  }
+
+  @Slash({ description: 'Check my anime list', name: 'my-anime-list' })
+  @SlashGroup('user', 'mal')
+  async animeList(
+    @SlashOption({
+      description: 'Public display?',
+      name: 'display',
+      required: true,
+      type: ApplicationCommandOptionType.Boolean,
+    })
+    display: boolean,
+    @SlashChoice({ name: 'Button navigation', value: 'button' })
+    @SlashChoice({ name: 'Select menu', value: 'select-menu' })
+    @SlashOption({
+      description: 'Navigation type',
+      name: 'navigation',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    navigation: string,
+    @SlashChoice(...MALConstants.MY_ANIME_SEARCH_STATUS)
+    @SlashOption({
+      description: 'Select status',
+      name: 'status',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    status: string,
+    @SlashChoice(...MALConstants.MY_ANIME_SEARCH_SORT)
+    @SlashOption({
+      description: 'Select sort',
+      name: 'sort',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    sort: string,
+    @SlashOption({
+      description: 'Select result limit (default: 10, max: 1000)',
+      name: 'limit',
+      required: false,
+      type: ApplicationCommandOptionType.Number,
+    })
+    limit: number,
+    interaction: CommandInteraction,
+  ): Promise<any> {
+    const userId = interaction.user.id;
+    if (limit < 1 || limit > 1000) return interaction.reply({ content: 'Limit must be between 1 and 1000' });
+    let params = Object.assign({ fields: 'list_status' }, status && { status }, sort && { sort }, limit && { limit });
+
+    try {
+      const res = await userApi.getMyAnimeList(userId, params);
+      const userAnimeList: Array<IUserAnime> = res.data.data;
+      if (userAnimeList.length === 0) {
+        return interaction.reply({ content: 'No anime found.', ephemeral: !display });
+      }
+
+      let names: string[] = [];
+
+      const pages = userAnimeList.map((anime: IUserAnime, index: number) => {
+        names.push(anime.node.title);
+        const embed = MAL_UserAnimeEmbed(anime, interaction.user, index + 1, res.data.data.length);
+
+        return {
+          embeds: [embed],
+        };
+      });
+
+      const pagination =
+        navigation === 'button'
+          ? MAL_ButtonPagination(interaction, pages, !!display)
+          : MAL_SelectMenuPagination(interaction, pages, !!display, names);
+
+      await pagination.send();
+    } catch (err: any) {
+      console.log(err);
+      interaction.reply({ content: err.message, ephemeral: !display });
+    }
+  }
+  @Slash({ description: 'Check my manga list', name: 'my-manga-list' })
+  @SlashGroup('user', 'mal')
+  async mangaList(
+    @SlashOption({
+      description: 'Public display?',
+      name: 'display',
+      required: true,
+      type: ApplicationCommandOptionType.Boolean,
+    })
+    display: boolean,
+    @SlashChoice({ name: 'Button navigation', value: 'button' })
+    @SlashChoice({ name: 'Select menu', value: 'select-menu' })
+    @SlashOption({
+      description: 'Navigation type',
+      name: 'navigation',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    navigation: string,
+    @SlashChoice(...MALConstants.MY_MANGA_SEARCH_STATUS)
+    @SlashOption({
+      description: 'Select status',
+      name: 'status',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    status: string,
+    @SlashChoice(...MALConstants.MY_MANGA_SEARCH_SORT)
+    @SlashOption({
+      description: 'Select sort',
+      name: 'sort',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    sort: string,
+    @SlashOption({
+      description: 'Select result limit (default: 10, max: 1000)',
+      name: 'limit',
+      required: false,
+      type: ApplicationCommandOptionType.Number,
+    })
+    limit: number,
+    interaction: CommandInteraction,
+  ): Promise<any> {
+    const userId = interaction.user.id;
+    if (limit < 1 || limit > 1000) return interaction.reply({ content: 'Limit must be between 1 and 1000' });
+    let params = Object.assign({ fields: 'list_status' }, status && { status }, sort && { sort }, limit && { limit });
+
+    try {
+      const res = await userApi.getMyMangaList(userId, params);
+      const userMangaList: Array<IUserManga> = res.data.data;
+      if (userMangaList.length === 0) {
+        return interaction.reply({ content: 'No manga found.', ephemeral: !display });
+      }
+
+      let names: string[] = [];
+
+      const pages = userMangaList.map((manga: IUserManga, index: number) => {
+        names.push(manga.node.title);
+        const embed = MAL_UserMangaEmbed(manga, interaction.user, index + 1, res.data.data.length);
+
+        return {
+          embeds: [embed],
+        };
+      });
+
+      const pagination =
+        navigation === 'button'
+          ? MAL_ButtonPagination(interaction, pages, !!display)
+          : MAL_SelectMenuPagination(interaction, pages, !!display, names);
+
+      await pagination.send();
+    } catch (err: any) {
+      console.log(err);
+      interaction.reply({ content: err.message, ephemeral: !display });
+    }
   }
 }

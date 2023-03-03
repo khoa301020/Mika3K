@@ -3,6 +3,22 @@ export class MALConstants {
   public static readonly COLOR_BY_APPROVED = (isApproved: Boolean) => (isApproved ? 0x00ff00 : 0x484a48);
   public static readonly MAL_API = 'https://api.myanimelist.net/v2';
   public static readonly MAL_AUTH_API = 'https://myanimelist.net/v1/oauth2';
+  public static readonly MAL_ANIME_URL = 'https://myanimelist.net/anime';
+  public static readonly MAL_MANGA_URL = 'https://myanimelist.net/manga';
+  public static readonly MAL_ANIME_STATUS_COLORS: { [key: string]: number } = {
+    watching: 0x2db039,
+    completed: 0x26448f,
+    on_hold: 0xf1c83e,
+    dropped: 0xa12f31,
+    plan_to_watch: 0xc3c3c3,
+  };
+  public static readonly MAL_MANGA_STATUS_COLORS = {
+    reading: 0x2db039,
+    completed: 0x26448f,
+    on_hold: 0xf1c83e,
+    dropped: 0xa12f31,
+    plan_to_read: 0xc3c3c3,
+  };
 
   /* Jikan API constants */
   private static readonly JIKAN_API = 'https://api.jikan.moe';
@@ -87,6 +103,14 @@ export class MALConstants {
     'favorites',
   ];
   public static readonly ANIME_TOP_QUERY_FILTER = ['airing', 'upcoming', 'bypopularity', 'favorite'];
+  public static readonly MY_ANIME_SEARCH_STATUS = ['watching', 'completed', 'on_hold', 'dropped', 'plan_to_watch'];
+  public static readonly MY_ANIME_SEARCH_SORT = [
+    'list_score',
+    'list_updated_at',
+    'anime_title',
+    'anime_start_date',
+    // 'anime_id'
+  ];
 
   /* Manga search constants */
   public static readonly MANGA_QUERY_TYPE = ['manga', 'novel', 'lightnovel', 'oneshot', 'doujin', 'manhwa', 'manhua'];
@@ -106,6 +130,14 @@ export class MALConstants {
     'favorites',
   ];
   public static readonly MANGA_TOP_QUERY_FILTER = ['publishing', 'upcoming', 'bypopularity', 'favorite'];
+  public static readonly MY_MANGA_SEARCH_STATUS = ['reading', 'completed', 'on_hold', 'dropped', 'plan_to_read'];
+  public static readonly MY_MANGA_SEARCH_SORT = [
+    'list_score',
+    'list_updated_at',
+    'manga_title',
+    'manga_start_date',
+    // 'manga_id'
+  ];
 
   /* Character search constants */
   public static readonly CHARACTER_QUERY_ORDER_BY = ['mal_id', 'name', 'favorites'];

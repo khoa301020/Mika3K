@@ -50,7 +50,7 @@ export const authApi = {
     return await MAL.findOneAndUpdate({ userId }, { codeChallenge: code_challenge }, { new: true, upsert: true });
   },
   getPKCE: async (userId: string) => {
-    return await MAL.findOne({ user: userId }).select('codeChallenge');
+    return await MAL.findOne({ userId }).select('codeChallenge');
   },
   getToken: async (data: any): Promise<AxiosResponse> => {
     return await axios({
@@ -63,7 +63,7 @@ export const authApi = {
   saveToken: async (userId: string, accessToken: string, refreshToken: string, expiresDate: Date) => {
     return await MAL.findOneAndUpdate({ userId }, { accessToken, refreshToken, expiresAt: expiresDate }, { new: true });
   },
-  refreshToken: async (userId: string): Promise<Date | null> => {
+  refreshToken: async (userId: string): Promise<any> => {
     const user = await MAL.findOne({ userId }).select('refreshToken expiresAt');
     if (!user || new Date().getTime() <= new Date(user!.expiresAt).getTime()) return null;
 
@@ -81,13 +81,13 @@ export const authApi = {
 
     const { refresh_token, access_token, expires_in } = response.data;
 
-    await MAL.findOneAndUpdate(
+    const updatedUser = await MAL.findOneAndUpdate(
       { userId },
       { refreshToken: refresh_token, accessToken: access_token, expiresAt: expireDate(expires_in) },
       { new: true },
     );
 
-    return expireDate(expires_in);
+    return updatedUser;
   },
 };
 export const userApi = {
@@ -99,16 +99,19 @@ export const userApi = {
     await axios.get(`${MALConstants.MAL_API}/users/${userId}?fields=anime_statistics,time_zone,is_supporter`, {
       headers: { Authorization: `Bearer ${token}` },
     }),
-  getMyAnimeList: async (userId: string, params: any) => {
-    const user = await MAL.findOne({ userId }).select('accessToken');
+  getMyAnimeList: async (userId: string, params: any): Promise<AxiosResponse> => {
+    let user = await MAL.findOne({ userId }).select('accessToken expiresAt');
+    if (!user) throw new Error('User not found, please login.');
+    if (new Date().getTime() <= new Date(user!.expiresAt).getTime()) user = await authApi.refreshToken(userId);
     const query = qs.stringify(params);
     return await axios.get(`${MALConstants.MAL_API}/users/@me/animelist?${query}`, {
       headers: { Authorization: `Bearer ${user?.accessToken}` },
     });
   },
-
-  getMyMangaList: async (userId: string, params: any) => {
-    const user = await MAL.findOne({ userId }).select('accessToken');
+  getMyMangaList: async (userId: string, params: any): Promise<AxiosResponse> => {
+    let user = await MAL.findOne({ userId }).select('accessToken');
+    if (!user) throw new Error('User not found, please login.');
+    if (new Date().getTime() <= new Date(user!.expiresAt).getTime()) user = await authApi.refreshToken(userId);
     const query = qs.stringify(params);
     return await axios.get(`${MALConstants.MAL_API}/users/@me/mangalist?${query}`, {
       headers: { Authorization: `Bearer ${user?.accessToken}` },

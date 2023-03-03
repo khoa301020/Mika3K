@@ -45,7 +45,9 @@ export class MAL_API {
     if (!userAuth) return (context.body = 'Login failed, please close this tab and try again.');
 
     user.send(
-      `MAL login successfully!\nYour login session will expire at **${datetimeConverter(expiresDate).datetime}**.`,
+      `MAL login successfully!\nYour login session will expire at **${
+        datetimeConverter(expiresDate).datetime
+      } (UTC)**.`,
     );
 
     return (context.body = 'Login succeed, you can close this tab now.');

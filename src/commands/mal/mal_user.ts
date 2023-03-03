@@ -52,12 +52,14 @@ export class MAL_User {
     await interaction.deferReply({ ephemeral: true });
     const userId = interaction.user.id;
 
-    const expireDate = await authApi.refreshToken(userId!);
+    const refreshedUser = await authApi.refreshToken(userId!);
 
-    if (!expireDate) return interaction.editReply({ content: 'User invalid or your token is still valid.' });
+    if (!refreshedUser) return interaction.editReply({ content: 'User invalid or your token is still valid.' });
 
     return interaction.editReply({
-      content: `Token refreshed. Your login session will expire at : **${datetimeConverter(expireDate!).datetime}**`,
+      content: `Token refreshed. Your login session will expire at : **${
+        datetimeConverter(refreshedUser.expiresAt!).datetime
+      } (UTC)**`,
     });
   }
   @SlashGroup('user', 'mal')

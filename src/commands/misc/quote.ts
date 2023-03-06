@@ -212,7 +212,7 @@ class QuoteSlash {
   ////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////     Slash Command   //////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////
-  @Slash({ description: 'Create quote' })
+  @Slash({ name: 'create', description: 'Create quote' })
   @SlashGroup('quote')
   async createquote(
     @SlashOption({
@@ -269,7 +269,7 @@ class QuoteSlash {
     return interaction.reply({ content: '✅ Quote added successfully.', ephemeral: true });
   }
 
-  @Slash({ description: 'Get quote' })
+  @Slash({ name: 'get', description: 'Get quote' })
   @SlashGroup('quote')
   async getquote(
     @SlashOption({
@@ -291,7 +291,7 @@ class QuoteSlash {
     return interaction.reply({ content: randomArray(quotes).quote?.value, ephemeral: true });
   }
 
-  @Slash({ description: 'List quotes' })
+  @Slash({ name: 'list', description: 'List quotes' })
   @SlashGroup('quote')
   async listquotes(interaction: CommandInteraction): Promise<any> {
     const guildId = interaction.guildId;
@@ -317,7 +317,7 @@ class QuoteSlash {
     return await pagination.send();
   }
 
-  @Slash({ description: 'My quotes' })
+  @Slash({ name: 'mine', description: 'My quotes' })
   @SlashGroup('quote')
   async myquotes(interaction: CommandInteraction): Promise<any> {
     const user = interaction.guild!.members.cache.get(interaction.user.id);
@@ -344,7 +344,7 @@ class QuoteSlash {
     return await pagination.send();
   }
 
-  @Slash({ description: 'Edit quote' })
+  @Slash({ name: 'edit', description: 'Edit quote' })
   @SlashGroup('quote')
   async editquote(
     @SlashOption({
@@ -378,7 +378,7 @@ class QuoteSlash {
     return interaction.reply({ content: response, ephemeral: true });
   }
 
-  @Slash({ description: 'Publish your quote' })
+  @Slash({ name: 'publish', description: 'Publish your quote' })
   @SlashGroup('quote')
   async publishquote(
     @SlashOption({
@@ -396,7 +396,7 @@ class QuoteSlash {
     return interaction.reply({ content: response, ephemeral: true });
   }
 
-  @Slash({ description: 'Private your quote' })
+  @Slash({ name: 'private', description: 'Private your quote' })
   @SlashGroup('quote')
   async privatequote(
     @SlashOption({
@@ -414,7 +414,7 @@ class QuoteSlash {
     return interaction.reply({ content: response, ephemeral: true });
   }
 
-  @Slash({ description: 'Delete quote' })
+  @Slash({ name: 'delete', description: 'Delete quote' })
   @SlashGroup('quote')
   async deletequote(
     @SlashOption({

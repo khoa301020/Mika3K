@@ -152,3 +152,5 @@ export const parseCookies = (cookieStr: string): { [key: string]: string } => {
 
   return cookies;
 };
+
+export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));

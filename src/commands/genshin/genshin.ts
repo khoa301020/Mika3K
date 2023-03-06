@@ -1,5 +1,6 @@
 import { ApplicationCommandOptionType, CommandInteraction, InteractionResponse } from 'discord.js';
 import { Client, Discord, Slash, SlashGroup, SlashOption } from 'discordx';
+import { setTimeout } from 'timers/promises';
 import { parseCookies } from '../../helpers/helper.js';
 import { GenshinAccountEmbed, GenshinRedeemResultEmbed } from '../../providers/embeds/genshinEmbed.js';
 import { Genshin_ButtonPagination } from '../../providers/paginations/genshinPagination.js';
@@ -114,20 +115,20 @@ export class GenshinRedeem {
     const user: IGenshin = await genshinApi.getUserInfo(userId);
     if (!user || !user.cookieString) return interaction.editReply('❌ Cookie not found, please save cookie first.');
 
-    const giftcodes = [giftcode1, giftcode2, giftcode3];
-    console.log(giftcodes);
+    const giftcodes = Array.from(new Set([giftcode1, giftcode2, giftcode3])).filter((giftcode) => giftcode);
 
     let results: Array<any> = [];
+    let timeout: number = 0;
 
-    for (const giftcode of giftcodes)
-      giftcode && (await genshinApi.redeemCode(user, giftcode!).then((res) => results.push({ giftcode, res })));
-
-    // for (const giftcode of giftcodes)
-    //   setTimeout(async function () {
-    //     await genshinApi.redeemCode(user, giftcode!).then((res) => results.push({ giftcode, res }));
-    //   }, 5000);
-
-    console.log(results);
+    for (let index = 0; index < giftcodes.length; index++) {
+      await genshinApi
+        .redeemCode(user, giftcodes[index]!)
+        .then((res) => results.push({ giftcode: giftcodes[index], res }));
+      if (giftcodes[index + 1]) {
+        timeout += 5555;
+        await setTimeout(timeout);
+      }
+    }
 
     const embed = GenshinRedeemResultEmbed(results, interaction.client as Client);
     return interaction.editReply({ embeds: [embed] });

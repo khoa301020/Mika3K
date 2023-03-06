@@ -26,8 +26,6 @@ export const GenshinRedeemResultEmbed = (results: Array<any>, client: Client): E
       value: result.res.data.retcode === 0 ? '```✅ Success```' : `\`\`\`❌ ${result.res.data.message}\`\`\``,
     });
 
-  console.log(fields);
-
   return new EmbedBuilder()
     .setColor(0x0099ff)
     .setTitle(`Redeem result`)

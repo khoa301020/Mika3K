@@ -33,11 +33,12 @@ My self-use discord bot created with [Discordx](https://discordx.js.org/docs).
 
 |    Features   | Context menu |      Message command     |   Slash command  |
 |:-------------:|:------------:|:------------------------:|:----------------:|
-| Create quote  |      :x:     |  `$cq` / `$createquote`  |  `/quote create` |
+| Create quote  |      :x:     |   `$$` / `$createquote`  |  `/quote create` |
+| Get quote     |      :x:     |    `$$$` / `$getquote`   |   `/quote get`   |
 | Edit quote    |      :x:     |   `$eq` / `$editquote`   |   `/quote edit`  |
 | Delete quote  |      :x:     |  `$dq` / `$deletequote`  |  `/quote delete` |
-| List quotes   |      :x:     |   `$lq` / `$listquote`   |   `/quote list`  |
-| My quotes     |      :x:     |    `$mq` / `$myquote`    |   `/quote mine`  |
+| List quotes   |      :x:     |   `$lq` / `$listquotes`  |   `/quote list`  |
+| My quotes     |      :x:     |    `$mq` / `$myquotes`   |   `/quote mine`  |
 | Publish quote |      :x:     | `$plq` / `$publishquote` | `/quote publish` |
 | Private quote |      :x:     | `$prq` / `$privatequote` | `/quote private` |
 
@@ -45,7 +46,7 @@ My self-use discord bot created with [Discordx](https://discordx.js.org/docs).
 
 |                Features               | Context menu |     Message command     |       Slash command       |
 |:-------------------------------------:|:------------:|:-----------------------:|:-------------------------:|
-| Play jankenpon (rock, scissor, paper) |      :x:     | `$ jkp` / `$jankenpon` |   `/minigame jankenpon`   |
+| Play jankenpon (rock, scissor, paper) |      :x:     | `$jkp` / `$jankenpon` |   `/minigame jankenpon`   |
 
 
 ## Misc

@@ -59,9 +59,10 @@ My self-use discord bot created with [Discordx](https://discordx.js.org/docs).
 
 # Resources
 
-- NHentai API by [Jandapress](https://github.com/sinkaroid/jandapress)
+- NHentai API by [@sinkaroid/Jandapress](https://github.com/sinkaroid/jandapress)
 - MyAnimeList API by [Jikan](https://github.com/jikan-me/jikan)
 - MyAnimeList typings from [@shineiichijo/marika](https://github.com/LuckyYam/Marika)
+- Blue Archive data from [@lonqie/SchaleDB](https://github.com/lonqie/SchaleDB)
 
 # Libraries
 

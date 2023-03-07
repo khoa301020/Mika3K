@@ -154,3 +154,6 @@ export const parseCookies = (cookieStr: string): { [key: string]: string } => {
 };
 
 export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+export const htmlEntitiesDecode = (str: string): string | null =>
+  new DOMParser().parseFromString(str, 'text/html').documentElement.textContent;

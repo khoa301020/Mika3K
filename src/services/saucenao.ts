@@ -18,7 +18,7 @@ export const resultsToEmbedFields = (data: any) =>
     if (Array.isArray(value) && key === 'ext_urls' && value.length > 0)
       return {
         name: key,
-        value: value.map((e: any) => `- [${SauceNAOConstants.REGEX_DOMAIN_NAME_ONLY.exec(e)![1]}](${e})`).join('\n- '),
+        value: value.map((e: any) => `- [${SauceNAOConstants.REGEX_DOMAIN_NAME_ONLY.exec(e)![1]}](${e})`).join('\n'),
       };
 
     return { name: key, value: value.toString() };

@@ -6,7 +6,7 @@ import { IEnemy } from '../types/bluearchive/enemy';
 import { IEquipment } from '../types/bluearchive/equipment';
 import { IFurniture } from '../types/bluearchive/furniture';
 import { IItem } from '../types/bluearchive/item';
-import { IRaid } from '../types/bluearchive/raid';
+import { Raid } from '../types/bluearchive/raid.js';
 import { IStudent } from '../types/bluearchive/student';
 import { ISummon } from '../types/bluearchive/summon';
 
@@ -15,66 +15,65 @@ const curl = async (url: string) => await axios.get(url);
 export const fetchData = {
   student: async function sync() {
     const url = BlueArchiveConstants.STUDENTS_DATA_URL;
-    const students = await (await curl(url)).data;
-    students.forEach(async (student: IStudent) => {
-      const result = await importData.student(student);
-      console.log('Imported ' + result.Name);
-    });
+    const students: Array<IStudent> = await (await curl(url)).data;
+    const promises = students.map(async (student: IStudent) => await importData.student(student));
+    console.log(`Students: ${promises.length}`);
+    return await Promise.all(promises);
   },
   currency: async function sync() {
     const url = BlueArchiveConstants.CURRENCY_DATA_URL;
     const currencies = await (await curl(url)).data;
-    currencies.forEach(async (currency: ICurrency) => {
-      const result = await importData.currency(currency);
-      console.log('Imported ' + result.Name);
-    });
+    const promises: Array<Promise<ICurrency>> = currencies.map(
+      async (currency: ICurrency) => await importData.currency(currency),
+    );
+    console.log(`Currencies: ${promises.length}`);
+    return await Promise.all(promises);
   },
   enemy: async function sync() {
     const url = BlueArchiveConstants.ENEMIES_DATA_URL;
     const enemies = await (await curl(url)).data;
-    enemies.forEach(async (enemy: IEnemy) => {
-      const result = await importData.enemy(enemy);
-      console.log('Imported ' + result.Name);
-    });
+    const promises: Array<Promise<IEnemy>> = enemies.map(async (enemy: IEnemy) => await importData.enemy(enemy));
+    console.log(`Enemies: ${promises.length}`);
+    return await Promise.all(promises);
   },
   equipment: async function sync() {
     const url = BlueArchiveConstants.EQUIPMENT_DATA_URL;
     const equipments = await (await curl(url)).data;
-    equipments.forEach(async (equipment: IEquipment) => {
-      const result = await importData.equipment(equipment);
-      console.log('Imported ' + result.Name);
-    });
+    const promises: Array<Promise<IEquipment>> = equipments.map(
+      async (equipment: IEquipment) => await importData.equipment(equipment),
+    );
+    console.log(`Equipments: ${promises.length}`);
+    return await Promise.all(promises);
   },
   furniture: async function sync() {
     const url = BlueArchiveConstants.FURNITURE_DATA_URL;
     const furnitures = await (await curl(url)).data;
-    furnitures.forEach(async (furniture: IFurniture) => {
-      const result = await importData.furniture(furniture);
-      console.log('Imported ' + result.Name);
-    });
+    const promises: Array<Promise<IFurniture>> = furnitures.map(
+      async (furniture: IFurniture) => await importData.furniture(furniture),
+    );
+    console.log(`Furnitures: ${promises.length}`);
+    return await Promise.all(promises);
   },
   item: async function sync() {
     const url = BlueArchiveConstants.ITEMS_DATA_URL;
     const items = await (await curl(url)).data;
-    items.forEach(async (item: IItem) => {
-      const result = await importData.item(item);
-      console.log('Imported ' + result.Name);
-    });
+    const promises: Array<Promise<IItem>> = items.map(async (item: IItem) => await importData.item(item));
+    console.log(`Items: ${promises.length}`);
+    return await Promise.all(promises);
   },
   raid: async function sync() {
     const url = BlueArchiveConstants.RAIDS_DATA_URL;
-    const raidlist = await (await curl(url)).data;
-    raidlist.Raid.forEach(async (raid: IRaid) => {
-      const result = await importData.raid(raid);
-    });
+    const raids = await (await curl(url)).data.Raid;
+    const promises: Array<Promise<Raid>> = raids.map(async (raid: Raid) => await importData.raid(raid));
+    console.log(`Raids: ${promises.length}`);
+    return await Promise.all(promises);
   },
   summon: async function sync() {
     const url = BlueArchiveConstants.SUMMONS_DATA_URL;
     const summons = await (await curl(url)).data;
-    summons.forEach(async (summon: ISummon) => {
-      const result = await importData.summon(summon);
-      console.log('Imported ' + result.Name);
-    });
+    const promises: Array<Promise<ISummon>> = summons.map(async (summon: ISummon) => await importData.summon(summon));
+    console.log(`Summons: ${promises.length}`);
+    return await Promise.all(promises);
   },
 };
 export const importData = {
@@ -89,7 +88,7 @@ export const importData = {
   furniture: async (furniture: IFurniture) =>
     await SchaleDB.Furniture.findOneAndUpdate({ Id: furniture.Id }, furniture, { upsert: true, new: true }),
   item: async (item: IItem) => await SchaleDB.Item.findOneAndUpdate({ Id: item.Id }, item, { upsert: true, new: true }),
-  raid: async (raid: any) => await SchaleDB.Raid.findOneAndUpdate({ Id: raid.Id }, raid, { upsert: true, new: true }),
+  raid: async (raid: Raid) => await SchaleDB.Raid.findOneAndUpdate({ Id: raid.Id }, raid, { upsert: true, new: true }),
   summon: async (summon: ISummon) =>
     await SchaleDB.Summon.findOneAndUpdate({ Id: summon.Id }, summon, { upsert: true, new: true }),
 };

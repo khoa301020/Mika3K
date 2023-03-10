@@ -121,11 +121,6 @@ export const tableConverter = (
   }
 };
 
-export const sortArray = {
-  asc: (array: Array<any>, field: string) => array?.sort((a, b) => (a[field] > b[field] ? 1 : -1)),
-  desc: (array: Array<any>, field: string) => array?.sort((a, b) => (a[field] > b[field] ? -1 : 1)),
-};
-
 export const createChart = (configs: any, width: number, height: number): string =>
   new QuickChart().setConfig(configs).setWidth(width).setHeight(height).getUrl();
 
@@ -157,3 +152,20 @@ export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export const htmlEntitiesDecode = (str: string): string | null =>
   new DOMParser().parseFromString(str, 'text/html').documentElement.textContent;
+
+export const sortArray = {
+  asc: (arr: Array<any>, field: string) =>
+    arr?.sort((a, b) => (a[field as keyof Object] > b[field as keyof Object] ? 1 : -1)),
+  desc: (arr: Array<any>, field: string) =>
+    arr?.sort((a, b) => (a[field as keyof Object] > b[field as keyof Object] ? -1 : 1)),
+  ascAlphabet: (arr: Array<any>, field: string) =>
+    arr?.sort((a, b) => (a[field as keyof Object] > b[field as keyof Object] ? 1 : 1)),
+  descAlphabet: (arr: Array<any>, field: string) =>
+    arr?.sort((a, b) => (a[field as keyof Object] > b[field as keyof Object] ? -1 : 1)),
+};
+
+export const arrayDiff = (arr1: Array<any>, arr2: Array<any>) =>
+  arr1.filter((obj1) => {
+    const obj2 = arr2.find((obj2) => obj2.id === obj1.id);
+    return JSON.stringify(obj1) !== JSON.stringify(obj2);
+  });

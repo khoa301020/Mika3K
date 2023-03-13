@@ -4,7 +4,7 @@ import {
   CommandInteraction,
   GuildMember,
   Message,
-  MessageContextMenuCommandInteraction,
+  UserContextMenuCommandInteraction,
 } from 'discord.js';
 import {
   Client,
@@ -57,7 +57,7 @@ class CheckInfo {
     name: 'Check user info',
     type: ApplicationCommandType.User,
   })
-  messageHandler(interaction: MessageContextMenuCommandInteraction): void {
+  messageHandler(interaction: UserContextMenuCommandInteraction): void {
     const user = interaction.guild!.members.cache.get(interaction.targetId);
 
     const embed = UserInfoEmbed(interaction.user, interaction.client as Client, user!);

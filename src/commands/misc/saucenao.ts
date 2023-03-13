@@ -1,6 +1,15 @@
 import { AxiosResponse } from 'axios';
-import { APIAttachment, ApplicationCommandOptionType, CommandInteraction } from 'discord.js';
 import {
+  APIAttachment,
+  ApplicationCommandOptionType,
+  ApplicationCommandType,
+  CommandInteraction,
+  Message,
+  MessageContextMenuCommandInteraction,
+  TextChannel,
+} from 'discord.js';
+import {
+  ContextMenu,
   Discord,
   SimpleCommand,
   SimpleCommandMessage,
@@ -76,9 +85,6 @@ class SauceNAO {
     return await pagination.send();
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////     Slash   //////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////////
   @Slash({ description: 'SauceNAO search', name: 'saucenao' })
   async saucenao(
     @SlashOption({
@@ -147,6 +153,59 @@ class SauceNAO {
     });
 
     const pagination = SauceNAO_SlashPagination(interaction, pages, isPublic);
+    return await pagination.send();
+  }
+
+  @ContextMenu({
+    name: 'Search SauceNAO',
+    type: ApplicationCommandType.Message,
+  })
+  async messageHandler(interaction: MessageContextMenuCommandInteraction): Promise<any> {
+    await interaction.deferReply();
+    const message: Message = await (interaction.channel as TextChannel).messages.fetch(interaction.targetId);
+
+    let url = message.content;
+    const attachments = message.attachments.map((a) => a.url);
+
+    if (!url && attachments.length === 0) return interaction.reply('❌ Url or attachment required.');
+    if (attachments.length > 1) return interaction.reply('❌ Too many attachments.');
+    if (attachments.length > 0) url = attachments[0];
+    // if (url && !Constants.REGEX_IMAGE_URL.test(url)) return interaction.editReply('Image URL is not valid.');
+
+    const request: ISaucenaoSearchRequest = {
+      output_type: 2,
+      api_key: process.env.SAUCENAO_API_KEY!,
+      testmode: 1,
+      db: 999,
+      dedupe: 1,
+      hide: 0,
+      url,
+    };
+
+    const response: AxiosResponse = await saucenao(request);
+
+    if (response.status !== 200) return interaction.editReply({ content: '❌ Search failed.' });
+
+    const data: ISaucenaoSearchResponse = response.data;
+
+    if (data.header?.status !== 0) return interaction.editReply({ content: `❌ ${data.header?.message}` });
+
+    if (data.results?.length === 0) return interaction.editReply({ content: `❌ No result found.` });
+
+    data.results = data.results?.filter(
+      (result: ISaucenaoSearchResponseResult) =>
+        parseFloat(result.header?.similarity!) > data.header?.minimum_similarity!,
+    );
+
+    if (data.results?.length === 0) return interaction.editReply({ content: `❌ The results' similarity is too low.` });
+
+    const pages = data.results!.map((result: ISaucenaoSearchResponseResult, index: number) => {
+      const embed = SauceNAOResultEmbed(interaction.user, result, index + 1, data.results!.length);
+
+      return { embeds: [embed] };
+    });
+
+    const pagination = SauceNAO_SlashPagination(interaction, pages, true);
     return await pagination.send();
   }
 }

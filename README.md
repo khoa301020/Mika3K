@@ -54,7 +54,7 @@ My self-use discord bot created with [Discordx](https://discordx.js.org/docs).
 |     Features    |    Context menu    |     Message command    | Slash command |
 |:---------------:|:------------------:|:----------------------:|:-------------:|
 | Check user info | :heavy_check_mark: | `$info` / `$userinfo` | `/check-info` |
-| SauceNAO        |         :x:        |  `$sn` / `$saucenao`  |  `/saucenao`  |
+| SauceNAO        | :heavy_check_mark: |  `$sn` / `$saucenao`  |  `/saucenao`  |
 | Math            |         :x:        |     `$m` / `$math`    | `/math`       |
 
 # Resources

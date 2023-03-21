@@ -150,9 +150,6 @@ export const parseCookies = (cookieStr: string): { [key: string]: string } => {
 
 export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-export const htmlEntitiesDecode = (str: string): string | null =>
-  new DOMParser().parseFromString(str, 'text/html').documentElement.textContent;
-
 export const sortArray = {
   asc: (arr: Array<any>, field: string) =>
     arr?.sort((a, b) => (a[field as keyof Object] > b[field as keyof Object] ? 1 : -1)),
@@ -169,3 +166,25 @@ export const arrayDiff = (arr1: Array<any>, arr2: Array<any>) =>
     const obj2 = arr2.find((obj2) => obj2.id === obj1.id);
     return JSON.stringify(obj1) !== JSON.stringify(obj2);
   });
+
+export const validateDayMonth = (day: number, month: number): boolean => {
+  switch (month) {
+    case 1:
+    case 3:
+    case 5:
+    case 7:
+    case 8:
+    case 10:
+    case 12:
+      return day > 0 && day <= 31 ? true : false;
+    case 4:
+    case 6:
+    case 9:
+    case 11:
+      return day > 0 && day <= 30 ? true : false;
+    case 2:
+      return day > 0 && day <= 29 ? true : false;
+    default:
+      return false;
+  }
+};

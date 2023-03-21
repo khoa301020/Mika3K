@@ -21,6 +21,7 @@
     "discord.js": "^14.7.1",
     "discordx": "^11.7.1",
     "dotenv": "^16.0.3",
+    "html-entities": "^2.3.3",
     "koa": "^2.14.1",
     "mathjs": "^11.6.0",
     "mongoose": "^7.0.1",

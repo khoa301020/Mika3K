@@ -54,7 +54,7 @@ export class MAL_User {
 
     const refreshedUser = await authApi.refreshToken(userId!);
 
-    if (!refreshedUser) return interaction.editReply({ content: 'User invalid or your token is still valid.' });
+    if (!refreshedUser) return interaction.editReply({ content: '❌ User invalid or your token is still valid.' });
 
     return interaction.editReply({
       content: `Token refreshed. Your login session will expire at : **${
@@ -81,7 +81,7 @@ export class MAL_User {
 
     if (!user)
       return interaction.editReply({
-        content: 'Your login session is expired or not authorized.\nPlease login.',
+        content: '❌ Your login session is expired or not authorized.\nPlease login.',
       });
 
     const response = await userApi.getSelf(user.accessToken!);

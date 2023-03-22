@@ -93,6 +93,9 @@ export const importData = {
     await SchaleDB.Summon.findOneAndUpdate({ Id: summon.Id }, summon, { upsert: true, new: true }),
 };
 export const getData = {
-  getStudent: async (query?: Partial<IStudent>) => await SchaleDB.Student.find(query ?? {}).lean(),
+  getStudent: async (sort: any, query?: Partial<IStudent>) =>
+    await SchaleDB.Student.find(query ?? {})
+      .sort(sort)
+      .lean(),
   getLocalization: async () => await curl(BlueArchiveConstants.LOCALIZATION_DATA_URL),
 };

@@ -22,6 +22,28 @@ export class BlueArchiveConstants {
 
   /* Student constants */
 
+  public static readonly SORT_BY: { [key: string]: string } = {
+    Rarity: 'StarGrade',
+    Name: 'Name',
+    Height: 'CharHeightMetric',
+    ATK_lv1: 'AttackPower1',
+    ATK_lvMAX: 'AttackPower100',
+    HP_lv1: 'MaxHP1',
+    HP_lvMAX: 'MaxHP100',
+    DEF_lv1: 'DefensePower1',
+    DEF_lvMAX: 'DefensePower100',
+    HEAL_lv1: 'HealPower1',
+    HEAL_lvMAX: 'HealPower100',
+    Dodge: 'DodgePoint',
+    Accuracy: 'AccuracyPoint',
+    CritRate: 'CriticalPoint',
+    CritDamage: 'CritDamageRate',
+    Range: 'Range',
+    CostRegen: 'RegenCost',
+    UrbanAdaptation: 'StreetBattleAdaptation',
+    IndoorAdaptation: 'IndoorBattleAdaptation',
+    OutdoorAdaptation: 'OutdoorBattleAdaptation',
+  };
   public static readonly STUDENT_RARITY = [1, 2, 3];
   public static readonly STUDENT_TYPE: { [key: number]: string } = {
     0: 'Non-limit',

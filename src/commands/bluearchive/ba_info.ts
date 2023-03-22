@@ -72,6 +72,7 @@ export class BlueArchiveSync {
       type: ApplicationCommandOptionType.Number,
     })
     MonthOfBirth: number,
+    @SlashChoice(...BlueArchiveConstants.STUDENT_RARITY)
     @SlashOption({
       description: "Student's rarity",
       name: 'rarity',
@@ -143,6 +144,25 @@ export class BlueArchiveSync {
       type: ApplicationCommandOptionType.String,
     })
     CharacterAge: string,
+    @SlashChoice(
+      ...Object.entries(BlueArchiveConstants.SORT_BY).map(([key, value]) => Object({ name: key, value: value })),
+    )
+    @SlashOption({
+      description: 'Select sort by (Sort name by default)',
+      name: 'sort-by',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    sortBy: string = 'Name',
+    @SlashChoice({ name: 'Ascending', value: 1 })
+    @SlashChoice({ name: 'Descending', value: -1 })
+    @SlashOption({
+      description: 'Select order by (Ascending by default)',
+      name: 'order-by',
+      required: false,
+      type: ApplicationCommandOptionType.Number,
+    })
+    orderBy: number = 1,
     interaction: CommandInteraction,
   ): Promise<any> {
     await interaction.deferReply({ ephemeral: !isPublic });
@@ -164,7 +184,7 @@ export class BlueArchiveSync {
         ),
       };
 
-    const request: Partial<IStudent> = Object.assign(
+    const query: Partial<IStudent> = Object.assign(
       JSON.parse(
         JSON.stringify({
           Name,
@@ -184,7 +204,13 @@ export class BlueArchiveSync {
       BirthDay && { BirthDay },
     );
 
-    const students: Array<IStudent> = await getData.getStudent(request);
+    const sort = {
+      [sortBy]: orderBy,
+    };
+
+    const students: Array<IStudent> = await getData.getStudent(sort, query);
+
+    if (students.length === 0) return interaction.editReply('❌ No student found.');
 
     const pages: Array<PaginationItem> = students.map(
       (student: IStudent, index: number): PaginationItem =>

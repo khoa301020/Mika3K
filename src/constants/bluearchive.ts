@@ -52,6 +52,11 @@ export class BlueArchiveConstants {
   };
   public static readonly ARMOR_TYPES = ['LightArmor', 'HeavyArmor', 'Unarmed', 'ElasticArmor'];
   public static readonly BULLET_TYPES = ['Explosion', 'Mystic', 'Pierce'];
+  public static readonly BULLET_COLOR: { [key: string]: number } = {
+    Explosion: 0xcc1a25,
+    Mystic: 0x216f9c,
+    Pierce: 0xb26d1f,
+  };
   public static readonly STUDENT_AGE = [
     '11 years old',
     '15 years old',

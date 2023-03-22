@@ -28,7 +28,7 @@ export const bot = new Client({
   ],
 
   // Debug logs are disabled in silent mode
-  silent: false,
+  silent: true,
 
   // Configuration for @SimpleCommand
   simpleCommand: {
@@ -36,9 +36,25 @@ export const bot = new Client({
   },
 });
 
+// Connect MongoDB
+mongoose.set('strictQuery', true);
+const mongoUri = process.env.MONGO_URI;
+await mongoose.connect(mongoUri!).then(async () => {
+  console.log('MongoDB connected');
+});
+
+// Cache before initialization
+const BALocalization: ILocalization = await (await axios.get(BlueArchiveConstants.LOCALIZATION_DATA_URL)).data;
+cache.set('BA_Localization', BALocalization);
+console.log('BA_Localization loaded');
+
+// const students: Array<IStudent> = await (await axios.get(BlueArchiveConstants.STUDENTS_DATA_URL)).data;
+// cache.set('BA_Students', students);
+// console.log('BA_Students loaded');
+
 bot.once('ready', async () => {
   // Make sure all guilds are cached
-  // await bot.guilds.fetch();
+  await bot.guilds.fetch();
 
   // Synchronize applications commands with Discord
   await bot.initApplicationCommands();
@@ -92,22 +108,6 @@ async function run() {
     console.log(`discord api server started on ${port}`);
     console.log(`visit localhost:${port}/guilds`);
   });
-
-  // ************* mongodb section **********
-
-  mongoose.set('strictQuery', true);
-
-  const mongoUri = process.env.MONGO_URI;
-
-  await mongoose.connect(mongoUri!).then(async () => {
-    console.log('MongoDB connected');
-  });
-
-  // ************* cache section **********
-
-  const BALocalization: ILocalization = await (await axios.get(BlueArchiveConstants.LOCALIZATION_DATA_URL)).data;
-  cache.set('BA_Localization', BALocalization);
-  console.log('BA_Localization loaded');
 }
 
 run();

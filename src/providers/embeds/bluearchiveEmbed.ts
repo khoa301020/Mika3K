@@ -6,7 +6,7 @@ import { IStudent } from '../../types/bluearchive/student.js';
 
 export const BA_StudentEmbed = (student: IStudent, author: User, page?: number, total?: number): EmbedBuilder => {
   return new EmbedBuilder()
-    .setColor(0x0099ff)
+    .setColor(BlueArchiveConstants.BULLET_COLOR[student.BulletType])
     .setTitle(`[${'★'.repeat(student.StarGrade)}] ${student.Name}`)
     .setURL(BlueArchiveConstants.SCHALE_STUDENT_URL + student.PathName)
     .setAuthor({
@@ -48,7 +48,7 @@ export const BA_StudentEmbed = (student: IStudent, author: User, page?: number, 
         inline: true,
       },
       { name: 'Weapon type', value: student.WeaponType, inline: true },
-      { name: 'Bullet type', value: student.BulletType, inline: true },
+      { name: 'Use cover', value: student.Cover ? 'Yes' : 'No', inline: true },
       {
         name: 'Adaptation',
         value: `Urban: ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation]}, Indoor: ${

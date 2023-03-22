@@ -80,6 +80,13 @@ export class BlueArchiveSync {
       type: ApplicationCommandOptionType.Number,
     })
     StarGrade: number,
+    @SlashOption({
+      description: "Student's artist",
+      name: 'artist',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    ArtistName: string,
     @SlashChoice(...BlueArchiveConstants.SQUAD_TYPES)
     @SlashOption({
       description: "Student's squad type",
@@ -139,7 +146,7 @@ export class BlueArchiveSync {
     @SlashChoice(...BlueArchiveConstants.STUDENT_AGE)
     @SlashOption({
       description: "Student's age",
-      name: 'character-age',
+      name: 'student-age',
       required: false,
       type: ApplicationCommandOptionType.String,
     })
@@ -199,6 +206,7 @@ export class BlueArchiveSync {
           CharacterAge,
           Position,
           TacticRole,
+          ArtistName,
         }),
       ),
       BirthDay && { BirthDay },

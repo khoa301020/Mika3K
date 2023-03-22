@@ -208,18 +208,23 @@ export class BlueArchiveSync {
       [sortBy]: orderBy,
     };
 
-    const students: Array<IStudent> = await getData.getStudent(sort, query);
+    try {
+      const students: Array<IStudent> = await getData.getStudent(sort, query);
 
-    if (students.length === 0) return interaction.editReply('❌ No student found.');
+      if (students.length === 0) return interaction.editReply('❌ No student found.');
 
-    const pages: Array<PaginationItem> = students.map(
-      (student: IStudent, index: number): PaginationItem =>
-        Object.assign({
-          embeds: [BA_StudentEmbed(student, interaction.user, index + 1, students.length)],
-        }),
-    );
-    const names = students.map((student: IStudent) => student.Name);
-    const pagination = BA_Pagination(interaction, pages, navigation, names, isPublic);
-    return await pagination.send();
+      const pages: Array<PaginationItem> = students.map(
+        (student: IStudent, index: number): PaginationItem =>
+          Object.assign({
+            embeds: [BA_StudentEmbed(student, interaction.user, index + 1, students.length)],
+          }),
+      );
+      const names = students.map((student: IStudent) => student.Name);
+      const pagination = BA_Pagination(interaction, pages, navigation, names, isPublic);
+      return await pagination.send();
+    } catch (err: any) {
+      console.log(err);
+      return interaction.editReply('❌ ' + err.message);
+    }
   }
 }

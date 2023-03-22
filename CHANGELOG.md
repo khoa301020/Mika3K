@@ -1,5 +1,10 @@
 ## Untagged
 
+- Feature: [WIP] Blue Archive Students search with sortBy & orderBy ([652d85](https://github.com/khoa301020/Xiaomi3K/commit/652d85e922d8ad02c0e797cdcea6b31d34a8b6cb))
+- Feature: [WIP] Blue Archive Students search ([264253](https://github.com/khoa301020/Xiaomi3K/commit/26425358d1c176f0413d88c210e5b315afa34b51))
+- Feature: Context menu for SauceNAO ([5b4f36](https://github.com/khoa301020/Xiaomi3K/commit/5b4f36dc45e4d3871616ab35d45b86da8c847f14))
+- Feature: Fetch & sync Blue Archive data (from SchaleDB) ([0b6605](https://github.com/khoa301020/Xiaomi3K/commit/0b66056eda141202781dc8b8d9c86cc0e0f688c0))
+- Feature: [WIP] Fetch & sync Blue Archive data (from SchaleDB) ([62f925](https://github.com/khoa301020/Xiaomi3K/commit/62f925cfa6d5709245476a79e777f469c83eaa64))
 - Update: Add Command descriptions to Readme ([279a2f](https://github.com/khoa301020/Xiaomi3K/commit/279a2fcfd3ddd5f880dfb8c8e71ddff83070a5db))
 - Feature: Genshin redeem giftcode(s) ([d36c57](https://github.com/khoa301020/Xiaomi3K/commit/d36c571c7fed5af15c76a5dba8d074a33fcf82da))
 - Feature: Genshin save token, select account & redeem giftcode (WIP) ([092000](https://github.com/khoa301020/Xiaomi3K/commit/0920002d36c05f3c56abe8c1da0248dc5223f3b7))

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { BlueArchiveConstants } from '../constants/bluearchive.js';
+import { BlueArchiveConstants } from '../constants/index.js';
 import { SchaleDB } from '../models/BlueArchive.js';
 import { ICurrency } from '../types/bluearchive/currency';
 import { IEnemy } from '../types/bluearchive/enemy';
@@ -97,5 +97,4 @@ export const getData = {
     await SchaleDB.Student.find(query ?? {})
       .sort(sort)
       .lean(),
-  getLocalization: async () => await curl(BlueArchiveConstants.LOCALIZATION_DATA_URL),
 };

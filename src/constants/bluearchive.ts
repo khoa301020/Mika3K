@@ -46,7 +46,7 @@ export class BlueArchiveConstants {
   };
   public static readonly STUDENT_RARITY = [1, 2, 3];
   public static readonly STUDENT_TYPE: { [key: number]: string } = {
-    0: 'Non-limit',
+    0: 'Permanent',
     1: 'Limited',
     2: 'Event',
   };

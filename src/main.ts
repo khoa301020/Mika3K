@@ -4,9 +4,14 @@ import type { Interaction, Message } from 'discord.js';
 import { IntentsBitField } from 'discord.js';
 import { Client } from 'discordx';
 import mongoose from 'mongoose';
+import NodeCache from 'node-cache';
 
+import axios from 'axios';
 import dotenv from 'dotenv';
+import { BlueArchiveConstants } from './constants/index.js';
+import { ILocalization } from './types/bluearchive/localization.js';
 dotenv.config();
+export const cache = new NodeCache();
 
 export const bot = new Client({
   // To use only guild command
@@ -73,7 +78,7 @@ async function run() {
   // Log in with your bot token
   await bot.login(process.env.BOT_TOKEN);
 
-  // ************* rest api section: start **********
+  // ************* rest api section **********
 
   // api: prepare server
   const server = new Koa();
@@ -88,17 +93,21 @@ async function run() {
     console.log(`visit localhost:${port}/guilds`);
   });
 
-  // ************* rest api section: end **********
-
-  // ************* mongodb section: start **********
+  // ************* mongodb section **********
 
   mongoose.set('strictQuery', true);
 
   const mongoUri = process.env.MONGO_URI;
 
-  mongoose.connect(mongoUri!).then(() => console.log('MongoDB connected'));
+  await mongoose.connect(mongoUri!).then(async () => {
+    console.log('MongoDB connected');
+  });
 
-  // ************* mongodb section: end **********
+  // ************* cache section **********
+
+  const BALocalization: ILocalization = await (await axios.get(BlueArchiveConstants.LOCALIZATION_DATA_URL)).data;
+  cache.set('BA_Localization', BALocalization);
+  console.log('BA_Localization loaded');
 }
 
 run();

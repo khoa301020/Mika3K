@@ -1,0 +1,35 @@
+export interface ILocalization {
+  SquadType: { [key: string]: string };
+  BulletType: { [key: string]: string };
+  ArmorType: { [key: string]: string };
+  ArmorTypeLong: { [key: string]: string };
+  TacticRole: { [key: string]: string };
+  School: { [key: string]: string };
+  AdaptationType: { [key: string]: string };
+  SchoolLong: { [key: string]: string };
+  Club: { [key: string]: string };
+  BossFaction: { [key: string]: string };
+  Stat: { [key: string]: string };
+  IsLimited: { [key: string]: string };
+  FurnitureSet: { [key: string]: string };
+  ItemCategory: { [key: string]: string };
+  ArtifactClass: { [key: string]: string };
+  EnemyTags: { [key: string]: string };
+  EventName: { [key: string]: string };
+  StageType: { [key: string]: string };
+  TimeAttackStage: { [key: string]: string };
+  ConquestMap: { [key: string]: string };
+  StageTitle: { [key: string]: string };
+  EnemyRank: { [key: string]: string };
+  NodeQuality: { [key: string]: string };
+  NodeTier: { [key: string]: string };
+  RaidDifficulty: { [key: string]: string };
+  WeaponPartExpBonus: { [key: string]: string };
+  BuffType: { [key: string]: string };
+  BuffName: { [key: string]: string };
+  BuffNameLong: { [key: string]: string };
+  BuffTooltip: { [key: string]: string };
+  ServerName: { [key: string]: string };
+  ShopCategory: { [key: string]: string };
+  GroggyCondition: { [key: string]: string };
+}

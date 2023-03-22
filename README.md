@@ -72,8 +72,10 @@ My self-use discord bot created with [Discordx](https://discordx.js.org/docs/dis
 - [Quickchart-JS](https://github.com/typpo/quickchart-js)
 - [MathJS](https://github.com/josdejong/mathjs)
 - [QS](https://github.com/ljharb/qs)
+- [Html-Entities](https://github.com/mdevils/html-entities)
+- [Node-cache](https://github.com/node-cache/node-cache)
 
 # Documentations
 
-- [Discord.js](https://discordx.js.org/docs)
+- [Discord.js](https://discordx.js.org/docs/discordx/getting-started)
 - [Discordx examples](https://github.com/discordx-ts/discordx/tree/main/packages/discordx/examples)

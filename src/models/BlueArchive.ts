@@ -1,9 +1,11 @@
 import mongoose from 'mongoose';
+import { cache } from '../main.js';
 import { ICurrency } from '../types/bluearchive/currency';
 import { IEnemy } from '../types/bluearchive/enemy';
 import { IEquipment, Shop as EquipmentShop } from '../types/bluearchive/equipment';
 import { IFurniture } from '../types/bluearchive/furniture';
 import { IItem, Shop as ItemShop } from '../types/bluearchive/item';
+import { ILocalization } from '../types/bluearchive/localization';
 import { Raid, RaidSkill, Terrain } from '../types/bluearchive/raid';
 import { IStudent, Skill, Summon } from '../types/bluearchive/student';
 import { ISummon } from '../types/bluearchive/summon';
@@ -82,7 +84,9 @@ const StudentSchema = new mongoose.Schema<IStudent>(
     SkillMaterial: Array<Number[]>,
     SkillMaterialAmount: Array<Number[]>,
   },
-  { strict: false },
+  {
+    strict: false,
+  },
 );
 const CurrencySchema = new mongoose.Schema<ICurrency>(
   {
@@ -252,6 +256,19 @@ const SummonSchema = new mongoose.Schema<ISummon>(
   },
   { strict: false },
 );
+
+function transformStudent(localization: ILocalization | undefined, doc: any) {
+  doc.School = localization ? localization.SchoolLong[doc.School] : doc.School;
+  doc.Club = localization ? localization.Club[doc.Club] : doc.Club;
+  doc.SquadType = localization ? localization.SquadType[doc.SquadType] : doc.SquadType;
+  doc.TacticRole = localization ? localization.TacticRole[doc.TacticRole] : doc.TacticRole;
+  doc.ArmorType = localization ? localization.ArmorTypeLong[doc.ArmorType] : doc.ArmorType;
+}
+StudentSchema.post('find', function (res) {
+  const localization: ILocalization | undefined = cache.get('BA_Localization');
+  if (res.length === 0) return;
+  res.forEach((res: any) => transformStudent(localization, res));
+});
 
 const conn = mongoose.createConnection(process.env.MONGO_URI_BA!);
 

@@ -207,13 +207,21 @@ export const transformSkillStat = (skill: Skill, localization?: ILocalization) =
     skill.Desc?.replace(/<b:([^>]*)>/g, (match, key) => {
       key = 'Buff_' + key;
       const value = localization && localization.BuffName[key];
-
       return value ?? match;
     })
       .replace(/<d:([^>]*)>/g, (match, key) => {
         key = 'Debuff_' + key;
         const value = localization && localization.BuffName[key];
-
+        return value ?? match;
+      })
+      .replace(/<s:([^>]*)>/g, (match, key) => {
+        key = 'Special_' + key;
+        const value = localization && localization.BuffName[key];
+        return value ?? match;
+      })
+      .replace(/<c:([^>]*)>/g, (match, key) => {
+        key = 'CC_' + key;
+        const value = localization && localization.BuffName[key];
         return value ?? match;
       })
       .replace(/<\?([^>]*)>/g, (match, key) => {

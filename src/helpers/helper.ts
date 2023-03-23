@@ -202,34 +202,37 @@ export const SchaleMath = {
 };
 
 export const transformSkillStat = (skill: Skill, localization?: ILocalization) => {
-  skill.Name = decode(skill.Name);
-  skill.Desc = skill.Desc?.replace(/<b:([^>]*)>/g, (match, key) => {
-    key = 'Buff_' + key;
-    const value = localization && localization.BuffName[key];
-
-    return value ?? match;
-  })
-    .replace(/<d:([^>]*)>/g, (match, key) => {
-      key = 'Debuff_' + key;
+  skill.Name = decode(skill.Name).replace(/<[^>]*>?/gm, '');
+  skill.Desc = decode(
+    skill.Desc?.replace(/<b:([^>]*)>/g, (match, key) => {
+      key = 'Buff_' + key;
       const value = localization && localization.BuffName[key];
 
       return value ?? match;
     })
-    .replace(/<\?([^>]*)>/g, (match, key) => {
-      let parameter: Array<string> | undefined;
-      if (skill.SkillType === 'ex')
-        parameter =
-          skill.Parameters &&
-          skill.Parameters[parseInt(key) - 1].filter((value, index) => index === 0 || index === 2 || index === 4);
-      else
-        parameter =
-          skill.Parameters &&
-          skill.Parameters[parseInt(key) - 1].filter(
-            (value, index) => index === 0 || index === 3 || index === 6 || index === 9,
-          );
+      .replace(/<d:([^>]*)>/g, (match, key) => {
+        key = 'Debuff_' + key;
+        const value = localization && localization.BuffName[key];
 
-      return parameter ? parameter.join('/') : match;
-    });
+        return value ?? match;
+      })
+      .replace(/<\?([^>]*)>/g, (match, key) => {
+        let parameter: Array<string> | undefined;
+        if (skill.SkillType === 'ex')
+          parameter =
+            skill.Parameters &&
+            skill.Parameters[parseInt(key) - 1].filter((value, index) => index === 0 || index === 2 || index === 4);
+        else
+          parameter =
+            skill.Parameters &&
+            skill.Parameters[parseInt(key) - 1].filter(
+              (value, index) => index === 0 || index === 3 || index === 6 || index === 9,
+            );
+
+        return parameter ? parameter.join('/') : match;
+      })
+      .replace(/<[^>]*>?/gm, ''),
+  );
 
   return skill;
 };

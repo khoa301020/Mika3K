@@ -1,14 +1,56 @@
 import { PaginationItem } from '@discordx/pagination';
-import { ApplicationCommandOptionType, CommandInteraction } from 'discord.js';
-import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
-import { BlueArchiveConstants } from '../../constants/bluearchive.js';
-import { CommonConstants } from '../../constants/common.js';
-import { validateDayMonth } from '../../helpers/helper.js';
-import { BA_StudentEmbed } from '../../providers/embeds/bluearchiveEmbed.js';
+import {
+  ActionRowBuilder,
+  ApplicationCommandOptionType,
+  ButtonBuilder,
+  ButtonInteraction,
+  ButtonStyle,
+  CommandInteraction,
+  MessageActionRowComponentBuilder,
+  MessageFlags,
+} from 'discord.js';
+import { ButtonComponent, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
+import { BlueArchiveConstants, CommonConstants, MALConstants } from '../../constants/index.js';
+import { isObjectEmpty, validateDayMonth } from '../../helpers/helper.js';
+import {
+  BA_StudentEmbed,
+  BA_StudentSkillsEmbed,
+  BA_StudentStatsEmbed,
+} from '../../providers/embeds/bluearchiveEmbed.js';
 import { BA_Pagination } from '../../providers/paginations/bluearchivePagination.js';
 import { getData } from '../../services/bluearchive.js';
 import { IStudent } from '../../types/bluearchive/student.js';
 import { TPaginationType } from '../../types/common.js';
+
+const studentStatsBtn = () =>
+  new ButtonBuilder().setLabel('📊 Stats').setStyle(ButtonStyle.Primary).setCustomId('studentStats');
+
+const studentSkillsBtn = () =>
+  new ButtonBuilder().setLabel('🎯 Skills').setStyle(ButtonStyle.Primary).setCustomId('studentSkills');
+const studentWeaponBtn = () =>
+  new ButtonBuilder().setLabel('🔫 Weapon').setStyle(ButtonStyle.Primary).setCustomId('studentWeapon');
+
+const studentSummonsBtn = (hasSummon: boolean) =>
+  new ButtonBuilder()
+    .setLabel('🚗 Summons')
+    .setStyle(ButtonStyle.Primary)
+    .setCustomId('studentSummons')
+    .setDisabled(!hasSummon);
+
+const studentGearBtn = (hasGear: boolean) =>
+  new ButtonBuilder()
+    .setLabel('⚙️ Gear')
+    .setStyle(ButtonStyle.Primary)
+    .setCustomId('studentGear')
+    .setDisabled(!hasGear);
+
+const studentRow = (hasSummon: boolean, hasGear: boolean) =>
+  new ActionRowBuilder<MessageActionRowComponentBuilder>()
+    .addComponents(studentStatsBtn())
+    .addComponents(studentSkillsBtn())
+    .addComponents(studentWeaponBtn())
+    .addComponents(studentSummonsBtn(hasSummon))
+    .addComponents(studentGearBtn(hasGear));
 
 @Discord()
 @SlashGroup({ name: 'buruaka', description: 'Blue Archive commands' })
@@ -225,6 +267,7 @@ export class BlueArchiveSync {
         (student: IStudent, index: number): PaginationItem =>
           Object.assign({
             embeds: [BA_StudentEmbed(student, interaction.user, index + 1, students.length)],
+            components: [studentRow(student.Summons.length > 0, !isObjectEmpty(student.Gear))],
           }),
       );
       const names = students.map((student: IStudent) => student.Name);
@@ -235,4 +278,55 @@ export class BlueArchiveSync {
       return interaction.editReply('❌ ' + err.message);
     }
   }
+
+  @ButtonComponent({ id: 'studentStats' })
+  async statsBtnComponent(interaction: ButtonInteraction): Promise<void> {
+    const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
+    await interaction.deferReply({ ephemeral: isEphemeral });
+    const student_id = interaction.message.embeds[0].data.description?.match(MALConstants.REGEX_GET_ID)![1];
+
+    try {
+      const student: IStudent = await getData.getStudentById(parseInt(student_id!));
+      if (isObjectEmpty(student)) {
+        interaction.editReply({ content: 'No student found.' });
+        return;
+      }
+
+      const embed = BA_StudentStatsEmbed(student, interaction.user);
+
+      await interaction.editReply({ embeds: [embed] });
+    } catch (err: any) {
+      console.log(err);
+      interaction.reply({ content: err.message, ephemeral: isEphemeral! });
+    }
+  }
+
+  @ButtonComponent({ id: 'studentSkills' })
+  async skillsBtnComponent(interaction: ButtonInteraction): Promise<void> {
+    const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
+    await interaction.deferReply({ ephemeral: isEphemeral });
+    const student_id = interaction.message.embeds[0].data.description?.match(MALConstants.REGEX_GET_ID)![1];
+
+    try {
+      const student: IStudent = await getData.getStudentById(parseInt(student_id!));
+      if (isObjectEmpty(student)) {
+        interaction.editReply({ content: 'No student found.' });
+        return;
+      }
+
+      const embed = BA_StudentSkillsEmbed(student, interaction.user);
+
+      await interaction.editReply({ embeds: [embed] });
+    } catch (err: any) {
+      console.log(err);
+      interaction.reply({ content: err.message, ephemeral: isEphemeral! });
+    }
+  }
+
+  @ButtonComponent({ id: 'studentWeapon' })
+  async weaponBtnComponent(interaction: ButtonInteraction): Promise<void> {}
+  @ButtonComponent({ id: 'studentSummons' })
+  async summonsBtnComponent(interaction: ButtonInteraction): Promise<void> {}
+  @ButtonComponent({ id: 'studentGear' })
+  async gearBtnComponent(interaction: ButtonInteraction): Promise<void> {}
 }

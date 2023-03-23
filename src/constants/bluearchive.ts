@@ -1,8 +1,14 @@
 export class BlueArchiveConstants {
-  public static readonly SCHALE_GG_LOGO = 'https://schale.gg/images/schale.png';
   public static readonly SCHALE_GG_BASE = 'https://schale.gg';
-  public static readonly SCHALE_IMAGE_STUDENT_URL = this.SCHALE_GG_BASE + '/images/student/portrait/';
   public static readonly SCHALE_STUDENT_URL = this.SCHALE_GG_BASE + '/?chara=';
+
+  /* Data urls */
+
+  public static readonly SCHALE_GG_LOGO = 'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/schale.png';
+  public static readonly SCHALE_PORTRAIT_STUDENT_URL =
+    'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/student/portrait/';
+  public static readonly SCHALE_ICON_STUDENT_URL =
+    'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/student/icon/';
   public static readonly CURRENCY_DATA_URL =
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/currency.json';
   public static readonly ENEMIES_DATA_URL =
@@ -19,6 +25,32 @@ export class BlueArchiveConstants {
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/students.json';
   public static readonly SUMMONS_DATA_URL =
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/summons.json';
+
+  /* Icon urls */
+
+  public static readonly COMMON_WEAPON_ICON =
+    'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/ui/Common_Icon_CharacterWeapon_off.png';
+  public static readonly COMMON_ROLE_ICON: { [key: string]: string } = {
+    DamageDealer: 'https://github.com/lonqie/SchaleDB/raw/main/images/ui/Role_DamageDealer.png',
+    Tanker: 'https://github.com/lonqie/SchaleDB/raw/main/images/ui/Role_Tanker.png',
+    Supporter: 'https://github.com/lonqie/SchaleDB/raw/main/images/ui/Role_Supporter.png',
+    Healer: 'https://github.com/lonqie/SchaleDB/raw/main/images/ui/Role_Healer.png',
+    Vehicle: 'https://github.com/lonqie/SchaleDB/raw/main/images/ui/Role_Vehicle.png',
+  };
+
+  public static readonly STUDENT_SCHOOL_LOGO: { [key: string]: string } = {
+    Abydos: 'https://schale.gg/images/schoolicon/School_Icon_ABYDOS_W.png',
+    Arius: 'https://schale.gg/images/schoolicon/School_Icon_ARIUS_W.png',
+    ETC: 'https://schale.gg/images/schoolicon/School_Icon_ETC_W.png',
+    Gehenna: 'https://schale.gg/images/schoolicon/School_Icon_GEHENNA_W.png',
+    Hyakkiyako: 'https://schale.gg/images/schoolicon/School_Icon_HYAKKIYAKO_W.png',
+    Millenium: 'https://schale.gg/images/schoolicon/School_Icon_MILLENNIUM_W.png',
+    RedWinter: 'https://schale.gg/images/schoolicon/School_Icon_REDWINTER_W.png',
+    Shanghaijin: 'https://schale.gg/images/schoolicon/School_Icon_SHANHAIJING_W.png',
+    SRT: 'https://schale.gg/images/schoolicon/School_Icon_SRT_W.png',
+    Trinity: 'https://schale.gg/images/schoolicon/School_Icon_TRINITY_W.png',
+    Valkyrie: 'https://schale.gg/images/schoolicon/School_Icon_VALKYRIE_W.png',
+  };
 
   /* Student constants */
 
@@ -105,17 +137,6 @@ export class BlueArchiveConstants {
     5: '😎',
   };
   public static readonly WEAPON_TYPE = ['SR', 'SG', 'AR', 'MG', 'SMG', 'HG', 'GL', 'MT', 'RG', 'RL', 'FT'];
-  public static readonly STUDENT_SCHOOL_LOGO: { [key: string]: string } = {
-    Abydos: 'https://schale.gg/images/schoolicon/School_Icon_ABYDOS_W.png',
-    Arius: 'https://schale.gg/images/schoolicon/School_Icon_ARIUS_W.png',
-    ETC: 'https://schale.gg/images/schoolicon/School_Icon_ETC_W.png',
-    Gehenna: 'https://schale.gg/images/schoolicon/School_Icon_GEHENNA_W.png',
-    Hyakkiyako: 'https://schale.gg/images/schoolicon/School_Icon_HYAKKIYAKO_W.png',
-    Millenium: 'https://schale.gg/images/schoolicon/School_Icon_MILLENNIUM_W.png',
-    RedWinter: 'https://schale.gg/images/schoolicon/School_Icon_REDWINTER_W.png',
-    Shanghaijin: 'https://schale.gg/images/schoolicon/School_Icon_SHANHAIJING_W.png',
-    SRT: 'https://schale.gg/images/schoolicon/School_Icon_SRT_W.png',
-    Trinity: 'https://schale.gg/images/schoolicon/School_Icon_TRINITY_W.png',
-    Valkyrie: 'https://schale.gg/images/schoolicon/School_Icon_VALKYRIE_W.png',
-  };
+  public static readonly CC_POWER = 100;
+  public static readonly CC_RESISTANCE = 100;
 }

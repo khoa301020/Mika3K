@@ -10,10 +10,12 @@ export interface IStudent {
   DevName: string;
   Name: string;
   School: School;
+  SchoolLong?: string;
   Club: string;
   StarGrade: number;
   SquadType: SquadType;
   TacticRole: TacticRole;
+  TacticRoleLong?: string;
   Summons: Summon[];
   Position: Position;
   BulletType: BulletType;

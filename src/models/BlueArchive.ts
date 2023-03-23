@@ -19,10 +19,12 @@ const StudentSchema = new mongoose.Schema<IStudent>(
     DevName: String,
     Name: String,
     School: String,
+    SchoolLong: String,
     Club: String,
     StarGrade: Number,
     SquadType: String,
     TacticRole: String,
+    TacticRoleLong: String,
     Summons: Array<Summon>,
     Position: String,
     BulletType: String,
@@ -258,10 +260,10 @@ const SummonSchema = new mongoose.Schema<ISummon>(
 );
 
 function transformStudent(localization: ILocalization | undefined, doc: any) {
-  doc.School = localization ? localization.SchoolLong[doc.School] : doc.School;
+  doc.SchoolLong = localization ? localization.SchoolLong[doc.School] : doc.School;
   doc.Club = localization ? localization.Club[doc.Club] : doc.Club;
   doc.SquadType = localization ? localization.SquadType[doc.SquadType] : doc.SquadType;
-  doc.TacticRole = localization ? localization.TacticRole[doc.TacticRole] : doc.TacticRole;
+  doc.TacticRoleLong = localization ? localization.TacticRole[doc.TacticRole] : doc.TacticRole;
   doc.ArmorType = localization ? localization.ArmorTypeLong[doc.ArmorType] : doc.ArmorType;
 }
 StudentSchema.post('find', function (res) {

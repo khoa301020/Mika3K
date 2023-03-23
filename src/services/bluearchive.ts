@@ -97,4 +97,5 @@ export const getData = {
     await SchaleDB.Student.find(query ?? {})
       .sort(sort)
       .lean(),
+  getStudentById: async (id: number) => await SchaleDB.Student.findOne({ Id: id }).lean(),
 };

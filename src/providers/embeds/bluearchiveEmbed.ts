@@ -3,7 +3,7 @@ import { EmbedBuilder } from 'discord.js';
 import { decode } from 'html-entities';
 import { BlueArchiveConstants } from '../../constants/index.js';
 import { cache } from '../../main.js';
-import { SchaleMath, transformSkillStat } from '../../services/bluearchive.js';
+import { getStudentStats, getWeaponStats, SchaleMath, transformSkillStat } from '../../services/bluearchive.js';
 import { ILocalization } from '../../types/bluearchive/localization.js';
 import { IStudent, Skill } from '../../types/bluearchive/student.js';
 
@@ -58,6 +58,7 @@ export const BA_StudentEmbed = (student: IStudent, author: User, page?: number, 
 };
 
 export const BA_StudentStatsEmbed = (student: IStudent, author: User): EmbedBuilder => {
+  const studentStats = getStudentStats(student);
   return new EmbedBuilder()
     .setColor(BlueArchiveConstants.BULLET_COLOR[student.BulletType])
     .setTitle(`[${'★'.repeat(student.StarGrade)}] ${student.Name}'s stats`)
@@ -71,7 +72,7 @@ export const BA_StudentStatsEmbed = (student: IStudent, author: User): EmbedBuil
     .addFields(
       {
         name: 'Base main stats',
-        value: `\`\`\`HP   : ${student.MaxHP1} / ${student.MaxHP100}\nATK  : ${student.AttackPower1} / ${student.AttackPower100}\nDEF  : ${student.DefensePower1} / ${student.DefensePower100}\nHEAL : ${student.HealPower1} / ${student.HealPower100}\`\`\``,
+        value: `\`\`\`HP   : ${student.MaxHP1} / ${studentStats.MaxHP}\nATK  : ${student.AttackPower1} / ${studentStats.AttackPower}\nDEF  : ${student.DefensePower1} / ${studentStats.DefensePower}\nHEAL : ${student.HealPower1} / ${studentStats.HealPower}\`\`\``,
       },
       {
         name: 'Base sub stats',
@@ -139,6 +140,7 @@ export const BA_StudentWeaponEmbed = (student: IStudent, author: User): EmbedBui
     student.Skills.find((skill: Skill) => skill.SkillType === 'weaponpassive')!,
     localization,
   );
+  const weaponStats = getWeaponStats(student);
 
   return new EmbedBuilder()
     .setColor(BlueArchiveConstants.BULLET_COLOR[student.BulletType])
@@ -177,7 +179,7 @@ export const BA_StudentWeaponEmbed = (student: IStudent, author: User): EmbedBui
       },
       {
         name: 'Stats',
-        value: `\`\`\`HP   : ${student.Weapon.MaxHP1} / ${student.Weapon.MaxHP100}\nATK  : ${student.Weapon.AttackPower1} / ${student.Weapon.AttackPower100}\nHEAL : ${student.Weapon.HealPower1} / ${student.Weapon.HealPower100}\`\`\``,
+        value: `\`\`\`HP   : ${student.Weapon.MaxHP1} / ${weaponStats.MaxHP}\nATK  : ${student.Weapon.AttackPower1} / ${weaponStats.AttackPower}\nHEAL : ${student.Weapon.HealPower1} / ${weaponStats.HealPower}\`\`\``,
       },
     )
     .setImage(BlueArchiveConstants.SCHALE_STUDENT_WEAPON_URL + student.WeaponImg + '.png')

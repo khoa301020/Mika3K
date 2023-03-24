@@ -93,6 +93,7 @@ export class BlueArchiveConstants {
     1: 'Limited',
     2: 'Event',
   };
+  public static readonly STUDENT_MAX_LEVEL = 85;
   public static readonly ARMOR_TYPES = ['LightArmor', 'HeavyArmor', 'Unarmed', 'ElasticArmor'];
   public static readonly BULLET_TYPES = ['Explosion', 'Mystic', 'Pierce'];
   public static readonly BULLET_COLOR: { [key: string]: number } = {
@@ -148,6 +149,7 @@ export class BlueArchiveConstants {
     5: '😎',
   };
   public static readonly WEAPON_TYPE = ['SR', 'SG', 'AR', 'MG', 'SMG', 'HG', 'GL', 'MT', 'RG', 'RL', 'FT'];
+  public static readonly WEAPON_MAX_LEVEL = 50;
   public static readonly CC_POWER = 100;
   public static readonly CC_RESISTANCE = 100;
 }

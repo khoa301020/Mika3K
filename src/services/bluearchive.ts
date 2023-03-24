@@ -155,3 +155,69 @@ export const SchaleMath = {
   criticalRate: (criticalPoint: number) => Math.floor(criticalPoint / 100),
   stabilityRate: (stabilityPoint: number) => ((stabilityPoint / (stabilityPoint + 1000) + 0.2) * 100).toFixed(2),
 };
+export const getWeaponStats = (student: IStudent, level: number = BlueArchiveConstants.WEAPON_MAX_LEVEL) => {
+  let weaponStats = { MaxHP: 0, AttackPower: 0, HealPower: 0 };
+  let levelscale: number = (level - 1) / 99;
+  if (student.Weapon.StatLevelUpType == 'Standard') levelscale = parseFloat(levelscale.toFixed(4));
+
+  weaponStats['AttackPower'] = Math.round(
+    student.Weapon.AttackPower1 + (student.Weapon.AttackPower100 - student.Weapon.AttackPower1) * levelscale,
+  );
+  weaponStats['MaxHP'] = Math.round(
+    student.Weapon.MaxHP1 + (student.Weapon.MaxHP100 - student.Weapon.MaxHP1) * levelscale,
+  );
+  weaponStats['HealPower'] = Math.round(
+    student.Weapon.HealPower1 + (student.Weapon.HealPower100 - student.Weapon.HealPower1) * levelscale,
+  );
+  return weaponStats;
+};
+
+export const getStudentStats = (student: IStudent, level: number = BlueArchiveConstants.STUDENT_MAX_LEVEL) => {
+  let studentStats = { MaxHP: 0, AttackPower: 0, DefensePower: 0, HealPower: 0 };
+  let levelscale: number = (level - 1) / 99;
+
+  const transcendence = [
+    [0, 1000, 1200, 1400, 1700],
+    [0, 500, 700, 900, 1400],
+    [0, 750, 1000, 1200, 1500],
+  ];
+
+  let transcendenceAttack = 1;
+  let transcendenceHP = 1;
+  let transcendenceHeal = 1;
+
+  for (let i = 0; i < student.StarGrade; i++) {
+    transcendenceAttack += transcendence[0][i] / 10000;
+    transcendenceHP += transcendence[1][i] / 10000;
+    transcendenceHeal += transcendence[2][i] / 10000;
+  }
+
+  studentStats.MaxHP = Math.ceil(
+    parseFloat(
+      (
+        Math.round(parseFloat((student.MaxHP1 + (student.MaxHP100 - student.MaxHP1) * levelscale).toFixed(4))) *
+        transcendenceHP
+      ).toFixed(4),
+    ),
+  );
+  studentStats.AttackPower = Math.ceil(
+    parseFloat(
+      Math.round(
+        parseFloat((student.AttackPower1 + (student.AttackPower100 - student.AttackPower1) * levelscale).toFixed(4)) *
+          transcendenceAttack,
+      ).toFixed(4),
+    ),
+  );
+  studentStats.DefensePower = Math.round(
+    parseFloat((student.DefensePower1 + (student.DefensePower100 - student.DefensePower1) * levelscale).toFixed(4)),
+  );
+  studentStats.HealPower = Math.ceil(
+    parseFloat(
+      Math.round(
+        parseFloat((student.HealPower1 + (student.HealPower100 - student.HealPower1) * levelscale).toFixed(4)) *
+          transcendenceHeal,
+      ).toFixed(4),
+    ),
+  );
+  return studentStats;
+};

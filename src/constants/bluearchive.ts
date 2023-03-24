@@ -14,10 +14,12 @@ export class BlueArchiveConstants {
   /* Data urls */
 
   public static readonly SCHALE_GG_LOGO = 'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/schale.png';
-  public static readonly SCHALE_PORTRAIT_STUDENT_URL =
+  public static readonly SCHALE_STUDENT_PORTRAIT_URL =
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/student/portrait/';
-  public static readonly SCHALE_ICON_STUDENT_URL =
+  public static readonly SCHALE_STUDENT_ICON_URL =
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/student/icon/';
+  public static readonly SCHALE_STUDENT_WEAPON_URL =
+    'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/weapon/';
   public static readonly CURRENCY_DATA_URL =
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/currency.json';
   public static readonly ENEMIES_DATA_URL =

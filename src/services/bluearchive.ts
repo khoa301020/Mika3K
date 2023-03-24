@@ -1,13 +1,15 @@
 import axios from 'axios';
-import { BlueArchiveConstants } from '../constants/index.js';
+import { decode } from 'html-entities';
+import { BlueArchiveConstants, CommonConstants } from '../constants/index.js';
 import { SchaleDB } from '../models/BlueArchive.js';
 import { ICurrency } from '../types/bluearchive/currency';
 import { IEnemy } from '../types/bluearchive/enemy';
 import { IEquipment } from '../types/bluearchive/equipment';
 import { IFurniture } from '../types/bluearchive/furniture';
 import { IItem } from '../types/bluearchive/item';
+import { ILocalization } from '../types/bluearchive/localization.js';
 import { Raid } from '../types/bluearchive/raid.js';
-import { IStudent } from '../types/bluearchive/student';
+import { IStudent, Skill } from '../types/bluearchive/student';
 import { ISummon } from '../types/bluearchive/summon';
 
 const curl = async (url: string) => await axios.get(url);
@@ -98,4 +100,58 @@ export const getData = {
       .sort(sort)
       .lean(),
   getStudentById: async (id: number): Promise<IStudent | null> => await SchaleDB.Student.findOne({ Id: id }).lean(),
+};
+
+export const transformSkillStat = (skill: Skill, localization?: ILocalization) => {
+  skill.Name = decode(skill.Name).replace(CommonConstants.REGEX_HTML_TAG, '');
+  skill.Desc = decode(
+    skill.Desc?.replace(BlueArchiveConstants.REGEX_BUFF_REPLACEMENT, (match, key) => {
+      key = 'Buff_' + key;
+      const value = localization && localization.BuffName[key];
+      return value ?? match;
+    })
+      .replace(BlueArchiveConstants.REGEX_DEBUFF_REPLACEMENT, (match, key) => {
+        key = 'Debuff_' + key;
+        const value = localization && localization.BuffName[key];
+        return value ?? match;
+      })
+      .replace(BlueArchiveConstants.REGEX_SPECIAL_REPLACEMENT, (match, key) => {
+        key = 'Special_' + key;
+        const value = localization && localization.BuffName[key];
+        return value ?? match;
+      })
+      .replace(BlueArchiveConstants.REGEX_CC_REPLACEMENT, (match, key) => {
+        key = 'CC_' + key;
+        const value = localization && localization.BuffName[key];
+        return value ?? match;
+      })
+      .replace(BlueArchiveConstants.REGEX_PARAMETERS_REPLACEMENT, (match, key) => {
+        let isNumericParameters = true;
+        let parameters: Array<string> | undefined;
+        if (skill.SkillType === 'ex')
+          parameters =
+            skill.Parameters &&
+            skill.Parameters[parseInt(key) - 1].filter((value, index) => index === 0 || index === 2 || index === 4);
+        else
+          parameters =
+            skill.Parameters &&
+            skill.Parameters[parseInt(key) - 1].filter(
+              (value, index) => index === 0 || index === 3 || index === 6 || index === 9,
+            );
+        if (parameters && !parameters[0]) {
+          isNumericParameters = false;
+          parameters = parameters?.map((parameter: string) => (parameter === '' ? 'No effect' : parameter.trim()));
+        }
+
+        return parameters ? (isNumericParameters ? parameters.join('/') : ` + (${parameters.join('/')})`) : match;
+      })
+      .replace(CommonConstants.REGEX_HTML_TAG, ''),
+  );
+
+  return skill;
+};
+
+export const SchaleMath = {
+  criticalRate: (criticalPoint: number) => Math.floor(criticalPoint / 100),
+  stabilityRate: (stabilityPoint: number) => ((stabilityPoint / (stabilityPoint + 1000) + 0.2) * 100).toFixed(2),
 };

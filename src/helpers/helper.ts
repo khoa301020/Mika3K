@@ -1,10 +1,6 @@
 import { randomBytes } from 'crypto';
-import { decode } from 'html-entities';
 import QuickChart from 'quickchart-js';
 import { BaseUserConfig, table } from 'table';
-import { BlueArchiveConstants, CommonConstants } from '../constants/index.js';
-import { ILocalization } from '../types/bluearchive/localization';
-import { Skill } from '../types/bluearchive/student';
 
 /**
  * Return a random element from an array.
@@ -195,58 +191,4 @@ export const validateDayMonth = (day: number, month: number): boolean => {
 
 export const isObjectEmpty = (obj: Object) => {
   return Object.keys(obj).length === 0;
-};
-
-export const SchaleMath = {
-  criticalRate: (criticalPoint: number) => Math.floor(criticalPoint / 100),
-  stabilityRate: (stabilityPoint: number) => ((stabilityPoint / (stabilityPoint + 1000) + 0.2) * 100).toFixed(2),
-};
-
-export const transformSkillStat = (skill: Skill, localization?: ILocalization) => {
-  skill.Name = decode(skill.Name).replace(CommonConstants.REGEX_HTML_TAG, '');
-  skill.Desc = decode(
-    skill.Desc?.replace(BlueArchiveConstants.REGEX_BUFF_REPLACEMENT, (match, key) => {
-      key = 'Buff_' + key;
-      const value = localization && localization.BuffName[key];
-      return value ?? match;
-    })
-      .replace(BlueArchiveConstants.REGEX_DEBUFF_REPLACEMENT, (match, key) => {
-        key = 'Debuff_' + key;
-        const value = localization && localization.BuffName[key];
-        return value ?? match;
-      })
-      .replace(BlueArchiveConstants.REGEX_SPECIAL_REPLACEMENT, (match, key) => {
-        key = 'Special_' + key;
-        const value = localization && localization.BuffName[key];
-        return value ?? match;
-      })
-      .replace(BlueArchiveConstants.REGEX_CC_REPLACEMENT, (match, key) => {
-        key = 'CC_' + key;
-        const value = localization && localization.BuffName[key];
-        return value ?? match;
-      })
-      .replace(BlueArchiveConstants.REGEX_PARAMETERS_REPLACEMENT, (match, key) => {
-        let isNumericParameters = true;
-        let parameters: Array<string> | undefined;
-        if (skill.SkillType === 'ex')
-          parameters =
-            skill.Parameters &&
-            skill.Parameters[parseInt(key) - 1].filter((value, index) => index === 0 || index === 2 || index === 4);
-        else
-          parameters =
-            skill.Parameters &&
-            skill.Parameters[parseInt(key) - 1].filter(
-              (value, index) => index === 0 || index === 3 || index === 6 || index === 9,
-            );
-        if (parameters && !parameters[0]) {
-          isNumericParameters = false;
-          parameters = parameters?.map((parameter: string) => (parameter === '' ? 'No effect' : parameter.trim()));
-        }
-
-        return parameters ? (isNumericParameters ? parameters.join('/') : `+ (${parameters.join('/')})`) : match;
-      })
-      .replace(CommonConstants.REGEX_HTML_TAG, ''),
-  );
-
-  return skill;
 };

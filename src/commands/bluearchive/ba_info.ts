@@ -16,6 +16,7 @@ import {
   BA_StudentEmbed,
   BA_StudentSkillsEmbed,
   BA_StudentStatsEmbed,
+  BA_StudentWeaponEmbed,
 } from '../../providers/embeds/bluearchiveEmbed.js';
 import { BA_Pagination } from '../../providers/paginations/bluearchivePagination.js';
 import { getData } from '../../services/bluearchive.js';
@@ -324,7 +325,26 @@ export class BlueArchiveSync {
   }
 
   @ButtonComponent({ id: 'studentWeapon' })
-  async weaponBtnComponent(interaction: ButtonInteraction): Promise<void> {}
+  async weaponBtnComponent(interaction: ButtonInteraction): Promise<void> {
+    const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
+    await interaction.deferReply({ ephemeral: isEphemeral });
+    const student_id = interaction.message.embeds[0].data.description?.match(MALConstants.REGEX_GET_ID)![1];
+
+    try {
+      const student: IStudent | null = await getData.getStudentById(parseInt(student_id!));
+      if (!student || isObjectEmpty(student)) {
+        interaction.editReply({ content: 'No student found.' });
+        return;
+      }
+
+      const embed = BA_StudentWeaponEmbed(student, interaction.user);
+
+      await interaction.editReply({ embeds: [embed] });
+    } catch (err: any) {
+      console.log(err);
+      interaction.reply({ content: err.message, ephemeral: isEphemeral! });
+    }
+  }
   @ButtonComponent({ id: 'studentSummons' })
   async summonsBtnComponent(interaction: ButtonInteraction): Promise<void> {}
   @ButtonComponent({ id: 'studentGear' })

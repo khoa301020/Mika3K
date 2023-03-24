@@ -93,9 +93,9 @@ export const importData = {
     await SchaleDB.Summon.findOneAndUpdate({ Id: summon.Id }, summon, { upsert: true, new: true }),
 };
 export const getData = {
-  getStudent: async (sort: any, query?: Partial<IStudent>) =>
+  getStudent: async (sort: any, query?: Partial<IStudent>): Promise<Array<IStudent>> =>
     await SchaleDB.Student.find(query ?? {})
       .sort(sort)
       .lean(),
-  getStudentById: async (id: number) => await SchaleDB.Student.findOne({ Id: id }).lean(),
+  getStudentById: async (id: number): Promise<IStudent | null> => await SchaleDB.Student.findOne({ Id: id }).lean(),
 };

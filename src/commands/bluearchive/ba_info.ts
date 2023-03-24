@@ -286,8 +286,8 @@ export class BlueArchiveSync {
     const student_id = interaction.message.embeds[0].data.description?.match(MALConstants.REGEX_GET_ID)![1];
 
     try {
-      const student: IStudent = await getData.getStudentById(parseInt(student_id!));
-      if (isObjectEmpty(student)) {
+      const student: IStudent | null = await getData.getStudentById(parseInt(student_id!));
+      if (!student || isObjectEmpty(student)) {
         interaction.editReply({ content: 'No student found.' });
         return;
       }
@@ -308,8 +308,8 @@ export class BlueArchiveSync {
     const student_id = interaction.message.embeds[0].data.description?.match(MALConstants.REGEX_GET_ID)![1];
 
     try {
-      const student: IStudent = await getData.getStudentById(parseInt(student_id!));
-      if (isObjectEmpty(student)) {
+      const student: IStudent | null = await getData.getStudentById(parseInt(student_id!));
+      if (!student || isObjectEmpty(student)) {
         interaction.editReply({ content: 'No student found.' });
         return;
       }

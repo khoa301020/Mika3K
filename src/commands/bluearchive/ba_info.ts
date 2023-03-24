@@ -81,7 +81,7 @@ export class BlueArchiveSync {
       required: false,
       type: ApplicationCommandOptionType.String,
     })
-    Name: string,
+    PersonalName: string,
     @SlashChoice({ name: 'Only Japan', value: '[true, false]' })
     @SlashChoice({ name: 'Global', value: '[true, true]' })
     @SlashOption({
@@ -236,7 +236,6 @@ export class BlueArchiveSync {
     const query: Partial<IStudent> = Object.assign(
       JSON.parse(
         JSON.stringify({
-          Name,
           IsReleased: IsReleased && JSON.parse(IsReleased),
           StarGrade,
           SquadType,
@@ -251,6 +250,7 @@ export class BlueArchiveSync {
           ArtistName,
         }),
       ),
+      PersonalName && { PersonalName: { $regex: new RegExp(`^${PersonalName}`, 'i') } },
       BirthDay && { BirthDay },
     );
 

@@ -3,6 +3,8 @@ export class CommonConstants {
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36';
 
   public static readonly REGEX_NUM = /^\d+$/;
+  public static readonly REGEX_HTML_TAG = /<[^>]*>?/gm;
+
   public static readonly CHART_WIDTH = 800;
   public static readonly CHART_HEIGHT = 400;
   public static readonly QUOTES_PER_PAGE = 10;

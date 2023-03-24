@@ -2,6 +2,15 @@ export class BlueArchiveConstants {
   public static readonly SCHALE_GG_BASE = 'https://schale.gg';
   public static readonly SCHALE_STUDENT_URL = this.SCHALE_GG_BASE + '/?chara=';
 
+  /* Regex */
+
+  public static readonly REGEX_NUMERIC_PARAMETER: RegExp = /^\d+(\.\d+)?%?$/g;
+  public static readonly REGEX_BUFF_REPLACEMENT: RegExp = /<b:([^>]*)>/g;
+  public static readonly REGEX_DEBUFF_REPLACEMENT: RegExp = /<d:([^>]*)>/g;
+  public static readonly REGEX_CC_REPLACEMENT: RegExp = /<c:([^>]*)>/g;
+  public static readonly REGEX_SPECIAL_REPLACEMENT: RegExp = /<s:([^>]*)>/g;
+  public static readonly REGEX_PARAMETERS_REPLACEMENT: RegExp = /<\?([^>]*)>/g;
+
   /* Data urls */
 
   public static readonly SCHALE_GG_LOGO = 'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/schale.png';

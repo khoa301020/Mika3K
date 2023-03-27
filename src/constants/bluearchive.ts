@@ -68,7 +68,7 @@ export class BlueArchiveConstants {
     ETC: 'https://schale.gg/images/schoolicon/School_Icon_ETC_W.png',
     Gehenna: 'https://schale.gg/images/schoolicon/School_Icon_GEHENNA_W.png',
     Hyakkiyako: 'https://schale.gg/images/schoolicon/School_Icon_HYAKKIYAKO_W.png',
-    Millenium: 'https://schale.gg/images/schoolicon/School_Icon_MILLENNIUM_W.png',
+    Millennium: 'https://schale.gg/images/schoolicon/School_Icon_MILLENNIUM_W.png',
     RedWinter: 'https://schale.gg/images/schoolicon/School_Icon_REDWINTER_W.png',
     Shanghaijin: 'https://schale.gg/images/schoolicon/School_Icon_SHANHAIJING_W.png',
     SRT: 'https://schale.gg/images/schoolicon/School_Icon_SRT_W.png',

@@ -43,12 +43,12 @@ export const BA_StudentEmbed = (student: IStudent, author: User, page?: number, 
       { name: 'Use cover', value: student.Cover ? 'Yes' : 'No', inline: true },
       {
         name: 'Adaptation',
-        value: `Urban: ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation]}, Indoor: ${
+        value: `\`\`\`Urban: ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation]}, Indoor: ${
           BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation]
-        }, Outdoor: ${BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation]}`,
+        }, Outdoor: ${BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation]}\`\`\``,
         inline: true,
       },
-      { name: 'Introduction', value: decode(student.ProfileIntroduction) },
+      { name: 'Introduction', value: `\`\`\`${decode(student.ProfileIntroduction)}\`\`\`` },
     )
     .setImage(BlueArchiveConstants.SCHALE_STUDENT_PORTRAIT_URL + 'Portrait_' + student.DevName + '.webp')
     .setTimestamp()

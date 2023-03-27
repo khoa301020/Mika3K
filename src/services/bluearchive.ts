@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { decode } from 'html-entities';
+import { FilterQuery } from 'mongoose';
 import { BlueArchiveConstants, CommonConstants } from '../constants/index.js';
 import { SchaleDB } from '../models/BlueArchive.js';
 import { ICurrency } from '../types/bluearchive/currency';
@@ -95,11 +96,13 @@ export const importData = {
     await SchaleDB.Summon.findOneAndUpdate({ Id: summon.Id }, summon, { upsert: true, new: true }),
 };
 export const getData = {
-  getStudent: async (sort: any, query?: Partial<IStudent>): Promise<Array<IStudent>> =>
+  getStudent: async (sort: any, query?: FilterQuery<IStudent>): Promise<Array<IStudent>> =>
     await SchaleDB.Student.find(query ?? {})
       .sort(sort)
       .lean(),
   getStudentById: async (id: number): Promise<IStudent | null> => await SchaleDB.Student.findOne({ Id: id }).lean(),
+  getFurnitures: async (ids: Array<number>): Promise<Array<IFurniture>> =>
+    await SchaleDB.Furniture.find({ Id: { $in: ids } }).lean(),
 };
 
 export const transformSkillStat = (skill: Skill, localization?: ILocalization) => {
@@ -154,70 +157,94 @@ export const transformSkillStat = (skill: Skill, localization?: ILocalization) =
 export const SchaleMath = {
   criticalRate: (criticalPoint: number) => Math.floor(criticalPoint / 100),
   stabilityRate: (stabilityPoint: number) => ((stabilityPoint / (stabilityPoint + 1000) + 0.2) * 100).toFixed(2),
-};
-export const getWeaponStats = (student: IStudent, level: number = BlueArchiveConstants.WEAPON_MAX_LEVEL) => {
-  let weaponStats = { MaxHP: 0, AttackPower: 0, HealPower: 0 };
-  let levelscale: number = (level - 1) / 99;
-  if (student.Weapon.StatLevelUpType == 'Standard') levelscale = parseFloat(levelscale.toFixed(4));
+  getWeaponStats: (student: IStudent, level: number = BlueArchiveConstants.WEAPON_MAX_LEVEL) => {
+    let weaponStats = { MaxHP: 0, AttackPower: 0, HealPower: 0 };
+    let levelscale: number = (level - 1) / 99;
+    if (student.Weapon.StatLevelUpType == 'Standard') levelscale = parseFloat(levelscale.toFixed(4));
 
-  weaponStats['AttackPower'] = Math.round(
-    student.Weapon.AttackPower1 + (student.Weapon.AttackPower100 - student.Weapon.AttackPower1) * levelscale,
-  );
-  weaponStats['MaxHP'] = Math.round(
-    student.Weapon.MaxHP1 + (student.Weapon.MaxHP100 - student.Weapon.MaxHP1) * levelscale,
-  );
-  weaponStats['HealPower'] = Math.round(
-    student.Weapon.HealPower1 + (student.Weapon.HealPower100 - student.Weapon.HealPower1) * levelscale,
-  );
-  return weaponStats;
-};
+    weaponStats['AttackPower'] = Math.round(
+      student.Weapon.AttackPower1 + (student.Weapon.AttackPower100 - student.Weapon.AttackPower1) * levelscale,
+    );
+    weaponStats['MaxHP'] = Math.round(
+      student.Weapon.MaxHP1 + (student.Weapon.MaxHP100 - student.Weapon.MaxHP1) * levelscale,
+    );
+    weaponStats['HealPower'] = Math.round(
+      student.Weapon.HealPower1 + (student.Weapon.HealPower100 - student.Weapon.HealPower1) * levelscale,
+    );
+    return weaponStats;
+  },
+  getStudentStats: (student: IStudent, level: number = BlueArchiveConstants.STUDENT_MAX_LEVEL) => {
+    let studentStats = { MaxHP: 0, AttackPower: 0, DefensePower: 0, HealPower: 0 };
 
-export const getStudentStats = (student: IStudent, level: number = BlueArchiveConstants.STUDENT_MAX_LEVEL) => {
-  let studentStats = { MaxHP: 0, AttackPower: 0, DefensePower: 0, HealPower: 0 };
-  let levelscale: number = (level - 1) / 99;
+    let transcendenceAttack = 1;
+    let transcendenceHP = 1;
+    let transcendenceHeal = 1;
 
-  const transcendence = [
-    [0, 1000, 1200, 1400, 1700],
-    [0, 500, 700, 900, 1400],
-    [0, 750, 1000, 1200, 1500],
-  ];
+    for (let i = 0; i < student.StarGrade; i++) {
+      transcendenceAttack += BlueArchiveConstants.TRANSCENDENCE.AttackPower[i] / 10000;
+      transcendenceHP += BlueArchiveConstants.TRANSCENDENCE.MaxHP[i] / 10000;
+      transcendenceHeal += BlueArchiveConstants.TRANSCENDENCE.HealPower[i] / 10000;
+    }
 
-  let transcendenceAttack = 1;
-  let transcendenceHP = 1;
-  let transcendenceHeal = 1;
-
-  for (let i = 0; i < student.StarGrade; i++) {
-    transcendenceAttack += transcendence[0][i] / 10000;
-    transcendenceHP += transcendence[1][i] / 10000;
-    transcendenceHeal += transcendence[2][i] / 10000;
-  }
-
-  studentStats.MaxHP = Math.ceil(
-    parseFloat(
-      (
-        Math.round(parseFloat((student.MaxHP1 + (student.MaxHP100 - student.MaxHP1) * levelscale).toFixed(4))) *
-        transcendenceHP
-      ).toFixed(4),
-    ),
-  );
-  studentStats.AttackPower = Math.ceil(
-    parseFloat(
-      Math.round(
-        parseFloat((student.AttackPower1 + (student.AttackPower100 - student.AttackPower1) * levelscale).toFixed(4)) *
-          transcendenceAttack,
-      ).toFixed(4),
-    ),
-  );
-  studentStats.DefensePower = Math.round(
-    parseFloat((student.DefensePower1 + (student.DefensePower100 - student.DefensePower1) * levelscale).toFixed(4)),
-  );
-  studentStats.HealPower = Math.ceil(
-    parseFloat(
-      Math.round(
-        parseFloat((student.HealPower1 + (student.HealPower100 - student.HealPower1) * levelscale).toFixed(4)) *
-          transcendenceHeal,
-      ).toFixed(4),
-    ),
-  );
-  return studentStats;
+    studentStats.MaxHP = Math.ceil(
+      parseFloat(
+        (
+          Math.round(
+            parseFloat(
+              (student.MaxHP1 + (student.MaxHP100 - student.MaxHP1) * BlueArchiveConstants.LEVEL_SCALE(level)).toFixed(
+                4,
+              ),
+            ),
+          ) * transcendenceHP
+        ).toFixed(4),
+      ),
+    );
+    studentStats.AttackPower = Math.ceil(
+      parseFloat(
+        Math.round(
+          parseFloat(
+            (
+              student.AttackPower1 +
+              (student.AttackPower100 - student.AttackPower1) * BlueArchiveConstants.LEVEL_SCALE(level)
+            ).toFixed(4),
+          ) * transcendenceAttack,
+        ).toFixed(4),
+      ),
+    );
+    studentStats.DefensePower = Math.round(
+      parseFloat(
+        (
+          student.DefensePower1 +
+          (student.DefensePower100 - student.DefensePower1) * BlueArchiveConstants.LEVEL_SCALE(level)
+        ).toFixed(4),
+      ),
+    );
+    studentStats.HealPower = Math.ceil(
+      parseFloat(
+        Math.round(
+          parseFloat(
+            (
+              student.HealPower1 +
+              (student.HealPower100 - student.HealPower1) * BlueArchiveConstants.LEVEL_SCALE(level)
+            ).toFixed(4),
+          ) * transcendenceHeal,
+        ).toFixed(4),
+      ),
+    );
+    return studentStats;
+  },
+  getBondStats: (student: IStudent, level: number) => {
+    var stat1 = 0,
+      stat2 = 0;
+    for (let i = 1; i < Math.min(level, 50); i++) {
+      if (i < 20) {
+        stat1 += student.FavorStatValue[Math.floor(i / 5)][0];
+        stat2 += student.FavorStatValue[Math.floor(i / 5)][1];
+      } else if (i < 50) {
+        stat1 += student.FavorStatValue[2 + Math.floor(i / 10)][0];
+        stat2 += student.FavorStatValue[2 + Math.floor(i / 10)][1];
+      }
+    }
+    return { [student.FavorStatType[0]]: stat1, [student.FavorStatType[1]]: stat2 };
+  },
 };

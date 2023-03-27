@@ -3,7 +3,8 @@ import { EmbedBuilder } from 'discord.js';
 import { decode } from 'html-entities';
 import { BlueArchiveConstants } from '../../constants/index.js';
 import { cache } from '../../main.js';
-import { getStudentStats, getWeaponStats, SchaleMath, transformSkillStat } from '../../services/bluearchive.js';
+import { SchaleMath, transformSkillStat } from '../../services/bluearchive.js';
+import { IFurniture } from '../../types/bluearchive/furniture.js';
 import { ILocalization } from '../../types/bluearchive/localization.js';
 import { IStudent, Skill } from '../../types/bluearchive/student.js';
 
@@ -56,9 +57,64 @@ export const BA_StudentEmbed = (student: IStudent, author: User, page?: number, 
       iconURL: BlueArchiveConstants.SCHALE_GG_LOGO,
     });
 };
+export const BA_StudentProfileEmbed = (
+  student: IStudent,
+  author: User,
+  furnitures: Array<IFurniture>,
+): EmbedBuilder => {
+  const localization: ILocalization | undefined = cache.get('BA_Localization');
+
+  return new EmbedBuilder()
+    .setColor(BlueArchiveConstants.BULLET_COLOR[student.BulletType])
+    .setTitle(`[${'★'.repeat(student.StarGrade)}] ${student.Name}'s profile`)
+    .setURL(BlueArchiveConstants.SCHALE_STUDENT_URL + student.PathName)
+    .setAuthor({
+      name: `${author.username}#${author.discriminator}`,
+      iconURL: author.displayAvatarURL(),
+    })
+    .setDescription(`[${student.Id}] ${student.FamilyName} ${student.PersonalName}`)
+    .setThumbnail(BlueArchiveConstants.SCHALE_STUDENT_ICON_URL + student.CollectionTexture + '.png')
+    .addFields(
+      { name: 'Hobbies', value: `\`\`\`${student.Hobby}\`\`\`` },
+      {
+        name: 'Favorite item tags',
+        value: `\`\`\`${student.FavorItemTags.length > 0 ? student.FavorItemTags.join(', ') : 'N/A'}\`\`\``,
+      },
+      {
+        name: 'Furniture interaction',
+        value: `\`\`\`${
+          furnitures?.length > 0
+            ? furnitures.map((furniture: IFurniture) => `[${furniture.Rarity}] ${furniture.Name}`).join('\n')
+            : 'N/A'
+        }\`\`\``,
+      },
+      {
+        name: 'Relationship rank bonus',
+        value: `\`\`\`${[10, 20, 30, 40, 50]
+          .map((level: number) => {
+            const stats = SchaleMath.getBondStats(student, level);
+            return `Rank ${level}: ${Object.keys(stats)
+              .map((key: string) => `${stats[key]} ${localization!.Stat[key]}`)
+              .join(', ')}`;
+          })
+          .join('\n')}\`\`\``,
+      },
+      {
+        name: `Recollection lobby (BGM: ${student.MemoryLobbyBGM})`,
+        value: `Unlocks after reaching relationship **rank ${student.MemoryLobby[0]}** with **${student.Name}**.`,
+      },
+    )
+    .setImage(BlueArchiveConstants.SCHALE_STUDENT_LOBBY_URL(student.DevName))
+    .setTimestamp()
+    .setFooter({
+      text: `SCHALE.gg`,
+      iconURL: BlueArchiveConstants.SCHALE_GG_LOGO,
+    });
+};
 
 export const BA_StudentStatsEmbed = (student: IStudent, author: User): EmbedBuilder => {
-  const studentStats = getStudentStats(student);
+  const studentStats = SchaleMath.getStudentStats(student);
+
   return new EmbedBuilder()
     .setColor(BlueArchiveConstants.BULLET_COLOR[student.BulletType])
     .setTitle(`[${'★'.repeat(student.StarGrade)}] ${student.Name}'s stats`)
@@ -91,7 +147,6 @@ export const BA_StudentStatsEmbed = (student: IStudent, author: User): EmbedBuil
       iconURL: BlueArchiveConstants.SCHALE_GG_LOGO,
     });
 };
-
 export const BA_StudentSkillsEmbed = (student: IStudent, author: User): EmbedBuilder => {
   const localization: ILocalization | undefined = cache.get('BA_Localization');
 
@@ -140,7 +195,7 @@ export const BA_StudentWeaponEmbed = (student: IStudent, author: User): EmbedBui
     student.Skills.find((skill: Skill) => skill.SkillType === 'weaponpassive')!,
     localization,
   );
-  const weaponStats = getWeaponStats(student);
+  const weaponStats = SchaleMath.getWeaponStats(student);
 
   return new EmbedBuilder()
     .setColor(BlueArchiveConstants.BULLET_COLOR[student.BulletType])
@@ -154,7 +209,7 @@ export const BA_StudentWeaponEmbed = (student: IStudent, author: User): EmbedBui
     .setThumbnail(BlueArchiveConstants.SCHALE_STUDENT_ICON_URL + student.CollectionTexture + '.png')
     .addFields(
       { name: 'Name', value: `\`\`\`${student.Weapon.Name}\`\`\`` },
-      { name: `[Skill upgrade] ${passiveSkillUpgrade.Name}`, value: `\`\`\`${passiveSkillUpgrade.Desc!}\`\`\`` },
+      { name: `[Skill upgrade] ${passiveSkillUpgrade.Name}`, value: `\`\`\`${passiveSkillUpgrade.Desc}\`\`\`` },
       {
         name: `[Adaptation upgrade] ${student.Weapon.AdaptationType}`,
         value: `\`\`\`Urban   : ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation]}${
@@ -183,6 +238,52 @@ export const BA_StudentWeaponEmbed = (student: IStudent, author: User): EmbedBui
       },
     )
     .setImage(BlueArchiveConstants.SCHALE_STUDENT_WEAPON_URL + student.WeaponImg + '.png')
+    .setTimestamp()
+    .setFooter({
+      text: `SCHALE.gg`,
+      iconURL: BlueArchiveConstants.SCHALE_GG_LOGO,
+    });
+};
+export const BA_StudentGearEmbed = (student: IStudent, author: User): EmbedBuilder => {
+  const localization: ILocalization | undefined = cache.get('BA_Localization');
+  const normalSkillUpgrade: Skill = transformSkillStat(
+    student.Skills.find((skill: Skill) => skill.SkillType === 'gearnormal')!,
+    localization,
+  );
+
+  return new EmbedBuilder()
+    .setColor(BlueArchiveConstants.BULLET_COLOR[student.BulletType])
+    .setTitle(
+      `[${'★'.repeat(student.StarGrade)}] ${student.Name}'s gear \`${
+        student.Gear.Released![1] ? 'Global' : 'JP only'
+      }\``,
+    )
+    .setURL(BlueArchiveConstants.SCHALE_STUDENT_URL + student.PathName)
+    .setAuthor({
+      name: `${author.username}#${author.discriminator}`,
+      iconURL: author.displayAvatarURL(),
+    })
+    .setDescription(`[${student.Id}] ${student.FamilyName} ${student.PersonalName}`)
+    .setThumbnail(BlueArchiveConstants.SCHALE_STUDENT_ICON_URL + student.CollectionTexture + '.png')
+    .addFields(
+      { name: 'Name', value: `\`\`\`${student.Gear.Name!}\`\`\`` },
+      { name: 'Description', value: `\`\`\`${student.Gear.Desc!}\`\`\`` },
+      { name: `[Skill upgrade] ${normalSkillUpgrade.Name}`, value: `\`\`\`${normalSkillUpgrade.Desc}\`\`\`` },
+      {
+        name: `Stats upgrade`,
+        value: `\`\`\`${Array(student.Gear.StatValue![0].length)
+          .fill(0)
+          .map(
+            (_, tier) =>
+              `T${tier + 1}: ${student.Gear.StatType!.map(
+                (stat, statIndex) =>
+                  `${student.Gear.StatValue![statIndex][tier]} ${localization?.Stat[stat.replace('_Base', '')]}`,
+              ).join(', ')}`,
+          )
+          .join('\n')}\`\`\``,
+      },
+    )
+    .setImage(BlueArchiveConstants.SCHALE_STUDENT_GEAR_URL + student.Gear.Icon + '.png')
     .setTimestamp()
     .setFooter({
       text: `SCHALE.gg`,

@@ -11,6 +11,15 @@ export class BlueArchiveConstants {
   public static readonly REGEX_SPECIAL_REPLACEMENT: RegExp = /<s:([^>]*)>/g;
   public static readonly REGEX_PARAMETERS_REPLACEMENT: RegExp = /<\?([^>]*)>/g;
 
+  /* Stats */
+  public static readonly LEVEL_SCALE = (level: number) => (level - 1) / 99;
+
+  public static readonly TRANSCENDENCE: { [key: string]: Array<number> } = {
+    AttackPower: [0, 1000, 1200, 1400, 1700],
+    MaxHP: [0, 500, 700, 900, 1400],
+    HealPower: [0, 750, 1000, 1200, 1500],
+  };
+
   /* Data urls */
 
   public static readonly SCHALE_GG_LOGO = 'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/schale.png';
@@ -20,6 +29,10 @@ export class BlueArchiveConstants {
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/student/icon/';
   public static readonly SCHALE_STUDENT_WEAPON_URL =
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/weapon/';
+  public static readonly SCHALE_STUDENT_GEAR_URL =
+    'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/gear/';
+  public static readonly SCHALE_STUDENT_LOBBY_URL = (devName: string) =>
+    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/student/lobby/Lobbyillust_Icon_${devName}_01.png`;
   public static readonly CURRENCY_DATA_URL =
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/currency.json';
   public static readonly ENEMIES_DATA_URL =
@@ -152,4 +165,6 @@ export class BlueArchiveConstants {
   public static readonly WEAPON_MAX_LEVEL = 50;
   public static readonly CC_POWER = 100;
   public static readonly CC_RESISTANCE = 100;
+  public static readonly CRIT_RESISTANCE = 100;
+  public static readonly CRIT_DMG_RESISTANCE = 50;
 }

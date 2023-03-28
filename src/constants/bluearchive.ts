@@ -123,17 +123,17 @@ export class BlueArchiveConstants {
     'Top Secret',
     'Age Unknown',
   ];
-  public static readonly EQUIPMENT_TYPES = [
-    'Hat',
-    'Hairpin',
-    'Watch',
-    'Shoes',
-    'Bag',
-    'Charm',
-    'Necklace',
-    'Gloves',
-    'Badge',
-  ];
+  public static readonly EQUIPMENT_TYPES: { [key: string]: string } = {
+    Hat: '🎩',
+    Hairpin: '🧷',
+    Watch: '⌚',
+    Shoes: '👟',
+    Bag: '👜',
+    Charm: '🧧',
+    Necklace: '📿',
+    Gloves: '🧤',
+    Badge: '📛',
+  };
   public static readonly FAVOR_STAT_TYPES = ['AttackPower', 'MaxHP', 'DefensePower', 'HealPower', 'CriticalPoint'];
   public static readonly POSITION = ['Back', 'Front', 'Middle'];
   public static readonly SCHOOL = [

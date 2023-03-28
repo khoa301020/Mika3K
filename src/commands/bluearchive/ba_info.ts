@@ -24,7 +24,19 @@ import {
 import { BA_Pagination } from '../../providers/paginations/bluearchivePagination.js';
 import { getData } from '../../services/bluearchive.js';
 import { IFurniture } from '../../types/bluearchive/furniture.js';
-import { IStudent } from '../../types/bluearchive/student.js';
+import {
+  ArmorType,
+  BulletType,
+  CharacterAge,
+  Equipment,
+  IStudent,
+  Position,
+  School,
+  SchoolYear,
+  SquadType,
+  TacticRole,
+  WeaponType,
+} from '../../types/bluearchive/student.js';
 import { TPaginationType } from '../../types/common.js';
 
 const studentMoreInfoBtn = () =>
@@ -56,10 +68,10 @@ const studentRow = (hasSummon: boolean, hasGear: boolean) =>
 @Discord()
 @SlashGroup({ name: 'buruaka', description: 'Blue Archive commands' })
 @SlashGroup({ name: 'info', description: 'Blue Archive info commands', root: 'buruaka' })
-export class BlueArchiveSync {
+export class BlueArchiveInfo {
   @SlashGroup('info', 'buruaka')
   @Slash({ name: 'student', description: 'Info student' })
-  async syncAll(
+  async infoStudent(
     @SlashOption({
       description: 'Public display?',
       name: 'display',
@@ -99,7 +111,7 @@ export class BlueArchiveSync {
       required: false,
       type: ApplicationCommandOptionType.String,
     })
-    School: string,
+    School: School,
     @SlashOption({
       description: "Student's day of birth",
       name: 'day-of-birth',
@@ -137,7 +149,7 @@ export class BlueArchiveSync {
       required: false,
       type: ApplicationCommandOptionType.String,
     })
-    SquadType: string,
+    SquadType: SquadType,
     @SlashChoice(...BlueArchiveConstants.TACTIC_ROLE)
     @SlashOption({
       description: "Student's tactic role",
@@ -145,7 +157,7 @@ export class BlueArchiveSync {
       required: false,
       type: ApplicationCommandOptionType.String,
     })
-    TacticRole: string,
+    TacticRole: TacticRole,
     @SlashChoice(...BlueArchiveConstants.POSITION)
     @SlashOption({
       description: "Student's position",
@@ -153,7 +165,7 @@ export class BlueArchiveSync {
       required: false,
       type: ApplicationCommandOptionType.String,
     })
-    Position: string,
+    Position: Position,
     @SlashChoice(...BlueArchiveConstants.ARMOR_TYPES)
     @SlashOption({
       description: "Student's armor type",
@@ -161,7 +173,7 @@ export class BlueArchiveSync {
       required: false,
       type: ApplicationCommandOptionType.String,
     })
-    ArmorType: string,
+    ArmorType: ArmorType,
     @SlashChoice(...BlueArchiveConstants.BULLET_TYPES)
     @SlashOption({
       description: "Student's bullet type",
@@ -169,7 +181,7 @@ export class BlueArchiveSync {
       required: false,
       type: ApplicationCommandOptionType.String,
     })
-    BulletType: string,
+    BulletType: BulletType,
     @SlashChoice(...BlueArchiveConstants.WEAPON_TYPE)
     @SlashOption({
       description: "Student's weapon type",
@@ -177,7 +189,15 @@ export class BlueArchiveSync {
       required: false,
       type: ApplicationCommandOptionType.String,
     })
-    WeaponType: string,
+    WeaponType: WeaponType,
+    @SlashChoice(...Object.keys(BlueArchiveConstants.EQUIPMENT_TYPES))
+    @SlashOption({
+      description: "Student's equipment",
+      name: 'equipment',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    Equipment: Equipment,
     @SlashChoice(...BlueArchiveConstants.SCHOOL_YEAR)
     @SlashOption({
       description: "Student's school year",
@@ -185,7 +205,7 @@ export class BlueArchiveSync {
       required: false,
       type: ApplicationCommandOptionType.String,
     })
-    SchoolYear: string,
+    SchoolYear: SchoolYear,
     @SlashChoice(...BlueArchiveConstants.STUDENT_AGE)
     @SlashOption({
       description: "Student's age",
@@ -193,7 +213,7 @@ export class BlueArchiveSync {
       required: false,
       type: ApplicationCommandOptionType.String,
     })
-    CharacterAge: string,
+    CharacterAge: CharacterAge,
     @SlashChoice(
       ...Object.entries(BlueArchiveConstants.SORT_BY).map(([key, value]) => Object({ name: key, value: value })),
     )
@@ -251,6 +271,7 @@ export class BlueArchiveSync {
           ArtistName,
         }),
       ),
+      Equipment && { Equipment: { $elemMatch: Equipment } },
       PersonalName && { PersonalName: { $regex: new RegExp(`^${PersonalName}`, 'i') } },
       BirthDay && { BirthDay },
     );

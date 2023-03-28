@@ -6,7 +6,7 @@ import { cache } from '../../main.js';
 import { SchaleMath, transformSkillStat } from '../../services/bluearchive.js';
 import { IFurniture } from '../../types/bluearchive/furniture.js';
 import { ILocalization } from '../../types/bluearchive/localization.js';
-import { IStudent, Skill } from '../../types/bluearchive/student.js';
+import { Equipment, IStudent, Skill } from '../../types/bluearchive/student.js';
 
 export const BA_StudentEmbed = (student: IStudent, author: User, page?: number, total?: number): EmbedBuilder => {
   return new EmbedBuilder()
@@ -37,16 +37,25 @@ export const BA_StudentEmbed = (student: IStudent, author: User, page?: number, 
       { name: 'Club', value: student.Club, inline: true },
       { name: 'Squad type ', value: student.SquadType, inline: true },
       { name: 'Position', value: student.Position, inline: true },
-      { name: 'Tactic role', value: student.TacticRole, inline: true },
+      {
+        name: 'Tactic role',
+        value: student.TacticRoleLong ? student.TacticRoleLong : student.TacticRole,
+        inline: true,
+      },
       { name: 'Armor type', value: student.ArmorType, inline: true },
-      { name: 'Weapon type', value: student.WeaponType, inline: true },
+      {
+        name: 'Equipment',
+        value: student.Equipment.map((equipment: Equipment) => BlueArchiveConstants.EQUIPMENT_TYPES[equipment]).join(
+          '/',
+        ),
+        inline: true,
+      },
       { name: 'Use cover', value: student.Cover ? 'Yes' : 'No', inline: true },
       {
         name: 'Adaptation',
         value: `\`\`\`Urban: ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation]}, Indoor: ${
           BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation]
         }, Outdoor: ${BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation]}\`\`\``,
-        inline: true,
       },
       { name: 'Introduction', value: `\`\`\`${decode(student.ProfileIntroduction)}\`\`\`` },
     )
@@ -208,7 +217,7 @@ export const BA_StudentWeaponEmbed = (student: IStudent, author: User): EmbedBui
     .setDescription(`[${student.Id}] ${student.FamilyName} ${student.PersonalName}`)
     .setThumbnail(BlueArchiveConstants.SCHALE_STUDENT_ICON_URL + student.CollectionTexture + '.png')
     .addFields(
-      { name: 'Name', value: `\`\`\`${student.Weapon.Name}\`\`\`` },
+      { name: 'Name', value: `\`\`\`[${student.WeaponType}] ${student.Weapon.Name}\`\`\`` },
       { name: `[Skill upgrade] ${passiveSkillUpgrade.Name}`, value: `\`\`\`${passiveSkillUpgrade.Desc}\`\`\`` },
       {
         name: `[Adaptation upgrade] ${student.Weapon.AdaptationType}`,

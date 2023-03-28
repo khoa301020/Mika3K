@@ -271,7 +271,7 @@ export class BlueArchiveInfo {
           ArtistName,
         }),
       ),
-      Equipment && { Equipment: { $elemMatch: Equipment } },
+      Equipment && { Equipment: { $elemMatch: { $eq: Equipment } } },
       PersonalName && { PersonalName: { $regex: new RegExp(`^${PersonalName}`, 'i') } },
       BirthDay && { BirthDay },
     );

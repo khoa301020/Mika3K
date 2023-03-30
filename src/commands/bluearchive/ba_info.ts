@@ -141,7 +141,7 @@ export class BlueArchiveInfo {
       required: false,
       type: ApplicationCommandOptionType.String,
     })
-    ArtistName: string,
+    Illustrator: string,
     @SlashChoice(...BlueArchiveConstants.SQUAD_TYPES)
     @SlashOption({
       description: "Student's squad type",
@@ -268,7 +268,7 @@ export class BlueArchiveInfo {
           CharacterAge,
           Position,
           TacticRole,
-          ArtistName,
+          Illustrator,
         }),
       ),
       Equipment && { Equipment: { $elemMatch: { $eq: Equipment } } },

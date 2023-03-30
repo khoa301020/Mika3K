@@ -6,7 +6,7 @@ import { IEquipment, Shop as EquipmentShop } from '../types/bluearchive/equipmen
 import { IFurniture } from '../types/bluearchive/furniture';
 import { IItem, Shop as ItemShop } from '../types/bluearchive/item';
 import { ILocalization } from '../types/bluearchive/localization';
-import { Raid, RaidSkill, Terrain } from '../types/bluearchive/raid';
+import { IRaid, RaidSkill, Terrain } from '../types/bluearchive/raid';
 import { IStudent, Skill, Summon } from '../types/bluearchive/student';
 import { ISummon } from '../types/bluearchive/summon';
 
@@ -49,7 +49,8 @@ const StudentSchema = new mongoose.Schema<IStudent>(
     Hobby: String,
     CharacterVoice: String,
     BirthDay: String,
-    ArtistName: String,
+    Illustrator: String,
+    Designer: String,
     CharHeightMetric: String,
     CharHeightImperial: String,
     StabilityPoint: Number,
@@ -129,9 +130,6 @@ const EnemySchema = new mongoose.Schema<IEnemy>(
     CriticalDamageRate: Number,
     CriticalResistPoint: Number,
     CriticalDamageResistRate: Number,
-    MoveSpeed: Number,
-    AmmoCount: Number,
-    AmmoCost: Number,
     Range: Number,
     DamagedRatio: Number,
     Transcendence: Array<Number[]>,
@@ -140,6 +138,8 @@ const EnemySchema = new mongoose.Schema<IEnemy>(
     GroggyGauge: Number,
     GroggyTime: Number,
     OutdoorBattleAdaptation: Number,
+    OppressionPower: Number,
+    OppressionResist: Number,
   },
   { strict: false },
 );
@@ -201,7 +201,7 @@ const ItemSchema = new mongoose.Schema<IItem>(
   },
   { strict: false },
 );
-const RaidSchema = new mongoose.Schema<Raid>(
+const RaidSchema = new mongoose.Schema<IRaid>(
   {
     Id: Number,
     IsReleased: Array<Boolean>,
@@ -281,6 +281,6 @@ export const SchaleDB = {
   Equipment: conn.model<IEquipment>('Equipment', EquipmentSchema, 'Equipments'),
   Furniture: conn.model<IFurniture>('Furniture', FurnitureSchema, 'Furnitures'),
   Item: conn.model<IItem>('Item', ItemSchema, 'Items'),
-  Raid: conn.model<Raid>('Raid', RaidSchema, 'Raids'),
+  Raid: conn.model<IRaid>('Raid', RaidSchema, 'Raids'),
   Summon: conn.model<ISummon>('Summon', SummonSchema, 'Summons'),
 };

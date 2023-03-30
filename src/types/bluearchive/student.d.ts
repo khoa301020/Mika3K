@@ -1,7 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////   IStudent   /////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
 export interface IStudent {
   Id: number;
   IsReleased: boolean[];
@@ -40,7 +36,8 @@ export interface IStudent {
   Hobby: string;
   CharacterVoice: string;
   BirthDay: string;
-  ArtistName: string;
+  Illustrator: string;
+  Designer: string;
   CharHeightMetric: string;
   CharHeightImperial: null | string;
   StabilityPoint: number;
@@ -203,12 +200,14 @@ export interface Frames {
 }
 
 export interface Restriction {
-  Property: string;
+  Property: Property;
   Operand: Operand;
   Value: Value;
 }
 
 export type Operand = 'NotEqual' | 'Equal' | 'Contains';
+
+export type Property = 'Id' | 'SquadType' | 'Tags' | 'BulletType';
 
 export type Value = number | string;
 
@@ -225,7 +224,7 @@ export interface Summon {
 
 export type TacticRole = 'DamageDealer' | 'Tanker' | 'Supporter' | 'Healer' | 'Vehicle';
 
-export interface Weapon {
+export interface IWeapon {
   Name: string;
   Desc: string;
   AdaptationType: AdaptationType;

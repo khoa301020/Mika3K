@@ -1,7 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////   IEnemy   //////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
 export interface IEnemy {
   Id: number;
   DevName: string;
@@ -29,9 +25,6 @@ export interface IEnemy {
   CriticalDamageRate: number;
   CriticalResistPoint: number;
   CriticalDamageResistRate: number;
-  MoveSpeed: number;
-  AmmoCount: number;
-  AmmoCost: number;
   Range: number;
   DamagedRatio: number;
   Transcendence?: Array<number[]>;
@@ -40,6 +33,8 @@ export interface IEnemy {
   GroggyGauge?: number;
   GroggyTime?: number;
   OutdoorBattleAdaptation?: number;
+  OppressionPower?: number;
+  OppressionResist?: number;
 }
 
 export type ArmorType = 'LightArmor' | 'HeavyArmor' | 'Unarmed' | 'Normal';

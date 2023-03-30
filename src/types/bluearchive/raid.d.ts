@@ -1,16 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////   IRaid   ///////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
 export interface IRaid {
-  Raid: Raid[];
-  RaidSeasons: RaidSeason[];
-  TimeAttack: TimeAttack[];
-  TimeAttackRules: TimeAttackRule[];
-  WorldRaid: WorldRaid[];
-}
-
-export interface Raid {
   Id: number;
   IsReleased: boolean[];
   MaxDifficulty: number[];
@@ -57,7 +45,7 @@ export type SkillType = 'EX' | 'Passive';
 
 export type Terrain = 'Outdoor' | 'Street' | 'Indoor';
 
-export interface RaidSeason {
+export interface IRaidSeason {
   Seasons: Season[];
   RewardSets: { [key: string]: Array<RewardSet[]> };
 }
@@ -74,7 +62,7 @@ export interface Season {
   RewardSetMax: number;
 }
 
-export interface TimeAttack {
+export interface ITimeAttack {
   Id: number;
   IsReleased: boolean[];
   DungeonType: DungeonType;
@@ -102,17 +90,18 @@ export type Icon =
   | 'EnemyInfo_Sweeper_Decagram_Taser_White'
   | 'EnemyInfo_Totem03_TimeAttack';
 
-export interface TimeAttackRule {
+export interface ITimeAttackRule {
   Id: number;
   Icon: string;
   Name: string;
   Desc: string;
 }
 
-export interface WorldRaid {
+export interface IWorldRaid {
   Id: number;
   IsReleased: boolean[];
   DifficultyMax: number[];
+  DifficultyName: string[];
   PathName: string;
   IconBG: string;
   Terrain: Terrain[];

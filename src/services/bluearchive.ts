@@ -9,7 +9,7 @@ import { IEquipment } from '../types/bluearchive/equipment';
 import { IFurniture } from '../types/bluearchive/furniture';
 import { IItem } from '../types/bluearchive/item';
 import { ILocalization } from '../types/bluearchive/localization.js';
-import { Raid } from '../types/bluearchive/raid.js';
+import { IRaid } from '../types/bluearchive/raid.js';
 import { IStudent, Skill } from '../types/bluearchive/student';
 import { ISummon } from '../types/bluearchive/summon';
 
@@ -67,7 +67,7 @@ export const fetchData = {
   raid: async function sync() {
     const url = BlueArchiveConstants.RAIDS_DATA_URL;
     const raids = await (await curl(url)).data.Raid;
-    const promises: Array<Promise<Raid>> = raids.map(async (raid: Raid) => await importData.raid(raid));
+    const promises: Array<Promise<IRaid>> = raids.map(async (raid: IRaid) => await importData.raid(raid));
     console.log(`Raids: ${promises.length}`);
     return await Promise.all(promises);
   },
@@ -91,7 +91,7 @@ export const importData = {
   furniture: async (furniture: IFurniture) =>
     await SchaleDB.Furniture.findOneAndUpdate({ Id: furniture.Id }, furniture, { upsert: true, new: true }),
   item: async (item: IItem) => await SchaleDB.Item.findOneAndUpdate({ Id: item.Id }, item, { upsert: true, new: true }),
-  raid: async (raid: Raid) => await SchaleDB.Raid.findOneAndUpdate({ Id: raid.Id }, raid, { upsert: true, new: true }),
+  raid: async (raid: IRaid) => await SchaleDB.Raid.findOneAndUpdate({ Id: raid.Id }, raid, { upsert: true, new: true }),
   summon: async (summon: ISummon) =>
     await SchaleDB.Summon.findOneAndUpdate({ Id: summon.Id }, summon, { upsert: true, new: true }),
 };

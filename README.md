@@ -13,6 +13,12 @@ My multi-purposes self-use discord bot created with [Discordx](https://discordx.
 | Character | Search character                                                                                        |      :x:     |       :x:       | `/mal character search` |
 |   People  | Search people                                                                                           |      :x:     |       :x:       | `/mal people search`    |
 
+## Blue Archive
+
+|  Group  | Feature                                                                                       | Context menu | Message command |      Slash command      |
+|:-------:|-----------------------------------------------------------------------------------------------|:------------:|:---------------:|:-----------------------:|
+| Student | Search student (with `show profile`, `show stats`, `show skills`, `show weapon` & `show gear` |      :x:     |       :x:       | `/buruaka info student` |
+
 ## NHentai
 
 |   Features  | Context menu |    Message command   |   Slash command   |
@@ -53,27 +59,26 @@ My multi-purposes self-use discord bot created with [Discordx](https://discordx.
 
 |     Features    |    Context menu    |     Message command    | Slash command |
 |:---------------:|:------------------:|:----------------------:|:-------------:|
-| Check user info | :heavy_check_mark: | `$info` / `$userinfo` | `/check-info` |
-| SauceNAO        | :heavy_check_mark: |  `$sn` / `$saucenao`  |  `/saucenao`  |
-| Math            |         :x:        |     `$m` / `$math`    | `/math`       |
+| Check user info | :heavy_check_mark: | `$info` / `$userinfo`  | `/check-info` |
+| SauceNAO        | :heavy_check_mark: |  `$sn` / `$saucenao`   |  `/saucenao`  |
+| Math            |         :x:        |     `$m` / `$math`     | `/math`       |
 
 # Resources
 
 - NHentai API by [@sinkaroid/Jandapress](https://github.com/sinkaroid/jandapress)
-- MyAnimeList API by [Jikan](https://github.com/jikan-me/jikan)
-- MyAnimeList typings from [@shineiichijo/marika](https://github.com/LuckyYam/Marika)
+- MyAnimeList API by [Jikan](https://github.com/jikan-me/jikan), typings from [@shineiichijo/marika](https://github.com/LuckyYam/Marika)
 - Blue Archive data from [@lonqie/SchaleDB](https://github.com/lonqie/SchaleDB)
 
-# Libraries
+# Dependencies
 
-- [Axios](https://axios-http.com)
-- [Mongoose](https://mongoosejs.com)
-- [Table](https://github.com/gajus/table)
-- [Quickchart-JS](https://github.com/typpo/quickchart-js)
-- [MathJS](https://github.com/josdejong/mathjs)
 - [QS](https://github.com/ljharb/qs)
-- [Html-Entities](https://github.com/mdevils/html-entities)
+- [Table](https://github.com/gajus/table)
+- [Axios](https://axios-http.com)
+- [MathJS](https://github.com/josdejong/mathjs)
+- [Mongoose](https://mongoosejs.com)
 - [Node-cache](https://github.com/node-cache/node-cache)
+- [Html-Entities](https://github.com/mdevils/html-entities)
+- [Quickchart-JS](https://github.com/typpo/quickchart-js)
 
 # Documentations
 

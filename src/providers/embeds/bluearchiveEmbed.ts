@@ -1,4 +1,4 @@
-import type { User } from 'discord.js';
+import type { APIEmbedField, User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { decode } from 'html-entities';
 import { BlueArchiveConstants, CommonConstants } from '../../constants/index.js';
@@ -21,6 +21,73 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
     (region) => region.raid.toString().length >= 4,
   );
 
+  const fields: Array<APIEmbedField> = [
+    { name: 'Student', value: `Level ${region.studentlevel_max}`, inline: true },
+    { name: 'Weapon', value: `Level ${region.weaponlevel_max}`, inline: true },
+    { name: 'Bond', value: `Level ${region.bondlevel_max}`, inline: true },
+    { name: 'Gear', value: `Tier ${region.gear1_max}/${region.gear2_max}/${region.gear3_max}`, inline: true },
+    { name: 'Mission', value: `Stage ${region.campaign_max}`, inline: true },
+    { name: 'Bounty', value: `Stage ${region.bounty_max}`, inline: true },
+    { name: 'Scrimmage', value: `Stage ${region.schooldungeon_max}`, inline: true },
+    { name: 'Commission', value: `Stage ${region.commission_max}`, inline: true },
+    {
+      name: 'Decagrammaton',
+      value: `Stage ${region.event_701_max} (${region.event_701_challenge_max})`,
+      inline: true,
+    },
+  ];
+  region.current_gacha.length > 0 &&
+    fields.push({
+      name: 'Current banner',
+      value: `${region.current_gacha
+        .map(
+          (currentGacha: CurrentGacha) =>
+            `• [${getRelativeTime(currentGacha.start, currentGacha.end)}] \nㅤ- ${currentGacha.characters
+              .map((character: any) => character.Name)
+              .join('\nㅤ- ')} `,
+        )
+        .join('\u200B')}`,
+    });
+  region.current_events.length > 0 &&
+    fields.push({
+      name: 'Current & upcoming events',
+      value: `${region.current_events
+        .map(
+          (currentEvent: CurrentEvent) =>
+            `- ${
+              !/^10/.test(currentEvent.event.toString())
+                ? localization?.EventName[currentEvent.event.toString()]
+                : `[Rerun] ${localization?.EventName[currentEvent.event.toString().slice(2)]}`
+            } *(${getRelativeTime(currentEvent.start, currentEvent.end)})*`,
+        )
+        .join('\n')}`,
+    });
+  raids.length > 0 &&
+    fields.push({
+      name: 'Current & upcoming raids',
+      value: `${raids
+        .map(
+          (currentRaid: CurrentRaid & { info?: any }) =>
+            `- [${localization?.AdaptationType[currentRaid.terrain!]}] ${currentRaid.info.Name} *(${getRelativeTime(
+              currentRaid.start,
+              currentRaid.end,
+            )})*`,
+        )
+        .join('\n')}`,
+    });
+  timeAttacks.length > 0 &&
+    fields.push({
+      name: 'Current & upcoming drills',
+      value: `${timeAttacks
+        .map(
+          (currentRaid: CurrentRaid & { info?: any }) =>
+            `- [${localization?.AdaptationType[currentRaid.info.Terrain]}] ${
+              currentRaid.info.DungeonType
+            } *(${getRelativeTime(currentRaid.start, currentRaid.end)})*`,
+        )
+        .join('\n')}`,
+    });
+
   return (
     new EmbedBuilder()
       .setColor(CommonConstants.DEFAULT_EMBED_COLOR)
@@ -31,68 +98,7 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
       })
       // .setDescription('')
       .setThumbnail(BlueArchiveConstants.SCHALE_GG_ARONA)
-      .addFields(
-        { name: 'Student', value: `Level ${region.studentlevel_max}`, inline: true },
-        { name: 'Weapon', value: `Level ${region.weaponlevel_max}`, inline: true },
-        { name: 'Bond', value: `Level ${region.bondlevel_max}`, inline: true },
-        { name: 'Gear', value: `Tier ${region.gear1_max}/${region.gear2_max}/${region.gear3_max}`, inline: true },
-        { name: 'Mission', value: `Stage ${region.campaign_max}`, inline: true },
-        { name: 'Bounty', value: `Stage ${region.bounty_max}`, inline: true },
-        { name: 'Scrimmage', value: `Stage ${region.schooldungeon_max}`, inline: true },
-        { name: 'Commission', value: `Stage ${region.commission_max}`, inline: true },
-        {
-          name: 'Decagrammaton',
-          value: `Stage ${region.event_701_max} (${region.event_701_challenge_max})`,
-          inline: true,
-        },
-        {
-          name: 'Current banner',
-          value: `${region.current_gacha
-            .map(
-              (currentGacha: CurrentGacha) =>
-                `• [${getRelativeTime(currentGacha.start, currentGacha.end)}] \nㅤ- ${currentGacha.characters
-                  .map((character: any) => character.Name)
-                  .join('\nㅤ- ')} `,
-            )
-            .join('\u200B')}`,
-        },
-        {
-          name: 'Current & upcomming events',
-          value: `${region.current_events
-            .map(
-              (currentEvent: CurrentEvent) =>
-                `- ${
-                  !/^10/.test(currentEvent.event.toString())
-                    ? localization?.EventName[currentEvent.event.toString()]
-                    : `[Rerun] ${localization?.EventName[currentEvent.event.toString().slice(2)]}`
-                } *(${getRelativeTime(currentEvent.start, currentEvent.end)})*`,
-            )
-            .join('\n')}`,
-        },
-        {
-          name: 'Current & upcomming raids',
-          value: `${raids
-            .map(
-              (currentRaid: CurrentRaid & { info?: any }) =>
-                `- [${localization?.AdaptationType[currentRaid.terrain!]}] ${currentRaid.info.Name} *(${getRelativeTime(
-                  currentRaid.start,
-                  currentRaid.end,
-                )})*`,
-            )
-            .join('\n')}`,
-        },
-        {
-          name: 'Current & upcomming drills',
-          value: `${timeAttacks
-            .map(
-              (currentRaid: CurrentRaid & { info?: any }) =>
-                `- [${localization?.AdaptationType[currentRaid.info.Terrain]}] ${
-                  currentRaid.info.DungeonType
-                } *(${getRelativeTime(currentRaid.start, currentRaid.end)})*`,
-            )
-            .join('\n')}`,
-        },
-      )
+      .addFields(fields)
       .setTimestamp()
       .setFooter({
         text: `SCHALE.gg`,

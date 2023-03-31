@@ -1,6 +1,10 @@
 export class BlueArchiveConstants {
   public static readonly SCHALE_GG_BASE = 'https://schale.gg';
   public static readonly SCHALE_STUDENT_URL = this.SCHALE_GG_BASE + '/?chara=';
+  public static readonly REGIONS: { [key: string]: number } = {
+    JP: 0,
+    GLOBAL: 1,
+  };
 
   /* Regex */
 
@@ -23,6 +27,8 @@ export class BlueArchiveConstants {
   /* Data urls */
 
   public static readonly SCHALE_GG_LOGO = 'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/schale.png';
+  public static readonly SCHALE_GG_ARONA =
+    'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/ui/Image_Char_Arona2.png';
   public static readonly SCHALE_STUDENT_PORTRAIT_URL =
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/student/portrait/';
   public static readonly SCHALE_STUDENT_ICON_URL =
@@ -49,6 +55,7 @@ export class BlueArchiveConstants {
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/students.json';
   public static readonly SUMMONS_DATA_URL =
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/summons.json';
+  public static readonly COMMON_DATA_URL = 'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/common.json';
 
   /* Icon urls */
 

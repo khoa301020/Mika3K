@@ -6,7 +6,17 @@ import { IEquipment, Shop as EquipmentShop } from '../types/bluearchive/equipmen
 import { IFurniture } from '../types/bluearchive/furniture';
 import { IItem, Shop as ItemShop } from '../types/bluearchive/item';
 import { ILocalization } from '../types/bluearchive/localization';
-import { IRaid, RaidSkill, Terrain } from '../types/bluearchive/raid';
+import {
+  Formation,
+  IRaid,
+  ITimeAttack,
+  IWorldRaid,
+  RaidSkill,
+  Reward,
+  Season,
+  Terrain,
+  TimeAttackRule,
+} from '../types/bluearchive/raid';
 import { IStudent, Skill, Summon } from '../types/bluearchive/student';
 import { ISummon } from '../types/bluearchive/summon';
 
@@ -221,6 +231,62 @@ const RaidSchema = new mongoose.Schema<IRaid>(
   },
   { strict: false },
 );
+const RaidSeasonSchema = new mongoose.Schema<Season>(
+  {
+    RegionId: Number,
+    Season: Number,
+    RaidId: Number,
+    Terrain: String,
+    Start: Number,
+    End: Number,
+    RewardSet: Number,
+    RewardSetMax: Number,
+  },
+  { strict: false },
+);
+
+const TimeAttackSchema = new mongoose.Schema<ITimeAttack>(
+  {
+    Id: Number,
+    IsReleased: Array<Boolean>,
+    DungeonType: String,
+    Icon: String,
+    MaxDifficulty: Number,
+    Terrain: String,
+    BulletType: String,
+    ArmorType: String,
+    EnemyLevel: Array<Number>,
+    Formations: Array<Formation>,
+    Rules: Array<TimeAttackRule[] | Number[]>,
+  },
+  { strict: false },
+);
+
+const WorldRaidSchema = new mongoose.Schema<IWorldRaid>(
+  {
+    Id: Number,
+    IsReleased: Array<Boolean>,
+    DifficultyMax: Array<Number>,
+    DifficultyName: Array<String>,
+    PathName: String,
+    IconBG: String,
+    Terrain: Array<Terrain>,
+    BulletType: String,
+    ArmorType: String,
+    WorldBossHP: Number,
+    Level: Array<Number>,
+    EnemyList: Array<Array<Number>>,
+    RaidSkill: Array<RaidSkill>,
+    Name: String,
+    Rewards: Array<Reward>,
+    EntryCost: Array<Array<Number>>,
+    RewardsGlobal: Array<Reward>,
+    BulletTypeInsane: String,
+    UseRaidSkillList: Number,
+  },
+  { strict: false },
+);
+
 const SummonSchema = new mongoose.Schema<ISummon>(
   {
     Id: Number,
@@ -282,5 +348,8 @@ export const SchaleDB = {
   Furniture: conn.model<IFurniture>('Furniture', FurnitureSchema, 'Furnitures'),
   Item: conn.model<IItem>('Item', ItemSchema, 'Items'),
   Raid: conn.model<IRaid>('Raid', RaidSchema, 'Raids'),
+  RaidSeason: conn.model<Season>('RaidSeason', RaidSeasonSchema, 'RaidSeasons'),
+  TimeAttack: conn.model<ITimeAttack>('TimeAttack', TimeAttackSchema, 'TimeAttacks'),
+  WorldRaid: conn.model<IWorldRaid>('WorldRaid', WorldRaidSchema, 'WorldRaids'),
   Summon: conn.model<ISummon>('Summon', SummonSchema, 'Summons'),
 };

@@ -53,6 +53,7 @@ export interface IRaidSeason {
 export type RewardSet = Array<number[]> | number;
 
 export interface Season {
+  RegionId?: number;
   Season: number;
   RaidId: number;
   Terrain: Terrain;
@@ -73,7 +74,7 @@ export interface ITimeAttack {
   ArmorType: Type;
   EnemyLevel: number[];
   Formations: Formation[];
-  Rules: Array<number[]>;
+  Rules: Array<number[] | TimeAttackRule[]>;
 }
 
 export type DungeonType = 'Shooting' | 'Defense' | 'Destruction';
@@ -90,8 +91,8 @@ export type Icon =
   | 'EnemyInfo_Sweeper_Decagram_Taser_White'
   | 'EnemyInfo_Totem03_TimeAttack';
 
-export interface ITimeAttackRule {
-  Id: number;
+export interface TimeAttackRule {
+  Id?: number;
   Icon: string;
   Name: string;
   Desc: string;

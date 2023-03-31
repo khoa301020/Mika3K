@@ -9,6 +9,7 @@ import NodeCache from 'node-cache';
 import axios from 'axios';
 import dotenv from 'dotenv';
 import { BlueArchiveConstants } from './constants/index.js';
+import { ICommon } from './types/bluearchive/common.js';
 import { ILocalization } from './types/bluearchive/localization.js';
 dotenv.config();
 export const cache = new NodeCache();
@@ -47,6 +48,10 @@ await mongoose.connect(mongoUri!).then(async () => {
 const BALocalization: ILocalization = await (await axios.get(BlueArchiveConstants.LOCALIZATION_DATA_URL)).data;
 cache.set('BA_Localization', BALocalization);
 console.log('BA_Localization loaded');
+
+const BACommon: ICommon = await (await axios.get(BlueArchiveConstants.COMMON_DATA_URL)).data;
+cache.set('BA_Common', BACommon);
+console.log('BA_Common loaded');
 
 // const students: Array<IStudent> = await (await axios.get(BlueArchiveConstants.STUDENTS_DATA_URL)).data;
 // cache.set('BA_Students', students);

@@ -9,7 +9,7 @@ import { IEquipment } from '../types/bluearchive/equipment';
 import { IFurniture } from '../types/bluearchive/furniture';
 import { IItem } from '../types/bluearchive/item';
 import { ILocalization } from '../types/bluearchive/localization.js';
-import { IRaid } from '../types/bluearchive/raid.js';
+import { IRaid, IRaidSeason, ITimeAttack, IWorldRaid, Season, TimeAttackRule } from '../types/bluearchive/raid.js';
 import { IStudent, Skill } from '../types/bluearchive/student';
 import { ISummon } from '../types/bluearchive/summon';
 
@@ -71,6 +71,52 @@ export const fetchData = {
     console.log(`Raids: ${promises.length}`);
     return await Promise.all(promises);
   },
+  raidSeason: async function sync() {
+    const url = BlueArchiveConstants.RAIDS_DATA_URL;
+    const raidSeasons: Array<IRaidSeason> = await (await curl(url)).data.RaidSeasons;
+    const seasons: Array<Season> = raidSeasons
+      .map((raidSeason: IRaidSeason, index: number) => {
+        return raidSeason.Seasons.map((season: Season) => Object.assign(season, { RegionId: index }));
+      })
+      .flat();
+    const promises: Array<Promise<Season>> = seasons
+      .flat()
+      .map(async (raidSeason: Season) => await importData.raidSeason(raidSeason));
+    console.log(`RaidSeasons: ${promises.length}`);
+    return await Promise.all(promises);
+  },
+  timeAttack: async function sync() {
+    const url = BlueArchiveConstants.RAIDS_DATA_URL;
+    const raids = await (await curl(url)).data;
+    const timeAttacks = raids.TimeAttack;
+    const timeAttackRules: Array<TimeAttackRule> = raids.TimeAttackRules;
+
+    timeAttacks.forEach((timeAttack: ITimeAttack) => {
+      timeAttack.Rules.forEach((rules: Array<TimeAttackRule | number>) => {
+        rules.forEach(
+          (ruleToConvert: TimeAttackRule | number, index: number, ruleArray: Array<TimeAttackRule | number>) => {
+            const indexProjected = timeAttackRules.findIndex((rule: TimeAttackRule) => rule.Id! === ruleToConvert);
+            if (indexProjected !== -1) ruleArray[index] = timeAttackRules[indexProjected];
+          },
+        );
+      });
+    });
+
+    const promises: Array<Promise<ITimeAttack>> = timeAttacks.map(
+      async (timeAttack: ITimeAttack) => await importData.timeAttack(timeAttack),
+    );
+    console.log(`TimeAttacks: ${promises.length}`);
+    return await Promise.all(promises);
+  },
+  worldRaid: async function sync() {
+    const url = BlueArchiveConstants.RAIDS_DATA_URL;
+    const worldRaids = await (await curl(url)).data.WorldRaid;
+    const promises: Array<Promise<IWorldRaid>> = worldRaids.map(
+      async (worldRaid: IWorldRaid) => await importData.worldRaid(worldRaid),
+    );
+    console.log(`WorldRaids: ${promises.length}`);
+    return await Promise.all(promises);
+  },
   summon: async function sync() {
     const url = BlueArchiveConstants.SUMMONS_DATA_URL;
     const summons = await (await curl(url)).data;
@@ -92,6 +138,16 @@ export const importData = {
     await SchaleDB.Furniture.findOneAndUpdate({ Id: furniture.Id }, furniture, { upsert: true, new: true }),
   item: async (item: IItem) => await SchaleDB.Item.findOneAndUpdate({ Id: item.Id }, item, { upsert: true, new: true }),
   raid: async (raid: IRaid) => await SchaleDB.Raid.findOneAndUpdate({ Id: raid.Id }, raid, { upsert: true, new: true }),
+  raidSeason: async (raidSeason: Season) =>
+    await SchaleDB.RaidSeason.findOneAndUpdate(
+      { RegionId: raidSeason.RegionId, Season: raidSeason.Season, RaidId: raidSeason.RaidId },
+      raidSeason,
+      { upsert: true, new: true },
+    ),
+  timeAttack: async (timeAttack: ITimeAttack) =>
+    await SchaleDB.TimeAttack.findOneAndUpdate({ Id: timeAttack.Id }, timeAttack, { upsert: true, new: true }),
+  worldRaid: async (worldRaid: IWorldRaid) =>
+    await SchaleDB.WorldRaid.findOneAndUpdate({ Id: worldRaid.Id }, worldRaid, { upsert: true, new: true }),
   summon: async (summon: ISummon) =>
     await SchaleDB.Summon.findOneAndUpdate({ Id: summon.Id }, summon, { upsert: true, new: true }),
 };
@@ -101,6 +157,11 @@ export const getData = {
       .sort(sort)
       .lean(),
   getStudentById: async (id: number): Promise<IStudent | null> => await SchaleDB.Student.findOne({ Id: id }).lean(),
+  getStudentByIds: async (ids: Array<number>): Promise<IStudent[]> =>
+    await SchaleDB.Student.find({ Id: { $in: ids } }).lean(),
+  getRaidById: async (id: number): Promise<IRaid | null> => await SchaleDB.Raid.findOne({ Id: id }).lean(),
+  getTimeAttackById: async (id: number): Promise<ITimeAttack | null> =>
+    await SchaleDB.TimeAttack.findOne({ Id: id }).lean(),
   getFurnitures: async (ids: Array<number>): Promise<Array<IFurniture>> =>
     await SchaleDB.Furniture.find({ Id: { $in: ids } }).lean(),
 };

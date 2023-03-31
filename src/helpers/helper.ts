@@ -192,3 +192,20 @@ export const validateDayMonth = (day: number, month: number): boolean => {
 export const isObjectEmpty = (obj: Object) => {
   return Object.keys(obj).length === 0;
 };
+
+export const getRelativeTime = (epochStart: number, epochEnd: number) => {
+  const now = new Date().getTime() / 1000;
+  const fromStart = (now - epochStart) * 1000;
+
+  const isRunning = fromStart > 0;
+  const diff = isRunning ? (epochEnd - now) * 1000 : Math.abs(fromStart);
+
+  const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+  const hours = Math.floor((diff % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+  const minutes = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000));
+  const seconds = Math.floor((diff % (60 * 1000)) / 1000);
+
+  const timeString = `**${days}d ${hours}h ${minutes}m ${seconds}s**`;
+
+  return isRunning ? `Ends in ${timeString}` : `Starts in ${timeString}`;
+};

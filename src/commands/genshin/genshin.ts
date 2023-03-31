@@ -1,7 +1,7 @@
 import { ApplicationCommandOptionType, CommandInteraction, InteractionResponse } from 'discord.js';
 import { Client, Discord, Slash, SlashGroup, SlashOption } from 'discordx';
 import { setTimeout } from 'timers/promises';
-import { parseCookies } from '../../helpers/helper.js';
+import { isObjectEmpty, parseCookies } from '../../helpers/helper.js';
 import { GenshinAccountEmbed, GenshinRedeemResultEmbed } from '../../providers/embeds/genshinEmbed.js';
 import { Genshin_ButtonPagination } from '../../providers/paginations/genshinPagination.js';
 import { genshinApi } from '../../services/genshin.js';
@@ -114,6 +114,8 @@ export class GenshinRedeem {
     const userId = interaction.user.id;
     const user: IGenshin = await genshinApi.getUserInfo(userId);
     if (!user || !user.cookieString) return interaction.editReply('❌ Cookie not found, please save cookie first.');
+    if (!user.selectedAccount || isObjectEmpty(user.selectedAccount))
+      return interaction.editReply('❌ Account data not found, please select account.');
 
     const giftcodes = Array.from(new Set([giftcode1, giftcode2, giftcode3])).filter((giftcode) => giftcode);
 

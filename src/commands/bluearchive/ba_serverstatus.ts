@@ -11,7 +11,7 @@ import { IStudent } from '../../types/bluearchive/student.js';
 @SlashGroup({ name: 'buruaka', description: 'Blue Archive commands' })
 export class BlueArchiveSync {
   @SlashGroup('buruaka')
-  @Slash({ name: 'server-info', description: "Get server's latest info" })
+  @Slash({ name: 'server-status', description: "Get server's current status" })
   async syncAll(
     @SlashChoice(
       ...Object.entries(BlueArchiveConstants.REGIONS).map(([key, value]) => Object({ name: key, value: value })),

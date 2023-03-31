@@ -26,7 +26,7 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
     { name: 'Weapon', value: `Level ${region.weaponlevel_max}`, inline: true },
     { name: 'Bond', value: `Level ${region.bondlevel_max}`, inline: true },
     { name: 'Gear', value: `Tier ${region.gear1_max}/${region.gear2_max}/${region.gear3_max}`, inline: true },
-    { name: 'Mission', value: `Stage ${region.campaign_max}`, inline: true },
+    { name: 'Mission', value: `Area ${region.campaign_max}`, inline: true },
     { name: 'Bounty', value: `Stage ${region.bounty_max}`, inline: true },
     { name: 'Scrimmage', value: `Stage ${region.schooldungeon_max}`, inline: true },
     { name: 'Commission', value: `Stage ${region.commission_max}`, inline: true },

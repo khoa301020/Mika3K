@@ -1,5 +1,8 @@
 ## Untagged
 
+- Update: [BA] Dynamic server current status ([c7d580](https://github.com/khoa301020/Xiaomi3K/commit/c7d5805987ca60bdf022e6b92e3f6db79c6e9890))
+- Feature: [BA] Get server current status ([cc2464](https://github.com/khoa301020/Xiaomi3K/commit/cc2464bbda13f332f0ae6291ca7b0bc922e20efc))
+- Update: [BA] Student info & README.md ([fdc93c](https://github.com/khoa301020/Xiaomi3K/commit/fdc93c2b9cd7ee12ade296f1ad1a8e7c82306492))
 - Change: [BA] field sync with SchaleDB latest update ([cd6251](https://github.com/khoa301020/Xiaomi3K/commit/cd62514f7b301e917e5d0dec5f3381a864303bba))
 - Fixx: [BA] lack query condition in find Student by equipment ([8c149e](https://github.com/khoa301020/Xiaomi3K/commit/8c149ec5d9ef66b00c662946670e613c8c7a5a1b))
 - Update: [BA] tactic role localization + add Equipment query & info ([7801f0](https://github.com/khoa301020/Xiaomi3K/commit/7801f06bcfe9167d163efacceaff0fd3a1347811))

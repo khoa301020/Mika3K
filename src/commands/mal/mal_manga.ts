@@ -183,7 +183,7 @@ export class MAL_Manga {
       let names: string[] = [];
 
       const pages = res.data.data.map((manga: IManga, index: number) => {
-        names.push(manga.title);
+        names.push(manga.title.length > 100 ? `${manga.title.slice(0, 95)}...` : manga.title);
         const embed = MAL_MangaEmbed(manga, interaction.user, index + 1, res.data.data.length);
 
         return { embeds: [embed], components: [mangaRow] };

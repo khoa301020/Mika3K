@@ -70,7 +70,7 @@ export class MAL_People {
       let names: string[] = [];
 
       const pages = res.data.data.map((people: IPeople, index: number) => {
-        names.push(people.name);
+        names.push(people.name.length > 100 ? `${people.name.slice(0, 95)}...` : people.name);
         const embed = MAL_PeopleEmbed(people, interaction.user, index + 1, res.data.data.length);
 
         return { embeds: [embed], name: people.name, ephemeral: !display };

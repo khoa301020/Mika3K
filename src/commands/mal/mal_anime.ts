@@ -234,7 +234,7 @@ export class MAL_Anime {
       let names: string[] = [];
 
       const pages = res.data.data.map((anime: IAnime, index: number) => {
-        names.push(anime.title);
+        names.push(anime.title.length > 100 ? `${anime.title.slice(0, 95)}...` : anime.title);
         const embed = MAL_AnimeEmbed(anime, interaction.user, index + 1, res.data.data.length);
         const row = animeRow;
 

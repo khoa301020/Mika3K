@@ -222,21 +222,6 @@ export const transformStudentSkillStat = (skill: Skill, localization?: ILocaliza
       const value = localization && localization.BuffName[key];
       return value ?? match;
     })
-      .replace(BlueArchiveConstants.REGEX_DEBUFF_REPLACEMENT, (match, key) => {
-        key = 'Debuff_' + key;
-        const value = localization && localization.BuffName[key];
-        return value ?? match;
-      })
-      .replace(BlueArchiveConstants.REGEX_SPECIAL_REPLACEMENT, (match, key) => {
-        key = 'Special_' + key;
-        const value = localization && localization.BuffName[key];
-        return value ?? match;
-      })
-      .replace(BlueArchiveConstants.REGEX_CC_REPLACEMENT, (match, key) => {
-        key = 'CC_' + key;
-        const value = localization && localization.BuffName[key];
-        return value ?? match;
-      })
       .replace(BlueArchiveConstants.REGEX_PARAMETERS_REPLACEMENT, (match, key) => {
         let isNumericParameters = true;
         let parameters: Array<string> | undefined;
@@ -257,21 +242,6 @@ export const transformStudentSkillStat = (skill: Skill, localization?: ILocaliza
 
         return parameters ? (isNumericParameters ? parameters.join('/') : ` + (${parameters.join('/')})`) : match;
       })
-      .replace(CommonConstants.REGEX_HTML_TAG, ''),
-  );
-
-  return skill;
-};
-export const transformRaidSkillStat = (skill: RaidSkill, difficulty: number, localization?: ILocalization) => {
-  skill.Name = `[${skill.SkillType}] ${decode(skill.Name).replace(CommonConstants.REGEX_HTML_TAG, '')}${
-    skill.ATGCost > 0 ? ` \`ATG: ${skill.ATGCost}\`` : ''
-  }`;
-  skill.Desc = decode(
-    skill.Desc?.replace(BlueArchiveConstants.REGEX_BUFF_REPLACEMENT, (match, key) => {
-      key = 'Buff_' + key;
-      const value = localization && localization.BuffName[key];
-      return value ?? match;
-    })
       .replace(BlueArchiveConstants.REGEX_DEBUFF_REPLACEMENT, (match, key) => {
         key = 'Debuff_' + key;
         const value = localization && localization.BuffName[key];
@@ -287,9 +257,41 @@ export const transformRaidSkillStat = (skill: RaidSkill, difficulty: number, loc
         const value = localization && localization.BuffName[key];
         return value ?? match;
       })
+
+      .replace(CommonConstants.REGEX_HTML_TAG, ''),
+  );
+
+  return skill;
+};
+export const transformRaidSkillStat = (skill: RaidSkill, difficulty: number, localization?: ILocalization) => {
+  skill.Name = `[${skill.SkillType}] ${decode(skill.Name).replace(CommonConstants.REGEX_HTML_TAG, '')}${
+    skill.ATGCost > 0 ? ` \`ATG: ${skill.ATGCost}\`` : ''
+  }`;
+  skill.Desc = decode(
+    skill.Desc?.replace(BlueArchiveConstants.REGEX_BUFF_REPLACEMENT, (match, key) => {
+      key = 'Buff_' + key;
+      const value = localization && localization.BuffName[key];
+      return value ?? match;
+    })
       .replace(BlueArchiveConstants.REGEX_PARAMETERS_REPLACEMENT, (match, key) => {
         return skill.Parameters![parseInt(key) - 1][difficulty];
       })
+      .replace(BlueArchiveConstants.REGEX_DEBUFF_REPLACEMENT, (match, key) => {
+        key = 'Debuff_' + key;
+        const value = localization && localization.BuffName[key];
+        return value ?? match;
+      })
+      .replace(BlueArchiveConstants.REGEX_SPECIAL_REPLACEMENT, (match, key) => {
+        key = 'Special_' + key;
+        const value = localization && localization.BuffName[key];
+        return value ?? match;
+      })
+      .replace(BlueArchiveConstants.REGEX_CC_REPLACEMENT, (match, key) => {
+        key = 'CC_' + key;
+        const value = localization && localization.BuffName[key];
+        return value ?? match;
+      })
+
       .replace(CommonConstants.REGEX_HTML_TAG, ''),
   );
 

@@ -4,10 +4,11 @@ import { decode } from 'html-entities';
 import { BlueArchiveConstants, CommonConstants } from '../../constants/index.js';
 import { getRelativeTime } from '../../helpers/helper.js';
 import { cache } from '../../main.js';
-import { SchaleMath, transformSkillStat } from '../../services/bluearchive.js';
+import { SchaleMath, transformRaidSkillStat, transformStudentSkillStat } from '../../services/bluearchive.js';
 import { CurrentEvent, CurrentGacha, CurrentRaid, Region } from '../../types/bluearchive/common.js';
 import { IFurniture } from '../../types/bluearchive/furniture.js';
 import { ILocalization } from '../../types/bluearchive/localization.js';
+import { IRaid, RaidSkill } from '../../types/bluearchive/raid.js';
 import { Equipment, IStudent, Skill } from '../../types/bluearchive/student.js';
 
 /* Server embed */
@@ -275,19 +276,19 @@ export const BA_StudentStatsEmbed = (student: IStudent, author: User): EmbedBuil
 export const BA_StudentSkillsEmbed = (student: IStudent, author: User): EmbedBuilder => {
   const localization: ILocalization | undefined = cache.get('BA_Localization');
 
-  const exSkill: Skill = transformSkillStat(
+  const exSkill: Skill = transformStudentSkillStat(
     student.Skills.find((skill: Skill) => skill.SkillType === 'ex')!,
     localization,
   );
-  const normalSkill: Skill = transformSkillStat(
+  const normalSkill: Skill = transformStudentSkillStat(
     student.Skills.find((skill: Skill) => skill.SkillType === 'normal')!,
     localization,
   );
-  const passiveSkill: Skill = transformSkillStat(
+  const passiveSkill: Skill = transformStudentSkillStat(
     student.Skills.find((skill: Skill) => skill.SkillType === 'passive')!,
     localization,
   );
-  const subSkill: Skill = transformSkillStat(
+  const subSkill: Skill = transformStudentSkillStat(
     student.Skills.find((skill: Skill) => skill.SkillType === 'sub')!,
     localization,
   );
@@ -316,7 +317,7 @@ export const BA_StudentSkillsEmbed = (student: IStudent, author: User): EmbedBui
 };
 export const BA_StudentWeaponEmbed = (student: IStudent, author: User): EmbedBuilder => {
   const localization: ILocalization | undefined = cache.get('BA_Localization');
-  const passiveSkillUpgrade: Skill = transformSkillStat(
+  const passiveSkillUpgrade: Skill = transformStudentSkillStat(
     student.Skills.find((skill: Skill) => skill.SkillType === 'weaponpassive')!,
     localization,
   );
@@ -371,7 +372,7 @@ export const BA_StudentWeaponEmbed = (student: IStudent, author: User): EmbedBui
 };
 export const BA_StudentGearEmbed = (student: IStudent, author: User): EmbedBuilder => {
   const localization: ILocalization | undefined = cache.get('BA_Localization');
-  const normalSkillUpgrade: Skill = transformSkillStat(
+  const normalSkillUpgrade: Skill = transformStudentSkillStat(
     student.Skills.find((skill: Skill) => skill.SkillType === 'gearnormal')!,
     localization,
   );
@@ -409,6 +410,76 @@ export const BA_StudentGearEmbed = (student: IStudent, author: User): EmbedBuild
       },
     )
     .setImage(BlueArchiveConstants.SCHALE_STUDENT_GEAR_URL + student.Gear.Icon + '.png')
+    .setTimestamp()
+    .setFooter({
+      text: `SCHALE.gg`,
+      iconURL: BlueArchiveConstants.SCHALE_GG_LOGO,
+    });
+};
+
+/* Raid embed */
+
+export const BA_RaidEmbed = (raid: IRaid, difficulty: string, author: User): EmbedBuilder => {
+  const localization: ILocalization | undefined = cache.get('BA_Localization');
+
+  let skills: Array<RaidSkill> = raid.RaidSkill.filter(
+    (raidSkill: RaidSkill) =>
+      raidSkill.SkillType !== 'raidautoattack' &&
+      BlueArchiveConstants.RAID_DIFFICULTIES[difficulty] >= raidSkill.MinDifficulty!,
+  );
+
+  skills = skills.map((skill: RaidSkill) =>
+    transformRaidSkillStat(skill, BlueArchiveConstants.RAID_DIFFICULTIES[difficulty], localization),
+  );
+
+  let fields: Array<APIEmbedField> = [
+    {
+      name: 'Bullet type',
+      value:
+        BlueArchiveConstants.RAID_DIFFICULTIES[difficulty] >= 5
+          ? localization!.BulletType[raid.BulletTypeInsane]
+          : localization!.BulletType[raid.BulletType],
+      inline: true,
+    },
+    { name: 'Armor type', value: localization ? localization.ArmorType[raid.ArmorType] : raid.ArmorType, inline: true },
+    { name: 'Terrain', value: raid.Terrain.join(', '), inline: true },
+  ];
+
+  skills.forEach((skill: RaidSkill) => {
+    fields.push({ name: skill.Name!, value: `\`\`\`${skill.Desc!}\`\`\`` });
+  });
+
+  fields.push({ name: 'Profile', value: `\`\`\`${raid.Profile}\`\`\`` });
+
+  return new EmbedBuilder()
+    .setColor(BlueArchiveConstants.ARMOR_COLOR[raid.ArmorType])
+    .setTitle(`[${raid.Faction}] ${raid.Name} - \`${difficulty}\``)
+    .setURL(BlueArchiveConstants.SCHALE_RAID_URL + raid.Id)
+    .setAuthor({
+      name: `${author.username}#${author.discriminator}`,
+      iconURL: author.displayAvatarURL(),
+    })
+    .setDescription(
+      `${
+        CommonConstants.BOOLEAN_MAP[
+          (raid.MaxDifficulty[0] >= BlueArchiveConstants.RAID_DIFFICULTIES[difficulty]).toString()
+        ]
+      } JP ー ${
+        CommonConstants.BOOLEAN_MAP[
+          (raid.MaxDifficulty[1] >= BlueArchiveConstants.RAID_DIFFICULTIES[difficulty] && raid.IsReleased[1]).toString()
+        ]
+      } GLOBAL`,
+    )
+    .setThumbnail(
+      BlueArchiveConstants.SCHALE_RAID_ICON_URL(raid.PathName, BlueArchiveConstants.RAID_DIFFICULTIES[difficulty] >= 5),
+    )
+    .addFields(fields)
+    .setImage(
+      BlueArchiveConstants.SCHALE_RAID_PORTRAIT_URL(
+        raid.PathName,
+        BlueArchiveConstants.RAID_DIFFICULTIES[difficulty] >= 5,
+      ),
+    )
     .setTimestamp()
     .setFooter({
       text: `SCHALE.gg`,

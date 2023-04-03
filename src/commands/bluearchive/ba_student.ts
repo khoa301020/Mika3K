@@ -67,9 +67,8 @@ const studentRow = (hasSummon: boolean, hasGear: boolean) =>
 
 @Discord()
 @SlashGroup({ name: 'buruaka', description: 'Blue Archive commands' })
-@SlashGroup({ name: 'info', description: 'Blue Archive info commands', root: 'buruaka' })
 export class BlueArchiveInfo {
-  @SlashGroup('info', 'buruaka')
+  @SlashGroup('buruaka')
   @Slash({ name: 'student', description: 'Info student' })
   async infoStudent(
     @SlashOption({

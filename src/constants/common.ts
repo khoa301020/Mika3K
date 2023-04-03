@@ -9,6 +9,10 @@ export class CommonConstants {
   public static readonly CHART_WIDTH = 800;
   public static readonly CHART_HEIGHT = 400;
   public static readonly QUOTES_PER_PAGE = 10;
+  public static readonly BOOLEAN_MAP: { [key: string]: string } = {
+    true: '✅',
+    false: '❌',
+  };
   public static readonly GENDER_MAP = {
     male: 'Male ♂',
     female: 'Female ♀',

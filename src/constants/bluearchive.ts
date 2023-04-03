@@ -1,6 +1,9 @@
+import { CommonConstants } from './common.js';
+
 export class BlueArchiveConstants {
   public static readonly SCHALE_GG_BASE = 'https://schale.gg';
   public static readonly SCHALE_STUDENT_URL = this.SCHALE_GG_BASE + '/?chara=';
+  public static readonly SCHALE_RAID_URL = this.SCHALE_GG_BASE + '/?raid=';
   public static readonly REGIONS: { [key: string]: number } = {
     JP: 0,
     GLOBAL: 1,
@@ -39,6 +42,14 @@ export class BlueArchiveConstants {
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/gear/';
   public static readonly SCHALE_STUDENT_LOBBY_URL = (devName: string) =>
     `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/student/lobby/Lobbyillust_Icon_${devName}_01.png`;
+  public static readonly SCHALE_RAID_ICON_URL = (pathName: string, isFromInsane: boolean) =>
+    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/icon/Icon_${pathName}${
+      isFromInsane ? '_Insane' : ''
+    }.png`;
+  public static readonly SCHALE_RAID_PORTRAIT_URL = (pathName: string, isFromInsane: boolean) =>
+    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/Boss_Portrait_${pathName}${
+      isFromInsane ? '_Insane' : ''
+    }_Lobby.png`;
   public static readonly CURRENCY_DATA_URL =
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/currency.json';
   public static readonly ENEMIES_DATA_URL =
@@ -121,6 +132,12 @@ export class BlueArchiveConstants {
     Mystic: 0x216f9c,
     Pierce: 0xb26d1f,
   };
+  public static readonly ARMOR_COLOR: { [key: string]: number } = {
+    LightArmor: 0xcc1a25,
+    Unarmed: 0x216f9c,
+    HeavyArmor: 0xb26d1f,
+    Normal: CommonConstants.DEFAULT_EMBED_COLOR,
+  };
   public static readonly STUDENT_AGE = [
     '11 years old',
     '15 years old',
@@ -174,4 +191,27 @@ export class BlueArchiveConstants {
   public static readonly CC_RESISTANCE = 100;
   public static readonly CRIT_RESISTANCE = 100;
   public static readonly CRIT_DMG_RESISTANCE = 50;
+
+  /* Raid constants */
+
+  public static readonly RAIDS: { [key: string]: number } = {
+    Binah: 1,
+    Chesed: 2,
+    ShiroKuro: 3,
+    Hieronymus: 4,
+    KAITEN: 5,
+    Perorodzilla: 6,
+    HOD: 7,
+    Goz: 8,
+  };
+
+  public static readonly RAID_DIFFICULTIES: { [key: string]: number } = {
+    Normal: 0,
+    Hard: 1,
+    VeryHard: 2,
+    Hardcore: 3,
+    Extreme: 4,
+    Insane: 5,
+    Torment: 6,
+  };
 }

@@ -18,7 +18,7 @@ My multi-purposes self-use discord bot created with [Discordx](https://discordx.
 |  Group  | Feature                                                                                       | Context menu | Message command |      Slash command      |
 |:-------:|-----------------------------------------------------------------------------------------------|:------------:|:---------------:|:-----------------------:|
 | Server | Check server status |      :x:     |       :x:       | `/buruaka server-status` |
-| Student | Search student (with `show profile`, `show stats`, `show skills`, `show weapon` & `show gear` |      :x:     |       :x:       | `/buruaka info student` |
+| Student | Search student (with `show profile`, `show stats`, `show skills`, `show weapon` & `show gear` |      :x:     |       :x:       | `/buruaka student` |
 
 ## NHentai
 

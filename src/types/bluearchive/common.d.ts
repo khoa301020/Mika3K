@@ -1,3 +1,5 @@
+import { IStudent } from './student';
+
 export interface ICommon {
   GachaGroup: GachaGroup[];
   regions: Region[];
@@ -30,6 +32,11 @@ export interface Region {
   current_gacha: CurrentGacha[];
   current_events: CurrentEvent[];
   current_raid: CurrentRaid[];
+  studentsCount?: number;
+  raidsCount?: number;
+  eventsCount?: number;
+  rerunEventsCount?: number;
+  incomingBirthdayStudents?: Array<IStudent>;
 }
 
 export interface CurrentEvent {

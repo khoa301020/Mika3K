@@ -22,6 +22,9 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
   );
 
   const fields: Array<APIEmbedField> = [
+    { name: 'No. students', value: `${region.studentsCount!}`, inline: true },
+    { name: 'No. raids', value: `${region.raidsCount!}`, inline: true },
+    { name: 'No. events', value: `${region.eventsCount} (${region.rerunEventsCount})`, inline: true },
     { name: 'Student', value: `Level ${region.studentlevel_max}`, inline: true },
     { name: 'Weapon', value: `Level ${region.weaponlevel_max}`, inline: true },
     { name: 'Bond', value: `Level ${region.bondlevel_max}`, inline: true },
@@ -48,6 +51,15 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
         )
         .join('\u200B')}`,
     });
+  region.incomingBirthdayStudents &&
+    region.incomingBirthdayStudents.length > 0 &&
+    fields.push({
+      name: "Upcoming student's birthday",
+      value: `${region.incomingBirthdayStudents
+        .map((student: IStudent) => `ㅤ- [${student.Birthday}] ${student.Name}`)
+        .join('\n')}`,
+    });
+
   region.current_events.length > 0 &&
     fields.push({
       name: 'Current & upcoming events',

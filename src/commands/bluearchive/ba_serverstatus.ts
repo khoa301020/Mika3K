@@ -41,6 +41,12 @@ export class BlueArchiveSync {
 
     const region = common.regions[regionId];
 
+    region.studentsCount = await getData.getStudentCount(regionId);
+    region.raidsCount = await getData.getRaidCount(regionId);
+    region.eventsCount = region.events.length;
+    region.rerunEventsCount = region.events.filter((event: number) => /^10/.test(event.toString())).length;
+    region.incomingBirthdayStudents = await getData.getStudentHasBirthdayNextWeek(regionId);
+
     const raids: Array<CurrentRaid & { info?: any }> = region.current_raid.filter(
       (region) => region.raid.toString().length < 4,
     );

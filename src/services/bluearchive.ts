@@ -2,6 +2,7 @@ import axios from 'axios';
 import { decode } from 'html-entities';
 import { FilterQuery } from 'mongoose';
 import { BlueArchiveConstants, CommonConstants } from '../constants/index.js';
+import { datetimeConverter } from '../helpers/helper.js';
 import { SchaleDB } from '../models/BlueArchive.js';
 import { ICurrency } from '../types/bluearchive/currency';
 import { IEnemy } from '../types/bluearchive/enemy';
@@ -152,6 +153,14 @@ export const importData = {
     await SchaleDB.Summon.findOneAndUpdate({ Id: summon.Id }, summon, { upsert: true, new: true }),
 };
 export const getData = {
+  getStudentCount: async (regionId: number): Promise<number> =>
+    await SchaleDB.Student.countDocuments(
+      regionId === BlueArchiveConstants.REGIONS.JP
+        ? {
+            $or: [{ IsReleased: [true, false] }, { IsReleased: [true, true] }],
+          }
+        : { IsReleased: [true, true] },
+    ),
   getStudent: async (sort: any, query?: FilterQuery<IStudent>): Promise<Array<IStudent>> =>
     await SchaleDB.Student.find(query ?? {})
       .sort(sort)
@@ -159,6 +168,37 @@ export const getData = {
   getStudentById: async (id: number): Promise<IStudent | null> => await SchaleDB.Student.findOne({ Id: id }).lean(),
   getStudentByIds: async (ids: Array<number>): Promise<IStudent[]> =>
     await SchaleDB.Student.find({ Id: { $in: ids } }).lean(),
+  getStudentHasBirthdayNextWeek: async (regionId: number): Promise<IStudent[]> => {
+    let currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    let birthdayStudents = [];
+
+    for (var i = 0; i < 7; i++) {
+      const nextDate = new Date();
+      nextDate.setHours(0, 0, 0, 0);
+      birthdayStudents.push(datetimeConverter(nextDate.setDate(currentDate.getDate() + i)).studentBirthday);
+    }
+
+    const query = Object.assign(
+      { PathName: { $regex: /^[^_]*$/i }, BirthDay: { $in: birthdayStudents } },
+      regionId === BlueArchiveConstants.REGIONS.JP
+        ? {
+            $or: [{ IsReleased: [true, false] }, { IsReleased: [true, true] }],
+          }
+        : { IsReleased: [true, true] },
+    );
+
+    return await SchaleDB.Student.find(query).sort({ BirthDay: 1 }).lean();
+  },
+  getRaidCount: async (regionId: number): Promise<number> =>
+    await SchaleDB.Raid.countDocuments(
+      regionId === BlueArchiveConstants.REGIONS.JP
+        ? {
+            $or: [{ IsReleased: [true, false] }, { IsReleased: [true, true] }],
+          }
+        : { IsReleased: [true, true] },
+    ),
   getRaidById: async (id: number): Promise<IRaid | null> => await SchaleDB.Raid.findOne({ Id: id }).lean(),
   getTimeAttackById: async (id: number): Promise<ITimeAttack | null> =>
     await SchaleDB.TimeAttack.findOne({ Id: id }).lean(),

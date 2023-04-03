@@ -16,6 +16,7 @@ import {
   Season,
   Terrain,
   TimeAttackRule,
+  WorldRaidSkill,
 } from '../types/bluearchive/raid';
 import { IStudent, Skill, Summon } from '../types/bluearchive/student';
 import { ISummon } from '../types/bluearchive/summon';
@@ -148,8 +149,11 @@ const EnemySchema = new mongoose.Schema<IEnemy>(
     GroggyGauge: Number,
     GroggyTime: Number,
     OutdoorBattleAdaptation: Number,
+    Skills: Array<Number>,
     OppressionPower: Number,
     OppressionResist: Number,
+    DefensePenetration1: Number,
+    DefensePenetration100: Number,
   },
   { strict: false },
 );
@@ -224,6 +228,7 @@ const RaidSchema = new mongoose.Schema<IRaid>(
     ArmorType: String,
     EnemyList: Array<Number[]>,
     RaidSkill: Array<RaidSkill>,
+    ExcludeNormalAttack: Array<Number>,
     Name: String,
     Profile: String,
     Icon: String,
@@ -276,7 +281,7 @@ const WorldRaidSchema = new mongoose.Schema<IWorldRaid>(
     WorldBossHP: Number,
     Level: Array<Number>,
     EnemyList: Array<Array<Number>>,
-    RaidSkill: Array<RaidSkill>,
+    RaidSkill: Array<WorldRaidSkill>,
     Name: String,
     Rewards: Array<Reward>,
     EntryCost: Array<Array<Number>>,

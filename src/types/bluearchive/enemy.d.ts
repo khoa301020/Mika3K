@@ -33,8 +33,11 @@ export interface IEnemy {
   GroggyGauge?: number;
   GroggyTime?: number;
   OutdoorBattleAdaptation?: number;
+  Skills?: string[];
   OppressionPower?: number;
   OppressionResist?: number;
+  DefensePenetration1?: number;
+  DefensePenetration100?: number;
 }
 
 export type ArmorType = 'LightArmor' | 'HeavyArmor' | 'Unarmed' | 'Normal';

@@ -10,6 +10,7 @@ export interface IRaid {
   ArmorType: Type;
   EnemyList: Array<number[]>;
   RaidSkill: RaidSkill[];
+  ExcludeNormalAttack: number[];
   Name: string;
   Profile: string;
   Icon?: string;
@@ -24,24 +25,56 @@ export interface RaidSkill {
   MinDifficulty?: number;
   ATGCost: number;
   Icon: string;
-  Name: string;
-  Desc: string;
-  Parameters?: Array<string[]>;
   Effects?: Effect[];
+  Name?: string;
+  Desc?: string;
+  Parameters?: Array<string[]>;
+  ShowInfo?: boolean;
+  EffectCombine?: EffectCombine[];
+  EffectCombineLabel?: EffectCombineLabel;
 }
+
+export type EffectCombine =
+  | 'DMGSingle'
+  | 'DMGZone'
+  | 'DMGMulti'
+  | 'BuffAlly'
+  | 'BuffTarget'
+  | 'DMGDot'
+  | 'CrowdControl';
+
+export interface EffectCombineLabel {
+  StackLabel?: string[];
+  Icon?: string[];
+  StackLabelTranslated?: StackLabelTranslated[];
+  DisableFirst?: boolean;
+}
+
+export type StackLabelTranslated = 'setting_off' | 'setting_on';
 
 export interface Effect {
-  Type: TypeEnum;
-  Value: Array<number[]>;
-  Stat: string;
-  Channel: number;
+  Type: EffectCombine;
+  Scale?: number | number[];
   RestrictTo?: number[];
+  CriticalCheck?: CriticalCheck;
+  CanEvade?: boolean;
+  HitFrames?: number[];
+  Hits?: number[];
+  Value?: Array<number[]>;
+  Stat?: string;
+  Channel?: number;
+  SubstituteCondition?: string;
+  SubstituteScale?: Array<number[]>;
+  Duration?: string;
+  Period?: string;
+  Icon?: string;
   StackSame?: number;
+  Chance?: string;
 }
 
-export type TypeEnum = 'BuffAlly' | 'BuffTarget';
+export type CriticalCheck = 'Check' | 'Never';
 
-export type SkillType = 'EX' | 'Passive';
+export type SkillType = 'EX' | 'Passive' | 'raidautoattack';
 
 export type Terrain = 'Outdoor' | 'Street' | 'Indoor';
 
@@ -111,13 +144,23 @@ export interface IWorldRaid {
   WorldBossHP?: number;
   Level: number[];
   EnemyList: Array<number[]>;
-  RaidSkill: RaidSkill[];
+  RaidSkill: WorldRaidSkill[];
   Name: string;
   Rewards: Reward[];
   EntryCost: Array<number[]>;
   RewardsGlobal?: Reward[];
   BulletTypeInsane?: string;
   UseRaidSkillList?: number;
+}
+
+export interface WorldRaidSkill {
+  Id: string;
+  SkillType: SkillType;
+  MinDifficulty: number;
+  ATGCost: number;
+  Icon: string;
+  Name: string;
+  Desc: string;
 }
 
 export interface Reward {

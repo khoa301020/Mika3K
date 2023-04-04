@@ -2,7 +2,7 @@ import type { APIEmbedField, User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { decode } from 'html-entities';
 import { BlueArchiveConstants, CommonConstants } from '../../constants/index.js';
-import { getRelativeTime } from '../../helpers/helper.js';
+import { convertTZ, datetimeConverter, getRelativeTime } from '../../helpers/helper.js';
 import { cache } from '../../main.js';
 import { SchaleMath, transformRaidSkillStat, transformStudentSkillStat } from '../../services/bluearchive.js';
 import { CurrentEvent, CurrentGacha, CurrentRaid, Region } from '../../types/bluearchive/common.js';
@@ -22,6 +22,11 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
   const timeAttacks: Array<CurrentRaid & { info?: any }> = region.current_raid.filter(
     (region) => region.raid.toString().length >= 4,
   );
+  const today = datetimeConverter(convertTZ(new Date(), 'Asia/Tokyo')).studentBirthday;
+  const nextday = new Date(today);
+  const tomorrow = datetimeConverter(
+    convertTZ(new Date(nextday.setDate(nextday.getDate() + 1)), 'Asia/Tokyo'),
+  ).studentBirthday;
 
   const fields: Array<APIEmbedField> = [
     { name: 'No. students', value: `${region.studentsCount!}`, inline: true },
@@ -58,7 +63,12 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
     fields.push({
       name: "Upcoming student's birthday",
       value: `${region.incomingBirthdayStudents
-        .map((student: IStudent) => `ㅤ- [${student.Birthday}] ${student.Name}`)
+        .map(
+          (student: IStudent) =>
+            `ㅤ- [${student.Birthday}] ${student.Name} ${
+              student.BirthDay === today ? 'ー **TODAY!**' : student.BirthDay === tomorrow ? 'ー **TOMORROW!**' : ''
+            }`,
+        )
         .join('\n')}`,
     });
 

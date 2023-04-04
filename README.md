@@ -25,7 +25,7 @@ My multi-purposes self-use discord bot created with [Discordx](https://discordx.
 
 |   Feature  | Context menu |    Message command   |   Slash command   |
 |:-----------:|:------------:|:--------------------:|:-----------------:|
-| Check nuke  |      :x:     | (Just send the code) |  `/nhentai check` |
+| Check nuke  |      :x:     | `$nh` / `$nhentai` |  `/nhentai check` |
 | Random nuke |      :x:     | `$nr` / `$nhrandom` | `/nhentai random` |
 
 ## Genshin

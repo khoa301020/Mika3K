@@ -210,3 +210,7 @@ export const getRelativeTime = (epochStart: number, epochEnd: number) => {
 
   return isRunning ? `Ends in ${timeString}` : `Starts in ${timeString}`;
 };
+
+export function convertTZ(date: Date, tzString: string) {
+  return new Date((typeof date === 'string' ? new Date(date) : date).toLocaleString('en-US', { timeZone: tzString }));
+}

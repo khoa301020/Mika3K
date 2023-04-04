@@ -1,8 +1,9 @@
 import mongoose from 'mongoose';
+import { isObjectEmpty } from '../helpers/helper.js';
 import { cache } from '../main.js';
 import { ICurrency } from '../types/bluearchive/currency';
 import { IEnemy } from '../types/bluearchive/enemy';
-import { IEquipment, Shop as EquipmentShop } from '../types/bluearchive/equipment';
+import { Shop as EquipmentShop, IEquipment } from '../types/bluearchive/equipment';
 import { IFurniture } from '../types/bluearchive/furniture';
 import { IItem, Shop as ItemShop } from '../types/bluearchive/item';
 import { ILocalization } from '../types/bluearchive/localization';
@@ -341,6 +342,19 @@ StudentSchema.post('find', function (res) {
   const localization: ILocalization | undefined = cache.get('BA_Localization');
   if (res.length === 0) return;
   res.forEach((res: any) => transformStudent(localization, res));
+});
+
+RaidSchema.post('findOne', async function (res: IRaid, next) {
+  if (isObjectEmpty(res)) return;
+  res.BossList = [];
+  let promises: Array<Promise<any>> = [];
+  res.EnemyList.forEach((enemies: Array<number>, index: number, array: Array<number[]>) =>
+    promises.push(
+      SchaleDB.Enemy.find({ Id: { $in: enemies }, Rank: 'Boss' }).then((bosses) => (res.BossList![index] = bosses)),
+    ),
+  );
+  await Promise.all(promises);
+  next();
 });
 
 const conn = mongoose.createConnection(process.env.MONGO_URI_BA!);

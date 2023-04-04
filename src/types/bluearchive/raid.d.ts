@@ -1,3 +1,5 @@
+import { IEnemy } from './enemy';
+
 export interface IRaid {
   Id: number;
   IsReleased: boolean[];
@@ -9,6 +11,7 @@ export interface IRaid {
   BulletTypeInsane: string;
   ArmorType: Type;
   EnemyList: Array<number[]>;
+  BossList?: Array<IEnemy[]>;
   RaidSkill: RaidSkill[];
   ExcludeNormalAttack: number[];
   Name: string;

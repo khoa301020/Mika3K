@@ -6,6 +6,7 @@ import { getRelativeTime } from '../../helpers/helper.js';
 import { cache } from '../../main.js';
 import { SchaleMath, transformRaidSkillStat, transformStudentSkillStat } from '../../services/bluearchive.js';
 import { CurrentEvent, CurrentGacha, CurrentRaid, Region } from '../../types/bluearchive/common.js';
+import { IEnemy } from '../../types/bluearchive/enemy.js';
 import { IFurniture } from '../../types/bluearchive/furniture.js';
 import { ILocalization } from '../../types/bluearchive/localization.js';
 import { IRaid, RaidSkill } from '../../types/bluearchive/raid.js';
@@ -444,6 +445,53 @@ export const BA_RaidEmbed = (raid: IRaid, difficulty: string, author: User): Emb
     { name: 'Armor type', value: localization ? localization.ArmorType[raid.ArmorType] : raid.ArmorType, inline: true },
     { name: 'Terrain', value: raid.Terrain.join(', '), inline: true },
   ];
+
+  if (raid.BossList && raid.BossList.length > 0)
+    raid.BossList[BlueArchiveConstants.RAID_DIFFICULTIES[difficulty]].forEach((boss: IEnemy) => {
+      const pickedStats = (({
+        MaxHP100,
+        AttackPower100,
+        DefensePower100,
+        DamagedRatio,
+        AccuracyPoint,
+        DodgePoint,
+        CriticalPoint,
+        CriticalResistPoint,
+        CriticalDamageRate,
+        CriticalDamageResistRate,
+        StabilityPoint,
+        Range,
+        GroggyGauge,
+        GroggyTime,
+      }) => ({
+        MaxHP100,
+        AttackPower100,
+        DefensePower100,
+        DamagedRatio,
+        AccuracyPoint,
+        DodgePoint,
+        CriticalPoint,
+        CriticalResistPoint,
+        CriticalDamageRate,
+        CriticalDamageResistRate,
+        StabilityPoint,
+        Range,
+        GroggyGauge,
+        GroggyTime,
+      }))(boss);
+      const stats = Object.entries(pickedStats).map(
+        ([key, value]) =>
+          `${
+            localization!.Stat[key === 'CriticalResistPoint' ? 'CriticalChanceResistPoint' : key.replace(/[0-9]/g, '')]
+          }: ${value}`,
+      );
+      fields.push({
+        name: `[Stats] Lv.${BlueArchiveConstants.RAID_LEVEL[BlueArchiveConstants.RAID_DIFFICULTIES[difficulty]]} ${
+          boss.Name
+        }`,
+        value: `Traits: ${boss.Tags.map((tag: string) => `\`${tag}\``).join(' ')}\n\`\`\`${stats.join('\n')}\`\`\``,
+      });
+    });
 
   skills.forEach((skill: RaidSkill) => {
     fields.push({ name: skill.Name!, value: `\`\`\`${skill.Desc!}\`\`\`` });

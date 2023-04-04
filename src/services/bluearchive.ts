@@ -217,31 +217,32 @@ export const getData = {
 export const transformStudentSkillStat = (skill: Skill, localization?: ILocalization) => {
   skill.Name = decode(skill.Name).replace(CommonConstants.REGEX_HTML_TAG, '');
   skill.Desc = decode(
-    skill.Desc?.replace(BlueArchiveConstants.REGEX_BUFF_REPLACEMENT, (match, key) => {
-      key = 'Buff_' + key;
-      const value = localization && localization.BuffName[key];
-      return value ?? match;
-    })
-      .replace(BlueArchiveConstants.REGEX_PARAMETERS_REPLACEMENT, (match, key) => {
-        let isNumericParameters = true;
-        let parameters: Array<string> | undefined;
-        if (skill.SkillType === 'ex')
-          parameters =
-            skill.Parameters &&
-            skill.Parameters[parseInt(key) - 1].filter((value, index) => index === 0 || index === 2 || index === 4);
-        else
-          parameters =
-            skill.Parameters &&
-            skill.Parameters[parseInt(key) - 1].filter(
-              (value, index) => index === 0 || index === 3 || index === 6 || index === 9,
-            );
-        if (parameters && !parameters[0]) {
-          isNumericParameters = false;
-          parameters = parameters?.map((parameter: string) => (parameter === '' ? 'No effect' : parameter.trim()));
-        }
+    skill.Desc?.replace(BlueArchiveConstants.REGEX_PARAMETERS_REPLACEMENT, (match, key) => {
+      let isNumericParameters = true;
+      let parameters: Array<string> | undefined;
+      if (skill.SkillType === 'ex')
+        parameters =
+          skill.Parameters &&
+          skill.Parameters[parseInt(key) - 1].filter((value, index) => index === 0 || index === 2 || index === 4);
+      else
+        parameters =
+          skill.Parameters &&
+          skill.Parameters[parseInt(key) - 1].filter(
+            (value, index) => index === 0 || index === 3 || index === 6 || index === 9,
+          );
+      if (parameters && !parameters[0]) {
+        isNumericParameters = false;
+        parameters = parameters?.map((parameter: string) => (parameter === '' ? 'No effect' : parameter.trim()));
+      }
 
-        return parameters ? (isNumericParameters ? parameters.join('/') : ` + (${parameters.join('/')})`) : match;
+      return parameters ? (isNumericParameters ? parameters.join('/') : ` + (${parameters.join('/')})`) : match;
+    })
+      .replace(BlueArchiveConstants.REGEX_BUFF_REPLACEMENT, (match, key) => {
+        key = 'Buff_' + key;
+        const value = localization && localization.BuffName[key];
+        return value ?? match;
       })
+
       .replace(BlueArchiveConstants.REGEX_DEBUFF_REPLACEMENT, (match, key) => {
         key = 'Debuff_' + key;
         const value = localization && localization.BuffName[key];
@@ -268,14 +269,15 @@ export const transformRaidSkillStat = (skill: RaidSkill, difficulty: number, loc
     skill.ATGCost > 0 ? ` \`ATG: ${skill.ATGCost}\`` : ''
   }`;
   skill.Desc = decode(
-    skill.Desc?.replace(BlueArchiveConstants.REGEX_BUFF_REPLACEMENT, (match, key) => {
-      key = 'Buff_' + key;
-      const value = localization && localization.BuffName[key];
-      return value ?? match;
+    skill.Desc?.replace(BlueArchiveConstants.REGEX_PARAMETERS_REPLACEMENT, (match, key) => {
+      return skill.Parameters![parseInt(key) - 1][difficulty];
     })
-      .replace(BlueArchiveConstants.REGEX_PARAMETERS_REPLACEMENT, (match, key) => {
-        return skill.Parameters![parseInt(key) - 1][difficulty];
+      .replace(BlueArchiveConstants.REGEX_BUFF_REPLACEMENT, (match, key) => {
+        key = 'Buff_' + key;
+        const value = localization && localization.BuffName[key];
+        return value ?? match;
       })
+
       .replace(BlueArchiveConstants.REGEX_DEBUFF_REPLACEMENT, (match, key) => {
         key = 'Debuff_' + key;
         const value = localization && localization.BuffName[key];

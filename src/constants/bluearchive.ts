@@ -194,6 +194,8 @@ export class BlueArchiveConstants {
 
   /* Raid constants */
 
+  public static readonly RAID_LEVEL = [17, 25, 35, 50, 70, 80, 90];
+
   public static readonly RAIDS: { [key: string]: number } = {
     Binah: 1,
     Chesed: 2,

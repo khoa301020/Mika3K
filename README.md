@@ -15,21 +15,22 @@ My multi-purposes self-use discord bot created with [Discordx](https://discordx.
 
 ## Blue Archive
 
-|  Group  | Feature                                                                                       | Context menu | Message command |      Slash command      |
-|:-------:|-----------------------------------------------------------------------------------------------|:------------:|:---------------:|:-----------------------:|
-| Server | Check server status |      :x:     |       :x:       | `/buruaka server-status` |
-| Student | Search student (with `show profile`, `show stats`, `show skills`, `show weapon` & `show gear` |      :x:     |       :x:       | `/buruaka student` |
+| Feature                                                                                       | Context menu | Message command |       Slash command      |
+|-----------------------------------------------------------------------------------------------|:------------:|:---------------:|:------------------------:|
+| Check server status                                                                           |      :x:     |       :x:       | `/buruaka server-status` |
+| Search student (with `show profile`, `show stats`, `show skills`, `show weapon` & `show gear` |      :x:     |       :x:       |    `/buruaka student`    |
+| Search raid                                                                                   |      :x:     |       :x:       |      `/buruaka raid`     |
 
 ## NHentai
 
-|   Features  | Context menu |    Message command   |   Slash command   |
+|   Feature  | Context menu |    Message command   |   Slash command   |
 |:-----------:|:------------:|:--------------------:|:-----------------:|
 | Check nuke  |      :x:     | (Just send the code) |  `/nhentai check` |
 | Random nuke |      :x:     | `$nr` / `$nhrandom` | `/nhentai random` |
 
 ## Genshin
 
-|     Features    | Context menu | Message command |       Slash command       |
+|     Feature    | Context menu | Message command |       Slash command       |
 |:---------------:|:------------:|:---------------:|:-------------------------:|
 | Save token      |      :x:     |       :x:       |   `/genshin save-token`   |
 | List account    |      :x:     |       :x:       | `/genshin list-account`   |
@@ -38,7 +39,7 @@ My multi-purposes self-use discord bot created with [Discordx](https://discordx.
 
 ## Quote
 
-|    Features   | Context menu |      Message command     |   Slash command  |
+|    Feature   | Context menu |      Message command     |   Slash command  |
 |:-------------:|:------------:|:------------------------:|:----------------:|
 | Create quote  |      :x:     |   `$$` / `$createquote`  |  `/quote create` |
 | Get quote     |      :x:     |    `$$$` / `$getquote`   |   `/quote get`   |
@@ -51,14 +52,14 @@ My multi-purposes self-use discord bot created with [Discordx](https://discordx.
 
 ## Minigames
 
-|                Features               | Context menu |     Message command     |       Slash command       |
+|                Feature               | Context menu |     Message command     |       Slash command       |
 |:-------------------------------------:|:------------:|:-----------------------:|:-------------------------:|
 | Play jankenpon (rock, scissor, paper) |      :x:     | `$jkp` / `$jankenpon` |   `/minigame jankenpon`   |
 
 
 ## Misc
 
-|     Features    |    Context menu    |     Message command    | Slash command |
+|     Feature    |    Context menu    |     Message command    | Slash command |
 |:---------------:|:------------------:|:----------------------:|:-------------:|
 | Check user info | :heavy_check_mark: | `$info` / `$userinfo`  | `/check-info` |
 | SauceNAO        | :heavy_check_mark: |  `$sn` / `$saucenao`   |  `/saucenao`  |

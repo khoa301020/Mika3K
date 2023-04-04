@@ -1,5 +1,13 @@
 ## Untagged
 
+- Feature: [BA] Raid info - Boss stats ([aab8d0](https://github.com/khoa301020/Xiaomi3K/commit/aab8d03190856a11da55d774348c281fa5f133db))
+- Fix: [BA] Also transform only-in-high-difficulty skill parameter ([10a1cc](https://github.com/khoa301020/Xiaomi3K/commit/10a1cc26b5e6586e234d01b37aa2b2eb7e76b38c))
+- Feature: [BA] [WIP] Search raid with difficulty ([473385](https://github.com/khoa301020/Xiaomi3K/commit/473385ff90b829c04b60a11c09d3aa80cfbfed51))
+- Fix: [MAL] handle title name surpass 100 characters in select menu label ([8ed211](https://github.com/khoa301020/Xiaomi3K/commit/8ed2119277a2ee661c66db4439b3298fcb92475d))
+- Update: [BA] Get server status ([47bcdd](https://github.com/khoa301020/Xiaomi3K/commit/47bcdd647188bf435d459e8b61d5ca973a7337cc))
+- Update: sync data format & update data ([aa0c35](https://github.com/khoa301020/Xiaomi3K/commit/aa0c3592c0bbf47c6ec4cbd474f34a61dd3c5c41))
+- Fix: [GI] verify user account data before redeeming ([f41aa3](https://github.com/khoa301020/Xiaomi3K/commit/f41aa36a8d804b59d4614fe4fbf12dc27d40031d))
+- Update: README & CHANGELOG ([b66505](https://github.com/khoa301020/Xiaomi3K/commit/b6650514a502a386a8239ed186e56e9cdb718907))
 - Update: [BA] Dynamic server current status ([c7d580](https://github.com/khoa301020/Xiaomi3K/commit/c7d5805987ca60bdf022e6b92e3f6db79c6e9890))
 - Feature: [BA] Get server current status ([cc2464](https://github.com/khoa301020/Xiaomi3K/commit/cc2464bbda13f332f0ae6291ca7b0bc922e20efc))
 - Update: [BA] Student info & README.md ([fdc93c](https://github.com/khoa301020/Xiaomi3K/commit/fdc93c2b9cd7ee12ade296f1ad1a8e7c82306492))

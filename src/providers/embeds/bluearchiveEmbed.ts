@@ -54,8 +54,8 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
       value: `${region.current_gacha
         .map(
           (currentGacha: CurrentGacha) =>
-            `• [${getRelativeTime(currentGacha.start, currentGacha.end)}] \nㅤ- ${currentGacha.characters
-              .map((character: any) => character.Name)
+            `• *${getRelativeTime(currentGacha.start, currentGacha.end)}* \nㅤ- ${currentGacha.characters
+              .map((character: any) => `[${`★`.repeat(character.StarGrade)}] ${character.Name}`)
               .join('\nㅤ- ')} `,
         )
         .join('\u200B')}`,

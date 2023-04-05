@@ -1,12 +1,13 @@
 import type { GuildMember, User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { Client } from 'discordx';
+import { CommonConstants } from '../../constants/common.js';
 import { datetimeConverter, tableConverter, timeDiff } from '../../helpers/helper.js';
 import { IUserQuote } from '../../types/quote.js';
 
 export const UserInfoEmbed = (author: User, client: Client, user: GuildMember): EmbedBuilder => {
   return new EmbedBuilder()
-    .setColor(0x0099ff)
+    .setColor(CommonConstants.DEFAULT_EMBED_COLOR)
     .setTitle(`${user.user.username}#${user.user.discriminator}`)
     .setURL(`https://discordapp.com/users/${user.id}`)
     .setAuthor({

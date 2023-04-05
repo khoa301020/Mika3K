@@ -2,7 +2,7 @@ import type { APIEmbedField, User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { decode } from 'html-entities';
 import { BlueArchiveConstants, CommonConstants } from '../../constants/index.js';
-import { convertTZ, datetimeConverter, getRelativeTime } from '../../helpers/helper.js';
+import { convertTZ, datetimeConverter, getRelativeTime, isEnded } from '../../helpers/helper.js';
 import { cache } from '../../main.js';
 import { SchaleMath, transformRaidSkillStat, transformStudentSkillStat } from '../../services/bluearchive.js';
 import { CurrentEvent, CurrentGacha, CurrentRaid, Region } from '../../types/bluearchive/common.js';
@@ -17,17 +17,19 @@ import { Equipment, IStudent, Skill } from '../../types/bluearchive/student.js';
 export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: number = 0): EmbedBuilder => {
   const localization: ILocalization | undefined = cache.get('BA_Localization');
   const raids: Array<CurrentRaid & { info?: any }> = region.current_raid.filter(
-    (region) => region.raid.toString().length < 4,
+    (region) => region.raid.toString().length < 4 && !isEnded(region.end),
   );
   const timeAttacks: Array<CurrentRaid & { info?: any }> = region.current_raid.filter(
-    (region) => region.raid.toString().length >= 4,
+    (region) => region.raid.toString().length >= 4 && !isEnded(region.end),
   );
-  const today = datetimeConverter(convertTZ(new Date(), 'Asia/Tokyo')).studentBirthday;
-  const nextday = new Date(today);
-  const tomorrow = datetimeConverter(
-    convertTZ(new Date(nextday.setDate(nextday.getDate() + 1)), 'Asia/Tokyo'),
-  ).studentBirthday;
+  region.current_gacha = region.current_gacha.filter((gacha: CurrentGacha) => !isEnded(gacha.end));
+  region.current_events = region.current_events.filter((event: CurrentEvent) => !isEnded(event.end));
 
+  const today = new Date();
+  const todayJP = datetimeConverter(convertTZ(today, 'Asia/Tokyo')).studentBirthday;
+  const tomorrowJP = datetimeConverter(
+    convertTZ(new Date(today.setDate(today.getDate() + 1)), 'Asia/Tokyo'),
+  ).studentBirthday;
   const fields: Array<APIEmbedField> = [
     { name: 'No. students', value: `${region.studentsCount!}`, inline: true },
     { name: 'No. raids', value: `${region.raidsCount!}`, inline: true },
@@ -66,7 +68,7 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
         .map(
           (student: IStudent) =>
             `ㅤ- [${student.Birthday}] ${student.Name} ${
-              student.BirthDay === today ? 'ー **TODAY!**' : student.BirthDay === tomorrow ? 'ー **TOMORROW!**' : ''
+              student.BirthDay === todayJP ? 'ー **TODAY!**' : student.BirthDay === tomorrowJP ? 'ー **TOMORROW!**' : ''
             }`,
         )
         .join('\n')}`,

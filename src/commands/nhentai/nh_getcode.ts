@@ -19,23 +19,24 @@ class GetNHentaiCode {
     code: String,
     interaction: CommandInteraction,
   ): Promise<void> {
+    await interaction.deferReply({ ephemeral: true });
     axios
-      .get(`${NHentaiConstants.NHENTAI_API}/get?book=${code}`)
+      .get(`${NHentaiConstants.NHENTAI_BASE_API}/book/${code}`)
       .then((res) => {
         const embed = NHentaiBookEmbed(res, interaction.user);
 
-        interaction.reply({ embeds: [embed], ephemeral: true });
+        interaction.editReply({ embeds: [embed] });
       })
       .catch((err) => {
         console.log(err);
-        interaction.reply({ content: err.message, ephemeral: true });
+        interaction.editReply({ content: err.message });
       });
   }
 
   @SimpleCommand({ aliases: ['nhentai', 'nh'], description: 'Check NHentai nuke code' })
   checkCodeCommand(command: SimpleCommandMessage): void {
     axios
-      .get(`${NHentaiConstants.NHENTAI_API}/get?book=${command.message.content}`)
+      .get(`${NHentaiConstants.NHENTAI_BASE_API}/book/${command.message.content}`)
       .then((res) => {
         const embed = NHentaiBookEmbed(res, command.message.author);
         command.message.reply({ embeds: [embed] });

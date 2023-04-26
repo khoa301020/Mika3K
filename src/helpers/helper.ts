@@ -15,6 +15,7 @@ export const randomArray = (array: Array<any>) => array[Math.floor(Math.random()
  * @returns An object with three properties: date, time, and datetime.
  */
 export const datetimeConverter = (timestamp: Date | number | string) => {
+  console.log(timestamp);
   const date = new Date(timestamp);
   const day = date.getDate();
   const month = date.getMonth() + 1;

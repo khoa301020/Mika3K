@@ -17,7 +17,7 @@ export class BlueArchiveSync {
     // Cache before initialization
     const BALocalization: ILocalization = await (await axios.get(BlueArchiveConstants.LOCALIZATION_DATA_URL)).data;
     cache.set('BA_Localization', BALocalization);
-    console.log('BA_Localization loaded');
+    interaction.editReply('BA_Localization loaded');
 
     let promises: Array<Promise<any>> = Object.entries(fetchData).map(async ([key, value]) => await value());
     Promise.all(promises)

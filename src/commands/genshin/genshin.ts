@@ -43,8 +43,6 @@ export class GenshinRedeem {
     const response: IGenshinResponse = await (await genshinApi.getUserAccount(user.cookieString)).data;
     const accounts: Array<IGenshinAccount> = response.data?.list!;
 
-    console.log(accounts);
-
     const pages = accounts.map((account: IGenshinAccount, index: number) => {
       const embed = GenshinAccountEmbed(account, interaction.client as Client, index + 1, accounts.length);
 

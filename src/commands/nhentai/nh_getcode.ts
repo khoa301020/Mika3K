@@ -2,7 +2,7 @@ import axios from 'axios';
 import { ApplicationCommandOptionType, CommandInteraction } from 'discord.js';
 import { Discord, SimpleCommand, SimpleCommandMessage, Slash, SlashGroup, SlashOption } from 'discordx';
 import { NHentaiConstants } from '../../constants/index.js';
-import { NHentaiBookEmbed } from '../../providers/embeds/nhentaiEmbed.js';
+import { NHentaiEmbed } from '../../providers/embeds/nhentaiEmbed.js';
 
 @SlashGroup({ description: 'NHentai commands', name: 'nhentai' })
 @Discord()
@@ -23,7 +23,7 @@ class GetNHentaiCode {
     axios
       .get(`${NHentaiConstants.NHENTAI_BASE_API}/book/${code}`)
       .then((res) => {
-        const embed = NHentaiBookEmbed(res, interaction.user);
+        const embed = NHentaiEmbed(res.data.data, interaction.user);
 
         interaction.editReply({ embeds: [embed] });
       })
@@ -38,7 +38,7 @@ class GetNHentaiCode {
     axios
       .get(`${NHentaiConstants.NHENTAI_BASE_API}/book/${command.message.content}`)
       .then((res) => {
-        const embed = NHentaiBookEmbed(res, command.message.author);
+        const embed = NHentaiEmbed(res.data.data, command.message.author);
         command.message.reply({ embeds: [embed] });
       })
       .catch((err) => {

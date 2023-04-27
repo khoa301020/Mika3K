@@ -2,7 +2,7 @@ import type { APIEmbedField, User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { decode } from 'html-entities';
 import { BlueArchiveConstants, CommonConstants } from '../../constants/index.js';
-import { convertTZ, datetimeConverter, getRelativeTime, isEnded } from '../../helpers/helper.js';
+import { convertTZ, datetimeConverter, getRelativeTimeBA, isEnded } from '../../helpers/helper.js';
 import { cache } from '../../main.js';
 import { SchaleMath, transformRaidSkillStat, transformStudentSkillStat } from '../../services/bluearchive.js';
 import { CurrentEvent, CurrentGacha, CurrentRaid, Region } from '../../types/bluearchive/common.js';
@@ -54,7 +54,7 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
       value: `${region.current_gacha
         .map(
           (currentGacha: CurrentGacha) =>
-            `• *${getRelativeTime(currentGacha.start, currentGacha.end)}* \nㅤ- ${currentGacha.characters
+            `• *${getRelativeTimeBA(currentGacha.start, currentGacha.end)}* \nㅤ- ${currentGacha.characters
               .map((character: any) => `[${`★`.repeat(character.StarGrade)}] ${character.Name}`)
               .join('\nㅤ- ')} `,
         )
@@ -84,7 +84,7 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
               !/^10/.test(currentEvent.event.toString())
                 ? localization?.EventName[currentEvent.event.toString()]
                 : `[Rerun] ${localization?.EventName[currentEvent.event.toString().slice(2)]}`
-            } *(${getRelativeTime(currentEvent.start, currentEvent.end)})*`,
+            } *(${getRelativeTimeBA(currentEvent.start, currentEvent.end)})*`,
         )
         .join('\n')}`,
     });
@@ -94,7 +94,7 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
       value: `${raids
         .map(
           (currentRaid: CurrentRaid & { info?: any }) =>
-            `- [${localization?.AdaptationType[currentRaid.terrain!]}] ${currentRaid.info.Name} *(${getRelativeTime(
+            `- [${localization?.AdaptationType[currentRaid.terrain!]}] ${currentRaid.info.Name} *(${getRelativeTimeBA(
               currentRaid.start,
               currentRaid.end,
             )})*`,
@@ -109,7 +109,7 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
           (currentRaid: CurrentRaid & { info?: any }) =>
             `- [${localization?.AdaptationType[currentRaid.info.Terrain]}] ${
               currentRaid.info.DungeonType
-            } *(${getRelativeTime(currentRaid.start, currentRaid.end)})*`,
+            } *(${getRelativeTimeBA(currentRaid.start, currentRaid.end)})*`,
         )
         .join('\n')}`,
     });

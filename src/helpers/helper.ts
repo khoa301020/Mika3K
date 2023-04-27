@@ -15,7 +15,6 @@ export const randomArray = (array: Array<any>) => array[Math.floor(Math.random()
  * @returns An object with three properties: date, time, and datetime.
  */
 export const datetimeConverter = (timestamp: Date | number | string) => {
-  console.log(timestamp);
   const date = new Date(timestamp);
   const day = date.getDate();
   const month = date.getMonth() + 1;
@@ -195,7 +194,7 @@ export const isObjectEmpty = (obj: Object) => {
   return Object.keys(obj).length === 0;
 };
 
-export const getRelativeTime = (epochStart: number, epochEnd: number) => {
+export const getRelativeTimeBA = (epochStart: number, epochEnd: number) => {
   const now = new Date().getTime() / 1000;
   const fromStart = (now - epochStart) * 1000;
 

@@ -1,5 +1,6 @@
 import { IEnemy } from './enemy';
 
+/* RAID */
 export interface IRaid {
   Id: number;
   IsReleased: boolean[];
@@ -57,7 +58,7 @@ export type StackLabelTranslated = 'setting_off' | 'setting_on';
 
 export interface Effect {
   Type: EffectCombine;
-  Scale?: number | number[];
+  Scale?: Scale[];
   RestrictTo?: number[];
   CriticalCheck?: CriticalCheck;
   CanEvade?: boolean;
@@ -77,9 +78,13 @@ export interface Effect {
 
 export type CriticalCheck = 'Check' | 'Never';
 
-export type SkillType = 'EX' | 'Passive' | 'raidautoattack';
+export type Scale = number[] | number;
+
+export type SkillType = 'raidautoattack' | 'EX' | 'Passive' | 'normal';
 
 export type Terrain = 'Outdoor' | 'Street' | 'Indoor';
+
+/* RAID SEASON */
 
 export interface IRaidSeason {
   Seasons: Season[];
@@ -98,6 +103,8 @@ export interface Season {
   RewardSet: number;
   RewardSetMax: number;
 }
+
+/* TIME ATTACK */
 
 export interface ITimeAttack {
   Id: number;
@@ -127,12 +134,16 @@ export type Icon =
   | 'EnemyInfo_Sweeper_Decagram_Taser_White'
   | 'EnemyInfo_Totem03_TimeAttack';
 
+/* TIME ATTACK RULE */
+
 export interface TimeAttackRule {
   Id?: number;
   Icon: string;
   Name: string;
   Desc: string;
 }
+
+/* WORLD RAID */
 
 export interface IWorldRaid {
   Id: number;

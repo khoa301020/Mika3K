@@ -6,7 +6,7 @@ export interface IFurniture {
   ComfortBonus: number;
   Category: Category;
   Tags: string[];
-  SynthQuality?: number;
+  SynthQuality?: number[];
   SubCategory: SubCategory;
   SetGroupId: number;
   Name: string;

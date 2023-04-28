@@ -14,7 +14,7 @@ export interface IEquipment {
   RecipeCost?: number;
 }
 
-export type Rarity = 'N';
+export type Rarity = 'N' | 'R' | 'SR' | 'SSR';
 
 export interface Shop {
   ShopCategory: ShopCategory;

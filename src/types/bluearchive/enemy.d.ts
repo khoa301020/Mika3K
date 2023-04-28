@@ -40,7 +40,7 @@ export interface IEnemy {
   DefensePenetration100?: number;
 }
 
-export type ArmorType = 'LightArmor' | 'HeavyArmor' | 'Unarmed' | 'Normal';
+export type ArmorType = 'LightArmor' | 'HeavyArmor' | 'Unarmed' | 'Normal' | 'ElasticArmor';
 
 export type BulletType = 'Normal' | 'Explosion' | 'Mystic' | 'Pierce';
 
@@ -61,8 +61,8 @@ export type WeaponType =
   | 'Vulcan'
   | 'Missile'
   | 'Cannon'
+  | 'MT'
   | 'Taser'
   | 'Binah'
   | 'Relic'
-  | 'RG'
-  | 'MT';
+  | 'RG';

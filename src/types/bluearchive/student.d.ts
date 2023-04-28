@@ -86,7 +86,8 @@ export type CharacterAge =
   | 'Top Secret'
   | '18 years old'
   | 'Age Unknown'
-  | '11 years old';
+  | '11 years old'
+  | '?? years old';
 
 export type Equipment = 'Hat' | 'Hairpin' | 'Watch' | 'Shoes' | 'Bag' | 'Charm' | 'Necklace' | 'Gloves' | 'Badge';
 
@@ -184,9 +185,21 @@ export interface Effect {
   Critical?: number;
   HideFormChangeIcon?: boolean;
   SourceStat?: FavorStatType;
+  ExtraDamageSource?: ExtraDamageSource;
 }
 
 export type CriticalCheck = 'Check' | 'Always';
+
+export interface ExtraDamageSource {
+  Side: string;
+  Stat: string;
+  Multiplier: number[];
+  SliderTranslation: string;
+  SliderStep: number[];
+  SliderLabel: number[];
+  SliderLabelSuffix: string;
+  SimulatePerHit: boolean;
+}
 
 export interface Frames {
   AttackEnterDuration: number;
@@ -200,18 +213,16 @@ export interface Frames {
 }
 
 export interface Restriction {
-  Property: Property;
+  Property: string;
   Operand: Operand;
   Value: Value;
 }
 
 export type Operand = 'NotEqual' | 'Equal' | 'Contains';
 
-export type Property = 'Id' | 'SquadType' | 'Tags' | 'BulletType';
-
 export type Value = number | string;
 
-export type SkillType = 'ex' | 'normal' | 'autoattack' | 'passive' | 'sub' | 'weaponpassive' | 'gearnormal';
+export type SkillType = 'ex' | 'normal' | 'autoattack' | 'gearnormal' | 'passive' | 'weaponpassive' | 'sub';
 
 export type SquadType = 'Main' | 'Support';
 
@@ -224,7 +235,7 @@ export interface Summon {
 
 export type TacticRole = 'DamageDealer' | 'Tanker' | 'Supporter' | 'Healer' | 'Vehicle';
 
-export interface IWeapon {
+export interface Weapon {
   Name: string;
   Desc: string;
   AdaptationType: AdaptationType;

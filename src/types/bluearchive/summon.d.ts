@@ -4,8 +4,8 @@ export interface ISummon {
   Name: string;
   DevName: string;
   Type: ISummonType;
-  BulletType: null | string;
-  ArmorType: null | string;
+  BulletType: string;
+  ArmorType: string;
   StreetBattleAdaptation?: number;
   OutdoorBattleAdaptation?: number;
   IndoorBattleAdaptation?: number;

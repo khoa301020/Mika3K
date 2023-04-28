@@ -10,7 +10,7 @@ export interface IItem {
   Name: string;
   Desc: string;
   ExpValue?: number;
-  SynthQuality?: number;
+  SynthQuality?: number[];
   EventBonus?: Array<number[]>;
   ConsumeType?: ConsumeType;
   ImmediateUse?: boolean;
@@ -42,4 +42,4 @@ export interface Shop {
 
 export type CostType = 'Currency' | 'Item';
 
-export type ShopCategory = 'General' | 'Raid' | 'Arena' | 'TimeAttack' | 'MasterCoin' | 'SecretStoneGrowth' | 'Chaser';
+export type ShopCategory = 'General' | 'Raid' | 'Arena' | 'TimeAttack' | 'MasterCoin' | 'Chaser' | 'SecretStoneGrowth';

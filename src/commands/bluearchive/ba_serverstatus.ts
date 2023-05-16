@@ -33,7 +33,6 @@ export class BlueArchiveSync {
     // timezoneOffset: number = 0,
     interaction: CommandInteraction,
   ): Promise<any> {
-    if (interaction.user.id !== process.env.OWNER_ID) return interaction.reply('Only the bot owner can sync.');
     await interaction.deferReply();
     const common: ICommon | undefined = cache.get('BA_Common');
 

@@ -7,6 +7,9 @@ WORKDIR /tmp/app
 # Move package.json
 COPY package.json .
 
+# Update npm
+RUN npm install -g npm@latest
+
 # Install dependencies
 RUN npm install
 
@@ -25,6 +28,9 @@ WORKDIR /app
 
 # Copy package.json from build-runner
 COPY --from=build-runner /tmp/app/package.json /app/package.json
+
+# Update npm
+RUN npm install -g npm@latest
 
 # Install dependencies
 RUN npm install --omit=dev

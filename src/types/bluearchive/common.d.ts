@@ -52,6 +52,7 @@ export interface CurrentGacha {
 }
 
 export interface CurrentRaid {
+  type: string;
   raid: number;
   terrain?: string;
   start: number;

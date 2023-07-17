@@ -146,6 +146,7 @@ export class BlueArchiveConstants {
     '18 years old',
     'Top Secret',
     'Age Unknown',
+    '?? years old',
   ];
   public static readonly EQUIPMENT_TYPES: { [key: string]: string } = {
     Hat: '🎩',
@@ -205,6 +206,7 @@ export class BlueArchiveConstants {
     Perorodzilla: 6,
     HOD: 7,
     Goz: 8,
+    Gregorius: 9,
   };
 
   public static readonly RAID_DIFFICULTIES: { [key: string]: number } = {

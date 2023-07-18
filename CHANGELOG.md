@@ -1,5 +1,13 @@
 ## Untagged
 
+- Update: Add Raid Gregorius & Age "?? years old" ([ca427b](https://github.com/khoa301020/Xiaomi3K/commit/ca427b38a65f84b246e1de02c5cdcf98cb0d7a29))
+- Fix: [BA] Remove owner verification in Check server status ([eaf0db](https://github.com/khoa301020/Xiaomi3K/commit/eaf0db28cb2bef1d99d46a84369344a6fe5e039f))
+- Update: [BA] Sync field names with SchaleDB ([6d0c8a](https://github.com/khoa301020/Xiaomi3K/commit/6d0c8a87470fd69e93345e3a01fa83bf4a7dc39a))
+- Update: [NHentai] ([cd6386](https://github.com/khoa301020/Xiaomi3K/commit/cd63868d9e35ade402a6f9e252905fd963a8bd28))
+- Change: [NHentai] ([8c13c1](https://github.com/khoa301020/Xiaomi3K/commit/8c13c1284af2b75ff24ecfb79c6da603e0718928))
+- Update: [BA] Show student rarity in server-status's current banner(s) ([50c7be](https://github.com/khoa301020/Xiaomi3K/commit/50c7bea4824803ec765f5103e66de6dcf971cd0d))
+- Fix: [BA] Remove ended gacha/events in server status ([d714b3](https://github.com/khoa301020/Xiaomi3K/commit/d714b352ca244809064ec77b19542968bedfb6c7))
+- Update: [Nhentai] stop onMessageCreate event & [BA] Indicate student birthday is today/tomorrow ([b59c88](https://github.com/khoa301020/Xiaomi3K/commit/b59c882ace1f6b633c70da6c2a9af03a8b4f16b7))
 - Feature: [BA] Raid info - Boss stats ([aab8d0](https://github.com/khoa301020/Xiaomi3K/commit/aab8d03190856a11da55d774348c281fa5f133db))
 - Fix: [BA] Also transform only-in-high-difficulty skill parameter ([10a1cc](https://github.com/khoa301020/Xiaomi3K/commit/10a1cc26b5e6586e234d01b37aa2b2eb7e76b38c))
 - Feature: [BA] [WIP] Search raid with difficulty ([473385](https://github.com/khoa301020/Xiaomi3K/commit/473385ff90b829c04b60a11c09d3aa80cfbfed51))

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { checkSchaleDB } from '../cron/checkSchaleDB.js';
 import { isObjectEmpty } from '../helpers/helper.js';
 import { cache } from '../main.js';
 import { ICurrency } from '../types/bluearchive/currency';
@@ -357,6 +358,7 @@ RaidSchema.post('findOne', async function (res: IRaid, next) {
   next();
 });
 
+checkSchaleDB.start();
 const conn = mongoose.createConnection(process.env.MONGO_URI_BA!);
 
 export const SchaleDB = {

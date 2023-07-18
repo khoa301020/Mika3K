@@ -3,6 +3,7 @@ import { decode } from 'html-entities';
 import { FilterQuery } from 'mongoose';
 import { BlueArchiveConstants, CommonConstants } from '../constants/index.js';
 import { datetimeConverter } from '../helpers/helper.js';
+import { cache } from '../main.js';
 import { SchaleDB } from '../models/BlueArchive.js';
 import { ICurrency } from '../types/bluearchive/currency';
 import { IEnemy } from '../types/bluearchive/enemy';
@@ -29,6 +30,7 @@ export const fetchData = {
     const url = BlueArchiveConstants.STUDENTS_DATA_URL;
     const students: Array<IStudent> = await (await curl(url)).data;
     const promises = students.map(async (student: IStudent) => await importData.student(student));
+    cache.set('BA_StudentCount', promises.length);
     console.log(`Students: ${promises.length}`);
     return await Promise.all(promises);
   },
@@ -38,6 +40,7 @@ export const fetchData = {
     const promises: Array<Promise<ICurrency>> = currencies.map(
       async (currency: ICurrency) => await importData.currency(currency),
     );
+    cache.set('BA_CurrencyCount', promises.length);
     console.log(`Currencies: ${promises.length}`);
     return await Promise.all(promises);
   },
@@ -45,6 +48,7 @@ export const fetchData = {
     const url = BlueArchiveConstants.ENEMIES_DATA_URL;
     const enemies = await (await curl(url)).data;
     const promises: Array<Promise<IEnemy>> = enemies.map(async (enemy: IEnemy) => await importData.enemy(enemy));
+    cache.set('BA_EnemyCount', promises.length);
     console.log(`Enemies: ${promises.length}`);
     return await Promise.all(promises);
   },
@@ -54,6 +58,7 @@ export const fetchData = {
     const promises: Array<Promise<IEquipment>> = equipments.map(
       async (equipment: IEquipment) => await importData.equipment(equipment),
     );
+    cache.set('BA_EquipmentCount', promises.length);
     console.log(`Equipments: ${promises.length}`);
     return await Promise.all(promises);
   },
@@ -63,6 +68,7 @@ export const fetchData = {
     const promises: Array<Promise<IFurniture>> = furnitures.map(
       async (furniture: IFurniture) => await importData.furniture(furniture),
     );
+    cache.set('BA_FurnitureCount', promises.length);
     console.log(`Furnitures: ${promises.length}`);
     return await Promise.all(promises);
   },
@@ -70,6 +76,7 @@ export const fetchData = {
     const url = BlueArchiveConstants.ITEMS_DATA_URL;
     const items = await (await curl(url)).data;
     const promises: Array<Promise<IItem>> = items.map(async (item: IItem) => await importData.item(item));
+    cache.set('BA_ItemCount', promises.length);
     console.log(`Items: ${promises.length}`);
     return await Promise.all(promises);
   },
@@ -77,6 +84,7 @@ export const fetchData = {
     const url = BlueArchiveConstants.RAIDS_DATA_URL;
     const raids = await (await curl(url)).data.Raid;
     const promises: Array<Promise<IRaid>> = raids.map(async (raid: IRaid) => await importData.raid(raid));
+    cache.set('BA_RaidCount', promises.length);
     console.log(`Raids: ${promises.length}`);
     return await Promise.all(promises);
   },
@@ -91,6 +99,7 @@ export const fetchData = {
     const promises: Array<Promise<Season>> = seasons
       .flat()
       .map(async (raidSeason: Season) => await importData.raidSeason(raidSeason));
+    cache.set('BA_RaidSeasonCount', promises.length);
     console.log(`RaidSeasons: ${promises.length}`);
     return await Promise.all(promises);
   },
@@ -114,6 +123,7 @@ export const fetchData = {
     const promises: Array<Promise<ITimeAttack>> = timeAttacks.map(
       async (timeAttack: ITimeAttack) => await importData.timeAttack(timeAttack),
     );
+    cache.set('BA_TimeAttackCount', promises.length);
     console.log(`TimeAttacks: ${promises.length}`);
     return await Promise.all(promises);
   },
@@ -123,6 +133,7 @@ export const fetchData = {
     const promises: Array<Promise<IWorldRaid>> = worldRaids.map(
       async (worldRaid: IWorldRaid) => await importData.worldRaid(worldRaid),
     );
+    cache.set('BA_WorldRaidCount', promises.length);
     console.log(`WorldRaids: ${promises.length}`);
     return await Promise.all(promises);
   },
@@ -130,6 +141,7 @@ export const fetchData = {
     const url = BlueArchiveConstants.SUMMONS_DATA_URL;
     const summons = await (await curl(url)).data;
     const promises: Array<Promise<ISummon>> = summons.map(async (summon: ISummon) => await importData.summon(summon));
+    cache.set('BA_SummonCount', promises.length);
     console.log(`Summons: ${promises.length}`);
     return await Promise.all(promises);
   },

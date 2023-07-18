@@ -1,31 +1,42 @@
-import axios from 'axios';
-import { CommandInteraction } from 'discord.js';
-import { Discord, Slash, SlashGroup } from 'discordx';
-import { BlueArchiveConstants } from '../../constants/bluearchive.js';
-import { cache } from '../../main.js';
-import { fetchData } from '../../services/bluearchive.js';
-import { ILocalization } from '../../types/bluearchive/localization.js';
+import { Discord, SimpleCommand, SimpleCommandMessage, SimpleCommandOption, SimpleCommandOptionType } from 'discordx';
+import NotifyChannel from '../../models/NotifyChannel.js';
 
 @Discord()
-@SlashGroup({ name: 'buruaka', description: 'Blue Archive commands' })
 export class BlueArchiveSync {
-  @SlashGroup('buruaka')
-  @Slash({ name: 'sync', description: 'Sync all' })
-  async syncAll(interaction: CommandInteraction): Promise<any> {
-    if (interaction.user.id !== process.env.OWNER_ID) return interaction.reply('Only the bot owner can sync.');
-    await interaction.deferReply({ ephemeral: true });
-    // Cache before initialization
-    const BALocalization: ILocalization = await (await axios.get(BlueArchiveConstants.LOCALIZATION_DATA_URL)).data;
-    cache.set('BA_Localization', BALocalization);
-    interaction.editReply('BA_Localization loaded');
-
-    let promises: Array<Promise<any>> = Object.entries(fetchData).map(async ([key, value]) => await value());
-    Promise.all(promises)
-      .then(() => interaction.editReply('Done'))
-      .catch((err) => {
-        console.log(err);
-
-        interaction.editReply('Failed');
+  @SimpleCommand({ aliases: ['nt', 'notify'], description: 'Notify', argSplitter: ' ' })
+  async syncAll(
+    @SimpleCommandOption({ name: 'action', type: SimpleCommandOptionType.String })
+    action: 'add' | 'remove',
+    command: SimpleCommandMessage,
+  ): Promise<any> {
+    if (command.message.author.id !== process.env.OWNER_ID)
+      return command.message.reply('Only the bot owner can use this command').then((msg) => {
+        setTimeout(() => {
+          msg.delete();
+        }, 5000);
       });
+
+    if (!action)
+      return command.message.reply('Invalid arguments').then((msg) => {
+        setTimeout(() => {
+          msg.delete();
+        }, 5000);
+      });
+
+    if (action === 'add') {
+      NotifyChannel.create({
+        guildId: command.message.guildId,
+        channelId: command.message.channelId,
+        notifyType: 'Blue Archive',
+      });
+      return command.message.reply('Notify channel added');
+    } else if (action === 'remove') {
+      NotifyChannel.deleteOne({
+        guildId: command.message.guildId,
+        channelId: command.message.channelId,
+        notifyType: 'Blue Archive',
+      });
+      return command.message.reply('Notify channel removed');
+    }
   }
 }

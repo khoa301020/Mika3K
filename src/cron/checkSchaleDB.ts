@@ -15,7 +15,7 @@ function getChanges(oldData: number | undefined, newData: number): string {
   else return '';
 }
 
-export const checkSchaleDB = new CronJob('0 * * * * *', async () => {
+export const checkSchaleDB = new CronJob('0 0 * * * *', async () => {
   const { data } = await axios.get('https://api.github.com/repos/lonqie/SchaleDB/branches/main');
 
   if (cache.get('SchaleDB') !== data.commit.sha) {
@@ -65,11 +65,11 @@ export const checkSchaleDB = new CronJob('0 * * * * *', async () => {
 
         const embed = new EmbedBuilder()
           .setTitle(
-            `SchaleDB updated (${new Date(data.commit.commit.author.date).toLocaleString('en-GB', {
+            `[${new Date(data.commit.commit.author.date).toLocaleString('en-GB', {
               timeZone: 'Asia/Ho_Chi_Minh',
-            })})`,
+            })}] SchaleDB updated`,
           )
-          .setURL(data.html_url)
+          .setURL(data.commit.html_url)
           .setColor('#00ff00')
           .setDescription(
             `

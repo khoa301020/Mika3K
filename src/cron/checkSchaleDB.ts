@@ -8,11 +8,10 @@ import { fetchData } from '../services/bluearchive.js';
 import { ICommon } from '../types/bluearchive/common.js';
 import { ILocalization } from '../types/bluearchive/localization.js';
 
-function getChanges(oldData: number | undefined, newData: number): string {
-  if (!oldData) return '';
-  if (oldData < newData) return `(+${newData - oldData}))`;
-  else if (oldData > newData) return `(-${oldData - newData}))`;
-  else return '';
+function getChanges(oldCount: number | undefined, newCount: number): string {
+  if (!oldCount || oldCount === newCount) return '';
+  const operator = oldCount < newCount ? '+' : '-';
+  return `(${operator}${Math.abs(oldCount - newCount)})`;
 }
 
 export const checkSchaleDB = new CronJob('0 0 * * * *', async () => {
@@ -47,6 +46,9 @@ export const checkSchaleDB = new CronJob('0 0 * * * *', async () => {
     let promises: Array<Promise<any>> = Object.entries(fetchData).map(async ([key, value]) => await value());
     Promise.all(promises)
       .then(() => {
+        // Skip send notification if this is the first time SchaleDB is cached
+        if (cache.has('init')) return;
+
         const newData: { [key: string]: number | undefined } = {
           students: cache.get('BA_StudentCount'),
           currencies: cache.get('BA_CurrencyCount'),
@@ -73,16 +75,16 @@ export const checkSchaleDB = new CronJob('0 0 * * * *', async () => {
           .setColor('#00ff00')
           .setDescription(
             `
-          ・ **Students**: ${newData.students} ${getChanges(currentData.students!, newData.students!)}
-          ・ **Currencies**: ${newData.currencies} ${getChanges(currentData.currencies!, newData.currencies!)}
-          ・ **Enemies**: ${newData.enemies} ${getChanges(currentData.enemies!, newData.enemies!)}
-          ・ **Equipment**: ${newData.equipment} ${getChanges(currentData.equipment!, newData.equipment!)}
-          ・ **Furnitures**: ${newData.furnitures} ${getChanges(currentData.furnitures!, newData.furnitures!)}
-          ・ **Items**: ${newData.items} ${getChanges(currentData.items!, newData.items!)}
-          ・ **Raids**: ${newData.raids} ${getChanges(currentData.raids!, newData.raids!)}
-          ・ **Raid Seasons**: ${newData.raidSeasons} ${getChanges(currentData.raidSeasons!, newData.raidSeasons!)}
-          ・ **Time Attacks**: ${newData.timeAttacks} ${getChanges(currentData.timeAttacks!, newData.timeAttacks!)}
-          ・ **World Raids**: ${newData.worldRaids} ${getChanges(currentData.worldRaids!, newData.worldRaids!)}
+          ・ **Students**: ${newData.students} ${getChanges(currentData.students!, newData.students!)}\n\
+          ・ **Currencies**: ${newData.currencies} ${getChanges(currentData.currencies!, newData.currencies!)}\n\
+          ・ **Enemies**: ${newData.enemies} ${getChanges(currentData.enemies!, newData.enemies!)}\n\
+          ・ **Equipment**: ${newData.equipment} ${getChanges(currentData.equipment!, newData.equipment!)}\n\
+          ・ **Furnitures**: ${newData.furnitures} ${getChanges(currentData.furnitures!, newData.furnitures!)}\n\
+          ・ **Items**: ${newData.items} ${getChanges(currentData.items!, newData.items!)}\n\
+          ・ **Raids**: ${newData.raids} ${getChanges(currentData.raids!, newData.raids!)}\n\
+          ・ **Raid Seasons**: ${newData.raidSeasons} ${getChanges(currentData.raidSeasons!, newData.raidSeasons!)}\n\
+          ・ **Time Attacks**: ${newData.timeAttacks} ${getChanges(currentData.timeAttacks!, newData.timeAttacks!)}\n\
+          ・ **World Raids**: ${newData.worldRaids} ${getChanges(currentData.worldRaids!, newData.worldRaids!)}\n\
           ・ **Summons**: ${newData.summons} ${getChanges(currentData.summons!, newData.summons!)}
           `,
           )
@@ -101,6 +103,8 @@ export const checkSchaleDB = new CronJob('0 0 * * * *', async () => {
         console.log(err);
       })
       .finally(() => {
+        // Clear init cache
+        if (cache.has('init')) cache.del('init');
         console.log(
           `[${new Date().toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' })}] SchaleDB updated to [${
             data.commit.sha

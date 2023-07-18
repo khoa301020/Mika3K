@@ -37,6 +37,7 @@ export const bot = new Client({
 mongoose.set('strictQuery', true);
 const mongoUri = process.env.MONGO_URI;
 await mongoose.connect(mongoUri!).then(async () => {
+  cache.set('init', true);
   console.log('MongoDB connected');
 });
 

@@ -24,11 +24,19 @@ export class BlueArchiveSync {
       });
 
     if (action === 'add') {
-      return NotifyChannel.create({
-        guildId: command.message.guildId,
-        channelId: command.message.channelId,
-        notifyType: 'Blue Archive',
-      }).then(() => command.message.reply('Notify channel added'));
+      return NotifyChannel.findOneAndUpdate(
+        {
+          channelId: command.message.channelId,
+        },
+        {
+          guildId: command.message.guildId,
+          channelId: command.message.channelId,
+          notifyType: 'Blue Archive',
+        },
+        {
+          upsert: true,
+        },
+      ).then(() => command.message.reply('Notify channel added'));
     } else if (action === 'remove') {
       return NotifyChannel.deleteOne({
         channelId: command.message.channelId,

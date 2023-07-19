@@ -445,7 +445,7 @@ export const MAL_UserAnimeEmbed = (
 
   return new EmbedBuilder()
     .setColor(MALConstants.MAL_ANIME_STATUS_COLORS[userAnime.list_status.status])
-    .setTitle(`[${userAnime.node.id}] ${userAnime.node.title} \`${userAnime.list_status.status}\``)
+    .setTitle(`[${userAnime.node.id}] ${userAnime.node.title} \`<${userAnime.list_status.status}>\``)
     .setURL(`${MALConstants.MAL_ANIME_URL}/${userAnime.node.id}`)
     .setAuthor({
       name: `${author.username}#${author.discriminator}`,

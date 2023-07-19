@@ -13,6 +13,15 @@ function getChanges(oldCount: number | undefined, newCount: number): string {
   const operator = oldCount < newCount ? '+' : '-';
   return `(${operator}${Math.abs(oldCount - newCount)})`;
 }
+export async function cacheCommonData(): Promise<void> {
+  // Cache localization
+  const BALocalization: ILocalization = await (await axios.get(BlueArchiveConstants.LOCALIZATION_DATA_URL)).data;
+  cache.set('BA_Localization', BALocalization);
+
+  // Cache common
+  const BACommon: ICommon = await (await axios.get(BlueArchiveConstants.COMMON_DATA_URL)).data;
+  cache.set('BA_Common', BACommon);
+}
 
 export const checkSchaleDB = new CronJob('0 0 * * * *', async () => {
   const { data } = await axios.get('https://api.github.com/repos/lonqie/SchaleDB/branches/main');
@@ -21,13 +30,8 @@ export const checkSchaleDB = new CronJob('0 0 * * * *', async () => {
     // Cache SchaleDB
     cache.set('SchaleDB', data.commit.sha);
 
-    // Cache localization
-    const BALocalization: ILocalization = await (await axios.get(BlueArchiveConstants.LOCALIZATION_DATA_URL)).data;
-    cache.set('BA_Localization', BALocalization);
-
-    // Cache common
-    const BACommon: ICommon = await (await axios.get(BlueArchiveConstants.COMMON_DATA_URL)).data;
-    cache.set('BA_Common', BACommon);
+    // Cache data
+    cacheCommonData();
 
     const currentData: { [key: string]: number | undefined } = {
       students: cache.get('BA_StudentCount'),

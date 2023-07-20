@@ -27,14 +27,14 @@ My multi-purposes self-use discord bot created with [Discordx](https://discordx.
 |:-----------:|:------------:|:--------------------:|:-----------------:|
 | Check nuke  |      :x:     | `$nh` / `$nhentai` |  `/nhentai check` |
 
-## Genshin
+## HoYoLAB
 
 |     Feature    | Context menu | Message command |       Slash command       |
 |:---------------:|:------------:|:---------------:|:-------------------------:|
-| Save token      |      :x:     |       :x:       |   `/genshin save-token`   |
-| List account    |      :x:     |       :x:       | `/genshin list-account`   |
-| Select account  |      :x:     |       :x:       | `/genshin select-account` |
-| Redeem giftcode |      :x:     |       :x:       | `/genshin redeem-giftcode` |
+| Save token      |      :x:     |       :x:       |   `/hoyolab save-token`   |
+| List account    |      :x:     |       :x:       | `/hoyolab list-account`   |
+| Select account  |      :x:     |       :x:       | `/hoyolab select-account` |
+| Redeem giftcode |      :x:     |       :x:       | `/hoyolab redeem-giftcode` |
 
 ## Quote
 

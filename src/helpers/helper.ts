@@ -226,3 +226,5 @@ export const ttc = async (fn: Function, ...args: any[]) => {
     return [err];
   }
 };
+
+export const invertObject = (obj: Object) => Object.entries(obj).map(([key, value]) => [value, key]);

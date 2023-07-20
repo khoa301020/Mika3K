@@ -59,7 +59,7 @@ export class API {
             if (i >= serifu.length) {
               i = 0;
             }
-          }, 1000);
+          }, 5000);
         }
       </script>
     </head>

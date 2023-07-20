@@ -1,8 +1,8 @@
 import { BlueArchiveConstants } from './bluearchive.js';
 import { CommonConstants } from './common.js';
-import { GenshinConstants } from './genshin.js';
+import { HoYoLABConstants } from './hoyolab.js';
 import { MALConstants } from './mal.js';
 import { NHentaiConstants } from './nhentai.js';
 import { SauceNAOConstants } from './saucenao.js';
 
-export { CommonConstants, MALConstants, NHentaiConstants, SauceNAOConstants, GenshinConstants, BlueArchiveConstants };
+export { BlueArchiveConstants, CommonConstants, HoYoLABConstants, MALConstants, NHentaiConstants, SauceNAOConstants };

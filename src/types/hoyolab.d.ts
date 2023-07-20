@@ -1,23 +1,24 @@
-export interface IGenshin {
+export interface IHoYoLAB {
   userId: string;
   accountId?: string;
   cookieToken?: string;
   cookieString?: string;
   expiresAt?: Date;
-  selectedAccount?: IGenshinAccount;
+  genshinAccount?: IHoYoLABAccount;
+  hsrAccount?: IHoYoLABAccount;
 }
 
-export class IGenshinResponse {
+export class IHoYoLABResponse {
   retcode: number;
   message: string;
-  data: IGenshinResponseUser | null;
+  data: IHoYoLABResponseUser | null;
 }
 
-export class IGenshinResponseUser {
-  list: Array<IGenshinAccount> | null;
+export class IHoYoLABResponseUser {
+  list: Array<IHoYoLABAccount> | null;
 }
 
-export class IGenshinAccount {
+export class IHoYoLABAccount {
   game_biz: string;
   region: string;
   game_uid: string;
@@ -32,3 +33,6 @@ export interface ICookie {
   cookie_token: string;
   account_id: string;
 }
+
+export type TRedeemRegion = 'usa' | 'eur' | 'asia' | 'cht';
+export type TRedeemTarget = 'genshin' | 'hsr';

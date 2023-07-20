@@ -1,7 +1,7 @@
 import { Pagination, PaginationItem, PaginationOptions, PaginationType } from '@discordx/pagination';
 import { ButtonStyle, CommandInteraction, Message } from 'discord.js';
 
-export const Genshin_ButtonPagination = (
+export const HoYoLAB_ButtonPagination = (
   interaction: CommandInteraction,
   pages: Array<PaginationItem>,
   display = true,

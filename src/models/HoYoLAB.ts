@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const GenshinSchema = new mongoose.Schema({
+const HoYoLABSchema = new mongoose.Schema({
   userId: {
     type: String,
     require: true,
@@ -21,7 +21,21 @@ const GenshinSchema = new mongoose.Schema({
     type: Date,
     require: false,
   },
-  selectedAccount: {
+  genshinAccount: {
+    _id: false,
+    type: {
+      game_biz: String,
+      region: String,
+      game_uid: String,
+      nickname: String,
+      level: Number,
+      is_chosen: Boolean,
+      region_name: String,
+      is_official: Boolean,
+    },
+    required: false,
+  },
+  hsrAccount: {
     _id: false,
     type: {
       game_biz: String,
@@ -37,8 +51,8 @@ const GenshinSchema = new mongoose.Schema({
   },
 });
 
-GenshinSchema.set('toJSON', { virtuals: true });
+HoYoLABSchema.set('toJSON', { virtuals: true });
 
-const Genshin = mongoose.model('Genshin', GenshinSchema, 'Genshin');
+const HoYoLAB = mongoose.model('HoYoLAB', HoYoLABSchema, 'HoYoLAB');
 
-export default Genshin;
+export default HoYoLAB;

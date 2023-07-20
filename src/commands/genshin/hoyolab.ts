@@ -1,16 +1,17 @@
 import { ApplicationCommandOptionType, CommandInteraction, InteractionResponse } from 'discord.js';
-import { Client, Discord, Slash, SlashGroup, SlashOption } from 'discordx';
+import { Client, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { setTimeout } from 'timers/promises';
+import { HoYoLABConstants } from '../../constants/hoyolab.js';
 import { isObjectEmpty, parseCookies } from '../../helpers/helper.js';
-import { GenshinAccountEmbed, GenshinRedeemResultEmbed } from '../../providers/embeds/genshinEmbed.js';
-import { Genshin_ButtonPagination } from '../../providers/paginations/genshinPagination.js';
-import { genshinApi } from '../../services/genshin.js';
-import { IGenshin, IGenshinAccount, IGenshinResponse } from '../../types/genshin.js';
+import { HoYoLABAccountEmbed, HoYoLABRedeemResultEmbed } from '../../providers/embeds/hoyolabEmbed.js';
+import { HoYoLAB_ButtonPagination } from '../../providers/paginations/hoyolabPagination.js';
+import { hoyolabApi } from '../../services/hoyolab.js';
+import { IHoYoLAB, IHoYoLABAccount, IHoYoLABResponse, TRedeemTarget } from '../../types/hoyolab.js';
 
 @Discord()
-@SlashGroup({ name: 'genshin', description: 'Genshin commands' })
-export class GenshinRedeem {
-  @SlashGroup('genshin')
+@SlashGroup({ name: 'hoyolab', description: 'HoYoLAB commands' })
+export class HoYoLABRedeem {
+  @SlashGroup('hoyolab')
   @Slash({ description: 'Save Mihoyo cookie token', name: 'save-token' })
   async saveToken(
     @SlashOption({
@@ -26,38 +27,48 @@ export class GenshinRedeem {
     const parsedCookie = parseCookies(cookie);
     if (!parsedCookie.cookie_token || !parsedCookie.account_id) return interaction.reply('❌ Cookie invalid.');
 
-    const user = await genshinApi.saveCredentials(userId, parsedCookie, cookie);
+    const user = await hoyolabApi.saveCredentials(userId, parsedCookie, cookie);
     if (!user) return interaction.reply('❌ User invalid.');
 
     return interaction.reply('✅ Save token succeed.');
   }
 
-  @SlashGroup('genshin')
-  @Slash({ description: 'List user account', name: 'list-account' })
+  @SlashGroup('hoyolab')
+  @Slash({ description: 'List game accounts', name: 'list-account' })
   async listAccount(interaction: CommandInteraction): Promise<any> {
     await interaction.deferReply({ ephemeral: true });
     const userId = interaction.user.id;
-    const user: IGenshin = await genshinApi.getUserInfo(userId);
+    const user: IHoYoLAB = await hoyolabApi.getUserInfo(userId);
     if (!user || !user.cookieString) return interaction.editReply('❌ Cookie not found, please save cookie first.');
 
-    const response: IGenshinResponse = await (await genshinApi.getUserAccount(user.cookieString)).data;
-    const accounts: Array<IGenshinAccount> = response.data?.list!;
+    const response: IHoYoLABResponse = await (await hoyolabApi.getUserAccount(user.cookieString)).data;
+    const accounts: Array<IHoYoLABAccount> = response.data?.list!;
 
-    const pages = accounts.map((account: IGenshinAccount, index: number) => {
-      const embed = GenshinAccountEmbed(account, interaction.client as Client, index + 1, accounts.length);
+    const pages = accounts.map((account: IHoYoLABAccount, index: number) => {
+      const embed = HoYoLABAccountEmbed(account, interaction.client as Client, index + 1, accounts.length);
 
       return { embeds: [embed] };
     });
 
-    const pagination = Genshin_ButtonPagination(interaction, pages, false);
+    const pagination = HoYoLAB_ButtonPagination(interaction, pages, false);
     return await pagination.send();
   }
 
-  @SlashGroup('genshin')
-  @Slash({ description: 'Select user account', name: 'select-account' })
+  @SlashGroup('hoyolab')
+  @Slash({ description: 'Select game account', name: 'select-account' })
   async selectAccount(
+    @SlashChoice(
+      ...Object.entries(HoYoLABConstants.REDEEM_TARGET).map(([key, value]) => Object({ name: value.name, value: key })),
+    )
     @SlashOption({
-      description: 'Genshin account UID',
+      description: 'Target game',
+      name: 'target-game',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    target: TRedeemTarget,
+    @SlashOption({
+      description: 'HoYoLAB account UID',
       name: 'uid',
       required: true,
       type: ApplicationCommandOptionType.String,
@@ -67,24 +78,37 @@ export class GenshinRedeem {
   ): Promise<any> {
     await interaction.deferReply({ ephemeral: true });
     const userId = interaction.user.id;
-    const user: IGenshin = await genshinApi.getUserInfo(userId);
+    const user: IHoYoLAB = await hoyolabApi.getUserInfo(userId);
     if (!user || !user.cookieString) return interaction.editReply('Cookie not found, please save cookie first.');
 
-    const response: IGenshinResponse = await (await genshinApi.getUserAccount(user.cookieString)).data;
-    const accounts: Array<IGenshinAccount> = response.data?.list!;
+    const response: IHoYoLABResponse = await (await hoyolabApi.getUserAccount(user.cookieString)).data;
+    const accounts: Array<IHoYoLABAccount> = response.data?.list!;
 
-    const selectedAccount = accounts.find((account: IGenshinAccount) => account.game_uid === uid);
+    const selectedAccount = accounts.find(
+      (account: IHoYoLABAccount) =>
+        account.game_uid === uid && account.game_biz.startsWith(HoYoLABConstants.REDEEM_TARGET[target].prefix),
+    );
 
     if (!selectedAccount) return interaction.editReply('❌ Account not found.');
 
-    await genshinApi.selectAccount(userId, selectedAccount);
+    await hoyolabApi.selectAccount(userId, target, selectedAccount);
 
     return interaction.editReply('✅ Select account succeed.');
   }
 
-  @SlashGroup('genshin')
+  @SlashGroup('hoyolab')
   @Slash({ description: 'Redeem giftcode', name: 'redeem-giftcode' })
   async redeemGiftcode(
+    @SlashChoice(
+      ...Object.entries(HoYoLABConstants.REDEEM_TARGET).map(([key, value]) => Object({ name: value.name, value: key })),
+    )
+    @SlashOption({
+      description: 'Target game',
+      name: 'target-game',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    target: TRedeemTarget,
     @SlashOption({
       description: 'Giftcode 1 (mandatory)',
       name: 'giftcode1',
@@ -110,9 +134,9 @@ export class GenshinRedeem {
   ): Promise<any> {
     await interaction.deferReply({ ephemeral: true });
     const userId = interaction.user.id;
-    const user: IGenshin = await genshinApi.getUserInfo(userId);
+    const user: IHoYoLAB = await hoyolabApi.getUserInfo(userId);
     if (!user || !user.cookieString) return interaction.editReply('❌ Cookie not found, please save cookie first.');
-    if (!user.selectedAccount || isObjectEmpty(user.selectedAccount))
+    if (!user[`${target}Account` as keyof Object] || isObjectEmpty(user[`${target}Account` as keyof Object]))
       return interaction.editReply('❌ Account data not found, please select account.');
 
     const giftcodes = Array.from(new Set([giftcode1, giftcode2, giftcode3])).filter((giftcode) => giftcode);
@@ -121,8 +145,8 @@ export class GenshinRedeem {
     let timeout: number = 0;
 
     for (let index = 0; index < giftcodes.length; index++) {
-      await genshinApi
-        .redeemCode(user, giftcodes[index]!)
+      await hoyolabApi
+        .redeemCode(user, target, giftcodes[index]!)
         .then((res) => results.push({ giftcode: giftcodes[index], res }));
       if (giftcodes[index + 1]) {
         timeout += 5555;
@@ -130,7 +154,7 @@ export class GenshinRedeem {
       }
     }
 
-    const embed = GenshinRedeemResultEmbed(results, interaction.client as Client);
+    const embed = HoYoLABRedeemResultEmbed(results, interaction.client as Client);
     return interaction.editReply({ embeds: [embed] });
   }
 }

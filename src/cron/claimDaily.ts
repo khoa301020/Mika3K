@@ -1,72 +1,137 @@
 import axios from 'axios';
 import { CronJob } from 'cron';
 import { HoYoLABConstants } from '../constants/hoyolab.js';
+import { bot } from '../main.js';
 import HoYoLAB from '../models/HoYoLAB.js';
-import { IHoYoLAB, IHoYoLABAccount } from '../types/hoyolab';
+import { IHoYoLAB, IRedeemResultAccount } from '../types/hoyolab';
+
+const cronName = 'HoYoLAB Daily login';
 
 export const claimDaily = new CronJob('0 0 16 * * *', async () => {
   // export const claimDaily = new CronJob('0 * * * * *', async () => {
   const listUsers: Array<IHoYoLAB> = await HoYoLAB.find({}).lean();
-  console.log(`[ClaimDaily] Found ${listUsers.length} users`);
+  console.log(
+    `[${new Date().toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' })} - ${cronName}] Found ${
+      listUsers.length
+    } users`,
+  );
 
   for (const user of listUsers) {
-    let gameAccounts: Array<IHoYoLABAccount> = [];
-    if (user.genshinAccount) gameAccounts.push(Object.assign(user.genshinAccount, { game: 'genshin' }));
-    if (user.hi3Account) gameAccounts.push(Object.assign(user.hi3Account, { game: 'hi3' }));
-    if (user.hsrAccount) gameAccounts.push(Object.assign(user.hsrAccount, { game: 'hsr' }));
+    if (user.hoyoUsers.length === 0) continue;
 
-    if (gameAccounts.length === 0) continue;
+    let result: Array<any> = [];
 
-    console.log(`[ClaimDaily] Found ${gameAccounts.length} accounts for user ${user.userId}`);
+    console.log(
+      `[${new Date().toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' })} - ${cronName}] Found ${
+        user.hoyoUsers.length
+      } HoYoLAB users for ${user.userId}`,
+    );
 
-    for (const account of gameAccounts) {
-      let { data } = await axios.post(
-        HoYoLABConstants.DAILY_CLAIM_API(account.game!),
-        {},
-        {
-          headers: {
-            Cookie: user.cookieString,
-          },
-        },
+    for (const hoyoUser of user.hoyoUsers) {
+      if (hoyoUser.gameAccounts.length === 0) continue;
+
+      result.push({
+        remark: hoyoUser.remark,
+        accounts: [],
+      });
+
+      console.log(
+        `[${new Date().toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' })} - ${cronName}] Found ${
+          hoyoUser.gameAccounts.length
+        } game accounts for ${hoyoUser.remark}`,
       );
 
-      if (data.data?.gt_result && data.data?.gt_result?.is_risk === true) {
-        data = await axios
-          .post(
-            HoYoLABConstants.DAILY_CLAIM_API(account.game!),
-            {},
-            {
-              headers: {
-                Cookie: user.cookieString,
-                'X-Rpc-Challenge': data.data.gt_result.challenge,
-              },
+      for (const account of hoyoUser.gameAccounts) {
+        let { data } = await axios.post(
+          HoYoLABConstants.DAILY_CLAIM_API(account.game!),
+          {},
+          {
+            headers: {
+              Cookie: hoyoUser.cookieString,
             },
-          )
-          .then((res) => res.data);
+          },
+        );
+
+        if (data.data?.gt_result && data.data?.gt_result?.is_risk === true) {
+          data = await axios
+            .post(
+              HoYoLABConstants.DAILY_CLAIM_API(account.game!),
+              {},
+              {
+                headers: {
+                  Cookie: hoyoUser.cookieString,
+                  'X-Rpc-Challenge': data.data.gt_result.challenge,
+                },
+              },
+            )
+            .then((res) => res.data);
+        }
+
+        let symbol: string;
+
+        switch (data.retcode) {
+          case -5003:
+            console.log(
+              `[${new Date().toLocaleString('en-GB', {
+                timeZone: 'Asia/Ho_Chi_Minh',
+              })} - ${cronName}] ${account.game?.toUpperCase()} account [${account.game_uid}] ${
+                account.nickname
+              } has already claimed daily`,
+            );
+            symbol = '⏺';
+            break;
+          case 0:
+            console.log(
+              `[${new Date().toLocaleString('en-GB', {
+                timeZone: 'Asia/Ho_Chi_Minh',
+              })} - ${cronName}] Claimed daily for ${account.game?.toUpperCase()} account [${account.game_uid}] ${
+                account.nickname
+              }`,
+            );
+            symbol = '✅';
+            break;
+
+          default:
+            console.log(
+              `[${new Date().toLocaleString('en-GB', {
+                timeZone: 'Asia/Ho_Chi_Minh',
+              })} - ${cronName}] Failed to claim daily for ${account.game?.toUpperCase()} user ${
+                user.userId
+              }, message: ${data.message}`,
+            );
+            symbol = '❌';
+            break;
+        }
+
+        result[result.length - 1].accounts.push({
+          nickname: account.nickname,
+          game: account.game,
+          uid: account.game_uid,
+          message: symbol,
+        });
+
+        await new Promise((resolve) => setTimeout(resolve, 3333));
       }
-
-      switch (data.retcode) {
-        case -5003:
-          console.log(
-            `[ClaimDaily] User ${user.userId}'s ${account.game?.toUpperCase()} account has already claimed daily`,
-          );
-          break;
-        case 0:
-          console.log(`[ClaimDaily] Claimed daily for ${account.game?.toUpperCase()} user ${user.userId}`);
-          break;
-
-        default:
-          console.log(
-            `[ClaimDaily] Failed to claim daily for ${account.game?.toUpperCase()} user ${user.userId}, message: ${
-              data.message
-            }`,
-          );
-          break;
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
+
+    bot.users.send(user.userId, {
+      embeds: [
+        {
+          title: 'HoYoLAB Daily Claim',
+          description: `Claimed daily for ${user.hoyoUsers.length} HoYoLAB user${user.hoyoUsers.length > 1 ? 's' : ''}`,
+          fields: result.map((res) => ({
+            name: res.remark,
+            value: res.accounts
+              .map(
+                (account: IRedeemResultAccount) =>
+                  `- [${account.game?.toUpperCase()}${account.uid}] ${account.nickname} ${account.message}`,
+              )
+              .join('\n'),
+          })),
+        },
+      ],
+    });
   }
 
-  console.log('[ClaimDaily] Done');
+  console.log(`[${new Date().toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' })} - ${cronName}] Done`);
 });

@@ -28,9 +28,9 @@ export const datetimeConverter = (timestamp: Date | number | string) => {
   const day = date.getDate();
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
-  const hour = date.getHours();
-  const minute = date.getMinutes();
-  const second = date.getSeconds();
+  const hour = `${date.getHours() < 10 ? '0' : ''}${date.getHours()}`;
+  const minute = `${date.getMinutes() < 10 ? '0' : ''}${date.getMinutes()}`;
+  const second = `${date.getSeconds() < 10 ? '0' : ''}${date.getSeconds()}`;
   return {
     date: `${day}/${month}/${year}`,
     time: `${hour}/${minute}/${second}`,

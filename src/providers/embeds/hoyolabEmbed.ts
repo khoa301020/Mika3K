@@ -1,10 +1,10 @@
 import { APIEmbedField, EmbedBuilder } from 'discord.js';
 import { Client } from 'discordx';
 import { HoYoLABConstants } from '../../constants/hoyolab.js';
-import { IHoYoLABAccount } from '../../types/hoyolab.js';
+import { IHoYoLABGameAccount, IRedeemResult } from '../../types/hoyolab.js';
 
 export const HoYoLABAccountEmbed = (
-  account: IHoYoLABAccount,
+  account: IHoYoLABGameAccount,
   client: Client,
   page: number,
   total: number,
@@ -27,13 +27,37 @@ export const HoYoLABAccountEmbed = (
   );
 };
 
-export const HoYoLABRedeemResultEmbed = (results: Array<any>, client: Client): EmbedBuilder => {
+export const HoYoLABRedeemResultEmbed = (
+  results: Array<{
+    giftcode: string | undefined;
+    result: Array<IRedeemResult>;
+  }>,
+  client: Client,
+): EmbedBuilder => {
   const fields: Array<APIEmbedField> = [];
 
-  for (const result of results)
+  for (const [key, result] of Object.entries(results))
     fields.push({
-      name: result.giftcode,
-      value: result.res.data.retcode === 0 ? '```✅ Success```' : `\`\`\`❌ ${result.res.data.message}\`\`\``,
+      name: `Giftcode ${parseInt(key) + 1}: ${result.giftcode}`,
+      value: result.result
+        .map((res: IRedeemResult) => {
+          const accounts = res.accounts.map((account) => {
+            if (account.code) {
+              switch (account.code) {
+                case 0:
+                  return ` - [${account.uid}] ${account.nickname} ✅`;
+                case -5003:
+                  return ` - [${account.uid}] ${account.nickname} ⏺`;
+                default:
+                  return ` - [${account.uid}] ${account.nickname} ❌`;
+              }
+            } else {
+              return ` - [${account.uid}] ${account.nickname} - ❌`;
+            }
+          });
+          return `${res.remark}\n${accounts.join('\n')}`;
+        })
+        .join('\n\n'),
     });
 
   return new EmbedBuilder()

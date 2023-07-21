@@ -1,12 +1,11 @@
-import { ApplicationCommandOptionType, CommandInteraction, InteractionResponse } from 'discord.js';
+import { ApplicationCommandOptionType, CommandInteraction, Message } from 'discord.js';
 import { Client, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { setTimeout } from 'timers/promises';
 import { HoYoLABConstants } from '../../constants/hoyolab.js';
-import { editOrReplyThenDelete, isObjectEmpty, parseCookies } from '../../helpers/helper.js';
-import { HoYoLABAccountEmbed, HoYoLABRedeemResultEmbed } from '../../providers/embeds/hoyolabEmbed.js';
-import { HoYoLAB_ButtonPagination } from '../../providers/paginations/hoyolabPagination.js';
+import { editOrReplyThenDelete, parseCookies } from '../../helpers/helper.js';
+import { HoYoLABRedeemResultEmbed } from '../../providers/embeds/hoyolabEmbed.js';
 import { hoyolabApi } from '../../services/hoyolab.js';
-import { IHoYoLAB, IHoYoLABAccount, IHoYoLABResponse, THoyoGame } from '../../types/hoyolab.js';
+import { IHoYoLAB, IRedeemResult, THoyoGame } from '../../types/hoyolab.js';
 
 @Discord()
 @SlashGroup({ name: 'hoyolab', description: 'HoYoLAB commands' })
@@ -15,88 +14,43 @@ export class HoYoLABRedeem {
   @Slash({ description: 'Save Mihoyo cookie token', name: 'save-token' })
   async saveToken(
     @SlashOption({
+      description: 'Remark for this HoYoLAB user',
+      name: 'remark',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    remark: string,
+    @SlashOption({
       description: 'Cookie token string',
       name: 'cookie',
       required: true,
       type: ApplicationCommandOptionType.String,
     })
     cookie: string,
-    interaction: CommandInteraction,
-  ): Promise<InteractionResponse<boolean> | void> {
-    const userId = interaction.user.id;
-    const parsedCookie = parseCookies(cookie);
-    if (!parsedCookie.cookie_token || !parsedCookie.account_id)
-      return editOrReplyThenDelete(interaction, '❌ Cookie invalid.');
-
-    const user = await hoyolabApi.saveCredentials(userId, parsedCookie, cookie);
-    if (!user) return editOrReplyThenDelete(interaction, '❌ User invalid.');
-
-    return interaction.reply('✅ Save token succeed.');
-  }
-
-  @SlashGroup('hoyolab')
-  @Slash({ description: 'List game accounts', name: 'list-account' })
-  async listAccount(interaction: CommandInteraction): Promise<any> {
-    await interaction.deferReply({ ephemeral: false });
-    const userId = interaction.user.id;
-    const user: IHoYoLAB = await hoyolabApi.getUserInfo(userId);
-    if (!user || !user.cookieString)
-      return editOrReplyThenDelete(interaction, '❌ Cookie not found, please save the cookie first.');
-
-    const response: IHoYoLABResponse = await (await hoyolabApi.getUserAccount(user.cookieString)).data;
-    const accounts: Array<IHoYoLABAccount> = response.data?.list!;
-
-    const pages = accounts.map((account: IHoYoLABAccount, index: number) => {
-      const embed = HoYoLABAccountEmbed(account, interaction.client as Client, index + 1, accounts.length);
-
-      return { embeds: [embed] };
-    });
-
-    const pagination = HoYoLAB_ButtonPagination(interaction, pages, false);
-    return await pagination.send();
-  }
-
-  @SlashGroup('hoyolab')
-  @Slash({ description: 'Select game account', name: 'select-account' })
-  async selectAccount(
-    @SlashChoice(
-      ...Object.entries(HoYoLABConstants.REDEEM_TARGET).map(([key, value]) => Object({ name: value.name, value: key })),
-    )
     @SlashOption({
-      description: 'Target game',
-      name: 'target-game',
+      description: 'Game accounts UIDs (separated by comma)',
+      name: 'uids',
       required: true,
       type: ApplicationCommandOptionType.String,
     })
-    target: THoyoGame,
-    @SlashOption({
-      description: 'HoYoLAB account UID',
-      name: 'uid',
-      required: true,
-      type: ApplicationCommandOptionType.String,
-    })
-    uid: string,
+    selectedUIDs: string,
     interaction: CommandInteraction,
-  ): Promise<any> {
+  ): Promise<Message<boolean> | void> {
     await interaction.deferReply({ ephemeral: true });
     const userId = interaction.user.id;
-    const user: IHoYoLAB = await hoyolabApi.getUserInfo(userId);
-    if (!user || !user.cookieString)
-      return editOrReplyThenDelete(interaction, '❌ Cookie not found, please save the cookie first.');
+    const parsedCookie = parseCookies(cookie);
+    if (
+      !(parsedCookie.cookie_token && parsedCookie.account_id) ||
+      !(parsedCookie.cookie_token_v2 && parsedCookie.account_id_v2)
+    )
+      return editOrReplyThenDelete(interaction, '❌ Cookie invalid.');
 
-    const response: IHoYoLABResponse = await (await hoyolabApi.getUserAccount(user.cookieString)).data;
-    const accounts: Array<IHoYoLABAccount> = response.data?.list!;
+    const uids: Array<string> = selectedUIDs.split(',').map((uid) => uid.trim());
 
-    const selectedAccount = accounts.find(
-      (account: IHoYoLABAccount) =>
-        account.game_uid === uid && account.game_biz.startsWith(HoYoLABConstants.REDEEM_TARGET[target].prefix),
-    );
+    const user = await hoyolabApi.saveCredentials(userId, remark, cookie, uids);
+    if (!user) return editOrReplyThenDelete(interaction, '❌ User invalid.');
 
-    if (!selectedAccount) return editOrReplyThenDelete(interaction, '❌ Account not found.');
-
-    await hoyolabApi.selectAccount(userId, target, selectedAccount);
-
-    return interaction.editReply('✅ Select account succeed.');
+    return interaction.editReply('✅ Save token succeed.');
   }
 
   @SlashGroup('hoyolab')
@@ -138,20 +92,20 @@ export class HoYoLABRedeem {
     await interaction.deferReply({ ephemeral: true });
     const userId = interaction.user.id;
     const user: IHoYoLAB = await hoyolabApi.getUserInfo(userId);
-    if (!user || !user.cookieString)
-      return editOrReplyThenDelete(interaction, '❌ Cookie not found, please save the cookie first.');
-    if (!user[`${target}Account` as keyof Object] || isObjectEmpty(user[`${target}Account` as keyof Object]))
-      return editOrReplyThenDelete(interaction, '❌ Account data not found, please select account.');
+    if (!user) return editOrReplyThenDelete(interaction, '❌ Cookie not found, please save the cookie first.');
 
     const giftcodes = Array.from(new Set([giftcode1, giftcode2, giftcode3])).filter((giftcode) => giftcode);
 
-    let results: Array<any> = [];
+    let results: Array<{
+      giftcode: string | undefined;
+      result: Array<IRedeemResult>;
+    }> = [];
     let timeout: number = 0;
 
     for (let index = 0; index < giftcodes.length; index++) {
       await hoyolabApi
         .redeemCode(user, target, giftcodes[index]!)
-        .then((res) => results.push({ giftcode: giftcodes[index], res }));
+        .then((res: Array<IRedeemResult>) => results.push({ giftcode: giftcodes[index], result: res }));
       if (giftcodes[index + 1]) {
         timeout += 5555;
         await setTimeout(timeout);

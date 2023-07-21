@@ -5,63 +5,44 @@ const HoYoLABSchema = new mongoose.Schema({
     type: String,
     require: true,
   },
-  accountId: {
-    type: String,
-    require: false,
-  },
-  cookieToken: {
-    type: String,
-    require: false,
-  },
-  cookieString: {
-    type: String,
-    require: false,
-  },
   expiresAt: {
     type: Date,
     require: false,
   },
-  genshinAccount: {
-    _id: false,
-    type: {
-      game_biz: String,
-      region: String,
-      game_uid: String,
-      nickname: String,
-      level: Number,
-      is_chosen: Boolean,
-      region_name: String,
-      is_official: Boolean,
-    },
-    required: false,
-  },
-  hsrAccount: {
-    _id: false,
-    type: {
-      game_biz: String,
-      region: String,
-      game_uid: String,
-      nickname: String,
-      level: Number,
-      is_chosen: Boolean,
-      region_name: String,
-      is_official: Boolean,
-    },
-    required: false,
-  },
-  hi3Account: {
-    _id: false,
-    type: {
-      game_biz: String,
-      region: String,
-      game_uid: String,
-      nickname: String,
-      level: Number,
-      is_chosen: Boolean,
-      region_name: String,
-      is_official: Boolean,
-    },
-    required: false,
+  hoyoUsers: {
+    type: [
+      {
+        remark: {
+          type: String,
+          require: true,
+          unique: true,
+        },
+        cookieString: {
+          type: String,
+          require: true,
+        },
+        gameAccounts: {
+          type: [
+            {
+              game: {
+                type: String,
+                require: false,
+                enum: ['genshin', 'hsr', 'hi3'],
+              },
+              game_biz: String,
+              region: String,
+              game_uid: String,
+              nickname: String,
+              level: Number,
+              is_chosen: Boolean,
+              region_name: String,
+              is_official: Boolean,
+            },
+          ],
+          require: true,
+        },
+      },
+    ],
   },
 });
 

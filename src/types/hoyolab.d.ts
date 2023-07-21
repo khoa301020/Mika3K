@@ -1,25 +1,16 @@
 export interface IHoYoLAB {
   userId: string;
-  accountId?: string;
-  cookieToken?: string;
-  cookieString?: string;
   expiresAt?: Date;
-  genshinAccount?: IHoYoLABAccount;
-  hsrAccount?: IHoYoLABAccount;
-  hi3Account?: IHoYoLABAccount;
+  hoyoUsers: Array<IHoYoLABUser>;
 }
 
-export class IHoYoLABResponse {
-  retcode: number;
-  message: string;
-  data: IHoYoLABResponseUser | null;
+export interface IHoYoLABUser {
+  remark: string;
+  cookieString: string;
+  gameAccounts: Array<IHoYoLABGameAccount>;
 }
 
-export class IHoYoLABResponseUser {
-  list: Array<IHoYoLABAccount> | null;
-}
-
-export class IHoYoLABAccount {
+export class IHoYoLABGameAccount {
   game?: THoyoGame;
   game_biz: string;
   region: string;
@@ -31,9 +22,26 @@ export class IHoYoLABAccount {
   is_official: boolean;
 }
 
-export interface ICookie {
-  cookie_token: string;
-  account_id: string;
+export type THoyoGame = 'genshin' | 'hsr' | 'hi3';
+export class IHoYoLABResponse {
+  retcode: number;
+  message: string;
+  data: IHoYoLABResponseUser | null;
 }
 
-export type THoyoGame = 'genshin' | 'hsr' | 'hi3';
+export class IHoYoLABResponseUser {
+  list: Array<IHoYoLABGameAccount> | null;
+}
+
+export class IRedeemResult {
+  remark: string;
+  accounts: Array<IRedeemResultAccount>;
+}
+
+export class IRedeemResultAccount {
+  nickname: string;
+  code?: number;
+  message: string;
+  game?: THoyoGame;
+  uid?: string;
+}

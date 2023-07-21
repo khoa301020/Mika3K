@@ -1,4 +1,13 @@
 import { randomBytes } from 'crypto';
+import {
+  ButtonInteraction,
+  CommandInteraction,
+  InteractionReplyOptions,
+  InteractionResponse,
+  Message,
+  MessageContextMenuCommandInteraction,
+  MessagePayload,
+} from 'discord.js';
 import QuickChart from 'quickchart-js';
 import { BaseUserConfig, table } from 'table';
 
@@ -228,3 +237,19 @@ export const ttc = async (fn: Function, ...args: any[]) => {
 };
 
 export const invertObject = (obj: Object) => Object.entries(obj).map(([key, value]) => [value, key]);
+
+export async function editOrReplyThenDelete(
+  interaction: CommandInteraction | ButtonInteraction | MessageContextMenuCommandInteraction | Message,
+  options: string | InteractionReplyOptions | MessagePayload = '',
+  timeout = 5000,
+): Promise<void> {
+  let msg: Message;
+  if (interaction instanceof Message) msg = await interaction.reply(options as string | MessagePayload);
+  else if (interaction.deferred) msg = await interaction.editReply(options);
+  else msg = await interaction.reply(options).then(async (res: InteractionResponse) => await res.fetch());
+
+  if (msg.deletable)
+    setTimeout(() => {
+      msg.delete();
+    }, timeout);
+}

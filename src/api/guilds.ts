@@ -67,7 +67,7 @@ export class API {
     <body>
       <div class="container">
         <h1 class="serifu" id="first">「あなたの<br>　せいじゃないよ、■■■」</h1>
-        <h1 class="serifu" id="second">「︙︙責任は、私は負うからね」</h1>
+        <h1 class="serifu" id="second">「︙︙責任は、私が負うからね」</h1>
         <h1 class="serifu" id="third">「それが、　<br>　<span><strong>大人</strong>の</span><br>　やるべきことだから」</h1>
         <h1 class="serifu" id="fourth">「君がなりたい<strong>存在</strong>は、<br>　<span><strong>君自身が決め</strong>て</span><br>　いいんだよ――」
         </h1>

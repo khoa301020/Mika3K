@@ -6,6 +6,7 @@ export interface IHoYoLAB {
   expiresAt?: Date;
   genshinAccount?: IHoYoLABAccount;
   hsrAccount?: IHoYoLABAccount;
+  hi3Account?: IHoYoLABAccount;
 }
 
 export class IHoYoLABResponse {
@@ -19,6 +20,7 @@ export class IHoYoLABResponseUser {
 }
 
 export class IHoYoLABAccount {
+  game?: THoyoGame;
   game_biz: string;
   region: string;
   game_uid: string;
@@ -34,5 +36,4 @@ export interface ICookie {
   account_id: string;
 }
 
-export type TRedeemRegion = 'usa' | 'eur' | 'asia' | 'cht';
-export type TRedeemTarget = 'genshin' | 'hsr';
+export type THoyoGame = 'genshin' | 'hsr' | 'hi3';

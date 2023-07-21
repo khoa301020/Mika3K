@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import qs from 'qs';
 import { HoYoLABConstants } from '../constants/hoyolab.js';
 import HoYoLAB from '../models/HoYoLAB.js';
-import { IHoYoLAB, IHoYoLABAccount, TRedeemTarget } from '../types/hoyolab.js';
+import { IHoYoLAB, IHoYoLABAccount, THoyoGame } from '../types/hoyolab.js';
 
 export const hoyolabApi = {
   saveCredentials: async (userId: string, cookie: any, cookieString: string) =>
@@ -14,9 +14,9 @@ export const hoyolabApi = {
   getUserInfo: async (userId: string): Promise<any> => await HoYoLAB.findOne({ userId }),
   getUserAccount: async (cookie: string): Promise<AxiosResponse> =>
     await axios.get(HoYoLABConstants.HOYOLAB_GET_USER, { headers: { cookie } }),
-  selectAccount: async (userId: string, target: TRedeemTarget, account: IHoYoLABAccount): Promise<any> =>
+  selectAccount: async (userId: string, target: THoyoGame, account: IHoYoLABAccount): Promise<any> =>
     await HoYoLAB.findOneAndUpdate({ userId }, { [`${target}Account`]: account }),
-  redeemCode: async (user: IHoYoLAB, target: TRedeemTarget, code: string): Promise<AxiosResponse> => {
+  redeemCode: async (user: IHoYoLAB, target: THoyoGame, code: string): Promise<AxiosResponse> => {
     const param = {
       t: Date.now(),
       uid: user?.[`${target}Account`]?.game_uid,

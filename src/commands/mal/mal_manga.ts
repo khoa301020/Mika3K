@@ -10,7 +10,7 @@ import {
 } from 'discord.js';
 import { ButtonComponent, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { MALConstants } from '../../constants/index.js';
-import { createChart, sortArray, splitToChunks } from '../../helpers/helper.js';
+import { createChart, editOrReplyThenDelete, sortArray, splitToChunks } from '../../helpers/helper.js';
 import {
   MAL_GenresEmbed,
   MAL_MangaCharacterEmbed,
@@ -176,7 +176,7 @@ export class MAL_Manga {
     try {
       const res = await mangaApi.search(queryString);
       if (res.data.data.length === 0) {
-        interaction.reply({ content: 'No manga found.', ephemeral: !display });
+        editOrReplyThenDelete(interaction, { content: 'No manga found.', ephemeral: !display });
         return;
       }
 
@@ -197,7 +197,7 @@ export class MAL_Manga {
       await pagination.send();
     } catch (err: any) {
       console.log(err);
-      interaction.reply({ content: err.message, ephemeral: !display });
+      editOrReplyThenDelete(interaction, { content: err.message, ephemeral: !display });
     }
   }
 
@@ -226,7 +226,7 @@ export class MAL_Manga {
     try {
       const res = await mangaApi.genres(queryString);
       if (res.data.data.length === 0) {
-        interaction.reply({ content: 'No genres found.', ephemeral: !display });
+        editOrReplyThenDelete(interaction, { content: 'No genres found.', ephemeral: !display });
         return;
       }
 
@@ -245,7 +245,7 @@ export class MAL_Manga {
       await pagination.send();
     } catch (err: any) {
       console.log(err);
-      interaction.reply({ content: err.message, ephemeral: !display });
+      editOrReplyThenDelete(interaction, { content: err.message, ephemeral: !display });
     }
   }
 
@@ -257,7 +257,7 @@ export class MAL_Manga {
     try {
       const res = await mangaApi.characters(mal_id!);
       if (res.data.data.length === 0) {
-        interaction.reply({ content: 'No character found.', ephemeral: isEphemeral! });
+        editOrReplyThenDelete(interaction, { content: 'No character found.', ephemeral: isEphemeral! });
         return;
       }
 
@@ -278,12 +278,12 @@ export class MAL_Manga {
       await pagination.send();
     } catch (err: any) {
       console.log(err);
-      interaction.reply({ content: err.message, ephemeral: isEphemeral! });
+      editOrReplyThenDelete(interaction, { content: err.message, ephemeral: isEphemeral! });
     }
   }
 
   @ButtonComponent({ id: 'mangaStatistics' })
-  async statisticsBtnComponent(interaction: ButtonInteraction): Promise<void> {
+  async statisticsBtnComponent(interaction: ButtonInteraction): Promise<any> {
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
     await interaction.deferReply({ ephemeral: isEphemeral });
     const mal_id = interaction.message.embeds[0].data.title?.match(MALConstants.REGEX_GET_ID)![1];
@@ -338,10 +338,10 @@ export class MAL_Manga {
 
       const embed = MAL_MangaStatisticsEmbed(statistics, interaction.user);
 
-      interaction.editReply({ embeds: [embed]! });
+      return interaction.editReply({ embeds: [embed]! });
     } catch (err: any) {
       console.log(err);
-      interaction.editReply({ content: err.message });
+      editOrReplyThenDelete(interaction, { content: err.message });
     }
   }
 }

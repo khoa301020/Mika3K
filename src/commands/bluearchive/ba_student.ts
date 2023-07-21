@@ -12,7 +12,7 @@ import {
 import { ButtonComponent, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { FilterQuery } from 'mongoose';
 import { BlueArchiveConstants, CommonConstants, MALConstants } from '../../constants/index.js';
-import { isObjectEmpty, validateDayMonth } from '../../helpers/helper.js';
+import { editOrReplyThenDelete, isObjectEmpty, validateDayMonth } from '../../helpers/helper.js';
 import {
   BA_StudentEmbed,
   BA_StudentGearEmbed,
@@ -236,13 +236,14 @@ export class BlueArchiveInfo {
   ): Promise<any> {
     await interaction.deferReply({ ephemeral: !isPublic });
 
-    if (DayOfBirth && DayOfBirth < 1 && DayOfBirth > 31) return interaction.editReply('❌ Invalid Day of Birth');
+    if (DayOfBirth && DayOfBirth < 1 && DayOfBirth > 31)
+      return editOrReplyThenDelete(interaction, '❌ Invalid Day of Birth');
 
     if (MonthOfBirth && MonthOfBirth < 1 && MonthOfBirth > 12)
-      return interaction.editReply('❌ Invalid Month of Birth');
+      return editOrReplyThenDelete(interaction, '❌ Invalid Month of Birth');
 
     if (DayOfBirth && MonthOfBirth)
-      if (!validateDayMonth(DayOfBirth, MonthOfBirth)) return interaction.editReply('❌ Invalid Birthday');
+      if (!validateDayMonth(DayOfBirth, MonthOfBirth)) return editOrReplyThenDelete(interaction, '❌ Invalid Birthday');
 
     let BirthDay = undefined;
     if (DayOfBirth || MonthOfBirth)
@@ -282,7 +283,7 @@ export class BlueArchiveInfo {
     try {
       const students: Array<IStudent> = await getData.getStudent(sort, query);
 
-      if (students.length === 0) return interaction.editReply('❌ No student found.');
+      if (students.length === 0) return editOrReplyThenDelete(interaction, '❌ No student found.');
 
       const pages: Array<PaginationItem> = students.map(
         (student: IStudent, index: number): PaginationItem =>
@@ -296,7 +297,7 @@ export class BlueArchiveInfo {
       return await pagination.send();
     } catch (err: any) {
       console.log(err);
-      return interaction.editReply('❌ ' + err.message);
+      return editOrReplyThenDelete(interaction, '❌ ' + err.message);
     }
   }
   @ButtonComponent({ id: 'studentProfile' })
@@ -319,7 +320,7 @@ export class BlueArchiveInfo {
       await interaction.editReply({ embeds: [embed] });
     } catch (err: any) {
       console.log(err);
-      interaction.reply({ content: err.message, ephemeral: isEphemeral! });
+      editOrReplyThenDelete(interaction, { content: err.message, ephemeral: isEphemeral! });
     }
   }
 
@@ -341,7 +342,7 @@ export class BlueArchiveInfo {
       await interaction.editReply({ embeds: [embed] });
     } catch (err: any) {
       console.log(err);
-      interaction.reply({ content: err.message, ephemeral: isEphemeral! });
+      editOrReplyThenDelete(interaction, { content: err.message, ephemeral: isEphemeral! });
     }
   }
 
@@ -363,7 +364,7 @@ export class BlueArchiveInfo {
       await interaction.editReply({ embeds: [embed] });
     } catch (err: any) {
       console.log(err);
-      interaction.reply({ content: err.message, ephemeral: isEphemeral! });
+      editOrReplyThenDelete(interaction, { content: err.message, ephemeral: isEphemeral! });
     }
   }
 
@@ -385,7 +386,7 @@ export class BlueArchiveInfo {
       await interaction.editReply({ embeds: [embed] });
     } catch (err: any) {
       console.log(err);
-      interaction.reply({ content: err.message, ephemeral: isEphemeral! });
+      editOrReplyThenDelete(interaction, { content: err.message, ephemeral: isEphemeral! });
     }
   }
 
@@ -407,7 +408,7 @@ export class BlueArchiveInfo {
       await interaction.editReply({ embeds: [embed] });
     } catch (err: any) {
       console.log(err);
-      interaction.reply({ content: err.message, ephemeral: isEphemeral! });
+      editOrReplyThenDelete(interaction, { content: err.message, ephemeral: isEphemeral! });
     }
   }
 }

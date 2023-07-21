@@ -18,6 +18,7 @@ import {
   Slash,
   SlashOption,
 } from 'discordx';
+import { editOrReplyThenDelete } from '../../helpers/helper.js';
 import { SauceNAOResultEmbed } from '../../providers/embeds/saucenaoEmbed.js';
 import {
   SauceNAO_CommandPagination,
@@ -40,10 +41,12 @@ class SauceNAO {
   ): Promise<any> {
     const attachments = command.message.attachments.map((a) => a.url);
 
-    if (!url && attachments.length === 0) return command.message.reply('❌ Url or attachment required.');
-    if (url && attachments.length > 0) return command.message.reply('❌ Only one of url or attachment is allowed.');
-    if (attachments.length > 1) return command.message.reply('❌ Too many attachments.');
-    // if (url && !Constants.REGEX_IMAGE_URL.test(url)) return interaction.editReply('Image URL is not valid.');
+    if (!url && attachments.length === 0)
+      return editOrReplyThenDelete(command.message, '❌ Url or attachment required.');
+    if (url && attachments.length > 0)
+      return editOrReplyThenDelete(command.message, '❌ Only one of url or attachment is allowed.');
+    if (attachments.length > 1) return editOrReplyThenDelete(command.message, '❌ Too many attachments.');
+    // if (url && !Constants.REGEX_IMAGE_URL.test(url)) return editOrReplyThenDelete(interaction, 'Image URL is not valid.');
 
     const request: ISaucenaoSearchRequest = Object.assign(
       {
@@ -60,20 +63,22 @@ class SauceNAO {
 
     const response: AxiosResponse = await saucenao(request);
 
-    if (response.status !== 200) return command.message.reply({ content: '❌ Search failed.' });
+    if (response.status !== 200) return editOrReplyThenDelete(command.message, { content: '❌ Search failed.' });
 
     const data: ISaucenaoSearchResponse = response.data;
 
-    if (data.header?.status !== 0) return command.message.reply({ content: `❌ ${data.header?.message}` });
+    if (data.header?.status !== 0)
+      return editOrReplyThenDelete(command.message, { content: `❌ ${data.header?.message}` });
 
-    if (data.results?.length === 0) return command.message.reply({ content: `❌ No result found.` });
+    if (data.results?.length === 0) return editOrReplyThenDelete(command.message, { content: `❌ No result found.` });
 
     data.results = data.results?.filter(
       (result: ISaucenaoSearchResponseResult) =>
         parseFloat(result.header?.similarity!) > data.header?.minimum_similarity!,
     );
 
-    if (data.results?.length === 0) return command.message.reply({ content: `❌ The results' similarity is too low.` });
+    if (data.results?.length === 0)
+      return editOrReplyThenDelete(command.message, { content: `❌ The results' similarity is too low.` });
 
     const pages = data.results!.map((result: ISaucenaoSearchResponseResult, index: number) => {
       const embed = SauceNAOResultEmbed(command.message.author, result, index + 1, data.results!.length);
@@ -112,9 +117,9 @@ class SauceNAO {
   ): Promise<any> {
     await interaction.deferReply({ ephemeral: !isPublic });
 
-    if (!url && !attachment) return interaction.editReply('❌ Url or attachment required.');
-    if (url && attachment) return interaction.editReply('❌ Only one of url or attachment is allowed.');
-    // if (url && !Constants.REGEX_IMAGE_URL.test(url)) return interaction.editReply('Image URL is not valid.');
+    if (!url && !attachment) return editOrReplyThenDelete(interaction, '❌ Url or attachment required.');
+    if (url && attachment) return editOrReplyThenDelete(interaction, '❌ Only one of url or attachment is allowed.');
+    // if (url && !Constants.REGEX_IMAGE_URL.test(url)) return editOrReplyThenDelete(interaction, 'Image URL is not valid.');
 
     const request: ISaucenaoSearchRequest = Object.assign(
       {
@@ -131,20 +136,21 @@ class SauceNAO {
 
     const response: AxiosResponse = await saucenao(request);
 
-    if (response.status !== 200) return interaction.editReply({ content: '❌ Search failed.' });
+    if (response.status !== 200) return editOrReplyThenDelete(interaction, { content: '❌ Search failed.' });
 
     const data: ISaucenaoSearchResponse = response.data;
 
-    if (data.header?.status !== 0) return interaction.editReply({ content: `❌ ${data.header?.message}` });
+    if (data.header?.status !== 0) return editOrReplyThenDelete(interaction, { content: `❌ ${data.header?.message}` });
 
-    if (data.results?.length === 0) return interaction.editReply({ content: `❌ No result found.` });
+    if (data.results?.length === 0) return editOrReplyThenDelete(interaction, { content: `❌ No result found.` });
 
     data.results = data.results?.filter(
       (result: ISaucenaoSearchResponseResult) =>
         parseFloat(result.header?.similarity!) > data.header?.minimum_similarity!,
     );
 
-    if (data.results?.length === 0) return interaction.editReply({ content: `❌ The results' similarity is too low.` });
+    if (data.results?.length === 0)
+      return editOrReplyThenDelete(interaction, { content: `❌ The results' similarity is too low.` });
 
     const pages = data.results!.map((result: ISaucenaoSearchResponseResult, index: number) => {
       const embed = SauceNAOResultEmbed(interaction.user, result, index + 1, data.results!.length);
@@ -167,10 +173,10 @@ class SauceNAO {
     let url = message.content;
     const attachments = message.attachments.map((a) => a.url);
 
-    if (!url && attachments.length === 0) return interaction.reply('❌ Url or attachment required.');
-    if (attachments.length > 1) return interaction.reply('❌ Too many attachments.');
+    if (!url && attachments.length === 0) return editOrReplyThenDelete(interaction, '❌ Url or attachment required.');
+    if (attachments.length > 1) return editOrReplyThenDelete(interaction, '❌ Too many attachments.');
     if (attachments.length > 0) url = attachments[0];
-    // if (url && !Constants.REGEX_IMAGE_URL.test(url)) return interaction.editReply('Image URL is not valid.');
+    // if (url && !Constants.REGEX_IMAGE_URL.test(url)) return editOrReplyThenDelete(interaction, 'Image URL is not valid.');
 
     const request: ISaucenaoSearchRequest = {
       output_type: 2,
@@ -184,20 +190,21 @@ class SauceNAO {
 
     const response: AxiosResponse = await saucenao(request);
 
-    if (response.status !== 200) return interaction.editReply({ content: '❌ Search failed.' });
+    if (response.status !== 200) return editOrReplyThenDelete(interaction, { content: '❌ Search failed.' });
 
     const data: ISaucenaoSearchResponse = response.data;
 
-    if (data.header?.status !== 0) return interaction.editReply({ content: `❌ ${data.header?.message}` });
+    if (data.header?.status !== 0) return editOrReplyThenDelete(interaction, { content: `❌ ${data.header?.message}` });
 
-    if (data.results?.length === 0) return interaction.editReply({ content: `❌ No result found.` });
+    if (data.results?.length === 0) return editOrReplyThenDelete(interaction, { content: `❌ No result found.` });
 
     data.results = data.results?.filter(
       (result: ISaucenaoSearchResponseResult) =>
         parseFloat(result.header?.similarity!) > data.header?.minimum_similarity!,
     );
 
-    if (data.results?.length === 0) return interaction.editReply({ content: `❌ The results' similarity is too low.` });
+    if (data.results?.length === 0)
+      return editOrReplyThenDelete(interaction, { content: `❌ The results' similarity is too low.` });
 
     const pages = data.results!.map((result: ISaucenaoSearchResponseResult, index: number) => {
       const embed = SauceNAOResultEmbed(interaction.user, result, index + 1, data.results!.length);

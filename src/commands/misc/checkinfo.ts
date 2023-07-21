@@ -17,6 +17,7 @@ import {
   Slash,
   SlashOption,
 } from 'discordx';
+import { editOrReplyThenDelete } from '../../helpers/helper.js';
 import { UserInfoEmbed } from '../../providers/embeds/commonEmbed.js';
 
 @Discord()
@@ -26,9 +27,9 @@ class CheckInfo {
     @SimpleCommandOption({ name: 'user', type: SimpleCommandOptionType.User })
     user: GuildMember | undefined,
     command: SimpleCommandMessage,
-  ): Promise<Message<boolean>> {
+  ): Promise<Message<boolean> | void> {
     if (!user) user = command.message.guild!.members.cache.get(command.message.author.id);
-    if (!user?.id) return command.message.reply({ content: 'Invalid user' });
+    if (!user?.id) return editOrReplyThenDelete(command.message, { content: '❌ Invalid user' });
 
     const embed = UserInfoEmbed(command.message.author, command.message.client as Client, user!);
 

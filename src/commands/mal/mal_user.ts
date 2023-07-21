@@ -4,13 +4,12 @@ import {
   ButtonBuilder,
   ButtonStyle,
   CommandInteraction,
-  InteractionResponse,
   MessageActionRowComponentBuilder,
 } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import qs from 'qs';
 import { CommonConstants, MALConstants } from '../../constants/index.js';
-import { codeChallenge, createChart, datetimeConverter } from '../../helpers/helper.js';
+import { codeChallenge, createChart, datetimeConverter, editOrReplyThenDelete } from '../../helpers/helper.js';
 import { MAL_UserAnimeEmbed, MAL_UserEmbed, MAL_UserMangaEmbed } from '../../providers/embeds/malEmbed.js';
 import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../../providers/paginations/malPagination.js';
 import { authApi, userApi } from '../../services/mal.js';
@@ -22,7 +21,7 @@ import { IUser, IUserAnime, IUserManga } from '../../types/mal.js';
 export class MAL_User {
   @SlashGroup('user', 'mal')
   @Slash({ description: 'Login MAL', name: 'login' })
-  async login(interaction: CommandInteraction): Promise<InteractionResponse<boolean>> {
+  async login(interaction: CommandInteraction): Promise<any> {
     const userId = interaction.user.id;
     const PKCE = codeChallenge;
     const clientId = process.env.MAL_CLIENT_ID;
@@ -54,7 +53,8 @@ export class MAL_User {
 
     const refreshedUser = await authApi.refreshToken(userId!);
 
-    if (!refreshedUser) return interaction.editReply({ content: '❌ User invalid or your token is still valid.' });
+    if (!refreshedUser)
+      return editOrReplyThenDelete(interaction, { content: '❌ User invalid or your token is still valid.' });
 
     return interaction.editReply({
       content: `Token refreshed. Your login session will expire at : **${
@@ -80,7 +80,7 @@ export class MAL_User {
     const user = await authApi.checkAuthorized(userId);
 
     if (!user)
-      return interaction.editReply({
+      return editOrReplyThenDelete(interaction, {
         content: '❌ Your login session is expired or not authorized.\nPlease login.',
       });
 
@@ -178,14 +178,15 @@ export class MAL_User {
     interaction: CommandInteraction,
   ): Promise<any> {
     const userId = interaction.user.id;
-    if (limit < 1 || limit > 1000) return interaction.reply({ content: 'Limit must be between 1 and 1000' });
+    if (limit < 1 || limit > 1000)
+      return editOrReplyThenDelete(interaction, { content: 'Limit must be between 1 and 1000' });
     let params = Object.assign({ fields: 'list_status' }, status && { status }, sort && { sort }, limit && { limit });
 
     try {
       const res = await userApi.getMyAnimeList(userId, params);
       const userAnimeList: Array<IUserAnime> = res.data.data;
       if (userAnimeList.length === 0) {
-        return interaction.reply({ content: 'No anime found.', ephemeral: !display });
+        return editOrReplyThenDelete(interaction, { content: 'No anime found.', ephemeral: !display });
       }
 
       let names: string[] = [];
@@ -207,7 +208,7 @@ export class MAL_User {
       await pagination.send();
     } catch (err: any) {
       console.log(err);
-      interaction.reply({ content: err.message, ephemeral: !display });
+      editOrReplyThenDelete(interaction, { content: err.message, ephemeral: !display });
     }
   }
   @Slash({ description: 'Check my manga list', name: 'my-manga-list' })
@@ -255,14 +256,15 @@ export class MAL_User {
     interaction: CommandInteraction,
   ): Promise<any> {
     const userId = interaction.user.id;
-    if (limit < 1 || limit > 1000) return interaction.reply({ content: 'Limit must be between 1 and 1000' });
+    if (limit < 1 || limit > 1000)
+      return editOrReplyThenDelete(interaction, { content: 'Limit must be between 1 and 1000' });
     let params = Object.assign({ fields: 'list_status' }, status && { status }, sort && { sort }, limit && { limit });
 
     try {
       const res = await userApi.getMyMangaList(userId, params);
       const userMangaList: Array<IUserManga> = res.data.data;
       if (userMangaList.length === 0) {
-        return interaction.reply({ content: 'No manga found.', ephemeral: !display });
+        return editOrReplyThenDelete(interaction, { content: 'No manga found.', ephemeral: !display });
       }
 
       let names: string[] = [];
@@ -284,7 +286,7 @@ export class MAL_User {
       await pagination.send();
     } catch (err: any) {
       console.log(err);
-      interaction.reply({ content: err.message, ephemeral: !display });
+      editOrReplyThenDelete(interaction, { content: err.message, ephemeral: !display });
     }
   }
 }

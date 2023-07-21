@@ -2,11 +2,11 @@ import { ApplicationCommandOptionType, CommandInteraction, InteractionResponse }
 import { Client, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { setTimeout } from 'timers/promises';
 import { HoYoLABConstants } from '../../constants/hoyolab.js';
-import { isObjectEmpty, parseCookies } from '../../helpers/helper.js';
+import { editOrReplyThenDelete, isObjectEmpty, parseCookies } from '../../helpers/helper.js';
 import { HoYoLABAccountEmbed, HoYoLABRedeemResultEmbed } from '../../providers/embeds/hoyolabEmbed.js';
 import { HoYoLAB_ButtonPagination } from '../../providers/paginations/hoyolabPagination.js';
 import { hoyolabApi } from '../../services/hoyolab.js';
-import { IHoYoLAB, IHoYoLABAccount, IHoYoLABResponse, TRedeemTarget } from '../../types/hoyolab.js';
+import { IHoYoLAB, IHoYoLABAccount, IHoYoLABResponse, THoyoGame } from '../../types/hoyolab.js';
 
 @Discord()
 @SlashGroup({ name: 'hoyolab', description: 'HoYoLAB commands' })
@@ -22,13 +22,14 @@ export class HoYoLABRedeem {
     })
     cookie: string,
     interaction: CommandInteraction,
-  ): Promise<InteractionResponse<boolean>> {
+  ): Promise<InteractionResponse<boolean> | void> {
     const userId = interaction.user.id;
     const parsedCookie = parseCookies(cookie);
-    if (!parsedCookie.cookie_token || !parsedCookie.account_id) return interaction.reply('❌ Cookie invalid.');
+    if (!parsedCookie.cookie_token || !parsedCookie.account_id)
+      return editOrReplyThenDelete(interaction, '❌ Cookie invalid.');
 
     const user = await hoyolabApi.saveCredentials(userId, parsedCookie, cookie);
-    if (!user) return interaction.reply('❌ User invalid.');
+    if (!user) return editOrReplyThenDelete(interaction, '❌ User invalid.');
 
     return interaction.reply('✅ Save token succeed.');
   }
@@ -36,10 +37,11 @@ export class HoYoLABRedeem {
   @SlashGroup('hoyolab')
   @Slash({ description: 'List game accounts', name: 'list-account' })
   async listAccount(interaction: CommandInteraction): Promise<any> {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ ephemeral: false });
     const userId = interaction.user.id;
     const user: IHoYoLAB = await hoyolabApi.getUserInfo(userId);
-    if (!user || !user.cookieString) return interaction.editReply('❌ Cookie not found, please save cookie first.');
+    if (!user || !user.cookieString)
+      return editOrReplyThenDelete(interaction, '❌ Cookie not found, please save the cookie first.');
 
     const response: IHoYoLABResponse = await (await hoyolabApi.getUserAccount(user.cookieString)).data;
     const accounts: Array<IHoYoLABAccount> = response.data?.list!;
@@ -66,7 +68,7 @@ export class HoYoLABRedeem {
       required: true,
       type: ApplicationCommandOptionType.String,
     })
-    target: TRedeemTarget,
+    target: THoyoGame,
     @SlashOption({
       description: 'HoYoLAB account UID',
       name: 'uid',
@@ -79,7 +81,8 @@ export class HoYoLABRedeem {
     await interaction.deferReply({ ephemeral: true });
     const userId = interaction.user.id;
     const user: IHoYoLAB = await hoyolabApi.getUserInfo(userId);
-    if (!user || !user.cookieString) return interaction.editReply('Cookie not found, please save cookie first.');
+    if (!user || !user.cookieString)
+      return editOrReplyThenDelete(interaction, '❌ Cookie not found, please save the cookie first.');
 
     const response: IHoYoLABResponse = await (await hoyolabApi.getUserAccount(user.cookieString)).data;
     const accounts: Array<IHoYoLABAccount> = response.data?.list!;
@@ -89,7 +92,7 @@ export class HoYoLABRedeem {
         account.game_uid === uid && account.game_biz.startsWith(HoYoLABConstants.REDEEM_TARGET[target].prefix),
     );
 
-    if (!selectedAccount) return interaction.editReply('❌ Account not found.');
+    if (!selectedAccount) return editOrReplyThenDelete(interaction, '❌ Account not found.');
 
     await hoyolabApi.selectAccount(userId, target, selectedAccount);
 
@@ -108,7 +111,7 @@ export class HoYoLABRedeem {
       required: true,
       type: ApplicationCommandOptionType.String,
     })
-    target: TRedeemTarget,
+    target: THoyoGame,
     @SlashOption({
       description: 'Giftcode 1 (mandatory)',
       name: 'giftcode1',
@@ -135,9 +138,10 @@ export class HoYoLABRedeem {
     await interaction.deferReply({ ephemeral: true });
     const userId = interaction.user.id;
     const user: IHoYoLAB = await hoyolabApi.getUserInfo(userId);
-    if (!user || !user.cookieString) return interaction.editReply('❌ Cookie not found, please save cookie first.');
+    if (!user || !user.cookieString)
+      return editOrReplyThenDelete(interaction, '❌ Cookie not found, please save the cookie first.');
     if (!user[`${target}Account` as keyof Object] || isObjectEmpty(user[`${target}Account` as keyof Object]))
-      return interaction.editReply('❌ Account data not found, please select account.');
+      return editOrReplyThenDelete(interaction, '❌ Account data not found, please select account.');
 
     const giftcodes = Array.from(new Set([giftcode1, giftcode2, giftcode3])).filter((giftcode) => giftcode);
 

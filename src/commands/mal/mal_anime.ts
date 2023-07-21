@@ -10,7 +10,7 @@ import {
 } from 'discord.js';
 import { ButtonComponent, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { CommonConstants, MALConstants } from '../../constants/index.js';
-import { createChart, sortArray, splitToChunks } from '../../helpers/helper.js';
+import { createChart, editOrReplyThenDelete, sortArray, splitToChunks } from '../../helpers/helper.js';
 import {
   MAL_AnimeCharacterEmbed,
   MAL_AnimeEmbed,
@@ -227,7 +227,7 @@ export class MAL_Anime {
     try {
       const res = await animeApi.search(queryString);
       if (res.data.data.length === 0) {
-        interaction.reply({ content: 'No anime found.', ephemeral: !display });
+        editOrReplyThenDelete(interaction, { content: '❌ No anime found.', ephemeral: !display });
         return;
       }
 
@@ -252,7 +252,7 @@ export class MAL_Anime {
       await pagination.send();
     } catch (err: any) {
       console.log(err);
-      interaction.reply({ content: err.message, ephemeral: !display });
+      editOrReplyThenDelete(interaction, { content: `❌ ${err.message}`, ephemeral: !display });
     }
   }
 
@@ -281,7 +281,7 @@ export class MAL_Anime {
     try {
       const res = await animeApi.genres(queryString);
       if (res.data.data.length === 0) {
-        interaction.reply({ content: 'No genres found.', ephemeral: !display });
+        editOrReplyThenDelete(interaction, { content: '❌ No genres found.', ephemeral: !display });
         return;
       }
 
@@ -300,7 +300,7 @@ export class MAL_Anime {
       await pagination.send();
     } catch (err: any) {
       console.log(err);
-      interaction.reply({ content: err.message, ephemeral: !display });
+      editOrReplyThenDelete(interaction, { content: `❌ ${err.message}`, ephemeral: !display });
     }
   }
 
@@ -312,7 +312,7 @@ export class MAL_Anime {
     try {
       const res = await animeApi.characters(mal_id!);
       if (res.data.data.length === 0) {
-        interaction.reply({ content: 'No character found.', ephemeral: isEphemeral! });
+        editOrReplyThenDelete(interaction, { content: '❌ No character found.', ephemeral: isEphemeral! });
         return;
       }
 
@@ -333,7 +333,7 @@ export class MAL_Anime {
       await pagination.send();
     } catch (err: any) {
       console.log(err);
-      interaction.reply({ content: err.message, ephemeral: isEphemeral! });
+      editOrReplyThenDelete(interaction, { content: `❌ ${err.message}`, ephemeral: isEphemeral! });
     }
   }
 
@@ -346,7 +346,7 @@ export class MAL_Anime {
     try {
       const episodes: Array<IAnimeEpisode> = await animeApi.episodes(mal_id!);
       if (episodes.length === 0) {
-        interaction.editReply({ content: 'No episode found.' });
+        interaction.editReply({ content: '❌ No episode found.' });
         return;
       }
 
@@ -367,7 +367,7 @@ export class MAL_Anime {
       await pagination.send();
     } catch (err: any) {
       console.log(err);
-      interaction.reply({ content: err.message, ephemeral: isEphemeral! });
+      editOrReplyThenDelete(interaction, { content: `❌ ${err.message}`, ephemeral: isEphemeral! });
     }
   }
 
@@ -380,17 +380,17 @@ export class MAL_Anime {
       const res = await animeApi.themes(mal_id!);
       const themes: IAnimeThemes = res.data.data;
       if (themes.openings.length === 0 && themes.endings.length === 0) {
-        interaction.reply({ content: 'No theme found.', ephemeral: isEphemeral! });
+        editOrReplyThenDelete(interaction, { content: '❌ No theme found.', ephemeral: isEphemeral! });
         return;
       }
       themes.anime_mal_id = parseInt(mal_id!);
 
       const embed = MAL_AnimeThemeEmbed(themes, interaction.user);
 
-      interaction.reply({ embeds: [embed], ephemeral: isEphemeral! });
+      editOrReplyThenDelete(interaction, { embeds: [embed], ephemeral: isEphemeral! });
     } catch (err: any) {
       console.log(err);
-      interaction.reply({ content: err.message, ephemeral: isEphemeral! });
+      editOrReplyThenDelete(interaction, { content: `❌ ${err.message}`, ephemeral: isEphemeral! });
     }
   }
 
@@ -402,7 +402,7 @@ export class MAL_Anime {
     try {
       const res = await animeApi.staff(mal_id!);
       if (res.data.data.length === 0) {
-        interaction.reply({ content: 'No staff found.', ephemeral: isEphemeral! });
+        editOrReplyThenDelete(interaction, { content: '❌ No staff found.', ephemeral: isEphemeral! });
         return;
       }
 
@@ -422,7 +422,7 @@ export class MAL_Anime {
       await pagination.send();
     } catch (err: any) {
       console.log(err);
-      interaction.reply({ content: err.message, ephemeral: isEphemeral! });
+      editOrReplyThenDelete(interaction, { content: `❌ ${err.message}`, ephemeral: isEphemeral! });
     }
   }
 
@@ -484,8 +484,8 @@ export class MAL_Anime {
 
       interaction.editReply({ embeds: [embed]! });
     } catch (err: any) {
-      console.log(err);
-      interaction.editReply({ content: err.message });
+      console.log(err as Error);
+      interaction.editReply({ content: `❌ ${err.message}` });
     }
   }
 }

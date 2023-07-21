@@ -17,7 +17,7 @@ import {
   SlashOption,
 } from 'discordx';
 import { CommonConstants } from '../../constants/index.js';
-import { randomArray, splitToChunks } from '../../helpers/helper.js';
+import { editOrReplyThenDelete, randomArray, splitToChunks } from '../../helpers/helper.js';
 import { ListQuoteEmbed } from '../../providers/embeds/commonEmbed.js';
 import { QuoteCommandPagination, QuoteSlashPagination } from '../../providers/paginations/quotePagination.js';
 import {
@@ -35,9 +35,6 @@ import { IUserQuote } from '../../types/quote.js';
 @Discord()
 @SlashGroup({ description: 'Quote commands', name: 'quote' })
 class QuoteCommand {
-  ////////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////     Message Command   /////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////////
   @SimpleCommand({ aliases: ['$', 'createquote'], description: 'Create new quote', argSplitter: ' ' })
   async createQuoteCommand(
     @SimpleCommandOption({ name: 'command', type: SimpleCommandOptionType.String })
@@ -209,9 +206,6 @@ class QuoteCommand {
 }
 @Discord()
 class QuoteSlash {
-  ////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////     Slash Command   //////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////////
   @Slash({ name: 'create', description: 'Create quote' })
   @SlashGroup('quote')
   async createquote(
@@ -244,8 +238,8 @@ class QuoteSlash {
     })
     attachment: APIAttachment,
     interaction: CommandInteraction,
-  ): Promise<InteractionResponse<boolean>> {
-    if (!content && !attachment) return interaction.reply('❌ Content required.');
+  ): Promise<InteractionResponse<boolean> | void> {
+    if (!content && !attachment) return editOrReplyThenDelete(interaction, '❌ Content required.');
 
     const quote: IUserQuote = {
       guild: interaction.guildId!,
@@ -260,10 +254,11 @@ class QuoteSlash {
 
     try {
       createQuote(quote).then((quoteResponse) => {
-        if (!quoteResponse) return interaction.reply({ content: '❌ Error occured.', ephemeral: true });
+        if (!quoteResponse)
+          return editOrReplyThenDelete(interaction, { content: '❌ Error occured.', ephemeral: true });
       });
     } catch (error) {
-      return interaction.reply({ content: '❌ Error occured.', ephemeral: true });
+      return editOrReplyThenDelete(interaction, { content: '❌ Error occured.', ephemeral: true });
     }
 
     return interaction.reply({ content: '✅ Quote added successfully.', ephemeral: true });
@@ -280,13 +275,13 @@ class QuoteSlash {
     })
     keyword: string,
     interaction: CommandInteraction,
-  ): Promise<InteractionResponse<boolean>> {
+  ): Promise<InteractionResponse<boolean> | void> {
     const guildId = interaction.guildId;
     let quotes: IUserQuote[] = await getQuote(keyword, guildId!);
-    if (quotes.length === 0) return interaction.reply('❌ No quote found.');
+    if (quotes.length === 0) return editOrReplyThenDelete(interaction, '❌ No quote found.');
 
     quotes = quotes.filter((quote) => interaction.user.id === quote.user || quote.private === false);
-    if (quotes.length === 0) return interaction.reply('❌ Quote privated.');
+    if (quotes.length === 0) return editOrReplyThenDelete(interaction, '❌ Quote privated.');
 
     return interaction.reply({ content: randomArray(quotes).quote?.value, ephemeral: true });
   }
@@ -297,7 +292,7 @@ class QuoteSlash {
     const guildId = interaction.guildId;
     let quotes: IUserQuote[] = await getListQuotes(guildId!);
 
-    if (quotes.length === 0) return interaction.reply('❌ No quote found.');
+    if (quotes.length === 0) return editOrReplyThenDelete(interaction, '❌ No quote found.');
 
     let splitedQuotes = splitToChunks(quotes, CommonConstants.QUOTES_PER_PAGE);
 
@@ -324,7 +319,7 @@ class QuoteSlash {
 
     let quotes: IUserQuote[] = await getUserQuotes(user!);
 
-    if (quotes.length === 0) return interaction.reply('❌ No quote found.');
+    if (quotes.length === 0) return editOrReplyThenDelete(interaction, '❌ No quote found.');
 
     let splitedQuotes = splitToChunks(quotes, CommonConstants.QUOTES_PER_PAGE);
 
@@ -370,7 +365,7 @@ class QuoteSlash {
     attachment: APIAttachment,
     interaction: CommandInteraction,
   ): Promise<any> {
-    if (!content && !attachment) return interaction.reply('❌ Content required.');
+    if (!content && !attachment) return editOrReplyThenDelete(interaction, '❌ Content required.');
 
     const user = interaction.guild?.members.cache.get(interaction.user.id);
     const response = await editQuote(user!, id, `${content} ${attachment ? attachment.url : ''}`.trim());

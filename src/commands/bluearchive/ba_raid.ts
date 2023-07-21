@@ -1,6 +1,7 @@
 import { ApplicationCommandOptionType, CommandInteraction } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { BlueArchiveConstants } from '../../constants/bluearchive.js';
+import { editOrReplyThenDelete } from '../../helpers/helper.js';
 import { BA_RaidEmbed } from '../../providers/embeds/bluearchiveEmbed.js';
 import { getData } from '../../services/bluearchive.js';
 
@@ -41,7 +42,7 @@ export class BlueArchiveSync {
 
     const raid = await getData.getRaidById(raidId);
 
-    if (!raid) return await interaction.editReply('❌ Raid not found');
+    if (!raid) return await editOrReplyThenDelete(interaction, '❌ Raid not found');
     if (BlueArchiveConstants.RAID_DIFFICULTIES[raidDifficulty] > raid.MaxDifficulty[0])
       return await interaction.editReply(`❌ Unavailable difficulty **${raidDifficulty}** in raid **${raid.Name}**.`);
 

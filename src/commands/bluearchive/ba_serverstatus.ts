@@ -1,6 +1,7 @@
 import { ApplicationCommandOptionType, CommandInteraction } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { BlueArchiveConstants } from '../../constants/index.js';
+import { editOrReplyThenDelete } from '../../helpers/helper.js';
 import { cache } from '../../main.js';
 import { BA_ServerEmbed } from '../../providers/embeds/bluearchiveEmbed.js';
 import { getData } from '../../services/bluearchive.js';
@@ -36,7 +37,7 @@ export class BlueArchiveSync {
     await interaction.deferReply();
     const common: ICommon | undefined = cache.get('BA_Common');
 
-    if (common === undefined) return interaction.editReply('❌ Cache not found.');
+    if (common === undefined) return editOrReplyThenDelete(interaction, '❌ Cache not found.');
 
     const region = common.regions[regionId];
 

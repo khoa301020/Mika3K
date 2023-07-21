@@ -2,6 +2,7 @@ import type { CommandInteraction } from 'discord.js';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { MALConstants } from '../../constants/mal.js';
+import { editOrReplyThenDelete } from '../../helpers/helper.js';
 import { MAL_CharacterEmbed } from '../../providers/embeds/malEmbed.js';
 import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../../providers/paginations/malPagination.js';
 import { characterApi } from '../../services/mal.js';
@@ -63,7 +64,7 @@ export class MAL_Character {
       const res = await characterApi.search(queryString);
 
       if (res.data.data.length === 0) {
-        interaction.reply({ content: 'No character found.', ephemeral: !display });
+        editOrReplyThenDelete(interaction, { content: 'No character found.', ephemeral: !display });
         return;
       }
 
@@ -84,7 +85,7 @@ export class MAL_Character {
       await pagination.send();
     } catch (err: any) {
       console.log(err);
-      interaction.reply({ content: err.message, ephemeral: !display });
+      editOrReplyThenDelete(interaction, { content: err.message, ephemeral: !display });
     }
   }
 }

@@ -1,18 +1,18 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { INHentaiQueryKey, INHentaiQueryParam } from '../types/nhentai';
 
 import { HttpCookieAgent, HttpsCookieAgent } from 'http-cookie-agent/http';
 import { CookieJar } from 'tough-cookie';
 
-const jar = new CookieJar();
-jar.setCookie(process.env.NHENTAI_COOKIE || '', 'https://nhentai.net/');
+export async function simulateNHentaiRequest(url: string): Promise<AxiosResponse> {
+  if (process.env.NHENTAI_USE_ORIGIN === 'true') return await axios.get(url);
+  const jar = new CookieJar();
+  jar.setCookie(process.env.NHENTAI_COOKIE || '', 'https://nhentai.net/');
 
-const client = axios.create({
-  httpAgent: new HttpCookieAgent({ cookies: { jar } }),
-  httpsAgent: new HttpsCookieAgent({ cookies: { jar } }),
-});
-
-export async function simulateNHentaiRequest(url: string) {
+  const client = axios.create({
+    httpAgent: new HttpCookieAgent({ cookies: { jar } }),
+    httpsAgent: new HttpsCookieAgent({ cookies: { jar } }),
+  });
   return await client.get(url, {
     headers: {
       'User-Agent': process.env.NHENTAI_USER_AGENT ?? 'Mika3K/1.0.0',

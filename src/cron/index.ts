@@ -1,17 +1,14 @@
 import { cacheCommonData, checkSchaleDB } from './checkSchaleDB.js';
 import { claimDaily } from './claimDaily.js';
-import { keepAliveNHentaiCookie } from './keepAliveNHentaiCookie.js';
 
 async function initFunctions(): Promise<void> {
-  // Cache SchaleDB
-  await cacheCommonData();
+  await cacheCommonData(); // Cache common data
 }
 
 function initCronJobs(): void {
-  // Check SchaleDB
-  checkSchaleDB.start();
-  claimDaily.start();
-  keepAliveNHentaiCookie.start();
+  checkSchaleDB.start(); // Check SchaleDB every 1 hour
+  claimDaily.start(); // Claim HoYoLAB daily everyday at 00:00 UTC+8
+  // keepAliveNHentaiCookie.start(); // Currently not working
 }
 
 export default async function init(): Promise<void> {

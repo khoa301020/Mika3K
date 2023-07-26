@@ -39,10 +39,7 @@ export class HoYoLABRedeem {
     await interaction.deferReply({ ephemeral: true });
     const userId = interaction.user.id;
     const parsedCookie = parseCookies(cookie);
-    if (
-      !(parsedCookie.cookie_token && parsedCookie.account_id) ||
-      !(parsedCookie.cookie_token_v2 && parsedCookie.account_id_v2)
-    )
+    if (!parsedCookie.cookie_token_v2 || !parsedCookie.account_id_v2)
       return editOrReplyThenDelete(interaction, '❌ Cookie invalid.');
 
     const uids: Array<string> = selectedUIDs.split(',').map((uid) => uid.trim());

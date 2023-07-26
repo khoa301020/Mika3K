@@ -23,8 +23,11 @@ export const hoyolabApi = {
     };
 
     return await HoYoLAB.findOneAndUpdate(
-      { userId, 'hoyoUsers.remark': remark },
-      { userId, hoyoUsers: [hoyoUser] },
+      { userId },
+      {
+        userId,
+        $addToSet: { hoyoUsers: hoyoUser },
+      },
       { new: true, upsert: true },
     );
   },

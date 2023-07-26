@@ -19,7 +19,7 @@ import {
 import { CommonConstants } from '../../constants/index.js';
 import { editOrReplyThenDelete, randomArray, splitToChunks } from '../../helpers/helper.js';
 import { ListQuoteEmbed } from '../../providers/embeds/commonEmbed.js';
-import { QuoteCommandPagination, QuoteSlashPagination } from '../../providers/paginations/quotePagination.js';
+import { commonPagination } from '../../providers/pagination.js';
 import {
   createQuote,
   deleteQuote,
@@ -112,7 +112,7 @@ class QuoteCommand {
       return { embeds: [embed] };
     });
 
-    const pagination = QuoteCommandPagination(command, pages);
+    const pagination = commonPagination(command, pages, CommonConstants.PAGINATION_TYPE.BUTTON, false);
     return await pagination.send();
   }
 
@@ -137,7 +137,7 @@ class QuoteCommand {
       return { embeds: [embed] };
     });
 
-    const pagination = QuoteCommandPagination(command, pages);
+    const pagination = commonPagination(command, pages, CommonConstants.PAGINATION_TYPE.BUTTON, false);
     return await pagination.send();
   }
 
@@ -308,7 +308,7 @@ class QuoteSlash {
       return { embeds: [embed] };
     });
 
-    const pagination = QuoteSlashPagination(interaction, pages);
+    const pagination = commonPagination(interaction, pages, CommonConstants.PAGINATION_TYPE.BUTTON, false);
     return await pagination.send();
   }
 
@@ -335,7 +335,7 @@ class QuoteSlash {
       return { embeds: [embed] };
     });
 
-    const pagination = QuoteSlashPagination(interaction, pages);
+    const pagination = commonPagination(interaction, pages, CommonConstants.PAGINATION_TYPE.BUTTON, false);
     return await pagination.send();
   }
 

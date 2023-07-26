@@ -9,7 +9,7 @@ import {
   MessageFlags,
 } from 'discord.js';
 import { ButtonComponent, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
-import { MALConstants } from '../../constants/index.js';
+import { CommonConstants, MALConstants } from '../../constants/index.js';
 import { createChart, editOrReplyThenDelete, sortArray, splitToChunks } from '../../helpers/helper.js';
 import {
   MAL_GenresEmbed,
@@ -17,8 +17,9 @@ import {
   MAL_MangaEmbed,
   MAL_MangaStatisticsEmbed,
 } from '../../providers/embeds/malEmbed.js';
-import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../../providers/paginations/malPagination.js';
+import { commonPagination } from '../../providers/pagination.js';
 import { mangaApi } from '../../services/mal.js';
+import { TPaginationType } from '../../types/common.js';
 import type { IGenre, IManga, IMangaStats } from '../../types/mal';
 
 const mangaCharactersBtn = new ButtonBuilder()
@@ -48,14 +49,14 @@ export class MAL_Manga {
     })
     display: Boolean,
     @SlashChoice({ name: 'Button navigation', value: 'button' })
-    @SlashChoice({ name: 'Select menu', value: 'select-menu' })
+    @SlashChoice({ name: 'Select menu', value: 'menu' })
     @SlashOption({
       description: 'Navigation type',
       name: 'navigation',
       required: true,
       type: ApplicationCommandOptionType.String,
     })
-    navigation: String,
+    navigation: TPaginationType,
     @SlashOption({
       description: 'Query to search',
       name: 'query',
@@ -189,10 +190,7 @@ export class MAL_Manga {
         return { embeds: [embed], components: [mangaRow] };
       });
 
-      const pagination =
-        navigation === 'button'
-          ? MAL_ButtonPagination(interaction, pages, !!display)
-          : MAL_SelectMenuPagination(interaction, pages, !!display, names);
+      const pagination = commonPagination(interaction, pages, navigation, !display, names);
 
       await pagination.send();
     } catch (err: any) {
@@ -240,7 +238,7 @@ export class MAL_Manga {
         return { embeds: [embed], ephemeral: !display };
       });
 
-      const pagination = MAL_ButtonPagination(interaction, pages, !!display);
+      const pagination = commonPagination(interaction, pages, CommonConstants.PAGINATION_TYPE.BUTTON, !display);
 
       await pagination.send();
     } catch (err: any) {
@@ -273,7 +271,13 @@ export class MAL_Manga {
         };
       });
 
-      const pagination = MAL_SelectMenuPagination(interaction, pages, !isEphemeral!, names);
+      const pagination = commonPagination(
+        interaction,
+        pages,
+        CommonConstants.PAGINATION_TYPE.MENU,
+        isEphemeral!,
+        names,
+      );
 
       await pagination.send();
     } catch (err: any) {

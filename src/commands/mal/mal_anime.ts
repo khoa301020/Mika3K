@@ -20,8 +20,9 @@ import {
   MAL_AnimeThemeEmbed,
   MAL_GenresEmbed,
 } from '../../providers/embeds/malEmbed.js';
-import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../../providers/paginations/malPagination.js';
+import { commonPagination } from '../../providers/pagination.js';
 import { animeApi } from '../../services/mal.js';
+import { TPaginationType } from '../../types/common.js';
 import type {
   IAnime,
   IAnimeCharacter,
@@ -90,14 +91,14 @@ export class MAL_Anime {
     })
     display: Boolean,
     @SlashChoice({ name: 'Button navigation', value: 'button' })
-    @SlashChoice({ name: 'Select menu', value: 'select-menu' })
+    @SlashChoice({ name: 'Select menu', value: 'menu' })
     @SlashOption({
       description: 'Navigation type',
       name: 'navigation',
       required: true,
       type: ApplicationCommandOptionType.String,
     })
-    navigation: String,
+    navigation: TPaginationType,
     @SlashOption({
       description: 'Query to search',
       name: 'query',
@@ -203,6 +204,7 @@ export class MAL_Anime {
     end_date: String,
     interaction: CommandInteraction,
   ): Promise<void> {
+    await interaction.deferReply({ ephemeral: !display });
     sfw === undefined && (sfw = true);
 
     let request = Object.assign(
@@ -231,10 +233,7 @@ export class MAL_Anime {
         return;
       }
 
-      let names: string[] = [];
-
       const pages = res.data.data.map((anime: IAnime, index: number) => {
-        names.push(anime.title.length > 100 ? `${anime.title.slice(0, 95)}...` : anime.title);
         const embed = MAL_AnimeEmbed(anime, interaction.user, index + 1, res.data.data.length);
         const row = animeRow;
 
@@ -243,11 +242,11 @@ export class MAL_Anime {
           components: [row(!anime.approved, anime.episodes > 1)],
         };
       });
+      const names: string[] = res.data.data.map((anime: IAnime) =>
+        anime.title.length > 100 ? `${anime.title.slice(0, 95)}...` : anime.title,
+      );
 
-      const pagination =
-        navigation === 'button'
-          ? MAL_ButtonPagination(interaction, pages, !!display)
-          : MAL_SelectMenuPagination(interaction, pages, !!display, names);
+      const pagination = commonPagination(interaction, pages, navigation, !display, names);
 
       await pagination.send();
     } catch (err: any) {
@@ -276,6 +275,7 @@ export class MAL_Anime {
     filter: String,
     interaction: CommandInteraction,
   ): Promise<void> {
+    await interaction.deferReply({ ephemeral: !display });
     const queryString = filter ? `filter=${filter}` : '';
 
     try {
@@ -295,7 +295,7 @@ export class MAL_Anime {
         return { embeds: [embed] };
       });
 
-      const pagination = MAL_ButtonPagination(interaction, pages, !!display);
+      const pagination = commonPagination(interaction, pages, CommonConstants.PAGINATION_TYPE.BUTTON, !display);
 
       await pagination.send();
     } catch (err: any) {
@@ -306,8 +306,9 @@ export class MAL_Anime {
 
   @ButtonComponent({ id: 'animeCharacters' })
   async charactersBtnComponent(interaction: ButtonInteraction): Promise<void> {
-    const mal_id = interaction.message.embeds[0].data.title?.match(MALConstants.REGEX_GET_ID)![1];
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
+    await interaction.deferReply({ ephemeral: isEphemeral });
+    const mal_id = interaction.message.embeds[0].data.title?.match(MALConstants.REGEX_GET_ID)![1];
 
     try {
       const res = await animeApi.characters(mal_id!);
@@ -328,7 +329,13 @@ export class MAL_Anime {
         };
       });
 
-      const pagination = MAL_SelectMenuPagination(interaction, pages, !isEphemeral!, names);
+      const pagination = commonPagination(
+        interaction,
+        pages,
+        CommonConstants.PAGINATION_TYPE.MENU,
+        isEphemeral!,
+        names,
+      );
 
       await pagination.send();
     } catch (err: any) {
@@ -362,7 +369,13 @@ export class MAL_Anime {
         };
       });
 
-      const pagination = MAL_SelectMenuPagination(interaction, pages, !isEphemeral!, titles);
+      const pagination = commonPagination(
+        interaction,
+        pages,
+        CommonConstants.PAGINATION_TYPE.MENU,
+        isEphemeral!,
+        titles,
+      );
 
       await pagination.send();
     } catch (err: any) {
@@ -373,8 +386,9 @@ export class MAL_Anime {
 
   @ButtonComponent({ id: 'animeThemes' })
   async themesBtnComponent(interaction: ButtonInteraction): Promise<void> {
-    const mal_id = interaction.message.embeds[0].data.title?.match(MALConstants.REGEX_GET_ID)![1];
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
+    await interaction.deferReply({ ephemeral: isEphemeral });
+    const mal_id = interaction.message.embeds[0].data.title?.match(MALConstants.REGEX_GET_ID)![1];
 
     try {
       const res = await animeApi.themes(mal_id!);
@@ -396,8 +410,9 @@ export class MAL_Anime {
 
   @ButtonComponent({ id: 'animeStaff' })
   async staffBtnComponent(interaction: ButtonInteraction): Promise<void> {
-    const mal_id = interaction.message.embeds[0].data.title?.match(MALConstants.REGEX_GET_ID)![1];
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
+    await interaction.deferReply({ ephemeral: isEphemeral });
+    const mal_id = interaction.message.embeds[0].data.title?.match(MALConstants.REGEX_GET_ID)![1];
 
     try {
       const res = await animeApi.staff(mal_id!);
@@ -417,7 +432,13 @@ export class MAL_Anime {
         };
       });
 
-      const pagination = MAL_SelectMenuPagination(interaction, pages, !isEphemeral!, names);
+      const pagination = commonPagination(
+        interaction,
+        pages,
+        CommonConstants.PAGINATION_TYPE.MENU,
+        isEphemeral!,
+        names,
+      );
 
       await pagination.send();
     } catch (err: any) {

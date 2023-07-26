@@ -4,8 +4,9 @@ import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { MALConstants } from '../../constants/mal.js';
 import { editOrReplyThenDelete } from '../../helpers/helper.js';
 import { MAL_CharacterEmbed } from '../../providers/embeds/malEmbed.js';
-import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../../providers/paginations/malPagination.js';
+import { commonPagination } from '../../providers/pagination.js';
 import { characterApi } from '../../services/mal.js';
+import { TPaginationType } from '../../types/common.js';
 import type { ICharacter } from '../../types/mal';
 
 @Discord()
@@ -23,14 +24,14 @@ export class MAL_Character {
     })
     display: Boolean,
     @SlashChoice({ name: 'Button navigation', value: 'button' })
-    @SlashChoice({ name: 'Select menu', value: 'select-menu' })
+    @SlashChoice({ name: 'Select menu', value: 'menu' })
     @SlashOption({
       description: 'Navigation type',
       name: 'navigation',
       required: true,
       type: ApplicationCommandOptionType.String,
     })
-    navigation: String,
+    navigation: TPaginationType,
     @SlashOption({
       description: 'Query to search',
       name: 'query',
@@ -77,10 +78,7 @@ export class MAL_Character {
         return { embeds: [embed], name: character.name, ephemeral: !display };
       });
 
-      const pagination =
-        navigation === 'button'
-          ? MAL_ButtonPagination(interaction, pages, !!display)
-          : MAL_SelectMenuPagination(interaction, pages, !!display, names);
+      const pagination = commonPagination(interaction, pages, navigation, !display, names);
 
       await pagination.send();
     } catch (err: any) {

@@ -258,3 +258,5 @@ export const currentTime = (timestamp: Date = new Date()) =>
   new Date(timestamp).toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' });
 
 export const formatter = new Intl.RelativeTimeFormat(`en`, { style: `narrow` });
+
+export const timeout = async (ms: number) => await new Promise((resolve) => setTimeout(resolve, 1000));

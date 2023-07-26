@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { CronJob } from 'cron';
 import { HoYoLABConstants } from '../constants/hoyolab.js';
+import { timeout } from '../helpers/helper.js';
 import { bot } from '../main.js';
 import HoYoLAB from '../models/HoYoLAB.js';
 import { IHoYoLAB, IRedeemResultAccount } from '../types/hoyolab';
@@ -110,7 +111,7 @@ export const claimDaily = new CronJob('0 0 16 * * *', async () => {
           message: symbol,
         });
 
-        await new Promise((resolve) => setTimeout(resolve, 3333));
+        await timeout(3333);
       }
     }
 

@@ -18,12 +18,10 @@ import {
   Slash,
   SlashOption,
 } from 'discordx';
+import { CommonConstants } from '../../constants/common.js';
 import { editOrReplyThenDelete } from '../../helpers/helper.js';
 import { SauceNAOResultEmbed } from '../../providers/embeds/saucenaoEmbed.js';
-import {
-  SauceNAO_CommandPagination,
-  SauceNAO_SlashPagination,
-} from '../../providers/paginations/saucenaoPagination.js';
+import { commonPagination } from '../../providers/pagination.js';
 import { saucenao } from '../../services/saucenao.js';
 import {
   ISaucenaoSearchRequest,
@@ -86,7 +84,7 @@ class SauceNAO {
       return { embeds: [embed] };
     });
 
-    const pagination = SauceNAO_CommandPagination(command, pages);
+    const pagination = commonPagination(command, pages, CommonConstants.PAGINATION_TYPE.BUTTON, false);
     return await pagination.send();
   }
 
@@ -158,7 +156,7 @@ class SauceNAO {
       return { embeds: [embed] };
     });
 
-    const pagination = SauceNAO_SlashPagination(interaction, pages, isPublic);
+    const pagination = commonPagination(interaction, pages, CommonConstants.PAGINATION_TYPE.MENU, !isPublic);
     return await pagination.send();
   }
 
@@ -212,7 +210,7 @@ class SauceNAO {
       return { embeds: [embed] };
     });
 
-    const pagination = SauceNAO_SlashPagination(interaction, pages, true);
+    const pagination = commonPagination(interaction, pages, CommonConstants.PAGINATION_TYPE.MENU, false);
     return await pagination.send();
   }
 }

@@ -3,10 +3,16 @@ import { INHentaiQueryKey, INHentaiQuerySort } from '../types/nhentai';
 export class NHentaiConstants {
   /* NHentai constants */
   // public static readonly NHENTAI_BASE_API = 'https://nh.modules.my.id';
-  public static readonly NHENTAI_BASE_API = 'http://129.150.63.211:3002';
-  // random from 1 to 300000
-  public static readonly NHENTAI_KEEP_COOKIE_ALIVE_ENDPOINT = 'https://nhentai.net/api/gallery/1';
   public static readonly NHENTAI_BASE_URL = 'https://nhentai.net';
+  public static readonly NHENTAI_BASE_API = 'http://129.150.63.211:3002';
+  public static readonly NHENTAI_KEEP_COOKIE_ALIVE_ENDPOINT = 'https://nhentai.net/api/gallery/1';
+  public static readonly NHENTAI_SEARCH_ENDPOINT = (query: string) =>
+    `${this.NHENTAI_BASE_API}/api/galleries/search?query=${query}`;
+  public static readonly NHENTAI_GALLERY_ENDPOINT = (galleryId: number | string) =>
+    `${this.NHENTAI_BASE_API}/api/gallery/${galleryId}`;
+  public static readonly NHENTAI_RANDOM_ENDPOINT = `${this.NHENTAI_BASE_API}/api/gallery/random`;
+  public static readonly NHENTAI_RELATED_ENDPOINT = (galleryId: number | string) =>
+    `${this.NHENTAI_BASE_API}/api/gallery/${galleryId}/related`;
   public static readonly NHENTAI_LOGO = 'https://archive.org/download/nhentai-logo-3/nhentai-logo-3.jpg';
   public static readonly EXT_MAP: { [key: string]: string } = {
     j: 'jpg',

@@ -19,18 +19,18 @@ import { simulateNHentaiRequest } from '../../services/nhentai.js';
 class CheckNHentaiCode {
   @SlashGroup('nhentai')
   @Slash({ description: 'Check NHentai nuke code', name: 'check' })
-  async checkCode(
+  async checkCodeSlash(
     @SlashOption({
       description: 'NHentai code',
       name: 'code',
       required: true,
       type: ApplicationCommandOptionType.Integer,
     })
-    code: String,
+    code: string,
     interaction: CommandInteraction,
   ): Promise<void | Message<boolean>> {
     await interaction.deferReply({ ephemeral: !(interaction.channel as TextChannel)?.nsfw ?? true });
-    const res = await simulateNHentaiRequest(`${NHentaiConstants.NHENTAI_BASE_API}/api/gallery/${code}`);
+    const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_GALLERY_ENDPOINT(code));
     if (!res.data) return await interaction.editReply({ content: 'Code not found' });
     const embed = NHentaiEmbed(res.data, interaction.user);
     return await interaction.editReply({ embeds: [embed] });
@@ -51,7 +51,7 @@ class CheckNHentaiCode {
         return await editOrReplyThenDelete(command.message, {
           content: 'This command can only be used in NSFW channel',
         });
-      const res = await simulateNHentaiRequest(`${NHentaiConstants.NHENTAI_BASE_API}/api/gallery/${code}`);
+      const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_GALLERY_ENDPOINT(code));
       if (!res.data) return await editOrReplyThenDelete(command.message, { content: 'Code not found' });
       const embed = NHentaiEmbed(res.data, command.message.author);
       return await command.message.reply({ embeds: [embed] });

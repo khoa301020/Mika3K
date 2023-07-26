@@ -1,7 +1,7 @@
 export interface INHentaiList {
   result: INHentai[];
-  num_pages: number;
-  per_page: number;
+  num_pages?: number;
+  per_page?: number;
 }
 
 export interface INHentai {

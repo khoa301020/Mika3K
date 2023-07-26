@@ -11,8 +11,9 @@ import qs from 'qs';
 import { CommonConstants, MALConstants } from '../../constants/index.js';
 import { codeChallenge, createChart, datetimeConverter, editOrReplyThenDelete } from '../../helpers/helper.js';
 import { MAL_UserAnimeEmbed, MAL_UserEmbed, MAL_UserMangaEmbed } from '../../providers/embeds/malEmbed.js';
-import { MAL_ButtonPagination, MAL_SelectMenuPagination } from '../../providers/paginations/malPagination.js';
+import { commonPagination } from '../../providers/pagination.js';
 import { authApi, userApi } from '../../services/mal.js';
+import { TPaginationType } from '../../types/common.js';
 import { IUser, IUserAnime, IUserManga } from '../../types/mal.js';
 
 @Discord()
@@ -144,14 +145,14 @@ export class MAL_User {
     })
     display: boolean,
     @SlashChoice({ name: 'Button navigation', value: 'button' })
-    @SlashChoice({ name: 'Select menu', value: 'select-menu' })
+    @SlashChoice({ name: 'Select menu', value: 'menu' })
     @SlashOption({
       description: 'Navigation type',
       name: 'navigation',
       required: true,
       type: ApplicationCommandOptionType.String,
     })
-    navigation: string,
+    navigation: TPaginationType,
     @SlashChoice(...MALConstants.MY_ANIME_SEARCH_STATUS)
     @SlashOption({
       description: 'Select status',
@@ -200,10 +201,7 @@ export class MAL_User {
         };
       });
 
-      const pagination =
-        navigation === 'button'
-          ? MAL_ButtonPagination(interaction, pages, !!display)
-          : MAL_SelectMenuPagination(interaction, pages, !!display, names);
+      const pagination = commonPagination(interaction, pages, navigation, !display, names);
 
       await pagination.send();
     } catch (err: any) {
@@ -222,14 +220,14 @@ export class MAL_User {
     })
     display: boolean,
     @SlashChoice({ name: 'Button navigation', value: 'button' })
-    @SlashChoice({ name: 'Select menu', value: 'select-menu' })
+    @SlashChoice({ name: 'Select menu', value: 'menu' })
     @SlashOption({
       description: 'Navigation type',
       name: 'navigation',
       required: true,
       type: ApplicationCommandOptionType.String,
     })
-    navigation: string,
+    navigation: TPaginationType,
     @SlashChoice(...MALConstants.MY_MANGA_SEARCH_STATUS)
     @SlashOption({
       description: 'Select status',
@@ -278,10 +276,7 @@ export class MAL_User {
         };
       });
 
-      const pagination =
-        navigation === 'button'
-          ? MAL_ButtonPagination(interaction, pages, !!display)
-          : MAL_SelectMenuPagination(interaction, pages, !!display, names);
+      const pagination = commonPagination(interaction, pages, navigation, !display, names);
 
       await pagination.send();
     } catch (err: any) {

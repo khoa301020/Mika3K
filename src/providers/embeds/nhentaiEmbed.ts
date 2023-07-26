@@ -21,8 +21,11 @@ export const NHentaiEmbed = (nhentai: INHentai, author: User, page?: number, tot
 
   const tags = nhentai.tags.filter((tag: Tag) => tag.type === 'tag').map((tag: Tag) => `${tag.name} (${tag.count})`);
 
-  const pagination =
-    page && total ? ` - Page ${nhentai.current_search_page}/${nhentai.total_search_page} (${page}/${total})` : '';
+  const searchPagination =
+    nhentai.current_search_page && nhentai.total_search_page
+      ? ` - Page ${nhentai.current_search_page}/${nhentai.total_search_page}`
+      : '';
+  const itemPagination = page && total ? ` (${page}/${total})` : '';
 
   return new EmbedBuilder()
     .setColor(0x0099ff)
@@ -57,7 +60,7 @@ export const NHentaiEmbed = (nhentai: INHentai, author: User, page?: number, tot
     .setImage(NHentaiConstants.NHENTAI_COVER(nhentai.media_id, nhentai.images.cover.t))
     .setTimestamp()
     .setFooter({
-      text: `NHentai${pagination}`,
+      text: `NHentai${searchPagination}${itemPagination}`,
       iconURL: NHentaiConstants.NHENTAI_LOGO,
     });
 };

@@ -21,7 +21,7 @@ import {
   BA_StudentStatsEmbed,
   BA_StudentWeaponEmbed,
 } from '../../providers/embeds/bluearchiveEmbed.js';
-import { BA_Pagination } from '../../providers/paginations/bluearchivePagination.js';
+import { commonPagination } from '../../providers/pagination.js';
 import { getData } from '../../services/bluearchive.js';
 import { IFurniture } from '../../types/bluearchive/furniture.js';
 import {
@@ -293,7 +293,7 @@ export class BlueArchiveInfo {
           }),
       );
       const names = students.map((student: IStudent) => student.Name);
-      const pagination = BA_Pagination(interaction, pages, navigation, names, isPublic);
+      const pagination = commonPagination(interaction, pages, navigation, !isPublic, names);
       return await pagination.send();
     } catch (err: any) {
       console.log(err);

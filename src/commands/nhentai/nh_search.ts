@@ -3,7 +3,7 @@ import { Discord, SimpleCommand, SimpleCommandMessage, Slash, SlashChoice, Slash
 import { NHentaiConstants } from '../../constants/index.js';
 import { editOrReplyThenDelete } from '../../helpers/helper.js';
 import { NHentaiEmbed } from '../../providers/embeds/nhentaiEmbed.js';
-import { NHentai_Pagination } from '../../providers/paginations/nhentaiPagination.js';
+import { commonPagination } from '../../providers/pagination.js';
 import { queryBuilder, simulateNHentaiRequest } from '../../services/nhentai.js';
 import { INHentai, INHentaiQueryParam, INHentaiQuerySort } from '../../types/nhentai.js';
 
@@ -12,7 +12,7 @@ import { INHentai, INHentaiQueryParam, INHentaiQuerySort } from '../../types/nhe
 class SearchNHentai {
   @SlashGroup('nhentai')
   @Slash({ description: 'Search NHentai', name: 'search' })
-  async checkCode(
+  async searchNHentaiSlash(
     @SlashOption({
       description: 'Keyword',
       name: 'keyword',
@@ -98,13 +98,9 @@ class SearchNHentai {
       category: category?.toString().split('|'),
     };
 
-    const queryString = keyword + queryBuilder(query);
+    const queryString = `${(keyword + queryBuilder(query)).trim()}&sort=${sort}&pages=${page}`;
 
-    const res = await simulateNHentaiRequest(
-      `${
-        NHentaiConstants.NHENTAI_BASE_API
-      }/api/galleries/search?query=${queryString.trim()}&sort=${sort}&pages=${page}`,
-    );
+    const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
 
     console.log(res.config.url);
     if (!res.data || !res.data.result) return await interaction.editReply({ content: 'No result found' });
@@ -118,7 +114,7 @@ class SearchNHentai {
       };
     });
     const titles = list.map((book: INHentai) => book.title.pretty);
-    const pagination = NHentai_Pagination(interaction, pages, 'button', titles, interaction.ephemeral ?? false);
+    const pagination = commonPagination(interaction, pages, 'button', interaction.ephemeral ?? false, titles);
 
     return await pagination.send();
   }
@@ -134,9 +130,9 @@ class SearchNHentai {
     if (!command.argString) [query, sort, page] = ['+', 'popular', '1'];
     else [query, sort, page] = command.argString.split('|').map((e) => e.trim());
 
-    const res = await simulateNHentaiRequest(
-      `${NHentaiConstants.NHENTAI_BASE_API}/api/galleries/search?query=${query}&sort=${sort}&pages=${page}`,
-    );
+    const queryString = `${query === '' ? '+' : query}&sort=${sort}&pages=${page}`;
+
+    const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
     console.log(res.config.url);
     if (!res.data || !res.data.result) {
       console.log(res.data);
@@ -152,7 +148,7 @@ class SearchNHentai {
       };
     });
     const titles = list.map((book: INHentai) => book.title.pretty);
-    const pagination = NHentai_Pagination(command, pages, 'button', titles, false);
+    const pagination = commonPagination(command, pages, 'button', false, titles);
 
     return await pagination.send();
   }

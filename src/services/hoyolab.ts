@@ -1,6 +1,7 @@
 import axios from 'axios';
 import qs from 'qs';
 import { HoYoLABConstants } from '../constants/hoyolab.js';
+import { timeout } from '../helpers/helper.js';
 import HoYoLAB from '../models/HoYoLAB.js';
 import { IHoYoLAB, IHoYoLABGameAccount, IHoYoLABUser, IRedeemResult, THoyoGame } from '../types/hoyolab.js';
 
@@ -66,7 +67,7 @@ export const hoyolabApi = {
           message: res.data.message,
         });
 
-        await new Promise((resolve) => setTimeout(resolve, 5555));
+        await timeout(5555);
       }
     }
 

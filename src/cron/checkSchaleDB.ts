@@ -2,6 +2,7 @@ import axios from 'axios';
 import { CronJob } from 'cron';
 import { EmbedBuilder, TextChannel } from 'discord.js';
 import { BlueArchiveConstants } from '../constants/bluearchive.js';
+import { currentTime } from '../helpers/helper.js';
 import { bot, cache } from '../main.js';
 import NotifyChannel from '../models/NotifyChannel.js';
 import { fetchData } from '../services/bluearchive.js';
@@ -51,7 +52,7 @@ export const checkSchaleDB = new CronJob('0 0 * * * *', async () => {
     Promise.all(promises)
       .then(() => {
         // Skip send notification if this is the first time SchaleDB is cached
-        if (cache.has('init')) return;
+        if (cache.take('init')) return;
 
         const newData: { [key: string]: number | undefined } = {
           students: cache.get('BA_StudentCount'),
@@ -70,28 +71,24 @@ export const checkSchaleDB = new CronJob('0 0 * * * *', async () => {
         const notifyChannels = NotifyChannel.find({ notifyType: 'Blue Archive' });
 
         const embed = new EmbedBuilder()
-          .setTitle(
-            `[${new Date(data.commit.commit.author.date).toLocaleString('en-GB', {
-              timeZone: 'Asia/Ho_Chi_Minh',
-            })}] SchaleDB updated`,
-          )
+          .setTitle(`[${currentTime(data.commit.commit.author.date)}] SchaleDB updated`)
           .setURL(data.commit.html_url)
           .setColor('#00ff00')
-          .setDescription(
-            `
-          ・ **Students**: ${newData.students} ${getChanges(currentData.students!, newData.students!)}\n\
-          ・ **Currencies**: ${newData.currencies} ${getChanges(currentData.currencies!, newData.currencies!)}\n\
-          ・ **Enemies**: ${newData.enemies} ${getChanges(currentData.enemies!, newData.enemies!)}\n\
-          ・ **Equipment**: ${newData.equipment} ${getChanges(currentData.equipment!, newData.equipment!)}\n\
-          ・ **Furnitures**: ${newData.furnitures} ${getChanges(currentData.furnitures!, newData.furnitures!)}\n\
-          ・ **Items**: ${newData.items} ${getChanges(currentData.items!, newData.items!)}\n\
-          ・ **Raids**: ${newData.raids} ${getChanges(currentData.raids!, newData.raids!)}\n\
-          ・ **Raid Seasons**: ${newData.raidSeasons} ${getChanges(currentData.raidSeasons!, newData.raidSeasons!)}\n\
-          ・ **Time Attacks**: ${newData.timeAttacks} ${getChanges(currentData.timeAttacks!, newData.timeAttacks!)}\n\
-          ・ **World Raids**: ${newData.worldRaids} ${getChanges(currentData.worldRaids!, newData.worldRaids!)}\n\
-          ・ **Summons**: ${newData.summons} ${getChanges(currentData.summons!, newData.summons!)}
-          `,
-          )
+          .setDescription(data.commit.commit.message)
+          .addFields({
+            name: 'Changes',
+            value: `\`\`\`・ Students: ${newData.students} ${getChanges(currentData.students!, newData.students!)}
+・ Currencies: ${newData.currencies} ${getChanges(currentData.currencies!, newData.currencies!)}
+・ Enemies: ${newData.enemies} ${getChanges(currentData.enemies!, newData.enemies!)}
+・ Equipment: ${newData.equipment} ${getChanges(currentData.equipment!, newData.equipment!)}
+・ Furnitures: ${newData.furnitures} ${getChanges(currentData.furnitures!, newData.furnitures!)}
+・ Items: ${newData.items} ${getChanges(currentData.items!, newData.items!)}
+・ Raids: ${newData.raids} ${getChanges(currentData.raids!, newData.raids!)}
+・ Raid Seasons: ${newData.raidSeasons} ${getChanges(currentData.raidSeasons!, newData.raidSeasons!)}
+・ Time Attacks: ${newData.timeAttacks} ${getChanges(currentData.timeAttacks!, newData.timeAttacks!)}
+・ World Raids: ${newData.worldRaids} ${getChanges(currentData.worldRaids!, newData.worldRaids!)}
+・ Summons: ${newData.summons} ${getChanges(currentData.summons!, newData.summons!)}\`\`\``.trim(),
+          })
           .setTimestamp()
           .setFooter({
             text: 'SchaleDB',
@@ -108,12 +105,7 @@ export const checkSchaleDB = new CronJob('0 0 * * * *', async () => {
       })
       .finally(() => {
         // Clear init cache
-        if (cache.has('init')) cache.del('init');
-        console.log(
-          `[${new Date().toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' })}] SchaleDB updated to [${
-            data.commit.sha
-          }]`,
-        );
+        console.log(`[${currentTime()}] SchaleDB updated to [${data.commit.sha}]`);
       });
   }
 });

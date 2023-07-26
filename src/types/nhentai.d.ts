@@ -1,42 +1,65 @@
+export interface INHentaiList {
+  result: INHentai[];
+  num_pages: number;
+  per_page: number;
+}
+
 export interface INHentai {
-  id: number;
+  id: ID;
+  media_id: string;
   title: Title;
   images: Images;
-  media_id: string;
   scanlator: string;
-  upload_date: string;
+  upload_date: number;
   tags: Tag[];
   num_pages: number;
   num_favorites: number;
-  upload_time: string;
-  hits: number;
-  _id: number;
-  lang: string;
-  related: any[];
+  current_search_page?: number;
+  total_search_page?: number;
 }
 
+export type ID = number | string;
+
 export interface Images {
-  cover: Cover;
   pages: Cover[];
+  cover: Cover;
   thumbnail: Cover;
 }
 
 export interface Cover {
-  t: string;
+  t: T;
   w: number;
   h: number;
 }
 
+export type T = 'j' | 'p';
+
 export interface Tag {
   id: number;
-  url: string;
+  type: Type;
   name: string;
-  type: string;
+  url: string;
   count: number;
 }
 
+export type Type = 'tag' | 'language' | 'artist' | 'category' | 'parody' | 'character' | 'group';
+
 export interface Title {
   english: string;
-  japanese: string;
+  japanese: null | string;
   pretty: string;
+}
+
+export type INHentaiQueryKey = Type;
+
+export type INHentaiQuerySort = 'popular' | 'popular-today' | 'popular-week' | 'popular-month' | 'recent';
+
+export interface INHentaiQueryParam {
+  tag?: Array<string>;
+  artist?: Array<string>;
+  character?: Array<string>;
+  category?: Array<string>;
+  parody?: Array<string>;
+  group?: Array<string>;
+  language?: Array<string>;
 }

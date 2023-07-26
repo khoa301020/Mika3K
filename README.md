@@ -26,15 +26,14 @@ My multi-purposes self-use discord bot created with [Discordx](https://discordx.
 |   Feature  | Context menu |    Message command   |   Slash command   |
 |:-----------:|:------------:|:--------------------:|:-----------------:|
 | Check nuke  |      :x:     | `$nh` / `$nhentai` |  `/nhentai check` |
+| Search nuke  |      :x:     | `$nhs` / `$nhsearch` |  `/nhentai search` |
 
 ## HoYoLAB
 
 |     Feature    | Context menu | Message command |       Slash command       |
 |:---------------:|:------------:|:---------------:|:-------------------------:|
 | Save token      |      :x:     |       :x:       |   `/hoyolab save-token`   |
-| List account    |      :x:     |       :x:       | `/hoyolab list-account`   |
-| Select account  |      :x:     |       :x:       | `/hoyolab select-account` |
-| Redeem giftcode |      :x:     |       :x:       | `/hoyolab redeem-giftcode` |
+| Auto claim daily |      :x:     |       :x:       |            :x:           |
 
 ## Quote
 
@@ -66,7 +65,7 @@ My multi-purposes self-use discord bot created with [Discordx](https://discordx.
 
 # Resources
 
-- NHentai API by [paukuman/Nhentai-Modules](https://github.com/paukuman/Nhentai-Modules)
+<!-- - NHentai API by [paukuman/Nhentai-Modules](https://github.com/paukuman/Nhentai-Modules) -->
 - MyAnimeList API by [Jikan](https://github.com/jikan-me/jikan), typings from [@shineiichijo/marika](https://github.com/LuckyYam/Marika)
 - Blue Archive data from [@lonqie/SchaleDB](https://github.com/lonqie/SchaleDB)
 
@@ -77,9 +76,12 @@ My multi-purposes self-use discord bot created with [Discordx](https://discordx.
 - [Axios](https://axios-http.com)
 - [MathJS](https://github.com/josdejong/mathjs)
 - [Mongoose](https://mongoosejs.com)
+- [Node-cron](https://github.com/kelektiv/node-cron)
 - [Node-cache](https://github.com/node-cache/node-cache)
+- [Tough-Cookie](https://github.com/salesforce/tough-cookie)
 - [Html-Entities](https://github.com/mdevils/html-entities)
 - [Quickchart-JS](https://github.com/typpo/quickchart-js)
+- [HTML-Cookie-Agent](https://github.com/3846masa/http-cookie-agent)
 
 # Documentations
 

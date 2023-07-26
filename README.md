@@ -27,6 +27,8 @@ My multi-purposes self-use discord bot created with [Discordx](https://discordx.
 |:-----------:|:------------:|:--------------------:|:-----------------:|
 | Check nuke  |      :x:     | `$nh` / `$nhentai` |  `/nhentai check` |
 | Search nuke  |      :x:     | `$nhs` / `$nhsearch` |  `/nhentai search` |
+| Random nuke  |      :x:     | `$nhrd` / `$nhrandom` |  `/nhentai random` |
+| Relate nuke  |      :x:     | `$nhr` / `$nhrelated` |  `/nhentai related` |
 
 ## HoYoLAB
 

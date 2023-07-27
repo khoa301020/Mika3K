@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { CronJob } from 'cron';
 import { EmbedBuilder, TextChannel } from 'discord.js';
-import { BlueArchiveConstants } from '../constants/bluearchive.js';
+import { BlueArchiveConstants } from '../constants/index.js';
 import { currentTime } from '../helpers/helper.js';
 import { bot, cache } from '../main.js';
 import NotifyChannel from '../models/NotifyChannel.js';
@@ -28,7 +28,7 @@ export const checkSchaleDB = new CronJob('0 0 * * * *', async () => {
   const { data } = await axios.get('https://api.github.com/repos/lonqie/SchaleDB/branches/main');
 
   if (cache.get('SchaleDB') !== data.commit.sha) {
-    // Cache SchaleDB
+    // Cache SchaleDB SHA to track changes
     cache.set('SchaleDB', data.commit.sha);
 
     // Cache data

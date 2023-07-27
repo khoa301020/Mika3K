@@ -1,6 +1,6 @@
 import { TPaginationType } from '../types/common';
 
-export class CommonConstants {
+export default class CommonConstants {
   public static readonly USER_AGENT =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36';
   public static readonly DEFAULT_EMBED_COLOR = 0x0099ff;

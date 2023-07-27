@@ -1,4 +1,4 @@
-export class SauceNAOConstants {
+export default class SauceNAOConstants {
   public static readonly REGEX_DOMAIN_NAME_ONLY = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/;
 
   /* SauceNAO */

@@ -18,7 +18,7 @@ import {
   Slash,
   SlashOption,
 } from 'discordx';
-import { CommonConstants } from '../../constants/common.js';
+import { CommonConstants } from '../../constants/index.js';
 import { editOrReplyThenDelete } from '../../helpers/helper.js';
 import { SauceNAOResultEmbed } from '../../providers/embeds/saucenaoEmbed.js';
 import { commonPagination } from '../../providers/pagination.js';

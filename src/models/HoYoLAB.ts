@@ -31,7 +31,11 @@ const HoYoLABSchema = new mongoose.Schema({
               },
               game_biz: String,
               region: String,
-              game_uid: String,
+              game_uid: {
+                type: String,
+                require: true,
+                unique: true,
+              },
               nickname: String,
               level: Number,
               is_chosen: Boolean,
@@ -43,6 +47,11 @@ const HoYoLABSchema = new mongoose.Schema({
         },
       },
     ],
+  },
+  receiveNotify: {
+    type: Boolean,
+    require: false,
+    default: true,
   },
 });
 

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { CronJob } from 'cron';
-import { HoYoLABConstants } from '../constants/hoyolab.js';
+import { HoYoLABConstants } from '../constants/index.js';
 import { timeout } from '../helpers/helper.js';
 import { bot } from '../main.js';
 import HoYoLAB from '../models/HoYoLAB.js';

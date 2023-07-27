@@ -7,6 +7,7 @@ import {
   Message,
   MessageContextMenuCommandInteraction,
   MessagePayload,
+  StringSelectMenuInteraction,
 } from 'discord.js';
 import QuickChart from 'quickchart-js';
 import { BaseUserConfig, table } from 'table';
@@ -239,7 +240,12 @@ export const ttc = async (fn: Function, ...args: any[]) => {
 export const invertObject = (obj: Object) => Object.entries(obj).map(([key, value]) => [value, key]);
 
 export async function editOrReplyThenDelete(
-  interaction: CommandInteraction | ButtonInteraction | MessageContextMenuCommandInteraction | Message,
+  interaction:
+    | CommandInteraction
+    | ButtonInteraction
+    | MessageContextMenuCommandInteraction
+    | StringSelectMenuInteraction
+    | Message,
   options: string | InteractionReplyOptions | MessagePayload = '',
   timeout = 5000,
 ): Promise<void> {

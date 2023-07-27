@@ -1,5 +1,5 @@
 import { CronJob } from 'cron';
-import { NHentaiConstants } from '../constants/nhentai.js';
+import { NHentaiConstants } from '../constants/index.js';
 import { currentTime } from '../helpers/helper.js';
 import { simulateNHentaiRequest } from '../services/nhentai.js';
 

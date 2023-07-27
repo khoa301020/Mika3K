@@ -1,7 +1,7 @@
 import type { CommandInteraction } from 'discord.js';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
-import { MALConstants } from '../../constants/mal.js';
+import { MALConstants } from '../../constants/index.js';
 import { editOrReplyThenDelete } from '../../helpers/helper.js';
 import { MAL_CharacterEmbed } from '../../providers/embeds/malEmbed.js';
 import { commonPagination } from '../../providers/pagination.js';

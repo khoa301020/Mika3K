@@ -1,4 +1,4 @@
-export class MALConstants {
+export default class MALConstants {
   public static readonly REGEX_GET_ID = /\[(\d+)\]/;
   public static readonly COLOR_BY_APPROVED = (isApproved: Boolean) => (isApproved ? 0x00ff00 : 0x484a48);
   public static readonly MAL_API = 'https://api.myanimelist.net/v2';

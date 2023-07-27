@@ -1,8 +1,8 @@
-import { ApplicationCommandOptionType, CommandInteraction, Message } from 'discord.js';
+import { ApplicationCommandOptionType, CommandInteraction } from 'discord.js';
 import { Client, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { setTimeout } from 'timers/promises';
-import { HoYoLABConstants } from '../../constants/hoyolab.js';
-import { editOrReplyThenDelete, parseCookies } from '../../helpers/helper.js';
+import { HoYoLABConstants } from '../../constants/index.js';
+import { editOrReplyThenDelete } from '../../helpers/helper.js';
 import { HoYoLABRedeemResultEmbed } from '../../providers/embeds/hoyolabEmbed.js';
 import { hoyolabApi } from '../../services/hoyolab.js';
 import { IHoYoLAB, IRedeemResult, THoyoGame } from '../../types/hoyolab.js';
@@ -10,46 +10,6 @@ import { IHoYoLAB, IRedeemResult, THoyoGame } from '../../types/hoyolab.js';
 @Discord()
 @SlashGroup({ name: 'hoyolab', description: 'HoYoLAB commands' })
 export class HoYoLABRedeem {
-  @SlashGroup('hoyolab')
-  @Slash({ description: 'Save Mihoyo cookie token', name: 'save-token' })
-  async saveToken(
-    @SlashOption({
-      description: 'Remark for this HoYoLAB user',
-      name: 'remark',
-      required: true,
-      type: ApplicationCommandOptionType.String,
-    })
-    remark: string,
-    @SlashOption({
-      description: 'Cookie token string',
-      name: 'cookie',
-      required: true,
-      type: ApplicationCommandOptionType.String,
-    })
-    cookie: string,
-    @SlashOption({
-      description: 'Game accounts UIDs (separated by comma)',
-      name: 'uids',
-      required: true,
-      type: ApplicationCommandOptionType.String,
-    })
-    selectedUIDs: string,
-    interaction: CommandInteraction,
-  ): Promise<Message<boolean> | void> {
-    await interaction.deferReply({ ephemeral: true });
-    const userId = interaction.user.id;
-    const parsedCookie = parseCookies(cookie);
-    if (!parsedCookie.cookie_token_v2 || !parsedCookie.account_id_v2)
-      return editOrReplyThenDelete(interaction, '❌ Cookie invalid.');
-
-    const uids: Array<string> = selectedUIDs.split(',').map((uid) => uid.trim());
-
-    const user = await hoyolabApi.saveCredentials(userId, remark, cookie, uids);
-    if (!user) return editOrReplyThenDelete(interaction, '❌ User invalid.');
-
-    return interaction.editReply('✅ Save token succeed.');
-  }
-
   @SlashGroup('hoyolab')
   @Slash({ description: 'Redeem giftcode', name: 'redeem-giftcode' })
   async redeemGiftcode(

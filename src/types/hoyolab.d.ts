@@ -2,6 +2,7 @@ export interface IHoYoLAB {
   userId: string;
   expiresAt?: Date;
   hoyoUsers: Array<IHoYoLABUser>;
+  receiveNotify?: boolean;
 }
 
 export interface IHoYoLABUser {

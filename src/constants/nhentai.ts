@@ -1,6 +1,6 @@
 import { INHentaiQueryKey, INHentaiQuerySort } from '../types/nhentai';
 
-export class NHentaiConstants {
+export default class NHentaiConstants {
   /* NHentai constants */
   // public static readonly NHENTAI_BASE_API = 'https://nh.modules.my.id';
   public static readonly NHENTAI_BASE_URL = 'https://nhentai.net';

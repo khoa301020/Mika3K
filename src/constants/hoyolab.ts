@@ -9,7 +9,7 @@ const getEventBaseUrl = (game: THoyoGame) => {
   return '';
 };
 
-export class HoYoLABConstants {
+export default class HoYoLABConstants {
   public static readonly HOYOLAB_GET_USER =
     'https://api-account-os.hoyoverse.com/account/binding/api/getUserGameRolesByCookieToken';
   public static readonly REDEEM_TARGET = {

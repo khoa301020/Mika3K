@@ -1,35 +1,46 @@
 import axios from 'axios';
 import qs from 'qs';
-import { HoYoLABConstants } from '../constants/hoyolab.js';
+import { HoYoLABConstants } from '../constants/index.js';
 import { timeout } from '../helpers/helper.js';
 import HoYoLAB from '../models/HoYoLAB.js';
 import { IHoYoLAB, IHoYoLABGameAccount, IHoYoLABUser, IRedeemResult, THoyoGame } from '../types/hoyolab.js';
 
 export const hoyolabApi = {
-  saveCredentials: async (userId: string, remark: string, cookie: any, uids: Array<string>) => {
-    const res = await axios.get(HoYoLABConstants.HOYOLAB_GET_USER, { headers: { cookie } });
+  saveCredentials: async (
+    userId: string,
+    remark: string,
+    cookie: string,
+    selectedAccounts: Array<IHoYoLABGameAccount>,
+  ): Promise<any> => {
     const hoyoUser: IHoYoLABUser = {
       remark,
       cookieString: cookie,
-      gameAccounts: res.data.data.list
-        .filter((account: IHoYoLABGameAccount) => uids.includes(account.game_uid))
-        .map((account: IHoYoLABGameAccount) =>
-          Object.assign(account, {
-            game: Object.entries(HoYoLABConstants.REDEEM_TARGET).find(
-              ([key, value]) => value.prefix === account.game_biz.split('_')[0],
-            )?.[0] as THoyoGame,
-          }),
-        ),
+      gameAccounts: selectedAccounts.map((account: IHoYoLABGameAccount) =>
+        Object.assign(account, {
+          game: Object.entries(HoYoLABConstants.REDEEM_TARGET).find(
+            ([key, value]) => value.prefix === account.game_biz.split('_')[0],
+          )?.[0] as THoyoGame,
+        }),
+      ),
     };
 
-    return await HoYoLAB.findOneAndUpdate(
-      { userId },
-      {
-        userId,
-        $addToSet: { hoyoUsers: hoyoUser },
-      },
-      { new: true, upsert: true },
-    );
+    return await HoYoLAB.findOne({ userId }).then(async (user) => {
+      if (!user) {
+        return await HoYoLAB.create({
+          userId,
+          hoyoUsers: [hoyoUser],
+        });
+      } else {
+        const hoyoUsers = user.hoyoUsers;
+        const index = hoyoUsers.findIndex((user) => user.remark === remark);
+        if (index === -1) {
+          hoyoUsers.push(hoyoUser);
+        } else {
+          hoyoUsers[index] = hoyoUser;
+        }
+        return await HoYoLAB.findOneAndUpdate({ userId }, { hoyoUsers });
+      }
+    });
   },
   getUserInfo: async (userId: string): Promise<any> => await HoYoLAB.findOne({ userId }),
   selectAccount: async (userId: string, target: THoyoGame, account: IHoYoLABGameAccount): Promise<any> =>

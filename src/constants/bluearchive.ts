@@ -1,6 +1,6 @@
-import { CommonConstants } from './common.js';
+import CommonConstants from './common.js';
 
-export class BlueArchiveConstants {
+export default class BlueArchiveConstants {
   public static readonly SCHALE_GG_BASE = 'https://schale.gg';
   public static readonly SCHALE_STUDENT_URL = this.SCHALE_GG_BASE + '/?chara=';
   public static readonly SCHALE_RAID_URL = this.SCHALE_GG_BASE + '/?raid=';

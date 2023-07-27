@@ -1,6 +1,6 @@
 import { APIEmbedField, EmbedBuilder } from 'discord.js';
 import { Client } from 'discordx';
-import { HoYoLABConstants } from '../../constants/hoyolab.js';
+import { HoYoLABConstants } from '../../constants/index.js';
 import { IHoYoLABGameAccount, IRedeemResult } from '../../types/hoyolab.js';
 
 export const HoYoLABAccountEmbed = (

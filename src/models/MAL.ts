@@ -3,19 +3,19 @@ import mongoose from 'mongoose';
 const MALSchema = new mongoose.Schema({
   userId: {
     type: String,
-    require: true,
+    required: true,
   },
   codeChallenge: {
     type: String,
-    require: false,
+    required: false,
   },
   accessToken: {
     type: String,
-    require: false,
+    required: false,
   },
   refreshToken: {
     type: String,
-    require: false,
+    required: false,
   },
   expiresAt: {
     type: Date,
@@ -24,17 +24,17 @@ const MALSchema = new mongoose.Schema({
   },
   followingAnimes: {
     type: [String],
-    require: false,
+    required: false,
     default: [],
   },
   followingMangas: {
     type: [String],
-    require: false,
+    required: false,
     default: [],
   },
   lastCheckIncoming: {
     type: Date,
-    require: true,
+    required: true,
     default: Date.now,
   },
 });

@@ -17,7 +17,6 @@ import {
   SlashOption,
 } from 'discordx';
 import { CommonConstants } from '../../constants/index.js';
-import { editOrReplyThenDelete, randomArray, splitToChunks } from '../../helpers/helper.js';
 import { ListQuoteEmbed } from '../../providers/embeds/commonEmbed.js';
 import { commonPagination } from '../../providers/pagination.js';
 import {
@@ -31,6 +30,7 @@ import {
   publishQuote,
 } from '../../services/quote.js';
 import { IUserQuote } from '../../types/quote.js';
+import { editOrReplyThenDelete, randomArray, splitToChunks } from '../../utils/index.js';
 
 @Discord()
 @SlashGroup({ description: 'Quote commands', name: 'quote' })

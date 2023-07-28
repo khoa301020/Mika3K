@@ -1,9 +1,9 @@
 import axios, { AxiosResponse } from 'axios';
 import qs from 'qs';
 import { MALConstants } from '../constants/index.js';
-import { expireDate } from '../helpers/helper.js';
 import MAL from '../models/MAL.js';
 import { IAnimeEpisode } from '../types/mal.js';
+import { expireDate } from '../utils/index.js';
 
 export const animeApi = {
   search: (queryString: string) => axios.get(`${MALConstants.JIKAN_ANIME_SEARCH}?${queryString}`),

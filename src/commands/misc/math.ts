@@ -1,7 +1,7 @@
 import { ApplicationCommandOptionType, CommandInteraction, InteractionResponse, Message } from 'discord.js';
 import { Client, Discord, SimpleCommand, SimpleCommandMessage, Slash, SlashOption } from 'discordx';
-import { editOrReplyThenDelete } from '../../helpers/helper.js';
 import { MathEmbed } from '../../providers/embeds/commonEmbed.js';
+import { editOrReplyThenDelete } from '../../utils/index.js';
 
 @Discord()
 class MathCalculation {

@@ -10,11 +10,11 @@ import {
   SlashOption,
 } from 'discordx';
 import { CommonConstants, NHentaiConstants } from '../../constants/index.js';
-import { editOrReplyThenDelete } from '../../helpers/helper.js';
 import { NHentaiEmbed } from '../../providers/embeds/nhentaiEmbed.js';
 import { commonPagination } from '../../providers/pagination.js';
 import { simulateNHentaiRequest } from '../../services/nhentai.js';
 import { INHentai } from '../../types/nhentai.js';
+import { editOrReplyThenDelete } from '../../utils/index.js';
 
 @SlashGroup({ description: 'NHentai commands', name: 'nhentai' })
 @Discord()

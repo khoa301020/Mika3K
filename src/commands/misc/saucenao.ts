@@ -19,7 +19,6 @@ import {
   SlashOption,
 } from 'discordx';
 import { CommonConstants } from '../../constants/index.js';
-import { editOrReplyThenDelete } from '../../helpers/helper.js';
 import { SauceNAOResultEmbed } from '../../providers/embeds/saucenaoEmbed.js';
 import { commonPagination } from '../../providers/pagination.js';
 import { saucenao } from '../../services/saucenao.js';
@@ -28,6 +27,7 @@ import {
   ISaucenaoSearchResponse,
   ISaucenaoSearchResponseResult,
 } from '../../types/saucenao.js';
+import { editOrReplyThenDelete } from '../../utils/index.js';
 
 @Discord()
 class SauceNAO {
@@ -156,7 +156,7 @@ class SauceNAO {
       return { embeds: [embed] };
     });
 
-    const pagination = commonPagination(interaction, pages, CommonConstants.PAGINATION_TYPE.MENU, !isPublic);
+    const pagination = commonPagination(interaction, pages, CommonConstants.PAGINATION_TYPE.BUTTON, !isPublic);
     return await pagination.send();
   }
 
@@ -210,7 +210,7 @@ class SauceNAO {
       return { embeds: [embed] };
     });
 
-    const pagination = commonPagination(interaction, pages, CommonConstants.PAGINATION_TYPE.MENU, false);
+    const pagination = commonPagination(interaction, pages, CommonConstants.PAGINATION_TYPE.BUTTON, false);
     return await pagination.send();
   }
 }

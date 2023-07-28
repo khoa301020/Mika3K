@@ -12,10 +12,10 @@ import {
 } from 'discord.js';
 import { Discord, SelectMenuComponent, Slash, SlashGroup, SlashOption } from 'discordx';
 import { HoYoLABConstants } from '../../constants/index.js';
-import { editOrReplyThenDelete, parseCookies } from '../../helpers/helper.js';
 import { cache } from '../../main.js';
 import { hoyolabApi } from '../../services/hoyolab.js';
 import { IHoYoLABGameAccount, THoyoGame } from '../../types/hoyolab.js';
+import { editOrReplyThenDelete, parseCookies } from '../../utils/index.js';
 
 @Discord()
 @SlashGroup({ name: 'hoyolab', description: 'HoYoLAB commands' })
@@ -106,7 +106,7 @@ export class HoYoLABSaveToken {
     if (!user) return editOrReplyThenDelete(interaction, '❌ User invalid.');
 
     return await interaction.followUp({
-      content: `✅ Saved ${user.hoyoUsers.length} HoYoLAB users for ${user.userId}`,
+      content: `✅ Saved user remark **${cachedHoyoInfo.remark}** for ${user.userId}`,
       ephemeral: true,
     });
   }

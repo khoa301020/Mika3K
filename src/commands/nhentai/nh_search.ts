@@ -1,11 +1,11 @@
 import { ApplicationCommandOptionType, CommandInteraction, TextChannel } from 'discord.js';
 import { Discord, SimpleCommand, SimpleCommandMessage, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { NHentaiConstants } from '../../constants/index.js';
-import { editOrReplyThenDelete } from '../../helpers/helper.js';
 import { NHentaiEmbed } from '../../providers/embeds/nhentaiEmbed.js';
 import { commonPagination } from '../../providers/pagination.js';
 import { queryBuilder, simulateNHentaiRequest } from '../../services/nhentai.js';
 import { INHentai, INHentaiQueryParam, INHentaiQuerySort } from '../../types/nhentai.js';
+import { editOrReplyThenDelete } from '../../utils/index.js';
 
 @SlashGroup({ description: 'NHentai commands', name: 'nhentai' })
 @Discord()

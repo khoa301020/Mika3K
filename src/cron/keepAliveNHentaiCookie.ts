@@ -1,7 +1,7 @@
 import { CronJob } from 'cron';
 import { NHentaiConstants } from '../constants/index.js';
-import { currentTime } from '../helpers/helper.js';
 import { simulateNHentaiRequest } from '../services/nhentai.js';
+import { currentTime } from '../utils/index.js';
 
 export const keepAliveNHentaiCookie = new CronJob(
   '0 0,20,40 * * * *',

@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import init from '../cron/index.js';
-import { isObjectEmpty } from '../helpers/helper.js';
 import { cache } from '../main.js';
 import { ICurrency } from '../types/bluearchive/currency';
 import { IEnemy } from '../types/bluearchive/enemy';
@@ -22,6 +21,7 @@ import {
 } from '../types/bluearchive/raid';
 import { IStudent, Skill, Summon } from '../types/bluearchive/student';
 import { ISummon } from '../types/bluearchive/summon';
+import { isObjectEmpty } from '../utils/index.js';
 
 const StudentSchema = new mongoose.Schema<IStudent>(
   {

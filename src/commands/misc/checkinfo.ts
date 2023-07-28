@@ -17,8 +17,8 @@ import {
   Slash,
   SlashOption,
 } from 'discordx';
-import { editOrReplyThenDelete } from '../../helpers/helper.js';
 import { UserInfoEmbed } from '../../providers/embeds/commonEmbed.js';
+import { editOrReplyThenDelete } from '../../utils/index.js';
 
 @Discord()
 class CheckInfo {

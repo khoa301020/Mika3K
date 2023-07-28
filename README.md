@@ -34,7 +34,9 @@ My multi-purposes self-use discord bot created with [Discordx](https://discordx.
 
 |     Feature    | Context menu | Message command |       Slash command       |
 |:---------------:|:------------:|:---------------:|:-------------------------:|
-| Save token      |      :x:     |       :x:       |   `/hoyolab save-token`   |
+|     My info     |      :x:     |       :x:       |      `/hoyolab info`      |
+| Save token (with account selection)      |      :x:     |       :x:       |   `/hoyolab save-token`   |
+| Redeem giftcode  |      :x:     |       :x:       | `/hoyolab redeem-giftcode` |
 | Auto claim daily |      :x:     |       :x:       |            :x:           |
 
 ## Quote

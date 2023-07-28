@@ -1,8 +1,8 @@
 import type { User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { NHentaiConstants } from '../../constants/index.js';
-import { datetimeConverter, sortArray } from '../../helpers/helper.js';
 import { INHentai, Tag } from '../../types/nhentai.js';
+import { datetimeConverter, sortArray } from '../../utils/index.js';
 
 export const NHentaiEmbed = (nhentai: INHentai, author: User, page?: number, total?: number): EmbedBuilder => {
   sortArray.desc(nhentai.tags, 'count');

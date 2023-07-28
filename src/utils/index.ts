@@ -6,6 +6,7 @@ import {
   InteractionResponse,
   Message,
   MessageContextMenuCommandInteraction,
+  MessageFlags,
   MessagePayload,
   StringSelectMenuInteraction,
 } from 'discord.js';
@@ -253,6 +254,8 @@ export async function editOrReplyThenDelete(
   if (interaction instanceof Message) msg = await interaction.reply(options as string | MessagePayload);
   else if (interaction.deferred) msg = await interaction.editReply(options);
   else msg = await interaction.reply(options).then(async (res: InteractionResponse) => await res.fetch());
+
+  if (msg.flags.has(MessageFlags.Ephemeral)) return;
 
   if (msg.deletable)
     setTimeout(() => {

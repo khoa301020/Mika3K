@@ -124,7 +124,7 @@ export default class BlueArchiveConstants {
     1: 'Limited',
     2: 'Event',
   };
-  public static readonly STUDENT_MAX_LEVEL = 85;
+  public static readonly STUDENT_MAX_LEVEL = 87;
   public static readonly ARMOR_TYPES = ['LightArmor', 'HeavyArmor', 'Unarmed', 'ElasticArmor'];
   public static readonly BULLET_TYPES = ['Explosion', 'Mystic', 'Pierce'];
   public static readonly BULLET_COLOR: { [key: string]: number } = {

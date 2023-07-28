@@ -1,7 +1,6 @@
 import type { APIEmbedField, User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { CommonConstants, MALConstants } from '../../constants/index.js';
-import { datetimeConverter, replaceEmpties, tableConverter, timeDiff } from '../../helpers/helper.js';
 import {
   IAnime,
   IAnimeCharacter,
@@ -14,6 +13,7 @@ import {
   IUserAnime,
   IUserManga,
 } from '../../types/mal';
+import { datetimeConverter, replaceEmpties, tableConverter, timeDiff } from '../../utils/index.js';
 
 export const MAL_AnimeEmbed = (resAnime: IAnime, author: User, page?: number, total?: number): EmbedBuilder => {
   const anime = replaceEmpties(resAnime, 'N/A', 'name' as keyof Object, true);

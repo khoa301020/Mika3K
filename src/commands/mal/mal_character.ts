@@ -2,12 +2,12 @@ import type { CommandInteraction } from 'discord.js';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { MALConstants } from '../../constants/index.js';
-import { editOrReplyThenDelete } from '../../helpers/helper.js';
 import { MAL_CharacterEmbed } from '../../providers/embeds/malEmbed.js';
 import { commonPagination } from '../../providers/pagination.js';
 import { characterApi } from '../../services/mal.js';
 import { TPaginationType } from '../../types/common.js';
 import type { ICharacter } from '../../types/mal';
+import { editOrReplyThenDelete } from '../../utils/index.js';
 
 @Discord()
 @SlashGroup({ description: 'MyAnimeList commands', name: 'mal' })

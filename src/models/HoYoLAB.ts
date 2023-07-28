@@ -3,54 +3,74 @@ import mongoose from 'mongoose';
 const HoYoLABSchema = new mongoose.Schema({
   userId: {
     type: String,
-    require: true,
+    required: true,
   },
   expiresAt: {
     type: Date,
-    require: false,
+    required: false,
   },
   hoyoUsers: {
     type: [
       {
         remark: {
           type: String,
-          require: true,
+          required: false,
           unique: true,
         },
         cookieString: {
           type: String,
-          require: true,
+          required: true,
         },
         gameAccounts: {
           type: [
             {
               game: {
                 type: String,
-                require: false,
                 enum: ['genshin', 'hsr', 'hi3'],
               },
-              game_biz: String,
-              region: String,
+              game_biz: {
+                type: String,
+                required: true,
+              },
+              region: {
+                type: String,
+                required: true,
+              },
               game_uid: {
                 type: String,
-                require: true,
+                required: true,
                 unique: true,
               },
-              nickname: String,
-              level: Number,
-              is_chosen: Boolean,
-              region_name: String,
-              is_official: Boolean,
+              nickname: {
+                type: String,
+                required: true,
+              },
+              level: {
+                type: Number,
+                required: true,
+              },
+              is_chosen: {
+                type: Boolean,
+                required: true,
+              },
+              region_name: {
+                type: String,
+                required: true,
+              },
+              is_official: {
+                type: Boolean,
+                required: true,
+              },
             },
           ],
-          require: true,
+          required: true,
         },
       },
     ],
   },
   receiveNotify: {
     type: Boolean,
-    require: false,
+    required: false,
     default: true,
   },
 });

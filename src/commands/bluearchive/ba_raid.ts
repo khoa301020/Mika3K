@@ -1,9 +1,9 @@
 import { ApplicationCommandOptionType, CommandInteraction } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { BlueArchiveConstants } from '../../constants/index.js';
-import { editOrReplyThenDelete } from '../../helpers/helper.js';
 import { BA_RaidEmbed } from '../../providers/embeds/bluearchiveEmbed.js';
 import { getData } from '../../services/bluearchive.js';
+import { editOrReplyThenDelete } from '../../utils/index.js';
 
 @Discord()
 @SlashGroup({ name: 'buruaka', description: 'Blue Archive commands' })

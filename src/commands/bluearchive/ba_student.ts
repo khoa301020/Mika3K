@@ -12,7 +12,6 @@ import {
 import { ButtonComponent, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { FilterQuery } from 'mongoose';
 import { BlueArchiveConstants, CommonConstants, MALConstants } from '../../constants/index.js';
-import { editOrReplyThenDelete, isObjectEmpty, validateDayMonth } from '../../helpers/helper.js';
 import {
   BA_StudentEmbed,
   BA_StudentGearEmbed,
@@ -38,6 +37,7 @@ import {
   WeaponType,
 } from '../../types/bluearchive/student.js';
 import { TPaginationType } from '../../types/common.js';
+import { editOrReplyThenDelete, isObjectEmpty, validateDayMonth } from '../../utils/index.js';
 
 const studentMoreInfoBtn = () =>
   new ButtonBuilder().setLabel('👤 Profile').setStyle(ButtonStyle.Primary).setCustomId('studentProfile');

@@ -1,30 +1,25 @@
 import { APIEmbedField, EmbedBuilder } from 'discord.js';
 import { Client } from 'discordx';
-import { HoYoLABConstants } from '../../constants/index.js';
-import { IHoYoLABGameAccount, IRedeemResult } from '../../types/hoyolab.js';
+import { IHoYoLAB, IHoYoLABGameAccount, IRedeemResult } from '../../types/hoyolab';
 
-export const HoYoLABAccountEmbed = (
-  account: IHoYoLABGameAccount,
-  client: Client,
-  page: number,
-  total: number,
-): EmbedBuilder => {
-  return (
-    new EmbedBuilder()
-      .setColor(0x0099ff)
-      .setTitle(`[UID ${account.game_uid}] ${account.nickname}`)
-      // Game is the value in HoYoLABConstants.HOYOLAB_GAME_PREFIX if the key is the prefix of account.game_biz
-      .addFields({
-        name: 'Game',
-        value: Object.entries(HoYoLABConstants.REDEEM_TARGET).find(([, value]) =>
-          account.game_biz.startsWith(value.prefix),
-        )![1].name,
-      })
-      .addFields({ name: 'Region', value: `[${account.region}] ${account.region_name}` })
-      .addFields({ name: 'World rank', value: account.level.toString() })
-      .setTimestamp()
-      .setFooter({ text: `Xiaomi3K (${page}/${total})`, iconURL: client.user!.displayAvatarURL() })
-  );
+export const HoYoLABInfoEmbed = (user: IHoYoLAB, client: Client): EmbedBuilder => {
+  return new EmbedBuilder()
+    .setColor(0x0099ff)
+    .setTitle(`Your HoYoLAB info`)
+    .addFields(
+      ...user.hoyoUsers.map(
+        (account): APIEmbedField => ({
+          name: account.remark,
+          value: account.gameAccounts
+            .map((gameAccount: IHoYoLABGameAccount) => {
+              return `- [${gameAccount.game?.toUpperCase()}${gameAccount.game_uid}] ${gameAccount.nickname}`;
+            })
+            .join('\n'),
+        }),
+      ),
+    )
+    .setTimestamp()
+    .setFooter({ text: `Xiaomi3K`, iconURL: client.user!.displayAvatarURL() });
 };
 
 export const HoYoLABRedeemResultEmbed = (

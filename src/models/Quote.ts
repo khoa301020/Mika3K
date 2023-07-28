@@ -3,21 +3,21 @@ import mongoose from 'mongoose';
 const QuoteSchema = new mongoose.Schema({
   guild: {
     type: String,
-    require: true,
+    required: true,
   },
   user: {
     type: String,
-    require: true,
+    required: true,
   },
   quote: {
     type: {
       key: {
         type: String,
-        require: true,
+        required: true,
       },
       value: {
         type: String,
-        require: true,
+        required: true,
       },
     },
   },
@@ -27,7 +27,7 @@ const QuoteSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    require: true,
+    required: true,
   },
 });
 

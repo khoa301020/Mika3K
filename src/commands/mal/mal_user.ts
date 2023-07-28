@@ -9,12 +9,12 @@ import {
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import qs from 'qs';
 import { CommonConstants, MALConstants } from '../../constants/index.js';
-import { codeChallenge, createChart, datetimeConverter, editOrReplyThenDelete } from '../../helpers/helper.js';
 import { MAL_UserAnimeEmbed, MAL_UserEmbed, MAL_UserMangaEmbed } from '../../providers/embeds/malEmbed.js';
 import { commonPagination } from '../../providers/pagination.js';
 import { authApi, userApi } from '../../services/mal.js';
 import { TPaginationType } from '../../types/common.js';
 import { IUser, IUserAnime, IUserManga } from '../../types/mal.js';
+import { codeChallenge, createChart, datetimeConverter, editOrReplyThenDelete } from '../../utils/index.js';
 
 @Discord()
 @SlashGroup({ description: 'MyAnimeList commands', name: 'mal' })

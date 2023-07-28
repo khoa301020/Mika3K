@@ -10,7 +10,6 @@ import {
 } from 'discord.js';
 import { ButtonComponent, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { CommonConstants, MALConstants } from '../../constants/index.js';
-import { createChart, editOrReplyThenDelete, sortArray, splitToChunks } from '../../helpers/helper.js';
 import {
   MAL_AnimeCharacterEmbed,
   MAL_AnimeEmbed,
@@ -32,6 +31,7 @@ import type {
   IAnimeThemes,
   IGenre,
 } from '../../types/mal';
+import { createChart, editOrReplyThenDelete, sortArray, splitToChunks } from '../../utils/index.js';
 
 const animeCharactersBtn = (isDisable: boolean) =>
   new ButtonBuilder()

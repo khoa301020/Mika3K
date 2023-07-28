@@ -2,12 +2,12 @@ import axios from 'axios';
 import { CronJob } from 'cron';
 import { EmbedBuilder, TextChannel } from 'discord.js';
 import { BlueArchiveConstants } from '../constants/index.js';
-import { currentTime } from '../helpers/helper.js';
 import { bot, cache } from '../main.js';
 import NotifyChannel from '../models/NotifyChannel.js';
 import { fetchData } from '../services/bluearchive.js';
 import { ICommon } from '../types/bluearchive/common.js';
 import { ILocalization } from '../types/bluearchive/localization.js';
+import { currentTime } from '../utils/index.js';
 
 function getChanges(oldCount: number | undefined, newCount: number): string {
   if (!oldCount || oldCount === newCount) return '';

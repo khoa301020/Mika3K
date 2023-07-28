@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { CronJob } from 'cron';
 import { HoYoLABConstants } from '../constants/index.js';
-import { timeout } from '../helpers/helper.js';
 import { bot } from '../main.js';
 import HoYoLAB from '../models/HoYoLAB.js';
 import { IHoYoLAB, IRedeemResultAccount } from '../types/hoyolab';
+import { timeout } from '../utils/index.js';
 
 const cronName = 'HoYoLAB Daily login';
 

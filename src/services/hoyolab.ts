@@ -1,9 +1,9 @@
 import axios from 'axios';
 import qs from 'qs';
 import { HoYoLABConstants } from '../constants/index.js';
-import { timeout } from '../helpers/helper.js';
 import HoYoLAB from '../models/HoYoLAB.js';
 import { IHoYoLAB, IHoYoLABGameAccount, IHoYoLABUser, IRedeemResult, THoyoGame } from '../types/hoyolab.js';
+import { timeout } from '../utils/index.js';
 
 export const hoyolabApi = {
   saveCredentials: async (
@@ -18,7 +18,7 @@ export const hoyolabApi = {
       gameAccounts: selectedAccounts.map((account: IHoYoLABGameAccount) =>
         Object.assign(account, {
           game: Object.entries(HoYoLABConstants.REDEEM_TARGET).find(
-            ([key, value]) => value.prefix === account.game_biz.split('_')[0],
+            ([, value]) => value.prefix === account.game_biz.split('_')[0],
           )?.[0] as THoyoGame,
         }),
       ),
@@ -42,11 +42,9 @@ export const hoyolabApi = {
       }
     });
   },
-  getUserInfo: async (userId: string): Promise<any> => await HoYoLAB.findOne({ userId }),
-  selectAccount: async (userId: string, target: THoyoGame, account: IHoYoLABGameAccount): Promise<any> =>
-    await HoYoLAB.findOneAndUpdate({ userId }, { [`${target}Account`]: account }),
+  getUserInfo: async (userId: string): Promise<any> => await HoYoLAB.findOne({ userId }).lean(),
   redeemCode: async (user: IHoYoLAB, target: THoyoGame, code: string): Promise<any> => {
-    if (!user || !user.hoyoUsers || user.hoyoUsers.length === 0) return Promise.reject('User invalid.');
+    if (!user || !user.hoyoUsers || user.hoyoUsers.length === 0) throw '❌ Account data not found.';
     let result: Array<IRedeemResult> = [];
     for (const hoyoUser of user.hoyoUsers) {
       const redeemAccounts: Array<IHoYoLABGameAccount> = hoyoUser.gameAccounts.filter(
@@ -86,5 +84,16 @@ export const hoyolabApi = {
     }
 
     return result;
+  },
+  deleteAccount: async (userId: string, remark: string): Promise<any> => {
+    return await HoYoLAB.findOne({ userId }).then(async (user) => {
+      if (!user)
+        throw '❌ User not found. Please save the cookie first or use `/hoyolab info` to see info containing remarks.';
+      const hoyoUsers = user.hoyoUsers;
+      const index = hoyoUsers.findIndex((user) => user.remark === remark);
+      if (index === -1) throw '❌ Remark not found.';
+      hoyoUsers.splice(index, 1);
+      return await HoYoLAB.findOneAndUpdate({ userId }, { hoyoUsers });
+    });
   },
 };

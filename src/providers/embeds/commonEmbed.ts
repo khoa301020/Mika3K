@@ -2,8 +2,8 @@ import type { GuildMember, User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { Client } from 'discordx';
 import { CommonConstants } from '../../constants/index.js';
-import { datetimeConverter, tableConverter, timeDiff } from '../../helpers/helper.js';
 import { IUserQuote } from '../../types/quote.js';
+import { datetimeConverter, tableConverter, timeDiff } from '../../utils/index.js';
 
 export const UserInfoEmbed = (author: User, client: Client, user: GuildMember): EmbedBuilder => {
   return new EmbedBuilder()

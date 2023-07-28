@@ -10,7 +10,6 @@ import {
 } from 'discord.js';
 import { ButtonComponent, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { CommonConstants, MALConstants } from '../../constants/index.js';
-import { createChart, editOrReplyThenDelete, sortArray, splitToChunks } from '../../helpers/helper.js';
 import {
   MAL_GenresEmbed,
   MAL_MangaCharacterEmbed,
@@ -21,6 +20,7 @@ import { commonPagination } from '../../providers/pagination.js';
 import { mangaApi } from '../../services/mal.js';
 import { TPaginationType } from '../../types/common.js';
 import type { IGenre, IManga, IMangaStats } from '../../types/mal';
+import { createChart, editOrReplyThenDelete, sortArray, splitToChunks } from '../../utils/index.js';
 
 const mangaCharactersBtn = new ButtonBuilder()
   .setLabel('👤 Characters')

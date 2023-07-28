@@ -1,9 +1,9 @@
 import { Get, Router } from '@discordx/koa';
 import { Guild, GuildMember } from 'discord.js';
 import type { Context } from 'koa';
-import { datetimeConverter, expireDate } from '../helpers/helper.js';
 import { bot } from '../main.js';
 import { authApi } from '../services/mal.js';
+import { datetimeConverter, expireDate } from '../utils/index.js';
 
 @Router()
 export class MAL_API {

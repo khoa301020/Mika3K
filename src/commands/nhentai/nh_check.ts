@@ -78,7 +78,7 @@ class CheckNHentaiCode {
       if (results.length === 0) return await editOrReplyThenDelete(command.message, { content: '❌ No code found' });
       if (results.length === 1) {
         const embed = NHentaiEmbed(results[0], command.message.author);
-        return await command.message.edit({ embeds: [embed] });
+        return await command.message.reply({ embeds: [embed] });
       } else {
         const pages = results.map((book: INHentai, index: number) => {
           const embed = NHentaiEmbed(book, command.message.author, index + 1, results.length);

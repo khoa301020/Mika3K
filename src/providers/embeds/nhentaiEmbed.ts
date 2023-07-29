@@ -27,8 +27,12 @@ export const NHentaiEmbed = (nhentai: INHentai, author: User, page?: number, tot
       : '';
   const itemPagination = page && total ? ` (${page}/${total})` : '';
 
+  const color = nhentai.tags.find((tag: Tag) => NHentaiConstants.NHENTAI_DANGEROUS_TAGS.includes(tag.name))
+    ? NHentaiConstants.NHENTAI_EMBED_COLOR.DANGER
+    : NHentaiConstants.NHENTAI_EMBED_COLOR.DEFAULT;
+
   return new EmbedBuilder()
-    .setColor(0x0099ff)
+    .setColor(color)
     .setTitle(`[${nhentai.id}] ${nhentai.title.japanese ? nhentai.title.japanese : nhentai.title.pretty}`)
     .setURL(`${NHentaiConstants.NHENTAI_BASE_URL}/g/${nhentai.id}`)
     .setAuthor({

@@ -6,8 +6,9 @@ import { editOrReplyThenDelete } from '../../utils/index.js';
 @Discord()
 class MathCalculation {
   @SimpleCommand({ aliases: ['m', 'math'], description: 'Math calculate' })
-  mathCommand(command: SimpleCommandMessage): Promise<Message<boolean> | void> {
-    const content = command.message.content.split(' ').slice(1).join(' ').trim();
+  mathCommand(command: SimpleCommandMessage): Promise<Message<boolean> | void> | undefined {
+    const content = command.argString.trim();
+    if (!content) return;
 
     const result = eval(content);
 

@@ -36,4 +36,9 @@ export default class NHentaiConstants {
     'group',
     'language',
   ];
+  public static readonly NHENTAI_EMBED_COLOR = {
+    DEFAULT: 0x0099ff,
+    DANGER: 0xff0000,
+  };
+  public static readonly NHENTAI_DANGEROUS_TAGS = ['guro', 'netorare', 'yaoi'];
 }

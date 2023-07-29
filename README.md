@@ -25,7 +25,7 @@ My multi-purposes self-use discord bot created with [Discordx](https://discordx.
 
 |   Feature  | Context menu |    Message command   |   Slash command   |
 |:-----------:|:------------:|:--------------------:|:-----------------:|
-| Check nuke  |      :x:     | `$nh` / `$nhentai` |  `/nhentai check` |
+| Check nuke  |  :heavy_check_mark: | `$nh` / `$nhentai` |  `/nhentai check` |
 | Search nuke  |      :x:     | `$nhs` / `$nhsearch` |  `/nhentai search` |
 | Random nuke  |      :x:     | `$nhrd` / `$nhrandom` |  `/nhentai random` |
 | Relate nuke  |      :x:     | `$nhr` / `$nhrelated` |  `/nhentai related` |
@@ -37,6 +37,7 @@ My multi-purposes self-use discord bot created with [Discordx](https://discordx.
 |     My info     |      :x:     |       :x:       |      `/hoyolab info`      |
 | Save token (with account selection)      |      :x:     |       :x:       |   `/hoyolab save-token`   |
 | Redeem giftcode  |      :x:     |       :x:       | `/hoyolab redeem-giftcode` |
+| Delete remark user |      :x:     |       :x:       | `/hoyolab delete-remark` |
 | Auto claim daily |      :x:     |       :x:       |            :x:           |
 
 ## Quote

@@ -5,13 +5,21 @@ import { HttpCookieAgent, HttpsCookieAgent } from 'http-cookie-agent/http';
 import { CookieJar } from 'tough-cookie';
 
 export async function simulateNHentaiRequest(url: string): Promise<AxiosResponse> {
-  if (process.env.NHENTAI_USE_ORIGIN === 'true') return await axios.get(url);
+  if (process.env.NHENTAI_USE_ORIGIN === 'true')
+    return await axios.get(url, {
+      validateStatus(status) {
+        return (status >= 200 && status < 300) || status == 404;
+      },
+    });
   const jar = new CookieJar();
   jar.setCookie(process.env.NHENTAI_COOKIE || '', 'https://nhentai.net/');
 
   const client = axios.create({
     httpAgent: new HttpCookieAgent({ cookies: { jar } }),
     httpsAgent: new HttpsCookieAgent({ cookies: { jar } }),
+    validateStatus(status) {
+      return (status >= 200 && status < 300) || status == 404;
+    },
   });
   return await client.get(url, {
     headers: {

@@ -86,7 +86,7 @@ class FindRelatedNHentai {
         };
       });
       const titles = list.map((book: INHentai) => book.title.pretty);
-      const pagination = commonPagination(command, pages, 'button', false, titles);
+      const pagination = commonPagination(command, pages, CommonConstants.PAGINATION_TYPE.BUTTON, false, titles);
 
       return await pagination.send();
     } catch (err: any) {

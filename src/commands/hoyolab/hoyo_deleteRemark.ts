@@ -7,8 +7,8 @@ import { editOrReplyThenDelete } from '../../utils/index.js';
 @SlashGroup({ name: 'hoyolab', description: 'HoYoLAB commands' })
 export class HoYoLABDelete {
   @SlashGroup('hoyolab')
-  @Slash({ description: 'Delete HoYoLAB user remark', name: 'delete' })
-  async delete(
+  @Slash({ description: 'Delete HoYoLAB user remark', name: 'delete-remark' })
+  async deleteRemark(
     @SlashOption({
       description: 'Remarks of the account (use `/hoyolab info` to see info containing remarks)',
       name: 'remark',

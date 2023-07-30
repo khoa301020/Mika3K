@@ -3,14 +3,22 @@ import { INHentaiQueryKey, INHentaiQueryParam } from '../types/nhentai';
 
 import { HttpCookieAgent, HttpsCookieAgent } from 'http-cookie-agent/http';
 import { CookieJar } from 'tough-cookie';
+import { NHentaiConstants } from '../constants/index.js';
 
 export async function simulateNHentaiRequest(url: string): Promise<AxiosResponse> {
   if (process.env.NHENTAI_USE_ORIGIN === 'true')
-    return await axios.get(url, {
-      validateStatus(status) {
-        return (status >= 200 && status < 300) || status == 404;
+    return await axios.get(
+      url.replace(
+        NHentaiConstants.NHENTAI_BASE_API,
+        process.env.NHENTAI_ORIGIN_API ?? NHentaiConstants.NHENTAI_BASE_API,
+      ),
+      {
+        validateStatus(status) {
+          return (status >= 200 && status < 300) || status == 403 || status == 404;
+        },
       },
-    });
+    );
+
   const jar = new CookieJar();
   jar.setCookie(process.env.NHENTAI_COOKIE || '', 'https://nhentai.net/');
 
@@ -18,12 +26,14 @@ export async function simulateNHentaiRequest(url: string): Promise<AxiosResponse
     httpAgent: new HttpCookieAgent({ cookies: { jar } }),
     httpsAgent: new HttpsCookieAgent({ cookies: { jar } }),
     validateStatus(status) {
-      return (status >= 200 && status < 300) || status == 404;
+      return (status >= 200 && status < 300) || status == 403 || status == 404;
     },
   });
   return await client.get(url, {
     headers: {
-      'User-Agent': process.env.NHENTAI_USER_AGENT ?? 'Mika3K/1.0.0',
+      'User-Agent':
+        process.env.NHENTAI_USER_AGENT ??
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36 Edg/115.0.1901.188',
     },
   });
 }

@@ -4,7 +4,7 @@ export default class NHentaiConstants {
   /* NHentai constants */
   // public static readonly NHENTAI_BASE_API = 'https://nh.modules.my.id';
   public static readonly NHENTAI_BASE_URL = 'https://nhentai.net';
-  public static readonly NHENTAI_BASE_API = 'http://129.150.63.211:3002';
+  public static readonly NHENTAI_BASE_API = this.NHENTAI_BASE_URL;
   public static readonly NHENTAI_KEEP_COOKIE_ALIVE_ENDPOINT = 'https://nhentai.net/api/gallery/1';
   public static readonly NHENTAI_SEARCH_ENDPOINT = (query: string) =>
     `${this.NHENTAI_BASE_API}/api/galleries/search?query=${query}`;

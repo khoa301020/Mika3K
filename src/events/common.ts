@@ -13,9 +13,8 @@ export class CommonEvents {
    */
   @On({ event: 'messageCreate' })
   PingPong([message]: ArgsOf<'messageCreate'>, client: Client): void {
-    const latency = Date.now() - message.createdTimestamp;
     if (message.content === 'ping') {
-      message.channel.send(`pong! \nLatency: ${latency}ms.`);
+      message.channel.send(`pong! \nLatency: ${Date.now() - message.createdTimestamp}ms.`);
     }
   }
 

@@ -89,3 +89,28 @@ export const MathEmbed = (expression: string, result: string, client: Client): E
     .setTimestamp()
     .setFooter({ text: 'Xiaomi3K', iconURL: client.user!.displayAvatarURL() });
 };
+
+export const CurrencyExchangeEmbed = (
+  from: string,
+  to: string,
+  amount: number,
+  result: number,
+  client: Client,
+): EmbedBuilder => {
+  return new EmbedBuilder()
+    .setColor(0x0099ff)
+    .addFields(
+      {
+        name: 'From',
+        value: `\`\`\`${amount.toLocaleString()} ${from.toUpperCase()}\`\`\``,
+        inline: true,
+      },
+      {
+        name: 'To',
+        value: `\`\`\`${result.toLocaleString()} ${to.toUpperCase()}\`\`\``,
+        inline: true,
+      },
+    )
+    .setTimestamp()
+    .setFooter({ text: 'Xiaomi3K', iconURL: client.user!.displayAvatarURL() });
+};

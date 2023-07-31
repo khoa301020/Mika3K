@@ -30,4 +30,7 @@ export default class CommonConstants {
     BUTTON: 'button',
     MENU: 'menu',
   };
+  public static readonly CURRENCY_CONVERTER_API = (query: string) =>
+    `https://free.currconv.com/api/v7/convert?q=${query}&compact=ultra&apiKey=${process.env.CURRENCY_CONVERTER_API_KEY}`;
+  public static readonly CURRENCY_LIST_API = `https://free.currconv.com/api/v7/currencies?apiKey=${process.env.CURRENCY_CONVERTER_API_KEY}`;
 }

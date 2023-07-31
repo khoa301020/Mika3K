@@ -8,6 +8,7 @@ import NodeCache from 'node-cache';
 import { config } from 'dotenv';
 import mongoose from 'mongoose';
 config();
+export const botPrefix = process.env.BOT_PREFIX ?? '$';
 export const cache = new NodeCache();
 
 export const bot = new Client({
@@ -29,7 +30,7 @@ export const bot = new Client({
 
   // Configuration for @SimpleCommand
   simpleCommand: {
-    prefix: '$',
+    prefix: botPrefix,
   },
 });
 

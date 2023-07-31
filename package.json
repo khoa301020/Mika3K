@@ -25,7 +25,6 @@
     "html-entities": "^2.4.0",
     "http-cookie-agent": "^5.0.4",
     "koa": "^2.14.2",
-    "mathjs": "^11.9.1",
     "mongoose": "^7.4.1",
     "node-cache": "^5.1.2",
     "qs": "^6.11.2",

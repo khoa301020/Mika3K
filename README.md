@@ -2,6 +2,7 @@
 
 My multi-purposes self-use discord bot created with [Discordx](https://discordx.js.org/docs/discordx/getting-started).
 
+Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 # Commands
 
 ## MyAnimeList
@@ -79,7 +80,6 @@ My multi-purposes self-use discord bot created with [Discordx](https://discordx.
 - [QS](https://github.com/ljharb/qs)
 - [Table](https://github.com/gajus/table)
 - [Axios](https://axios-http.com)
-- [MathJS](https://github.com/josdejong/mathjs)
 - [Mongoose](https://mongoosejs.com)
 - [Node-cron](https://github.com/kelektiv/node-cron)
 - [Node-cache](https://github.com/node-cache/node-cache)

@@ -17,6 +17,7 @@ import {
   SlashOption,
 } from 'discordx';
 import { CommonConstants } from '../../constants/index.js';
+import { botPrefix } from '../../main.js';
 import { ListQuoteEmbed } from '../../providers/embeds/commonEmbed.js';
 import { commonPagination } from '../../providers/pagination.js';
 import {
@@ -35,7 +36,7 @@ import { editOrReplyThenDelete, randomArray, splitToChunks } from '../../utils/i
 @Discord()
 @SlashGroup({ description: 'Quote commands', name: 'quote' })
 class QuoteCommand {
-  @SimpleCommand({ aliases: ['$', 'createquote'], description: 'Create new quote', argSplitter: ' ' })
+  @SimpleCommand({ aliases: [botPrefix, 'createquote'], description: 'Create new quote', argSplitter: ' ' })
   async createQuoteCommand(
     @SimpleCommandOption({ name: 'command', type: SimpleCommandOptionType.String })
     cmd: string,
@@ -71,7 +72,7 @@ class QuoteCommand {
     return command.message.reply('✅ Quote added successfully.');
   }
 
-  @SimpleCommand({ aliases: ['$$', 'getquote'], description: 'Get quote', argSplitter: ' ' })
+  @SimpleCommand({ aliases: [botPrefix.repeat(2), 'getquote'], description: 'Get quote', argSplitter: ' ' })
   async getQuoteCommand(
     @SimpleCommandOption({ name: 'command', type: SimpleCommandOptionType.String })
     cmd: string,

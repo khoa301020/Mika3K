@@ -13,7 +13,7 @@ export class CommonEvents {
    */
   @On({ event: 'messageCreate' })
   PingPong([message]: ArgsOf<'messageCreate'>, client: Client): void {
-    if (message.content === 'ping') {
+    if (message.content.toLowerCase() === 'ping') {
       message.channel.send(`pong! \nLatency: ${Date.now() - message.createdTimestamp}ms.`);
     }
   }

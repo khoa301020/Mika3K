@@ -1,10 +1,10 @@
 import { ApplicationCommandOptionType, CommandInteraction, TextChannel } from 'discord.js';
 import { Discord, SimpleCommand, SimpleCommandMessage, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
-import { NHentaiConstants } from '../../constants/index.js';
-import { NHentaiEmbed } from '../../providers/embeds/nhentaiEmbed.js';
+import { CommonConstants, NHentaiConstants } from '../../constants/index.js';
+import { NHentaiListEmbed } from '../../providers/embeds/nhentaiEmbed.js';
 import { commonPagination } from '../../providers/pagination.js';
 import { queryBuilder, simulateNHentaiRequest } from '../../services/nhentai.js';
-import { INHentai, INHentaiQueryParam, INHentaiQuerySort } from '../../types/nhentai.js';
+import { INHentaiModulesResult, INHentaiQueryParam, INHentaiQuerySort } from '../../types/nhentai.js';
 import { editOrReplyThenDelete } from '../../utils/index.js';
 
 @SlashGroup({ description: 'NHentai commands', name: 'nhentai' })
@@ -98,23 +98,29 @@ class SearchNHentai {
       category: category?.toString().split('|'),
     };
 
-    const queryString = `${(keyword + queryBuilder(query)).trim()}&sort=${sort}&pages=${page}`;
+    const queryString = `${keyword.trim() + queryBuilder(query).trim()}&sort=${sort}&pages=${page}`;
 
     const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
 
     console.log(res.config.url);
-    if (!res.data || !res.data.result) return await interaction.editReply({ content: 'No result found' });
-    const list: Array<INHentai> = res.data.result;
-    const pages = list.map((book: INHentai, index: number) => {
+    if (!res.data || res.data.status !== 200) return await interaction.editReply({ content: '❌ No result found' });
+    const list: Array<INHentaiModulesResult> = res.data.data.result;
+    const pages = list.map((book: INHentaiModulesResult, index: number) => {
       book.total_search_page = res.data.num_pages;
       book.current_search_page = page;
-      const embed = NHentaiEmbed(book, interaction.user, index + 1, list.length);
+      const embed = NHentaiListEmbed(book, interaction.user, index + 1, list.length);
       return {
         embeds: [embed],
       };
     });
-    const titles = list.map((book: INHentai) => book.title.pretty);
-    const pagination = commonPagination(interaction, pages, 'button', interaction.ephemeral ?? false, titles);
+    const titles = list.map((book: INHentaiModulesResult) => book.title.pretty);
+    const pagination = commonPagination(
+      interaction,
+      pages,
+      CommonConstants.PAGINATION_TYPE.BUTTON,
+      interaction.ephemeral ?? false,
+      titles,
+    );
 
     return await pagination.send();
   }
@@ -123,31 +129,29 @@ class SearchNHentai {
   async searchNHentaiCommand(command: SimpleCommandMessage): Promise<any> {
     if (!(command.message.channel as TextChannel).nsfw)
       return await editOrReplyThenDelete(command.message, {
-        content: 'This command can only be used in NSFW channel',
+        content: '❌ This command can only be used in NSFW channel',
       });
 
     let query: string, sort: string, page: string;
     if (!command.argString) [query, sort, page] = ['+', 'popular', '1'];
     else [query, sort, page] = command.argString.split('|').map((e) => e.trim());
 
-    const queryString = `${query === '' ? '+' : query}&sort=${sort}&pages=${page}`;
+    const queryString = `${query.trim() === '' ? '+' : query.trim()}&sort=${sort}&pages=${page}`;
 
     const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
     console.log(res.config.url);
-    if (!res.data || !res.data.result) {
-      console.log(res.data);
-      return await editOrReplyThenDelete(command.message, 'No result found');
-    }
-    const list: Array<INHentai> = res.data.result;
-    const pages = list.map((book: INHentai, index: number) => {
-      book.total_search_page = res.data.num_pages;
+    if (!res.data || res.data.status !== 200) return await editOrReplyThenDelete(command.message, '❌ No result found');
+
+    const list: Array<INHentaiModulesResult> = res.data.data.result;
+    const pages = list.map((book: INHentaiModulesResult, index: number) => {
+      book.total_search_page = res.data.data.num_pages;
       book.current_search_page = parseInt(page);
-      const embed = NHentaiEmbed(book, command.message.author, index + 1, list.length);
+      const embed = NHentaiListEmbed(book, command.message.author, index + 1, list.length);
       return {
         embeds: [embed],
       };
     });
-    const titles = list.map((book: INHentai) => book.title.pretty);
+    const titles = list.map((book: INHentaiModulesResult) => book.title.pretty);
     const pagination = commonPagination(command, pages, 'button', false, titles);
 
     return await pagination.send();

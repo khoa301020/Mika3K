@@ -18,8 +18,9 @@ class RandomNHentaiCode {
         Math.floor(Math.random() * parseInt(process.env.NHENTAI_MAX_ID ?? '400000')) + 1,
       ),
     );
-    if (!res.data) return await interaction.editReply({ content: 'No result found' });
-    const embed = NHentaiEmbed(res.data, interaction.user);
+    if (!res.data || res.data.status !== 200)
+      return await editOrReplyThenDelete(interaction, { content: '❌ No result found' });
+    const embed = NHentaiEmbed(res.data.data, interaction.user);
     return await interaction.editReply({ embeds: [embed] });
   }
 
@@ -28,7 +29,7 @@ class RandomNHentaiCode {
     try {
       if (!(command.message.channel as TextChannel).nsfw)
         return await editOrReplyThenDelete(command.message, {
-          content: 'This command can only be used in NSFW channel',
+          content: '❌ This command can only be used in NSFW channel',
         });
       // const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_RANDOM_ENDPOINT);
       const res = await simulateNHentaiRequest(
@@ -36,8 +37,9 @@ class RandomNHentaiCode {
           Math.floor(Math.random() * parseInt(process.env.NHENTAI_MAX_ID ?? '400000')) + 1,
         ),
       );
-      if (!res.data) return await editOrReplyThenDelete(command.message, { content: 'No result found' });
-      const embed = NHentaiEmbed(res.data, command.message.author);
+      if (!res.data || res.data.status !== 200)
+        return await editOrReplyThenDelete(command.message, { content: '❌ No result found' });
+      const embed = NHentaiEmbed(res.data.data, command.message.author);
       return await command.message.reply({ embeds: [embed] });
     } catch (err: any) {
       console.log(err);

@@ -56,22 +56,7 @@ class CurrencyExchange {
     const result = await exchangeCurrency(fromCurrency.id, toCurrency.id, amount);
 
     return command.message.reply({
-      embeds: [
-        {
-          fields: [
-            {
-              name: 'From',
-              value: `\`\`\`${amount} ${from.toUpperCase()}\`\`\``,
-              inline: true,
-            },
-            {
-              name: 'To',
-              value: `\`\`\`${result} ${to.toUpperCase()}\`\`\``,
-              inline: true,
-            },
-          ],
-        },
-      ],
+      embeds: [CurrencyExchangeEmbed(from, to, amount, result, command.message.client as Client)],
     });
   }
 

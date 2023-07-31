@@ -99,18 +99,8 @@ export const CurrencyExchangeEmbed = (
 ): EmbedBuilder => {
   return new EmbedBuilder()
     .setColor(0x0099ff)
-    .addFields(
-      {
-        name: 'From',
-        value: `\`\`\`${amount.toLocaleString()} ${from.toUpperCase()}\`\`\``,
-        inline: true,
-      },
-      {
-        name: 'To',
-        value: `\`\`\`${result.toLocaleString()} ${to.toUpperCase()}\`\`\``,
-        inline: true,
-      },
-    )
+    .addFields({ name: `From ${from.toUpperCase()}`, value: `\`\`\`${amount.toLocaleString()}\`\`\`` })
+    .addFields({ name: `To ${to.toUpperCase()}`, value: `\`\`\`${result.toLocaleString()}\`\`\`` })
     .setTimestamp()
     .setFooter({ text: 'Xiaomi3K', iconURL: client.user!.displayAvatarURL() });
 };

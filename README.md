@@ -63,15 +63,16 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 
 ## Misc
 
-|     Feature    |    Context menu    |     Message command    | Slash command |
-|:---------------:|:------------------:|:----------------------:|:-------------:|
-| Check user info | :heavy_check_mark: | `$info` / `$userinfo`  | `/check-info` |
-| SauceNAO        | :heavy_check_mark: |  `$sn` / `$saucenao`   |  `/saucenao`  |
-| Math            |         :x:        |     `$m` / `$math`     | `/math`       |
+|      Feature      |    Context menu    |     Message command    |     Slash command     |
+|:-----------------:|:------------------:|:----------------------:|:--――-――--------------:|
+| Check user info   | :heavy_check_mark: | `$info` / `$userinfo`  |     `/check-info`     |
+| SauceNAO          | :heavy_check_mark: |  `$sn` / `$saucenao`   |      `/saucenao`      |
+| Math              |         :x:        |     `$m` / `$math`     |     `/math`           |
+| Currency exchange |         :x:        |     `$ce` / `$curr`    | `/currency-exchange`  |
 
 # Resources
 
-<!-- - NHentai API by [paukuman/Nhentai-Modules](https://github.com/paukuman/Nhentai-Modules) -->
+- NHentai API by [paukuman/Nhentai-Modules](https://github.com/paukuman/Nhentai-Modules)
 - MyAnimeList API by [Jikan](https://github.com/jikan-me/jikan), typings from [@shineiichijo/marika](https://github.com/LuckyYam/Marika)
 - Blue Archive data from [@lonqie/SchaleDB](https://github.com/lonqie/SchaleDB)
 

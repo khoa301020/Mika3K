@@ -29,7 +29,6 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 | Check nuke  |  :heavy_check_mark: | `$nh` / `$nhentai` |  `/nhentai check` |
 | Search nuke  |      :x:     | `$nhs` / `$nhsearch` |  `/nhentai search` |
 | Random nuke  |      :x:     | `$nhrd` / `$nhrandom` |  `/nhentai random` |
-| Relate nuke  |      :x:     | `$nhr` / `$nhrelated` |  `/nhentai related` |
 
 ## HoYoLAB
 
@@ -64,7 +63,7 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 ## Misc
 
 |      Feature      |    Context menu    |     Message command    |     Slash command     |
-|:-----------------:|:------------------:|:----------------------:|:--――-――--------------:|
+|:-----------------:|:------------------:|:----------------------:|:---------------------:|
 | Check user info   | :heavy_check_mark: | `$info` / `$userinfo`  |     `/check-info`     |
 | SauceNAO          | :heavy_check_mark: |  `$sn` / `$saucenao`   |      `/saucenao`      |
 | Math              |         :x:        |     `$m` / `$math`     |     `/math`           |

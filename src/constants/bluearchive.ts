@@ -126,16 +126,18 @@ export default class BlueArchiveConstants {
   };
   public static readonly STUDENT_MAX_LEVEL = 87;
   public static readonly ARMOR_TYPES = ['LightArmor', 'HeavyArmor', 'Unarmed', 'ElasticArmor'];
-  public static readonly BULLET_TYPES = ['Explosion', 'Mystic', 'Pierce'];
+  public static readonly BULLET_TYPES = ['Explosion', 'Mystic', 'Pierce', 'Sonic'];
   public static readonly BULLET_COLOR: { [key: string]: number } = {
     Explosion: 0xcc1a25,
     Mystic: 0x216f9c,
     Pierce: 0xb26d1f,
+    Sonic: 0x9431a5,
   };
   public static readonly ARMOR_COLOR: { [key: string]: number } = {
     LightArmor: 0xcc1a25,
     Unarmed: 0x216f9c,
     HeavyArmor: 0xb26d1f,
+    ElasticArmor: 0x9431a5,
     Normal: CommonConstants.DEFAULT_EMBED_COLOR,
   };
   public static readonly STUDENT_AGE = [

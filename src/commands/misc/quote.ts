@@ -56,7 +56,7 @@ class QuoteCommand {
       user: command.message.author.id,
       quote: {
         key: key,
-        value: `${value} ${attachments}`.trim(),
+        value: `${value ?? ''} ${attachments ?? ''}`.trim(),
       },
       createdAt: new Date(),
     };
@@ -185,7 +185,7 @@ class QuoteCommand {
 
     const user = command.message.guild!.members.cache.get(command.message.author.id);
 
-    const response = await editQuote(user!, id, `${content} ${attachments}`.trim());
+    const response = await editQuote(user!, id, `${content ?? ''} ${attachments ?? ''}`.trim());
 
     return command.message.reply(response);
   }
@@ -247,7 +247,7 @@ class QuoteSlash {
       user: interaction.user.id,
       quote: {
         key: keyword,
-        value: `${content} ${attachment ? attachment.url : ''}`.trim(),
+        value: `${content ?? ''} ${attachment ? attachment.url : ''}`.trim(),
       },
       private: isPrivate,
       createdAt: new Date(),
@@ -369,7 +369,7 @@ class QuoteSlash {
     if (!content && !attachment) return editOrReplyThenDelete(interaction, '❌ Content required.');
 
     const user = interaction.guild?.members.cache.get(interaction.user.id);
-    const response = await editQuote(user!, id, `${content} ${attachment ? attachment.url : ''}`.trim());
+    const response = await editQuote(user!, id, `${content ?? ''} ${attachment ? attachment.url : ''}`.trim());
 
     return interaction.reply({ content: response, ephemeral: true });
   }

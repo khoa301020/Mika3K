@@ -19,6 +19,9 @@ export default class NHentaiConstants {
     `${this.NHENTAI_BASE_API}/book/${galleryId}`;
 
   public static readonly NHENTAI_LOGO = 'https://archive.org/download/nhentai-logo-3/nhentai-logo-3.jpg';
+  public static readonly NHENTAI_DEFAULT_PAGE = 1;
+  public static readonly NHENTAI_DEFAULT_SORT = 'popular';
+  public static readonly NHENTAI_DEFAULT_QUERY = '+';
   public static readonly EXT_MAP: { [key: string]: string } = {
     j: 'jpg',
     p: 'png',

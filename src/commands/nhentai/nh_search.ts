@@ -75,7 +75,7 @@ class SearchNHentai {
       required: false,
       type: ApplicationCommandOptionType.Integer,
     })
-    page: number = 1,
+    page: number = NHentaiConstants.NHENTAI_DEFAULT_PAGE,
     @SlashChoice(...NHentaiConstants.NHENTAI_SORT_ARGS.map((e) => ({ name: e.toUpperCase(), value: e })))
     @SlashOption({
       description: 'Sort by recent or popularity, default to popular',
@@ -83,7 +83,7 @@ class SearchNHentai {
       required: false,
       type: ApplicationCommandOptionType.String,
     })
-    sort: INHentaiQuerySort = 'popular',
+    sort: INHentaiQuerySort = NHentaiConstants.NHENTAI_DEFAULT_SORT,
     interaction: CommandInteraction,
   ): Promise<any> {
     await interaction.deferReply({ ephemeral: !(interaction.channel as TextChannel)?.nsfw ?? true });
@@ -136,7 +136,11 @@ class SearchNHentai {
     if (!command.argString) [query, sort, page] = ['+', 'popular', '1'];
     else [query, sort, page] = command.argString.split('|').map((e) => e.trim());
 
-    const queryString = `${query.trim() === '' ? '+' : query.trim()}&sort=${sort}&pages=${page}`;
+    sort = sort ?? NHentaiConstants.NHENTAI_DEFAULT_SORT;
+    page = page ?? NHentaiConstants.NHENTAI_DEFAULT_PAGE;
+    query = query.trim() ?? NHentaiConstants.NHENTAI_DEFAULT_QUERY;
+
+    const queryString = `${query}&sort=${sort}&pages=${page}`;
 
     const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
     console.log(res.config.url);

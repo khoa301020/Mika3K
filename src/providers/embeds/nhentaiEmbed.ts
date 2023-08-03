@@ -31,7 +31,7 @@ export const NHentaiEmbed = (
   //   nhentai.current_search_page && nhentai.total_search_page
   //     ? ` - Page ${nhentai.current_search_page}/${nhentai.total_search_page}`
   //     : '';
-  // const itemPagination = page && total ? ` (${page}/${total})` : '';
+  const itemPagination = page && total ? ` (${page}/${total})` : '';
 
   const color = nhentai.tags.find((tag: Tag) => NHentaiConstants.NHENTAI_DANGEROUS_TAGS.includes(tag.name))
     ? NHentaiConstants.NHENTAI_EMBED_COLOR.DANGER
@@ -74,7 +74,7 @@ export const NHentaiEmbed = (
       .setTimestamp()
       .setFooter({
         // text: `NHentai${searchPagination}${itemPagination}`,
-        text: `NHentai`,
+        text: `NHentai${itemPagination}`,
         iconURL: NHentaiConstants.NHENTAI_LOGO,
       })
   );
@@ -103,6 +103,7 @@ export const NHentaiListEmbed = (
     })
     .setThumbnail(NHentaiConstants.NHENTAI_LOGO)
     .addFields(
+      { name: 'Code', value: `\`\`\`${nhentai.id.toString()}\`\`\`` },
       { name: 'Pages count', value: nhentai.num_pages.toString(), inline: true },
       { name: 'Language', value: nhentai.lang, inline: true },
     )

@@ -26,7 +26,7 @@ import { editOrReplyThenDelete, timeout } from '../../utils/index.js';
 
 @SlashGroup({ description: 'NHentai commands', name: 'nhentai' })
 @Discord()
-class CheckNHentaiCode {
+export default class CheckNHentaiCode {
   @SlashGroup('nhentai')
   @Slash({ description: 'Check NHentai nuke code', name: 'check' })
   async checkCodeSlash(
@@ -54,11 +54,14 @@ class CheckNHentaiCode {
       name: 'code',
       type: SimpleCommandOptionType.Number,
     })
-    code: number,
+    code: string,
     command: SimpleCommandMessage,
   ): Promise<any> {
     try {
-      if (!code) return await editOrReplyThenDelete(command.message, { content: '❌ Please provide a code' });
+      if (!code)
+        return await editOrReplyThenDelete(command.message, {
+          content: '❌ Please provide code(s), separated by space and must be 6 digits if more than 1',
+        });
       if (!(command.message.channel as TextChannel).nsfw)
         return await editOrReplyThenDelete(command.message, {
           content: '❌ This command can only be used in NSFW channel',

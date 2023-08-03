@@ -6,6 +6,7 @@ import { commonPagination } from '../../providers/pagination.js';
 import { queryBuilder, simulateNHentaiRequest } from '../../services/nhentai.js';
 import { INHentaiModulesResult, INHentaiQueryParam, INHentaiQuerySort } from '../../types/nhentai.js';
 import { editOrReplyThenDelete } from '../../utils/index.js';
+import CheckNHentaiCode from './nh_check.js';
 
 @SlashGroup({ description: 'NHentai commands', name: 'nhentai' })
 @Discord()
@@ -139,12 +140,20 @@ class SearchNHentai {
     sort = sort ?? NHentaiConstants.NHENTAI_DEFAULT_SORT;
     page = page ?? NHentaiConstants.NHENTAI_DEFAULT_PAGE;
     query = query.trim() ?? NHentaiConstants.NHENTAI_DEFAULT_QUERY;
+    query = query
+      .replace(/<a?:.+?:\d+>/g, '') // remove all emojis
+      .replace(/<@!?\d+>/g, '') // remove all mentions
+      .replace(/https?:\/\/\S+/g, ''); // remove all links (both http and https)
+
+    const codes: Array<string> | null = query.match(/\d{6}/g);
+    if (codes && codes.length > 0) return new CheckNHentaiCode().checkCodeCommand(query, command);
 
     const queryString = `${query}&sort=${sort}&pages=${page}`;
 
     const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
     console.log(res.config.url);
-    if (!res.data || res.data.status !== 200) return await editOrReplyThenDelete(command.message, '❌ No result found');
+    if (!res.data || res.data.status !== 200 || res.data.data.num_pages === 0)
+      return await editOrReplyThenDelete(command.message, '❌ No result found');
 
     const list: Array<INHentaiModulesResult> = res.data.data.result;
     const pages = list.map((book: INHentaiModulesResult, index: number) => {
@@ -155,6 +164,7 @@ class SearchNHentai {
         embeds: [embed],
       };
     });
+
     const titles = list.map((book: INHentaiModulesResult) => book.title.pretty);
     const pagination = commonPagination(command, pages, 'button', false, titles);
 

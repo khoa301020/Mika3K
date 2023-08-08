@@ -90,8 +90,8 @@ export class MAL_Anime {
       type: ApplicationCommandOptionType.Boolean,
     })
     display: Boolean,
-    @SlashChoice({ name: 'Button navigation', value: 'button' })
-    @SlashChoice({ name: 'Select menu', value: 'menu' })
+    @SlashChoice({ name: 'Button navigation', value: CommonConstants.PAGINATION_TYPE.BUTTON })
+    @SlashChoice({ name: 'Select menu', value: CommonConstants.PAGINATION_TYPE.MENU })
     @SlashOption({
       description: 'Navigation type',
       name: 'navigation',

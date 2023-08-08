@@ -1,5 +1,5 @@
 import { CommandInteraction } from 'discord.js';
-import { Client, Discord, Slash, SlashGroup } from 'discordx';
+import { Discord, Slash, SlashGroup } from 'discordx';
 import { HoYoLABInfoEmbed } from '../../providers/embeds/hoyolabEmbed.js';
 import { hoyolabApi } from '../../services/hoyolab.js';
 import { editOrReplyThenDelete } from '../../utils/index.js';
@@ -15,7 +15,7 @@ export class HoYoLABInfo {
     const user = await hoyolabApi.getUserInfo(userId);
     if (!user) return editOrReplyThenDelete(interaction, '❌ Account data not found, please save the cookie first.');
 
-    const embed = HoYoLABInfoEmbed(user, interaction.client as Client);
+    const embed = HoYoLABInfoEmbed(user);
     return interaction.editReply({ embeds: [embed] });
   }
 }

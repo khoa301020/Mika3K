@@ -7,7 +7,6 @@ import {
   UserContextMenuCommandInteraction,
 } from 'discord.js';
 import {
-  Client,
   ContextMenu,
   Discord,
   SimpleCommand,
@@ -31,7 +30,7 @@ class CheckInfo {
     if (!user) user = command.message.guild!.members.cache.get(command.message.author.id);
     if (!user?.id) return editOrReplyThenDelete(command.message, { content: '❌ Invalid user' });
 
-    const embed = UserInfoEmbed(command.message.author, command.message.client as Client, user!);
+    const embed = UserInfoEmbed(command.message.author, user!);
 
     return command.message.reply({ embeds: [embed] });
   }
@@ -49,7 +48,7 @@ class CheckInfo {
   ): void {
     if (!user) user = interaction.guild!.members.cache.get(interaction.user.id);
 
-    const embed = UserInfoEmbed(interaction.user, interaction.client as Client, user!);
+    const embed = UserInfoEmbed(interaction.user, user!);
 
     interaction.reply({ embeds: [embed], ephemeral: true });
   }
@@ -61,7 +60,7 @@ class CheckInfo {
   messageHandler(interaction: UserContextMenuCommandInteraction): void {
     const user = interaction.guild!.members.cache.get(interaction.targetId);
 
-    const embed = UserInfoEmbed(interaction.user, interaction.client as Client, user!);
+    const embed = UserInfoEmbed(interaction.user, user!);
     interaction.reply({ embeds: [embed], ephemeral: true });
   }
 }

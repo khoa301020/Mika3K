@@ -24,11 +24,17 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 
 ## NHentai
 
+|    Feature   |     Context menu     |    Message command   |   Slash command   |
+|:------------:|:--------------------:|:--------------------:|:-----------------:|
+| Check nuke   |          :x:         | `$nh` / `$nhentai` |  `/nhentai check` |
+| Search nuke  |          :x:         | `$nhs` / `$nhsearch` |  `/nhentai search` |
+| Random nuke  |  :heavy_check_mark:  | `$nhrd` / `$nhrandom` |  `/nhentai random` |
+
+## Syosetu
+
 |   Feature  | Context menu |    Message command   |   Slash command   |
 |:-----------:|:------------:|:--------------------:|:-----------------:|
-| Check nuke  |  :heavy_check_mark: | `$nh` / `$nhentai` |  `/nhentai check` |
-| Search nuke  |      :x:     | `$nhs` / `$nhsearch` |  `/nhentai search` |
-| Random nuke  |      :x:     | `$nhrd` / `$nhrandom` |  `/nhentai random` |
+| Search novel  |      :x:     |        :x:        |  `/syosetu search` |
 
 ## HoYoLAB
 
@@ -83,10 +89,8 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 - [Mongoose](https://mongoosejs.com)
 - [Node-cron](https://github.com/kelektiv/node-cron)
 - [Node-cache](https://github.com/node-cache/node-cache)
-- [Tough-Cookie](https://github.com/salesforce/tough-cookie)
 - [Html-Entities](https://github.com/mdevils/html-entities)
 - [Quickchart-JS](https://github.com/typpo/quickchart-js)
-- [HTML-Cookie-Agent](https://github.com/3846masa/http-cookie-agent)
 
 # Documentations
 

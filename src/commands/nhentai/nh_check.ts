@@ -1,13 +1,10 @@
 import {
   ApplicationCommandOptionType,
-  ApplicationCommandType,
   CommandInteraction,
   Message,
-  MessageContextMenuCommandInteraction,
-  TextChannel,
+  TextChannel
 } from 'discord.js';
 import {
-  ContextMenu,
   Discord,
   SimpleCommand,
   SimpleCommandMessage,
@@ -15,7 +12,7 @@ import {
   SimpleCommandOptionType,
   Slash,
   SlashGroup,
-  SlashOption,
+  SlashOption
 } from 'discordx';
 import { CommonConstants, NHentaiConstants } from '../../constants/index.js';
 import { NHentaiEmbed } from '../../providers/embeds/nhentaiEmbed.js';
@@ -98,50 +95,6 @@ export default class CheckNHentaiCode {
     } catch (err: any) {
       console.log(err);
       return await editOrReplyThenDelete(command.message, { content: err.message });
-    }
-  }
-
-  @ContextMenu({
-    name: 'Check nuke',
-    type: ApplicationCommandType.Message,
-  })
-  async checkCodeContextMenu(interaction: MessageContextMenuCommandInteraction): Promise<any> {
-    await interaction.deferReply({ ephemeral: !(interaction.channel as TextChannel)?.nsfw });
-    const message: Message = await (interaction.channel as TextChannel).messages.fetch(interaction.targetId);
-
-    const content = message.content
-      .replace(/<a?:.+?:\d+>/g, '') // remove all emojis
-      .replace(/<@!?\d+>/g, '') // remove all mentions
-      .replace(/https?:\/\/\S+/g, ''); // remove all links (both http and https)
-
-    const codes: Array<string> | null = content.match(/\d{6}/g);
-    if (!codes) return editOrReplyThenDelete(interaction, { content: '❌ No code found in the message' });
-    let results: Array<INHentaiModulesGallery> = [];
-    for (const code of codes) {
-      const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_GALLERY_ENDPOINT(code));
-      if (!res.data || res.status === 404 || res.data.status !== 200) continue;
-      results.push(res.data.data);
-      await timeout(3333);
-    }
-    if (results.length === 0) return await editOrReplyThenDelete(interaction, { content: '❌ No code found' });
-    if (results.length === 1) {
-      const embed = NHentaiEmbed(results[0], interaction.user);
-      return await interaction.editReply({ embeds: [embed] });
-    } else {
-      const pages = results.map((book: INHentaiModulesGallery, index: number) => {
-        const embed = NHentaiEmbed(book, interaction.user, index + 1, results.length);
-        return {
-          embeds: [embed],
-        };
-      });
-      const pagination = commonPagination(
-        interaction,
-        pages,
-        CommonConstants.PAGINATION_TYPE.BUTTON,
-        interaction.ephemeral ?? true,
-      );
-
-      return await pagination.send();
     }
   }
 }

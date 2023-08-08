@@ -6,7 +6,6 @@ import {
   InteractionResponse,
   Message,
   MessageContextMenuCommandInteraction,
-  MessageFlags,
   MessagePayload,
   StringSelectMenuInteraction,
 } from 'discord.js';
@@ -240,6 +239,13 @@ export const ttc = async (fn: Function, ...args: any[]) => {
 
 export const invertObject = (obj: Object) => Object.entries(obj).map(([key, value]) => [value, key]);
 
+export const currentTime = (timestamp: Date = new Date()) =>
+  new Date(timestamp).toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' }) + ' GMT+7';
+
+export const formatter = new Intl.RelativeTimeFormat(`en`, { style: `narrow` });
+
+export const timeout = async (ms: number) => await new Promise((resolve) => setTimeout(resolve, ms));
+
 export async function editOrReplyThenDelete(
   interaction:
     | CommandInteraction
@@ -248,24 +254,16 @@ export async function editOrReplyThenDelete(
     | StringSelectMenuInteraction
     | Message,
   options: string | InteractionReplyOptions | MessagePayload = '',
-  timeout = 5000,
+  delay = 5000,
 ): Promise<void> {
   let msg: Message;
   if (interaction instanceof Message) msg = await interaction.reply(options as string | MessagePayload);
   else if (interaction.deferred) msg = await interaction.editReply(options);
   else msg = await interaction.reply(options).then(async (res: InteractionResponse) => await res.fetch());
 
-  if (msg.flags.has(MessageFlags.Ephemeral)) return;
+  await timeout(delay);
 
-  if (msg.deletable)
-    setTimeout(() => {
-      msg.delete();
-    }, timeout);
+  if (interaction instanceof Message) msg.delete();
+  // msg.delete().catch(() => console.error(`Failed to delete message: ${msg.id} in channel: ${msg.channel.id}`));
+  else interaction.deleteReply();
 }
-
-export const currentTime = (timestamp: Date = new Date()) =>
-  new Date(timestamp).toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' });
-
-export const formatter = new Intl.RelativeTimeFormat(`en`, { style: `narrow` });
-
-export const timeout = async (ms: number) => await new Promise((resolve) => setTimeout(resolve, 1000));

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { CommonConstants } from '../constants/index.js';
 import { cache } from '../main.js';
+import { ICurrencyExchange } from '../types/common.js';
 import { ICurrencyResponse, IExchangeResponse } from '../types/currencies';
 
 export async function cacheCurrencies(): Promise<void> {
@@ -14,9 +15,12 @@ export async function cacheCurrencies(): Promise<void> {
   );
 }
 
-export async function exchangeCurrency(from: string, to: string, amount: number): Promise<number> {
+export async function exchangeCurrency(from: string, to: string, amount: number): Promise<ICurrencyExchange> {
   const query = `${from}_${to}`;
   const res = await axios.get(CommonConstants.CURRENCY_CONVERTER_API(query));
   const data: IExchangeResponse = res.data;
-  return data[query] * amount;
+  return {
+    rate: data[query],
+    result: data[query] * amount,
+  };
 }

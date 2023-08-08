@@ -1,6 +1,5 @@
 import { ApplicationCommandOptionType, AutocompleteInteraction, CommandInteraction, Message } from 'discord.js';
 import {
-  Client,
   Discord,
   SimpleCommand,
   SimpleCommandMessage,
@@ -56,7 +55,7 @@ class CurrencyExchange {
     const result = await exchangeCurrency(fromCurrency.id, toCurrency.id, amount);
 
     return command.message.reply({
-      embeds: [CurrencyExchangeEmbed(from, to, amount, result, command.message.client as Client)],
+      embeds: [CurrencyExchangeEmbed(from, to, amount, result)],
     });
   }
 
@@ -108,7 +107,7 @@ class CurrencyExchange {
         return editOrReplyThenDelete(interaction, { content: '❌ Invalid amount', ephemeral: true });
       const result = await exchangeCurrency(from.toUpperCase(), to.toUpperCase(), calculatedAmount);
       return interaction.reply({
-        embeds: [CurrencyExchangeEmbed(from, to, calculatedAmount, result, interaction.client as Client)],
+        embeds: [CurrencyExchangeEmbed(from, to, calculatedAmount, result)],
       });
     }
   }

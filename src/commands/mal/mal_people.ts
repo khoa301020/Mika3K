@@ -1,7 +1,7 @@
 import type { CommandInteraction } from 'discord.js';
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
-import { MALConstants } from '../../constants/index.js';
+import { CommonConstants, MALConstants } from '../../constants/index.js';
 import { MAL_PeopleEmbed } from '../../providers/embeds/malEmbed.js';
 import { commonPagination } from '../../providers/pagination.js';
 import { peopleApi } from '../../services/mal.js';
@@ -23,8 +23,8 @@ export class MAL_People {
       type: ApplicationCommandOptionType.Boolean,
     })
     display: Boolean,
-    @SlashChoice({ name: 'Button navigation', value: 'button' })
-    @SlashChoice({ name: 'Select menu', value: 'menu' })
+    @SlashChoice({ name: 'Button navigation', value: CommonConstants.PAGINATION_TYPE.BUTTON })
+    @SlashChoice({ name: 'Select menu', value: CommonConstants.PAGINATION_TYPE.MENU })
     @SlashOption({
       description: 'Navigation type',
       name: 'navigation',

@@ -6,7 +6,6 @@ import {
   Message,
 } from 'discord.js';
 import {
-  Client,
   Discord,
   SimpleCommand,
   SimpleCommandMessage,
@@ -102,13 +101,7 @@ class QuoteCommand {
     let splitedQuotes = splitToChunks(quotes, CommonConstants.QUOTES_PER_PAGE);
 
     const pages = splitedQuotes.map((chunk: IUserQuote[], index: number) => {
-      const embed = ListQuoteEmbed(
-        command.message.author,
-        command.message.client as Client,
-        chunk,
-        index + 1,
-        splitedQuotes.length,
-      );
+      const embed = ListQuoteEmbed(command.message.author, chunk, index + 1, splitedQuotes.length);
 
       return { embeds: [embed] };
     });
@@ -127,13 +120,7 @@ class QuoteCommand {
     let splitedQuotes = splitToChunks(quotes, CommonConstants.QUOTES_PER_PAGE);
 
     const pages = splitedQuotes.map((chunk: IUserQuote[], index: number) => {
-      const embed = ListQuoteEmbed(
-        command.message.author,
-        command.message.client as Client,
-        chunk,
-        index + 1,
-        splitedQuotes.length,
-      );
+      const embed = ListQuoteEmbed(command.message.author, chunk, index + 1, splitedQuotes.length);
 
       return { embeds: [embed] };
     });
@@ -298,13 +285,7 @@ class QuoteSlash {
     let splitedQuotes = splitToChunks(quotes, CommonConstants.QUOTES_PER_PAGE);
 
     const pages = splitedQuotes.map((chunk: IUserQuote[], index: number) => {
-      const embed = ListQuoteEmbed(
-        interaction.user,
-        interaction.client as Client,
-        chunk,
-        index + 1,
-        splitedQuotes.length,
-      );
+      const embed = ListQuoteEmbed(interaction.user, chunk, index + 1, splitedQuotes.length);
 
       return { embeds: [embed] };
     });
@@ -325,13 +306,7 @@ class QuoteSlash {
     let splitedQuotes = splitToChunks(quotes, CommonConstants.QUOTES_PER_PAGE);
 
     const pages = splitedQuotes.map((chunk: Array<IUserQuote>, index: number) => {
-      const embed = ListQuoteEmbed(
-        interaction.user,
-        interaction.client as Client,
-        chunk,
-        index + 1,
-        splitedQuotes.length,
-      );
+      const embed = ListQuoteEmbed(interaction.user, chunk, index + 1, splitedQuotes.length);
 
       return { embeds: [embed] };
     });

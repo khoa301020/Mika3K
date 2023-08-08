@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionType, CommandInteraction } from 'discord.js';
-import { Client, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
+import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import { setTimeout } from 'timers/promises';
 import { HoYoLABConstants } from '../../constants/index.js';
 import { HoYoLABRedeemResultEmbed } from '../../providers/embeds/hoyolabEmbed.js';
@@ -72,7 +72,7 @@ export class HoYoLABRedeem {
       }
     }
 
-    const embed = HoYoLABRedeemResultEmbed(results, interaction.client as Client);
+    const embed = HoYoLABRedeemResultEmbed(results);
     return interaction.editReply({ embeds: [embed] });
   }
 }

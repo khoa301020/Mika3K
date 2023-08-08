@@ -1,8 +1,8 @@
 import { APIEmbedField, EmbedBuilder } from 'discord.js';
-import { Client } from 'discordx';
+import { bot } from '../../main.js';
 import { IHoYoLAB, IHoYoLABGameAccount, IRedeemResult } from '../../types/hoyolab';
 
-export const HoYoLABInfoEmbed = (user: IHoYoLAB, client: Client): EmbedBuilder => {
+export const HoYoLABInfoEmbed = (user: IHoYoLAB): EmbedBuilder => {
   return new EmbedBuilder()
     .setColor(0x0099ff)
     .setTitle(`Your HoYoLAB info`)
@@ -19,7 +19,7 @@ export const HoYoLABInfoEmbed = (user: IHoYoLAB, client: Client): EmbedBuilder =
       ),
     )
     .setTimestamp()
-    .setFooter({ text: `Xiaomi3K`, iconURL: client.user!.displayAvatarURL() });
+    .setFooter({ text: `Xiaomi3K`, iconURL: bot.user!.displayAvatarURL() });
 };
 
 export const HoYoLABRedeemResultEmbed = (
@@ -27,7 +27,6 @@ export const HoYoLABRedeemResultEmbed = (
     giftcode: string | undefined;
     result: Array<IRedeemResult>;
   }>,
-  client: Client,
 ): EmbedBuilder => {
   const fields: Array<APIEmbedField> = [];
 
@@ -60,5 +59,5 @@ export const HoYoLABRedeemResultEmbed = (
     .setTitle(`Redeem result`)
     .addFields(fields)
     .setTimestamp()
-    .setFooter({ text: `Xiaomi3K`, iconURL: client.user!.displayAvatarURL() });
+    .setFooter({ text: `Xiaomi3K`, iconURL: bot.user!.displayAvatarURL() });
 };

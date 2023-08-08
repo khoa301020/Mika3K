@@ -4,6 +4,13 @@ export default class CommonConstants {
   public static readonly USER_AGENT =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36';
   public static readonly DEFAULT_EMBED_COLOR = 0x0099ff;
+  public static readonly EMBED_TITLE_LIMIT = 256;
+  public static readonly EMBED_DESCRIPTION_LIMIT = 4096;
+  public static readonly EMBED_FIELD_NAME_LIMIT = 256;
+  public static readonly EMBED_FIELD_VALUE_LIMIT = 1024;
+  public static readonly EMBED_FIELD_LIMIT = 25;
+  public static readonly EMBED_FOOTER_TEXT_LIMIT = 2048;
+  public static readonly EMBED_AUTHOR_NAME_LIMIT = 256;
 
   public static readonly REGEX_NUM = /^\d+$/;
   public static readonly REGEX_HTML_TAG = /<[^>]*>?/gm;

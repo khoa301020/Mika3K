@@ -151,11 +151,16 @@ export interface ISyosetuGeneralFields
     | 'general_all_no'
     | 'length'
     | 'time'
-    | 'pc_or_k'
     | 'sasie_cnt'
     | 'kaiwaritu'
     | 'novelupdated_at'
     | 'updated_at'
+  > {}
+
+export interface ISyosetuGeneralEmbedFields
+  extends Omit<
+    ISyosetuGeneralFields,
+    'title' | 'ncode' | 'userid' | 'writer' | 'story' | 'keyword' | 'updated_at' | 'biggenre' | 'genre'
   > {}
 
 export interface ISyosetuNovelTagsFields
@@ -304,7 +309,7 @@ export interface ICommandMultiSelect {
   trans: string;
 }
 
-export interface ICommandSelectOne {
+export interface ICommandSingleSelect {
   key: string;
   value: string;
   trans: string;

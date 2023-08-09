@@ -1,6 +1,6 @@
 import { I18n } from '../types/common';
 import {
-  ICommandSelectOne,
+  ICommandSingleSelect,
   ISyosetuGeneralFields,
   ISyosetuNovelPointsFields,
   ISyosetuNovelStatusFields,
@@ -21,8 +21,8 @@ export class SyosetuConstants {
     2: { jp: 'ファンタジー', en: 'Fantasy' },
     3: { jp: '文芸', en: 'Literature' },
     4: { jp: 'SF', en: 'Science fiction' },
-    98: { jp: 'その他', en: 'Other' },
-    99: { jp: 'ノンジャンル', en: 'Non genre' },
+    98: { jp: 'ノンジャンル', en: 'Non genre' },
+    99: { jp: 'その他', en: 'Other' },
   };
 
   public static readonly GENRES: { [key in TSyosetuGenre]: I18n } = {
@@ -49,7 +49,7 @@ export class SyosetuConstants {
     9801: { jp: 'ノンジャンル〔ノンジャンル〕', en: 'Non genre (Non genre)' },
   };
 
-  public static readonly ORDER: Array<ICommandSelectOne> = [
+  public static readonly ORDER: Array<ICommandSingleSelect> = [
     { key: 'new', value: '新着更新順', trans: 'Order by new update' },
     { key: 'favnovelcnt', value: 'ブックマーク数の多い順', trans: 'Order by bookmark' },
     { key: 'reviewcnt', value: 'レビュー数の多い順', trans: 'Order by review' },
@@ -70,7 +70,7 @@ export class SyosetuConstants {
     { key: 'old', value: '更新が古い順', trans: 'Order by old update' },
   ];
 
-  public static readonly TYPES: Array<ICommandSelectOne> = [
+  public static readonly TYPES: Array<ICommandSingleSelect> = [
     { key: 't', value: '短編', trans: 'Short story' },
     { key: 'r', value: '連載中', trans: 'Serializing' },
     { key: 'er', value: '完結済連載小説', trans: 'Serialized novel completed' },
@@ -82,7 +82,7 @@ export class SyosetuConstants {
     { key: 'ter', value: '短編と完結済連載小説', trans: 'Short stories and serialized novels completed' },
   ];
 
-  public static readonly UPDATE_TIME: Array<ICommandSelectOne> = [
+  public static readonly UPDATE_TIME: Array<ICommandSingleSelect> = [
     { key: 'thisweek', value: '今週(日曜日の午前0時はじまり)', trans: 'This week (starts at 0:00 am on Sunday)' },
     {
       key: 'sevenday',
@@ -107,14 +107,13 @@ export class SyosetuConstants {
     keyword: { jp: 'キーワード', en: 'Keyword' },
     general_firstup: { jp: '初回掲載日', en: 'First publication date' },
     general_lastup: { jp: '最終掲載日', en: 'Last publication date' },
-    general_all_no: { jp: '', en: 'Total publications' },
-    length: { jp: '', en: 'Novel length (in characters)' },
-    time: { jp: '', en: 'Reading time (in minutes)' },
-    pc_or_k: { jp: '', en: 'Upload platform' },
-    sasie_cnt: { jp: '', en: 'Number of illustrations' },
-    kaiwaritu: { jp: '', en: 'Conversation rate' },
-    novelupdated_at: { jp: '', en: 'Last novel update datetime' },
-    updated_at: { jp: '', en: 'Last data update datetime' },
+    general_all_no: { jp: '全掲載部分数', en: 'Total publications' },
+    length: { jp: '小説文字数', en: 'Novel length (in characters)' },
+    time: { jp: '読了時間(分単位)', en: 'Reading time (in minutes)' },
+    sasie_cnt: { jp: '挿絵の数', en: 'Number of illustrations' },
+    kaiwaritu: { jp: '会話率', en: 'Conversation rate' },
+    novelupdated_at: { jp: '小説の更新日時', en: 'Last novel update datetime' },
+    updated_at: { jp: '最終更新日時（システム用）', en: 'Last data update datetime' },
   };
 
   public static readonly NOVEL_TAGS: {
@@ -132,8 +131,8 @@ export class SyosetuConstants {
     [key in keyof ISyosetuNovelStatusFields]: { [key: number]: I18n };
   } = {
     end: {
-      0: { jp: '連載中', en: 'Ongoing' },
-      1: { jp: '完結済み', en: 'Completed' },
+      0: { jp: '完結済み', en: 'Completed' },
+      1: { jp: '連載中', en: 'Ongoing' },
     },
     isstop: {
       0: { jp: '長期連載中', en: 'Long-term serializing' },
@@ -160,5 +159,11 @@ export class SyosetuConstants {
   public static readonly NOVEL_TYPE: { [key in 1 | 2]: I18n } = {
     1: { jp: '連載', en: 'Serializing' },
     2: { jp: '短編', en: 'Short story' },
+  };
+
+  public static readonly NOVEL_UPLOAD_PLATFORM: { [key in 1 | 2 | 3]: I18n } = {
+    1: { jp: 'ケータイのみ', en: 'Mobile only' },
+    2: { jp: 'PCのみ', en: 'PC only' },
+    3: { jp: 'PCとケータイ', en: 'PC and mobile' },
   };
 }

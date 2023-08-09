@@ -35,6 +35,7 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 |   Feature  | Context menu |    Message command   |   Slash command   |
 |:-----------:|:------------:|:--------------------:|:-----------------:|
 | Search novel  |      :x:     |        :x:        |  `/syosetu search` |
+| List genres  |      :x:     |        :x:        |  `/syosetu genres` |
 
 ## HoYoLAB
 

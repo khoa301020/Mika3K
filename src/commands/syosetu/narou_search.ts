@@ -7,7 +7,7 @@ import { SyosetuNovelEmbed } from '../../providers/embeds/syosetuEmbed.js';
 import { commonPagination } from '../../providers/pagination.js';
 import { convertToQuery } from '../../services/syosetu.js';
 import {
-  ICommandSelectOne,
+  ICommandSingleSelect,
   ISyosetuNovel,
   ISyosetuRequest,
   ISyosetuResponseMeta,
@@ -22,8 +22,7 @@ import { editOrReplyThenDelete } from '../../utils/index.js';
 
 const defaultRequest: ISyosetuRequest = {
   out: 'json',
-  // lim: 20,
-  lim: 1,
+  lim: 20,
   title: 1,
   ex: 1,
   keyword: 1,
@@ -36,7 +35,9 @@ class Syosetu {
   @SlashGroup('syosetu')
   @Slash({ name: 'search', description: 'Search Syosetu novels' })
   async searchSyosetu(
-    @SlashChoice(...SyosetuConstants.ORDER.map((obj: ICommandSelectOne) => Object({ name: obj.trans, value: obj.key })))
+    @SlashChoice(
+      ...SyosetuConstants.ORDER.map((obj: ICommandSingleSelect) => Object({ name: obj.trans, value: obj.key })),
+    )
     @SlashOption({
       description: 'Order result by',
       name: 'order',
@@ -59,14 +60,15 @@ class Syosetu {
     })
     notword: string,
     @SlashOption({
-      description: 'Filter by big genre(s) use ID, separate by comma, exclude by prefixing with -',
+      description:
+        'Filter by big genre(s) use ID (/syosetu list-genres), separate by comma, exclude by prefixing with -',
       name: 'big-genre',
       required: false,
       type: ApplicationCommandOptionType.String,
     })
     biggenres: string,
     @SlashOption({
-      description: 'Filter by genre(s) use ID, separate by comma, exclude by prefixing with -',
+      description: 'Filter by genre(s) use ID (/syosetu list-genres), separate by comma, exclude by prefixing with -',
       name: 'genre',
       required: false,
       type: ApplicationCommandOptionType.String,
@@ -79,7 +81,9 @@ class Syosetu {
       type: ApplicationCommandOptionType.String,
     })
     userids: string,
-    @SlashChoice(...SyosetuConstants.TYPES.map((obj: ICommandSelectOne) => Object({ name: obj.trans, value: obj.key })))
+    @SlashChoice(
+      ...SyosetuConstants.TYPES.map((obj: ICommandSingleSelect) => Object({ name: obj.trans, value: obj.key })),
+    )
     @SlashOption({
       description: 'Filter by novel type',
       name: 'type',
@@ -124,7 +128,7 @@ class Syosetu {
     ncode: string,
 
     @SlashChoice(
-      ...SyosetuConstants.UPDATE_TIME.map((obj: ICommandSelectOne) => Object({ name: obj.trans, value: obj.key })),
+      ...SyosetuConstants.UPDATE_TIME.map((obj: ICommandSingleSelect) => Object({ name: obj.trans, value: obj.key })),
     )
     @SlashOption({
       description: 'Filter by last up (creation)',
@@ -134,7 +138,7 @@ class Syosetu {
     })
     lastup: TLastUp,
     @SlashChoice(
-      ...SyosetuConstants.UPDATE_TIME.map((obj: ICommandSelectOne) => Object({ name: obj.trans, value: obj.key })),
+      ...SyosetuConstants.UPDATE_TIME.map((obj: ICommandSingleSelect) => Object({ name: obj.trans, value: obj.key })),
     )
     @SlashOption({
       description: 'Filter by last update',

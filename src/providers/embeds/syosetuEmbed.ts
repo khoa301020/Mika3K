@@ -1,8 +1,10 @@
-import type { User } from 'discord.js';
+import type { APIEmbedField, User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { CommonConstants } from '../../constants/index.js';
 import { SyosetuConstants } from '../../constants/syosetu.js';
+import { I18n } from '../../types/common.js';
 import {
+  ISyosetuGeneralEmbedFields,
   ISyosetuNovel,
   ISyosetuNovelPointsFields,
   ISyosetuNovelStatusFields,
@@ -26,6 +28,29 @@ export const SyosetuNovelEmbed = (novel: ISyosetuNovel, author: User, page?: num
     return acc;
   }, [] as Array<string>);
 
+  const generalExcludeFields = [
+    'title',
+    'ncode',
+    'userid',
+    'writer',
+    'story',
+    'keyword',
+    'updated_at',
+    'biggenre',
+    'genre',
+  ];
+
+  const generalFields: Array<APIEmbedField> = Object.keys(SyosetuConstants.FIELDS)
+    .filter((key) => !generalExcludeFields.includes(key))
+    .reduce((acc, key) => {
+      acc.push({
+        name: SyosetuConstants.FIELDS[key as keyof ISyosetuGeneralEmbedFields][lang],
+        value: novel[key as keyof ISyosetuGeneralEmbedFields].toLocaleString(),
+        inline: true,
+      });
+      return acc;
+    }, [] as Array<APIEmbedField>);
+
   const genre = SyosetuConstants.GENRES[novel.genre][lang];
 
   return new EmbedBuilder()
@@ -47,7 +72,8 @@ export const SyosetuNovelEmbed = (novel: ISyosetuNovel, author: User, page?: num
     })
     .addFields({ name: '作者名', value: `[${novel.writer}](${SyosetuConstants.SYOSETU_USER_PAGE + novel.userid})` })
     .addFields({ name: 'ジャンルとカテゴリ', value: `${genre}・${tagFields.join('・')}`.replace(/・$/, '') })
-    .addFields({ name: '状況', value: statusFields.join('・') })
+    .addFields(...generalFields)
+    .addFields({ name: '状況', value: statusFields.join('・'), inline: true })
     .addFields({
       name: 'ポイント',
       value: `\`\`\`${Object.keys(SyosetuConstants.NOVEL_POINTS)
@@ -71,3 +97,18 @@ export const SyosetuNovelEmbed = (novel: ISyosetuNovel, author: User, page?: num
       iconURL: SyosetuConstants.SYOSETU_LOGO,
     });
 };
+
+export const SyosetuGenreListEmbed = (listBigGenres: string, listGenres: string, lang: keyof I18n): EmbedBuilder =>
+  new EmbedBuilder()
+    .setTitle(lang === 'jp' ? 'ジャンル一覧' : 'Genre List')
+    .setColor(CommonConstants.DEFAULT_EMBED_COLOR)
+    .addFields({
+      name: lang === 'jp' ? '大ジャンル' : 'Big Genres',
+      value: `\`\`\`${listBigGenres}\`\`\``,
+    })
+    .addFields({
+      name: lang === 'jp' ? 'ジャンル' : 'Genres',
+      value: `\`\`\`${listGenres}\`\`\``,
+    })
+    .setTimestamp()
+    .setFooter({ text: 'Syosetu', iconURL: SyosetuConstants.SYOSETU_LOGO });

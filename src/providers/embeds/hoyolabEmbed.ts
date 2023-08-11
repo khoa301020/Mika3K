@@ -19,7 +19,7 @@ export const HoYoLABInfoEmbed = (user: IHoYoLAB): EmbedBuilder => {
       ),
     )
     .setTimestamp()
-    .setFooter({ text: `Xiaomi3K`, iconURL: bot.user!.displayAvatarURL() });
+    .setFooter({ text: `${bot.user?.displayName}`, iconURL: bot.user!.displayAvatarURL() });
 };
 
 export const HoYoLABRedeemResultEmbed = (
@@ -59,5 +59,5 @@ export const HoYoLABRedeemResultEmbed = (
     .setTitle(`Redeem result`)
     .addFields(fields)
     .setTimestamp()
-    .setFooter({ text: `Xiaomi3K`, iconURL: bot.user!.displayAvatarURL() });
+    .setFooter({ text: `${bot.user?.displayName}`, iconURL: bot.user!.displayAvatarURL() });
 };

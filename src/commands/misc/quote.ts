@@ -42,13 +42,13 @@ class QuoteCommand {
     @SimpleCommandOption({ name: 'key', type: SimpleCommandOptionType.String })
     key: string,
     command: SimpleCommandMessage,
-  ): Promise<Message<boolean>> {
-    if (!key) return command.message.reply('❌ Keyword required.');
+  ): Promise<Message<boolean> | void> {
+    if (!key) return editOrReplyThenDelete(command.message, '❌ Keyword required.');
 
     const value = command.message.content.split(' ').slice(2).join(' ').trim();
     const attachments = command.message.attachments.map((a) => a.url).join(', ');
 
-    if (!value && !attachments) return command.message.reply('Content required.');
+    if (!value && !attachments) return editOrReplyThenDelete(command.message, '❌ Content required.');
 
     const quote: IUserQuote = {
       guild: command.message.guildId!,
@@ -62,13 +62,13 @@ class QuoteCommand {
 
     try {
       createQuote(quote).then((quoteResponse) => {
-        if (!quoteResponse) return command.message.reply('❌ Error occured.');
+        if (!quoteResponse) return editOrReplyThenDelete(command.message, '❌ Error occured.');
       });
     } catch (error) {
-      return command.message.reply('❌ Error occured.');
+      return editOrReplyThenDelete(command.message, '❌ Error occured.');
     }
 
-    return command.message.reply('✅ Quote added successfully.');
+    return editOrReplyThenDelete(command.message, '✅ Quote added successfully.');
   }
 
   @SimpleCommand({ aliases: [botPrefix.repeat(2), 'getquote'], description: 'Get quote', argSplitter: ' ' })
@@ -78,15 +78,15 @@ class QuoteCommand {
     @SimpleCommandOption({ name: 'key', type: SimpleCommandOptionType.String })
     key: string,
     command: SimpleCommandMessage,
-  ): Promise<Message<boolean>> {
-    if (!key) return command.message.reply('Keyword required.');
+  ): Promise<Message<boolean> | void> {
+    if (!key) return editOrReplyThenDelete(command.message, 'Keyword required.');
     const keyword = key.trim();
     const guildId = command.message.guildId;
     let quotes: IUserQuote[] = await getQuote(keyword, guildId!);
-    if (quotes.length === 0) return command.message.reply('❌ No quote found.');
+    if (quotes.length === 0) return editOrReplyThenDelete(command.message, '❌ No quote found.');
 
     quotes = quotes.filter((quote) => command.message.author.id === quote.user || quote.private === false);
-    if (quotes.length === 0) return command.message.reply('❌ Quote privated.');
+    if (quotes.length === 0) return editOrReplyThenDelete(command.message, '❌ Quote privated.');
 
     return command.message.reply({ content: randomArray(quotes).quote?.value });
   }
@@ -96,7 +96,7 @@ class QuoteCommand {
     const guildId = command.message.guildId;
     let quotes: IUserQuote[] = await getListQuotes(guildId!);
 
-    if (quotes.length === 0) return command.message.reply('❌ No quote found.');
+    if (quotes.length === 0) return editOrReplyThenDelete(command.message, '❌ No quote found.');
 
     let splitedQuotes = splitToChunks(quotes, CommonConstants.QUOTES_PER_PAGE);
 
@@ -115,7 +115,7 @@ class QuoteCommand {
     const user = command.message.guild!.members.cache.get(command.message.author.id);
     let quotes: IUserQuote[] = await getUserQuotes(user!);
 
-    if (quotes.length === 0) return command.message.reply('❌ No quote found.');
+    if (quotes.length === 0) return editOrReplyThenDelete(command.message, '❌ No quote found.');
 
     let splitedQuotes = splitToChunks(quotes, CommonConstants.QUOTES_PER_PAGE);
 
@@ -135,7 +135,7 @@ class QuoteCommand {
     id: string,
     command: SimpleCommandMessage,
   ): Promise<any> {
-    if (!id) return command.message.reply('❌ ID required.');
+    if (!id) return editOrReplyThenDelete(command.message, '❌ ID required.');
 
     const user = command.message.guild!.members.cache.get(command.message.author.id);
 
@@ -163,12 +163,12 @@ class QuoteCommand {
     id: string,
     command: SimpleCommandMessage,
   ): Promise<any> {
-    if (!id) return command.message.reply('❌ ID required.');
+    if (!id) return editOrReplyThenDelete(command.message, '❌ ID required.');
 
     const content = command.message.content.split(' ').slice(2).join(' ').trim();
     const attachments = command.message.attachments.map((a) => a.url).join(', ');
 
-    if (!content && !attachments) return command.message.reply('Content required.');
+    if (!content && !attachments) return editOrReplyThenDelete(command.message, '❌ Content required.');
 
     const user = command.message.guild!.members.cache.get(command.message.author.id);
 
@@ -183,7 +183,7 @@ class QuoteCommand {
     id: string,
     command: SimpleCommandMessage,
   ): Promise<any> {
-    if (!id) return command.message.reply('❌ ID required.');
+    if (!id) return editOrReplyThenDelete(command.message, '❌ ID required.');
 
     const user = command.message.guild!.members.cache.get(command.message.author.id);
 

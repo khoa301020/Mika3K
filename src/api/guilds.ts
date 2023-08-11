@@ -17,7 +17,7 @@ export class API {
     <html>
     
     <head>
-      <title>Xiaomi3K</title>
+      <title>${bot.user?.displayName}</title>
       <style>
         body {
           margin: 0px;

@@ -13,7 +13,7 @@ export const ErrorLogEmbed = (error: Error): EmbedBuilder => {
     .addFields({ name: 'Name', value: error.name }, { name: 'Message', value: error.message })
     .addFields()
     .setTimestamp()
-    .setFooter({ text: 'Xiaomi3K', iconURL: bot.user!.displayAvatarURL() });
+    .setFooter({ text: bot.user!.displayName, iconURL: bot.user!.displayAvatarURL() });
 
   if (error instanceof DiscordAPIError)
     embed.addFields(
@@ -64,7 +64,7 @@ export const UserInfoEmbed = (author: User, user: GuildMember): EmbedBuilder => 
         : 'No boosting',
     })
     .setTimestamp()
-    .setFooter({ text: 'Xiaomi3K', iconURL: bot.user!.displayAvatarURL() });
+    .setFooter({ text: bot.user!.displayName, iconURL: bot.user!.displayAvatarURL() });
 };
 
 export const ListQuoteEmbed = (author: User, quotes: Array<IUserQuote>, page: Number, total: Number): EmbedBuilder => {
@@ -91,7 +91,7 @@ export const ListQuoteEmbed = (author: User, quotes: Array<IUserQuote>, page: Nu
       // .setThumbnail()
       // .addFields({})
       .setTimestamp()
-      .setFooter({ text: `Xiaomi3K (${page}/${total})`, iconURL: bot.user!.displayAvatarURL() })
+      .setFooter({ text: `${bot.user?.displayName} (${page}/${total})`, iconURL: bot.user!.displayAvatarURL() })
   );
 };
 
@@ -102,7 +102,7 @@ export const MathEmbed = (expression: string, result: string): EmbedBuilder => {
     .addFields({ name: 'Expression', value: `\`\`\`${expression}\`\`\`` })
     .addFields({ name: 'Result', value: `\`\`\`${result}\`\`\`` })
     .setTimestamp()
-    .setFooter({ text: 'Xiaomi3K', iconURL: bot.user!.displayAvatarURL() });
+    .setFooter({ text: bot.user!.displayName, iconURL: bot.user!.displayAvatarURL() });
 };
 
 export const CurrencyExchangeEmbed = (
@@ -116,7 +116,7 @@ export const CurrencyExchangeEmbed = (
     .addFields({ name: `From ${from.toUpperCase()}`, value: `\`\`\`${amount.toLocaleString()}\`\`\`` })
     .addFields({ name: `To ${to.toUpperCase()}`, value: `\`\`\`${exchangeRes.result.toLocaleString()}\`\`\`` })
     .setTimestamp()
-    .setFooter({ text: 'Xiaomi3K', iconURL: bot.user!.displayAvatarURL() });
+    .setFooter({ text: bot.user!.displayName, iconURL: bot.user!.displayAvatarURL() });
 
   if (amount > 1)
     embed.setTitle(`Rate: 1 ${from.toUpperCase()} = ${exchangeRes.rate.toLocaleString()} ${to.toUpperCase()}`);

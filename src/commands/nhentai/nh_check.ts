@@ -32,12 +32,17 @@ export default class CheckNHentaiCode {
     interaction: CommandInteraction,
   ): Promise<void | Message<boolean>> {
     await interaction.deferReply({ ephemeral: !(interaction.channel as TextChannel)?.nsfw ?? true });
-    const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_GALLERY_ENDPOINT(code));
-    if (!res.data) return await editOrReplyThenDelete(interaction, { content: '❌ Internal error' });
-    if (res.data.status === 400) return await editOrReplyThenDelete(interaction, { content: '❌ Error occur' });
+    try {
+      const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_GALLERY_ENDPOINT(code));
+      if (!res.data) return await editOrReplyThenDelete(interaction, { content: '❌ Internal error' });
+      if (res.data.status === 400) return await editOrReplyThenDelete(interaction, { content: '❌ Error occur' });
 
-    const embed = NHentaiEmbed(res.data, interaction.user);
-    return await interaction.editReply({ embeds: [embed] });
+      const embed = NHentaiEmbed(res.data, interaction.user);
+      return await interaction.editReply({ embeds: [embed] });
+    } catch (err: any) {
+      await editOrReplyThenDelete(interaction, { content: err.message });
+      throw err;
+    }
   }
 
   @SimpleCommand({ aliases: ['nhentai', 'nh'], description: 'Check NHentai nuke code' })
@@ -88,8 +93,8 @@ export default class CheckNHentaiCode {
         return await pagination.send();
       }
     } catch (err: any) {
-      console.log(err);
-      return await editOrReplyThenDelete(command.message, { content: err.message });
+      await editOrReplyThenDelete(command.message, { content: err.message });
+      throw err;
     }
   }
 }

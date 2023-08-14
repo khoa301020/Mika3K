@@ -117,30 +117,35 @@ class SearchNHentai {
 
     const queryString = `${keyword.trim() + queryBuilder(query).trim()}&sort=${sort}&pages=${page}`;
 
-    const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
+    try {
+      const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
 
-    console.log(res.config.url);
-    if (!res.data || res.data.result.length === 0)
-      return await editOrReplyThenDelete(interaction, { content: '❌ No result found' });
-    const list: Array<INHentai> = res.data.result;
-    const pages = list.map((book: INHentai, index: number) => {
-      book.total_search_page = res.data.num_pages;
-      book.current_search_page = page;
-      const embed = NHentaiEmbed(book, interaction.user, index + 1, list.length);
-      return {
-        embeds: [embed],
-      };
-    });
-    const titles = list.map((book: INHentai) => book.title.pretty);
-    const pagination = commonPagination(
-      interaction,
-      pages,
-      CommonConstants.PAGINATION_TYPE.BUTTON,
-      interaction.ephemeral ?? false,
-      titles,
-    );
+      console.log(res.config.url);
+      if (!res.data || !res.data.result)
+        return await editOrReplyThenDelete(interaction, { content: '❌ No result found' });
+      const list: Array<INHentai> = res.data.result;
+      const pages = list.map((book: INHentai, index: number) => {
+        book.total_search_page = res.data.num_pages;
+        book.current_search_page = page;
+        const embed = NHentaiEmbed(book, interaction.user, index + 1, list.length);
+        return {
+          embeds: [embed],
+        };
+      });
+      const titles = list.map((book: INHentai) => book.title.pretty);
+      const pagination = commonPagination(
+        interaction,
+        pages,
+        CommonConstants.PAGINATION_TYPE.BUTTON,
+        interaction.ephemeral ?? false,
+        titles,
+      );
 
-    return await pagination.send();
+      return await pagination.send();
+    } catch (err: any) {
+      await editOrReplyThenDelete(interaction, { content: err.message });
+      throw err;
+    }
   }
 
   @SimpleCommand({ aliases: ['nhs', 'nhsearch'], description: 'Search NHentai' })
@@ -167,25 +172,29 @@ class SearchNHentai {
 
     const queryString = `${encodeURIComponent(query.toLowerCase())}&sort=${sort}&pages=${page}`;
 
-    const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
-    console.log(res.config.url);
-    if (!res.data || res.data.result.length === 0)
-      return await editOrReplyThenDelete(command.message, '❌ No result found');
+    try {
+      const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
+      console.log(res.config.url);
+      if (!res.data || !res.data.result) return await editOrReplyThenDelete(command.message, '❌ No result found');
 
-    const list: Array<INHentai> = res.data.result;
-    const pages = list.map((book: INHentai, index: number) => {
-      book.total_search_page = res.data.num_pages;
-      book.current_search_page = parseInt(page);
-      const embed = NHentaiEmbed(book, command.message.author, index + 1, list.length);
-      return {
-        embeds: [embed],
-      };
-    });
+      const list: Array<INHentai> = res.data.result;
+      const pages = list.map((book: INHentai, index: number) => {
+        book.total_search_page = res.data.num_pages;
+        book.current_search_page = parseInt(page);
+        const embed = NHentaiEmbed(book, command.message.author, index + 1, list.length);
+        return {
+          embeds: [embed],
+        };
+      });
 
-    const titles = list.map((book: INHentai) => book.title.pretty);
-    const pagination = commonPagination(command, pages, 'button', false, titles);
+      const titles = list.map((book: INHentai) => book.title.pretty);
+      const pagination = commonPagination(command, pages, 'button', false, titles);
 
-    return await pagination.send();
+      return await pagination.send();
+    } catch (err: any) {
+      await editOrReplyThenDelete(command.message, { content: err.message });
+      throw err;
+    }
   }
 
   @ContextMenu({
@@ -201,50 +210,54 @@ class SearchNHentai {
       .replace(/<@!?\d+>/g, '') // remove all mentions
       .replace(/https?:\/\/\S+/g, ''); // remove all links (both http and https)
 
-    const codes: Array<string> | null = query.match(/\d{6}/g);
-    if (codes && codes.length > 0) {
-      let results: Array<INHentai> = [];
-      for (const code of codes) {
-        const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_GALLERY_ENDPOINT(code));
-        if (!res.data || res.status === 404) continue;
-        results.push(res.data);
-        await timeout(3333);
-      }
-      if (results.length === 0) return await editOrReplyThenDelete(interaction, { content: '❌ No code found' });
-      if (results.length === 1) {
-        const embed = NHentaiEmbed(results[0], interaction.user);
-        return await interaction.editReply({ embeds: [embed] });
+    try {
+      const codes: Array<string> | null = query.match(/\d{6}/g);
+      if (codes && codes.length > 0) {
+        let results: Array<INHentai> = [];
+        for (const code of codes) {
+          const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_GALLERY_ENDPOINT(code));
+          if (!res.data || res.status === 404) continue;
+          results.push(res.data);
+          await timeout(3333);
+        }
+        if (results.length === 0) return await editOrReplyThenDelete(interaction, { content: '❌ No code found' });
+        if (results.length === 1) {
+          const embed = NHentaiEmbed(results[0], interaction.user);
+          return await interaction.editReply({ embeds: [embed] });
+        } else {
+          const pages = results.map((book: INHentai, index: number) => {
+            const embed = NHentaiEmbed(book, interaction.user, index + 1, results.length);
+            return {
+              embeds: [embed],
+            };
+          });
+          const pagination = commonPagination(interaction, pages, CommonConstants.PAGINATION_TYPE.BUTTON, false);
+
+          return await pagination.send();
+        }
       } else {
-        const pages = results.map((book: INHentai, index: number) => {
-          const embed = NHentaiEmbed(book, interaction.user, index + 1, results.length);
+        const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(query));
+        console.log(res.config.url);
+        if (!res.data || !res.data.result) return await editOrReplyThenDelete(interaction, '❌ No result found');
+
+        const list: Array<INHentai> = res.data.result;
+        const pages = list.map((book: INHentai, index: number) => {
+          book.total_search_page = res.data.num_pages;
+          book.current_search_page = 1;
+          const embed = NHentaiEmbed(book, interaction.user, index + 1, list.length);
           return {
             embeds: [embed],
           };
         });
-        const pagination = commonPagination(interaction, pages, CommonConstants.PAGINATION_TYPE.BUTTON, false);
+
+        const titles = list.map((book: INHentai) => book.title.pretty);
+        const pagination = commonPagination(interaction, pages, CommonConstants.PAGINATION_TYPE.BUTTON, false, titles);
 
         return await pagination.send();
       }
-    } else {
-      const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(query));
-      console.log(res.config.url);
-      if (!res.data || res.data.result.length === 0)
-        return await editOrReplyThenDelete(interaction, '❌ No result found');
-
-      const list: Array<INHentai> = res.data.result;
-      const pages = list.map((book: INHentai, index: number) => {
-        book.total_search_page = res.data.num_pages;
-        book.current_search_page = 1;
-        const embed = NHentaiEmbed(book, interaction.user, index + 1, list.length);
-        return {
-          embeds: [embed],
-        };
-      });
-
-      const titles = list.map((book: INHentai) => book.title.pretty);
-      const pagination = commonPagination(interaction, pages, CommonConstants.PAGINATION_TYPE.BUTTON, false, titles);
-
-      return await pagination.send();
+    } catch (err: any) {
+      await editOrReplyThenDelete(interaction, { content: err.message });
+      throw err;
     }
   }
 }

@@ -7,7 +7,7 @@ import { INHentaiQueryKey, INHentaiQueryParam } from '../types/nhentai';
 export async function simulateNHentaiRequest(url: string): Promise<AxiosResponse> {
   // return await axios.get(url);
 
-  if (process.env.NHENTAI_USE_ORIGIN !== 'false')
+  if (process.env.NHENTAI_USE_ORIGIN === 'true')
     return await axios.get(
       url.replace(
         NHentaiConstants.NHENTAI_BASE_API,
@@ -15,7 +15,7 @@ export async function simulateNHentaiRequest(url: string): Promise<AxiosResponse
       ),
       {
         validateStatus(status) {
-          return (status >= 200 && status < 300) || status == 403 || status == 404;
+          return (status >= 200 && status < 300) || status == 404;
         },
       },
     );
@@ -27,6 +27,9 @@ export async function simulateNHentaiRequest(url: string): Promise<AxiosResponse
     httpsAgent: new HttpsCookieAgent({ cookies: { jar } }),
     headers: {
       'User-Agent': process.env.USER_AGENT || CommonConstants.USER_AGENT,
+    },
+    validateStatus(status) {
+      return (status >= 200 && status < 300) || status == 404;
     },
   });
 }

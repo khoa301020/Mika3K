@@ -2,7 +2,7 @@ import { TPaginationType } from '../types/common';
 
 export default class CommonConstants {
   public static readonly USER_AGENT =
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36';
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36 Edg/115.0.1901.203';
   public static readonly DEFAULT_EMBED_COLOR = 0x0099ff;
   public static readonly EMBED_TITLE_LIMIT = 256;
   public static readonly EMBED_DESCRIPTION_LIMIT = 4096;

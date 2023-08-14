@@ -63,7 +63,7 @@ bot.once('ready', async () => {
 });
 
 process.on('unhandledRejection', (error: Error) => {
-  if (!process.env.NODE_ENV && process.env.NODE_ENV === 'development') return console.error(error);
+  if (process.env.NODE_ENV === 'development') return console.error(error);
   console.log(`[${currentTime()}] ERROR: ${error.message}`);
 
   if (!process.env.LOG_CHANNEL_ID) {

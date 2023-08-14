@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import { PixivConstants } from '../constants/index.js';
 import { cache } from '../main.js';
 import { IPixivRefreshTokenResponse } from '../types/pixiv';
+import { currentTime } from '../utils/index.js';
 
 const cronName = 'Pixiv Refresh token';
 
@@ -50,5 +51,5 @@ export async function cacheAccessToken() {
 
 export const refreshPixivToken = new CronJob('0 */30 * * * *', async () => {
   await cacheAccessToken();
-  console.log(`[${cronName}] done.`);
+  console.log(`[${currentTime()}] ${cronName} done.`);
 });

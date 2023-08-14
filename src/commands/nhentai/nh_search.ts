@@ -17,15 +17,10 @@ import {
   SlashOption,
 } from 'discordx';
 import { CommonConstants, NHentaiConstants } from '../../constants/index.js';
-import { NHentaiEmbed, NHentaiListEmbed } from '../../providers/embeds/nhentaiEmbed.js';
+import { NHentaiEmbed } from '../../providers/embeds/nhentaiEmbed.js';
 import { commonPagination } from '../../providers/pagination.js';
 import { queryBuilder, simulateNHentaiRequest } from '../../services/nhentai.js';
-import {
-  INHentaiModulesGallery,
-  INHentaiModulesResult,
-  INHentaiQueryParam,
-  INHentaiQuerySort,
-} from '../../types/nhentai.js';
+import { INHentai, INHentaiQueryParam, INHentaiQuerySort } from '../../types/nhentai.js';
 import { editOrReplyThenDelete, timeout } from '../../utils/index.js';
 import CheckNHentaiCode from './nh_check.js';
 
@@ -125,18 +120,18 @@ class SearchNHentai {
     const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
 
     console.log(res.config.url);
-    if (!res.data || res.data.status !== 200 || res.data.data.num_pages === 0)
+    if (!res.data || res.data.result.length === 0)
       return await editOrReplyThenDelete(interaction, { content: '❌ No result found' });
-    const list: Array<INHentaiModulesResult> = res.data.data.result;
-    const pages = list.map((book: INHentaiModulesResult, index: number) => {
+    const list: Array<INHentai> = res.data.result;
+    const pages = list.map((book: INHentai, index: number) => {
       book.total_search_page = res.data.num_pages;
       book.current_search_page = page;
-      const embed = NHentaiListEmbed(book, interaction.user, index + 1, list.length);
+      const embed = NHentaiEmbed(book, interaction.user, index + 1, list.length);
       return {
         embeds: [embed],
       };
     });
-    const titles = list.map((book: INHentaiModulesResult) => book.title.pretty);
+    const titles = list.map((book: INHentai) => book.title.pretty);
     const pagination = commonPagination(
       interaction,
       pages,
@@ -174,20 +169,20 @@ class SearchNHentai {
 
     const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
     console.log(res.config.url);
-    if (!res.data || res.data.status !== 200 || res.data.data.num_pages === 0)
+    if (!res.data || res.data.result.length === 0)
       return await editOrReplyThenDelete(command.message, '❌ No result found');
 
-    const list: Array<INHentaiModulesResult> = res.data.data.result;
-    const pages = list.map((book: INHentaiModulesResult, index: number) => {
-      book.total_search_page = res.data.data.num_pages;
+    const list: Array<INHentai> = res.data.result;
+    const pages = list.map((book: INHentai, index: number) => {
+      book.total_search_page = res.data.num_pages;
       book.current_search_page = parseInt(page);
-      const embed = NHentaiListEmbed(book, command.message.author, index + 1, list.length);
+      const embed = NHentaiEmbed(book, command.message.author, index + 1, list.length);
       return {
         embeds: [embed],
       };
     });
 
-    const titles = list.map((book: INHentaiModulesResult) => book.title.pretty);
+    const titles = list.map((book: INHentai) => book.title.pretty);
     const pagination = commonPagination(command, pages, 'button', false, titles);
 
     return await pagination.send();
@@ -208,11 +203,11 @@ class SearchNHentai {
 
     const codes: Array<string> | null = query.match(/\d{6}/g);
     if (codes && codes.length > 0) {
-      let results: Array<INHentaiModulesGallery> = [];
+      let results: Array<INHentai> = [];
       for (const code of codes) {
         const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_GALLERY_ENDPOINT(code));
-        if (!res.data || res.status === 404 || res.data.status !== 200) continue;
-        results.push(res.data.data);
+        if (!res.data || res.status === 404) continue;
+        results.push(res.data);
         await timeout(3333);
       }
       if (results.length === 0) return await editOrReplyThenDelete(interaction, { content: '❌ No code found' });
@@ -220,7 +215,7 @@ class SearchNHentai {
         const embed = NHentaiEmbed(results[0], interaction.user);
         return await interaction.editReply({ embeds: [embed] });
       } else {
-        const pages = results.map((book: INHentaiModulesGallery, index: number) => {
+        const pages = results.map((book: INHentai, index: number) => {
           const embed = NHentaiEmbed(book, interaction.user, index + 1, results.length);
           return {
             embeds: [embed],
@@ -233,20 +228,20 @@ class SearchNHentai {
     } else {
       const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(query));
       console.log(res.config.url);
-      if (!res.data || res.data.status !== 200 || res.data.data.num_pages === 0)
+      if (!res.data || res.data.result.length === 0)
         return await editOrReplyThenDelete(interaction, '❌ No result found');
 
-      const list: Array<INHentaiModulesResult> = res.data.data.result;
-      const pages = list.map((book: INHentaiModulesResult, index: number) => {
-        book.total_search_page = res.data.data.num_pages;
+      const list: Array<INHentai> = res.data.result;
+      const pages = list.map((book: INHentai, index: number) => {
+        book.total_search_page = res.data.num_pages;
         book.current_search_page = 1;
-        const embed = NHentaiListEmbed(book, interaction.user, index + 1, list.length);
+        const embed = NHentaiEmbed(book, interaction.user, index + 1, list.length);
         return {
           embeds: [embed],
         };
       });
 
-      const titles = list.map((book: INHentaiModulesResult) => book.title.pretty);
+      const titles = list.map((book: INHentai) => book.title.pretty);
       const pagination = commonPagination(interaction, pages, CommonConstants.PAGINATION_TYPE.BUTTON, false, titles);
 
       return await pagination.send();

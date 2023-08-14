@@ -1,9 +1,4 @@
-import {
-  ApplicationCommandOptionType,
-  CommandInteraction,
-  Message,
-  TextChannel
-} from 'discord.js';
+import { ApplicationCommandOptionType, CommandInteraction, Message, TextChannel } from 'discord.js';
 import {
   Discord,
   SimpleCommand,
@@ -12,13 +7,13 @@ import {
   SimpleCommandOptionType,
   Slash,
   SlashGroup,
-  SlashOption
+  SlashOption,
 } from 'discordx';
 import { CommonConstants, NHentaiConstants } from '../../constants/index.js';
 import { NHentaiEmbed } from '../../providers/embeds/nhentaiEmbed.js';
 import { commonPagination } from '../../providers/pagination.js';
 import { simulateNHentaiRequest } from '../../services/nhentai.js';
-import { INHentaiModulesGallery } from '../../types/nhentai.js';
+import { INHentai } from '../../types/nhentai.js';
 import { editOrReplyThenDelete, timeout } from '../../utils/index.js';
 
 @SlashGroup({ description: 'NHentai commands', name: 'nhentai' })
@@ -41,7 +36,7 @@ export default class CheckNHentaiCode {
     if (!res.data) return await editOrReplyThenDelete(interaction, { content: '❌ Internal error' });
     if (res.data.status === 400) return await editOrReplyThenDelete(interaction, { content: '❌ Error occur' });
 
-    const embed = NHentaiEmbed(res.data.data, interaction.user);
+    const embed = NHentaiEmbed(res.data, interaction.user);
     return await interaction.editReply({ embeds: [embed] });
   }
 
@@ -70,11 +65,11 @@ export default class CheckNHentaiCode {
 
       const codes: Array<string> | null = content.match(/\d{6}/g);
       if (!codes) return editOrReplyThenDelete(command.message, { content: '❌ No code found in the message' });
-      let results: Array<INHentaiModulesGallery> = [];
+      let results: Array<INHentai> = [];
       for (const code of codes) {
         const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_GALLERY_ENDPOINT(code));
-        if (!res.data || res.status === 404 || res.data.status !== 200) continue;
-        results.push(res.data.data);
+        if (!res.data || res.status === 404) continue;
+        results.push(res.data);
         await timeout(3333);
       }
       if (results.length === 0) return await editOrReplyThenDelete(command.message, { content: '❌ No code found' });
@@ -82,7 +77,7 @@ export default class CheckNHentaiCode {
         const embed = NHentaiEmbed(results[0], command.message.author);
         return await command.message.reply({ embeds: [embed] });
       } else {
-        const pages = results.map((book: INHentaiModulesGallery, index: number) => {
+        const pages = results.map((book: INHentai, index: number) => {
           const embed = NHentaiEmbed(book, command.message.author, index + 1, results.length);
           return {
             embeds: [embed],

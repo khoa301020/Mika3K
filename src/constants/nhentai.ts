@@ -5,18 +5,17 @@ export default class NHentaiConstants {
   public static readonly NHENTAI_BASE_URL = 'https://nhentai.net';
 
   /* NHentai Origin API */
-  // public static readonly NHENTAI_BASE_API = this.NHENTAI_BASE_URL;
-  // public static readonly NHENTAI_SEARCH_ENDPOINT = (query: string) =>
-  // `${this.NHENTAI_BASE_API}/api/galleries/search?query=${query}`;
-  // public static readonly NHENTAI_GALLERY_ENDPOINT = (galleryId: number | string) =>
-  // `${this.NHENTAI_BASE_API}/api/gallery/${galleryId}`;
-  // public static readonly NHENTAI_RANDOM_ENDPOINT = `${this.NHENTAI_BASE_API}/api/gallery/random`;
+  public static readonly NHENTAI_BASE_API = this.NHENTAI_BASE_URL;
+  public static readonly NHENTAI_SEARCH_ENDPOINT = (query: string) =>
+    `${this.NHENTAI_BASE_API}/api/galleries/search?query=${query}`;
+  public static readonly NHENTAI_GALLERY_ENDPOINT = (galleryId: number | string) =>
+    `${this.NHENTAI_BASE_API}/api/gallery/${galleryId}`;
 
   /* NHentai Modules API */
-  public static readonly NHENTAI_BASE_API = 'https://nh.modules.my.id';
-  public static readonly NHENTAI_SEARCH_ENDPOINT = (query: string) => `${this.NHENTAI_BASE_API}/search/${query}`;
-  public static readonly NHENTAI_GALLERY_ENDPOINT = (galleryId: number | string) =>
-    `${this.NHENTAI_BASE_API}/book/${galleryId}`;
+  // public static readonly NHENTAI_BASE_API = 'https://nh.modules.my.id';
+  // public static readonly NHENTAI_SEARCH_ENDPOINT = (query: string) => `${this.NHENTAI_BASE_API}/search/${query}`;
+  // public static readonly NHENTAI_GALLERY_ENDPOINT = (galleryId: number | string) =>
+  //   `${this.NHENTAI_BASE_API}/book/${galleryId}`;
 
   public static readonly NHENTAI_LOGO = 'https://archive.org/download/nhentai-logo-3/nhentai-logo-3.jpg';
   public static readonly NHENTAI_DEFAULT_PAGE = 1;

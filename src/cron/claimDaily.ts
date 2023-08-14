@@ -4,29 +4,21 @@ import { HoYoLABConstants } from '../constants/index.js';
 import { bot } from '../main.js';
 import HoYoLAB from '../models/HoYoLAB.js';
 import { IHoYoLAB, IRedeemResultAccount } from '../types/hoyolab';
-import { timeout } from '../utils/index.js';
+import { currentTime, timeout } from '../utils/index.js';
 
 const cronName = 'HoYoLAB Daily login';
 
 export const claimDaily = new CronJob('0 0 16 * * *', async () => {
   // export const claimDaily = new CronJob('0 * * * * *', async () => {
   const listUsers: Array<IHoYoLAB> = await HoYoLAB.find({}).lean();
-  console.log(
-    `[${new Date().toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' })} - ${cronName}] Found ${
-      listUsers.length
-    } users`,
-  );
+  console.log(`[${currentTime()} - ${cronName}] Found ${listUsers.length} users`);
 
   for (const user of listUsers) {
     if (user.hoyoUsers.length === 0) continue;
 
     let result: Array<any> = [];
 
-    console.log(
-      `[${new Date().toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' })} - ${cronName}] Found ${
-        user.hoyoUsers.length
-      } HoYoLAB users for ${user.userId}`,
-    );
+    console.log(`[${currentTime()} - ${cronName}] Found ${user.hoyoUsers.length} HoYoLAB users for ${user.userId}`);
 
     for (const hoyoUser of user.hoyoUsers) {
       if (hoyoUser.gameAccounts.length === 0) continue;
@@ -37,9 +29,7 @@ export const claimDaily = new CronJob('0 0 16 * * *', async () => {
       });
 
       console.log(
-        `[${new Date().toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' })} - ${cronName}] Found ${
-          hoyoUser.gameAccounts.length
-        } game accounts for ${hoyoUser.remark}`,
+        `[${currentTime()} - ${cronName}] Found ${hoyoUser.gameAccounts.length} game accounts for ${hoyoUser.remark}`,
       );
 
       for (const account of hoyoUser.gameAccounts) {
@@ -134,5 +124,5 @@ export const claimDaily = new CronJob('0 0 16 * * *', async () => {
     });
   }
 
-  console.log(`[${new Date().toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' })} - ${cronName}] Done`);
+  console.log(`[${currentTime()} - ${cronName}] Done`);
 });

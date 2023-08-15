@@ -71,7 +71,9 @@ export interface MetaPage {
   image_urls: ImageUrls;
 }
 
-export interface MetaSinglePage {}
+export interface MetaSinglePage {
+  original_image_url: string;
+}
 
 export interface Tag {
   name: string;

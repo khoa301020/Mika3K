@@ -4,6 +4,7 @@ export default class PixivConstants {
   public static readonly PIXIV_URL = 'https://www.pixiv.net';
   public static readonly PIXIV_IMG_DOMAIN = 'i.pximg.net';
   public static readonly PIXIV_ILLUST_URL = 'https://www.pixiv.net/artworks/';
+  public static readonly PIXIV_USER_URL = 'https://www.pixiv.net/users/';
   public static readonly PIXIV_LOGO = 'https://policies.pixiv.net/favicon.a8396493.ico';
 
   /* Pixiv API */

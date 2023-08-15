@@ -18,14 +18,7 @@ class Syosetu {
       type: ApplicationCommandOptionType.String,
     })
     action: TFollowAction,
-    @SlashOption({
-      description: 'The Ncode of the novel',
-      name: 'ncode',
-      required: true,
-      type: ApplicationCommandOptionType.String,
-    })
-    ncode: string,
-    @SlashChoice({ name: 'User (this user)', value: 'users' }, { name: 'Channel (this channel)', value: 'channels' })
+    @SlashChoice({ name: 'This user', value: 'users' }, { name: 'This channel', value: 'channels' })
     @SlashOption({
       description: 'Select follow target',
       name: 'target',
@@ -33,6 +26,13 @@ class Syosetu {
       type: ApplicationCommandOptionType.String,
     })
     target: TFollowTarget,
+    @SlashOption({
+      description: 'The Ncode of the novel',
+      name: 'ncode',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    ncode: string,
     interaction: CommandInteraction,
   ): Promise<any> {
     await interaction.deferReply();

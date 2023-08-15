@@ -11,10 +11,11 @@ export const convertToQuery = (request: ISyosetuRequest): string =>
 
 export const SyosetuAPI = {
   checkNovelExists: async (ncode: string): Promise<[boolean, boolean]> => {
-    const isSaved = (await Syosetu.exists({ ncode })) ? true : false;
     const request: ISyosetuRequest = { ncode: [ncode], out: 'json', of: ['n', 'gf'], lim: 1 };
     const { data } = await SyosetuAPI.getNovel(request);
     const isExists = data[0].allcount > 0 ? true : false;
+    if (!isExists) return [isExists, false];
+    const isSaved = (await Syosetu.exists({ ncode })) ? true : false;
     return [isExists, isSaved];
   },
   getNovel: async (request: ISyosetuRequest): Promise<AxiosResponse> =>

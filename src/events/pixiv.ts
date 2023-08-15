@@ -1,7 +1,7 @@
 // import type { ArgsOf, Client } from 'discordx';
 import axios, { AxiosResponse } from 'axios';
 import { ChannelType } from 'discord.js';
-import { ArgsOf, Client, Discord, On } from 'discordx';
+import { ArgsOf, Discord, On } from 'discordx';
 import { PixivConstants } from '../constants/index.js';
 import { cache } from '../main.js';
 import { PixivIllustListEmbeds } from '../providers/embeds/pixivEmbed.js';
@@ -14,12 +14,11 @@ export class CommonEvents {
    * Pixiv preview
    *
    * @param {ArgsOf<'messageCreate'>} [message]
-   * @param {Client} client
    * @memberof CommonEvents
    *
    */
   @On({ event: 'messageCreate' })
-  async PixivPreview([message]: ArgsOf<'messageCreate'>, client: Client): Promise<void> {
+  async PixivPreview([message]: ArgsOf<'messageCreate'>): Promise<void> {
     if (message.author.bot) return;
     if (message.channel.type !== ChannelType.GuildText) return;
     if (!message.content.match(PixivConstants.PIXIV_ILLUST_URL_REGEX)) return;
@@ -45,7 +44,7 @@ export class CommonEvents {
     if (!illustRes || !illustRes.illust) return;
 
     if (!message.channel.nsfw && illustRes.illust.x_restrict !== PixivConstants.PIXIV_SAFE_VALUE)
-      return editOrReplyThenDelete(message, 'This illust is NSFW, preview is only available in NSFW channels.');
+      return editOrReplyThenDelete(message, '❌ This illust is NSFW, preview is only available in NSFW channels.');
 
     message.reply({
       embeds: [...PixivIllustListEmbeds(illustRes.illust)],

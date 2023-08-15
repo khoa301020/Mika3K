@@ -115,7 +115,7 @@ class SearchNHentai {
       category: category?.toString().split('|'),
     };
 
-    const queryString = `${keyword.trim() + queryBuilder(query).trim()}&sort=${sort}&pages=${page}`;
+    const queryString = `${keyword.trim() + queryBuilder(query).trim()}&sort=${sort}&page=${page}`;
 
     try {
       const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
@@ -170,7 +170,7 @@ class SearchNHentai {
     const codes: Array<string> | null = query.match(/\d{6}/g);
     if (codes && codes.length > 0) return new CheckNHentaiCode().checkCodeCommand(query, command);
 
-    const queryString = `${encodeURIComponent(query.toLowerCase())}&sort=${sort}&pages=${page}`;
+    const queryString = `${encodeURIComponent(query.toLowerCase())}&sort=${sort}&page=${page}`;
 
     try {
       const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));

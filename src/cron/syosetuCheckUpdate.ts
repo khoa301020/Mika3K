@@ -16,11 +16,13 @@ export const syosetuCheckUpdate = new CronJob('0 0 * * * *', async () => {
     } else if (before.metadata.general_all_no !== after.metadata.general_all_no) {
       // Notify to all users
       after.followings.users.forEach(async (user: string) => {
-        bot.users.send(user, `Novel **${after.metadata.title}** has been updated!`);
+        await bot.users.send(user, `Novel **${after.metadata.title}** has been updated!`);
       });
       // Notify to all channels (@here)
       after.followings.channels.forEach(async (channel: string) => {
-        (bot.channels.cache.get(channel) as TextChannel).send(`Novel **${after.metadata.title}** has been updated!`);
+        await (bot.channels.cache.get(channel) as TextChannel).send(
+          `Novel **${after.metadata.title}** has been updated!`,
+        );
       });
     }
   });

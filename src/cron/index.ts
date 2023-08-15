@@ -23,7 +23,7 @@ function initCronJobs(): void {
     claimDaily.start(); // Claim HoYoLAB daily everyday at 00:00 UTC+8
     refreshPixivToken.start(); // Refresh Pixiv token every 30 minutes
     if (process.env.NHENTAI_USE_ORIGIN === 'false') refreshNHentaiCfToken.start(); // Refresh NHentai Cloudflare token every 20 minutes
-    syosetuCheckUpdate.start(); // Check Syosetu update every 1 hour
+    syosetuCheckUpdate.start(); // Check update Syosetu every 1 hour
   }
 }
 

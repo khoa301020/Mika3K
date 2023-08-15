@@ -16,5 +16,7 @@ export const refreshCf = async () => {
 };
 
 export const refreshNHentaiCfToken = new CronJob('0 */20 * * * *', async () => {
+  console.log(`[${currentTime()}] ${cronName} started.`);
   await refreshCf();
+  console.log(`[${currentTime()}] ${cronName} finished.`);
 });

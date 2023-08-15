@@ -9,6 +9,7 @@ import { currentTime, timeout } from '../utils/index.js';
 const cronName = 'HoYoLAB Daily login';
 
 export const claimDaily = new CronJob('0 0 16 * * *', async () => {
+  console.log(`[${currentTime()}] ${cronName} started.`);
   // export const claimDaily = new CronJob('0 * * * * *', async () => {
   const listUsers: Array<IHoYoLAB> = await HoYoLAB.find({}).lean();
   console.log(`[${currentTime()} - ${cronName}] Found ${listUsers.length} users`);
@@ -124,5 +125,5 @@ export const claimDaily = new CronJob('0 0 16 * * *', async () => {
     });
   }
 
-  console.log(`[${currentTime()} - ${cronName}] Done`);
+  console.log(`[${currentTime()}] ${cronName} finished.`);
 });

@@ -50,6 +50,7 @@ export async function cacheAccessToken() {
 }
 
 export const refreshPixivToken = new CronJob('0 */30 * * * *', async () => {
+  console.log(`[${currentTime()}] ${cronName} started.`);
   await cacheAccessToken();
-  console.log(`[${currentTime()}] ${cronName} done.`);
+  console.log(`[${currentTime()}] ${cronName} finished.`);
 });

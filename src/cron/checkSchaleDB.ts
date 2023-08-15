@@ -9,6 +9,8 @@ import { ICommon } from '../types/bluearchive/common.js';
 import { ILocalization } from '../types/bluearchive/localization.js';
 import { currentTime } from '../utils/index.js';
 
+const cronName = 'Check update SchaleDB';
+
 function getChanges(oldCount: number | undefined, newCount: number): string {
   if (!oldCount || oldCount === newCount) return '';
   const operator = oldCount < newCount ? '+' : '-';
@@ -25,6 +27,8 @@ export async function cacheCommonData(): Promise<void> {
 }
 
 export const checkSchaleDB = new CronJob('0 0 * * * *', async () => {
+  console.log(`[${currentTime()}] ${cronName} started.`);
+
   const { data } = await axios.get('https://api.github.com/repos/lonqie/SchaleDB/branches/main');
 
   if (cache.get('SchaleDB') !== data.commit.sha) {
@@ -108,4 +112,6 @@ export const checkSchaleDB = new CronJob('0 0 * * * *', async () => {
         console.log(`[${currentTime()}] SchaleDB updated to [${data.commit.sha}]`);
       });
   }
+
+  console.log(`[${currentTime()}] ${cronName} finished.`);
 });

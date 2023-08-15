@@ -4,8 +4,13 @@ import { bot } from '../main.js';
 import Syosetu from '../models/Syosetu.js';
 import { SyosetuAPI } from '../services/syosetu.js';
 import { IMongooseDocumentNovel } from '../types/syosetu';
+import { currentTime } from '../utils/index.js';
+
+const cronName = 'Check update Syosetu';
 
 export const syosetuCheckUpdate = new CronJob('0 0 * * * *', async () => {
+  console.log(`[${currentTime()}] ${cronName} started.`);
+
   const beforeUpdates = await Syosetu.find({}).exec();
 
   beforeUpdates.forEach(async (before: IMongooseDocumentNovel) => {
@@ -26,4 +31,6 @@ export const syosetuCheckUpdate = new CronJob('0 0 * * * *', async () => {
       });
     }
   });
+
+  console.log(`[${currentTime()}] ${cronName} finished.`);
 });

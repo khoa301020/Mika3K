@@ -1,11 +1,10 @@
-import axios from 'axios';
 import { ApplicationCommandOptionType, CommandInteraction } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
 import CommonConstants from '../../constants/common.js';
-import { SyosetuConstants } from '../../constants/syosetu.js';
+import { SyosetuConstants } from '../../constants/index.js';
 import { SyosetuNovelEmbed } from '../../providers/embeds/syosetuEmbed.js';
 import { commonPagination } from '../../providers/pagination.js';
-import { convertToQuery } from '../../services/syosetu.js';
+import { SyosetuAPI, convertToQuery } from '../../services/syosetu.js';
 import {
   ICommandSingleSelect,
   ISyosetuNovel,
@@ -274,7 +273,7 @@ class Syosetu {
     );
 
     console.log(SyosetuConstants.SYOSETU_BASE_URL + convertToQuery(request));
-    const res = await axios.get(SyosetuConstants.SYOSETU_BASE_URL + convertToQuery(request));
+    const res = await SyosetuAPI.getNovel(request);
 
     const syosetuRes: Array<ISyosetuResponseMeta | ISyosetuNovel> = res.data;
 

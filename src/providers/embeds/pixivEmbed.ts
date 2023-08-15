@@ -11,6 +11,7 @@ export const PixivIllustListEmbeds = (illust: IPixivIllust): Array<EmbedBuilder>
 
   return image_urls.slice(0, 4).map((image_url: string) =>
     new EmbedBuilder()
+      .setColor(PixivConstants.PIXIV_EMBED_COLOR)
       .setURL(PixivConstants.PIXIV_ILLUST_URL + illust.id)
       .setAuthor({
         name: illust.user.name.slice(0, CommonConstants.EMBED_AUTHOR_NAME_LIMIT),

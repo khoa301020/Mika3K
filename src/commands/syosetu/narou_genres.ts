@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType, CommandInteraction } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
-import { SyosetuConstants } from '../../constants/syosetu.js';
+import { SyosetuConstants } from '../../constants/index.js';
 import { SyosetuGenreListEmbed } from '../../providers/embeds/syosetuEmbed.js';
 import { I18n } from '../../types/common.js';
 

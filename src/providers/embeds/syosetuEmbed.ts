@@ -1,7 +1,6 @@
 import type { APIEmbedField, User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
-import { CommonConstants } from '../../constants/index.js';
-import { SyosetuConstants } from '../../constants/syosetu.js';
+import { CommonConstants, SyosetuConstants } from '../../constants/index.js';
 import { I18n } from '../../types/common.js';
 import {
   ISyosetuGeneralEmbedFields,

@@ -135,6 +135,21 @@ export interface ISyosetuNovel {
   updated_at?: Date; // 最終更新日時 //　Last data update date time (this is for the system and has nothing to do with the novel update)
 }
 
+export interface ISyosetuMetadataFields
+  extends Pick<
+    ISyosetuNovel,
+    | 'title'
+    | 'writer'
+    | 'story'
+    | 'general_lastup'
+    | 'novel_type'
+    | 'end'
+    | 'general_all_no'
+    | 'length'
+    | 'time'
+    | 'novelupdated_at'
+  > {}
+
 export interface ISyosetuGeneralFields
   extends Pick<
     ISyosetuNovel,
@@ -313,4 +328,17 @@ export interface ICommandSingleSelect {
   key: string;
   value: string;
   trans: string;
+}
+
+export type TFollowTarget = 'users' | 'channels';
+export type TFollowAction = 'follow' | 'unfollow';
+
+export interface IMongooseDocumentNovel {
+  ncode: string;
+  metadata: ISyosetuMetadataFields;
+  followings: {
+    users: Array<string>;
+    channels: Array<string>;
+  };
+  lastSystemUpdate: Date;
 }

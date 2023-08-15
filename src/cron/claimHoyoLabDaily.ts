@@ -3,7 +3,7 @@ import { CronJob } from 'cron';
 import { HoYoLABConstants } from '../constants/index.js';
 import { bot } from '../main.js';
 import HoYoLAB from '../models/HoYoLAB.js';
-import { IHoYoLAB, IRedeemResultAccount } from '../types/hoyolab';
+import { IHoYoLAB, IRedeemResultAccount } from '../types/hoyolab.js';
 import { currentTime, timeout } from '../utils/index.js';
 
 const cronName = 'HoYoLAB Daily login';

@@ -24,32 +24,33 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 
 ## NHentai
 
-|    Feature   |     Context menu     |    Message command   |   Slash command   |
-|:------------:|:--------------------:|:--------------------:|:-----------------:|
-| Check nuke   |          :x:         | `$nh` / `$nhentai` |  `/nhentai check` |
-| Search nuke  |          :x:         | `$nhs` / `$nhsearch` |  `/nhentai search` |
-| Random nuke  |  :heavy_check_mark:  | `$nhrd` / `$nhrandom` |  `/nhentai random` |
+|    Feature   |     Context menu     |    Message command    |    Slash command   |
+|:------------:|:--------------------:|:---------------------:|:------------------:|
+| Check nuke   |          :x:         |   `$nh` / `$nhentai`  |  `/nhentai check`  |
+| Search nuke  |  :heavy_check_mark:  |  `$nhs` / `$nhsearch` |  `/nhentai search` |
+| Random nuke  |          :x:         | `$nhrd` / `$nhrandom` |  `/nhentai random` |
 
 ## Syosetu
 
-|   Feature  | Context menu |    Message command   |   Slash command   |
-|:-----------:|:------------:|:--------------------:|:-----------------:|
-| Search novel  |      :x:     |        :x:        |  `/syosetu search` |
-| List genres  |      :x:     |        :x:        |  `/syosetu genres` |
+|         Feature        | Context menu |    Message command    |    Slash command   |
+|:----------------------:|:------------:|:---------------------:|:------------------:|
+|      Search novel      |      :x:     |          :x:          |  `/syosetu search` |
+|      List genres       |      :x:     |          :x:          |  `/syosetu genres` |
+| Follow/unfollow novel  |      :x:     |          :x:          |  `/syosetu follow` |
 
 ## HoYoLAB
 
-|     Feature    | Context menu | Message command |       Slash command       |
-|:---------------:|:------------:|:---------------:|:-------------------------:|
-|     My info     |      :x:     |       :x:       |      `/hoyolab info`      |
-| Save token (with account selection)      |      :x:     |       :x:       |   `/hoyolab save-token`   |
-| Redeem giftcode  |      :x:     |       :x:       | `/hoyolab redeem-giftcode` |
-| Delete remark user |      :x:     |       :x:       | `/hoyolab delete-remark` |
-| Auto claim daily |      :x:     |       :x:       |            :x:           |
+|                  Feature                 | Context menu | Message command |       Slash command        |
+|:----------------------------------------:|:------------:|:---------------:|:--------------------------:|
+| My info                                  |      :x:     |       :x:       |       `/hoyolab info`      |
+| Save token (with account selection)      |      :x:     |       :x:       |    `/hoyolab save-token`   |
+| Redeem giftcode                          |      :x:     |       :x:       | `/hoyolab redeem-giftcode` |
+| Delete remark user                       |      :x:     |       :x:       |  `/hoyolab delete-remark`  |
+| Auto claim daily                         |      :x:     |       :x:       |             :x:            |
 
 ## Quote
 
-|    Feature   | Context menu |      Message command     |   Slash command  |
+|    Feature    | Context menu |      Message command     |   Slash command  |
 |:-------------:|:------------:|:------------------------:|:----------------:|
 | Create quote  |      :x:     |   `$$` / `$createquote`  |  `/quote create` |
 | Get quote     |      :x:     |    `$$$` / `$getquote`   |   `/quote get`   |
@@ -62,9 +63,9 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 
 ## Minigames
 
-|                Feature               | Context menu |     Message command     |       Slash command       |
+|                Feature                | Context menu |     Message command     |       Slash command       |
 |:-------------------------------------:|:------------:|:-----------------------:|:-------------------------:|
-| Play jankenpon (rock, scissor, paper) |      :x:     | `$jkp` / `$jankenpon` |   `/minigame jankenpon`   |
+| Play jankenpon (rock, scissor, paper) |      :x:     |  `$jkp` / `$jankenpon`  |   `/minigame jankenpon`   |
 
 
 ## Misc
@@ -78,7 +79,7 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 
 # Resources
 
-- NHentai API by [paukuman/Nhentai-Modules](https://github.com/paukuman/Nhentai-Modules)
+<!-- - NHentai API by [paukuman/Nhentai-Modules](https://github.com/paukuman/Nhentai-Modules) -->
 - MyAnimeList API by [Jikan](https://github.com/jikan-me/jikan), typings from [@shineiichijo/marika](https://github.com/LuckyYam/Marika)
 - Blue Archive data from [@lonqie/SchaleDB](https://github.com/lonqie/SchaleDB)
 

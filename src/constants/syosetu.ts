@@ -5,16 +5,30 @@ import {
   ISyosetuNovelPointsFields,
   ISyosetuNovelStatusFields,
   ISyosetuNovelTagsFields,
+  TOf,
   TSyosetuBigGenre,
   TSyosetuGenre,
 } from '../types/syosetu';
 
-export class SyosetuConstants {
+export default class SyosetuConstants {
   public static readonly SYOSETU_BASE_URL = 'https://api.syosetu.com/novelapi/api/';
   public static readonly NCODE_NOVEL_BASE_URL = 'https://ncode.syosetu.com/';
   public static readonly SYOSETU_LOGO =
     'https://static.syosetu.com/view/images/common/socialbutton/twitter/twittericon_syosetu.png';
   public static readonly SYOSETU_USER_PAGE = 'https://mypage.syosetu.com/';
+
+  public static readonly SYOSETU_METADATA_QUERY_PARAMS: Array<TOf> = [
+    't', // title
+    'w', // writer
+    's', // story
+    'gl', // general_lastup
+    'nt', // noveltype
+    'e', // end
+    'ga', // general_all_no
+    'l', // length
+    'ti', // time
+    'nu', // novelupdated_at
+  ];
 
   public static readonly BIG_GENRES: { [key in TSyosetuBigGenre]: I18n } = {
     1: { jp: '恋愛', en: 'Love' },

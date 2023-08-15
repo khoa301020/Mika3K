@@ -1,8 +1,9 @@
 import { cacheCurrencies } from '../services/common.js';
 import { cacheCommonData, checkSchaleDB } from './checkSchaleDB.js';
-import { claimDaily } from './claimDaily.js';
+import { claimDaily } from './claimHoyoLabDaily.js';
 import { refreshCf, refreshNHentaiCfToken } from './refreshNhentaiCfToken.js';
 import { cacheAccessToken, refreshPixivToken } from './refreshPixivToken.js';
+import { syosetuCheckUpdate } from './syosetuCheckUpdate.js';
 
 async function initFunctions(): Promise<void> {
   // Production only
@@ -22,6 +23,7 @@ function initCronJobs(): void {
     claimDaily.start(); // Claim HoYoLAB daily everyday at 00:00 UTC+8
     refreshPixivToken.start(); // Refresh Pixiv token every 30 minutes
     if (process.env.NHENTAI_USE_ORIGIN === 'false') refreshNHentaiCfToken.start(); // Refresh NHentai Cloudflare token every 20 minutes
+    syosetuCheckUpdate.start(); // Check Syosetu update every 1 hour
   }
 }
 

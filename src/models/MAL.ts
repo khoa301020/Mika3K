@@ -41,6 +41,6 @@ const MALSchema = new mongoose.Schema({
 
 MALSchema.set('toJSON', { virtuals: true });
 
-const Quote = mongoose.model('MAL', MALSchema, 'MAL');
+const MAL = mongoose.model('MAL', MALSchema, 'MAL');
 
-export default Quote;
+export default MAL;

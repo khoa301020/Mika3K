@@ -18,6 +18,7 @@ export default class SyosetuConstants {
   public static readonly SYOSETU_USER_PAGE = 'https://mypage.syosetu.com/';
 
   public static readonly SYOSETU_METADATA_QUERY_PARAMS: Array<TOf> = [
+    'n', // ncode // for iterating
     't', // title
     'w', // writer
     's', // story

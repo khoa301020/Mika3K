@@ -138,6 +138,7 @@ export interface ISyosetuNovel {
 export interface ISyosetuMetadataFields
   extends Pick<
     ISyosetuNovel,
+    | 'ncode'
     | 'title'
     | 'writer'
     | 'story'

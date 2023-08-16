@@ -42,7 +42,7 @@ class Syosetu {
       return editOrReplyThenDelete(interaction, '❌ Novel not found');
     }
     if (!isExists[1]) {
-      await SyosetuAPI.saveNovelInfo(ncode);
+      await SyosetuAPI.saveNovelInfo([ncode]);
     }
 
     let request: Promise<IMongooseDocumentNovel | null>;

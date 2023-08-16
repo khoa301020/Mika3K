@@ -13,30 +13,39 @@ export const syosetuCheckUpdate = new CronJob('0 0 * * * *', async () => {
 
   const beforeUpdates = await Syosetu.find({}).exec();
 
-  beforeUpdates.forEach(async (before: IMongooseDocumentNovel) => {
-    const after: IMongooseDocumentNovel | null = await SyosetuAPI.saveNovelInfo(before.ncode);
-    if (!after) {
-      console.log(`ncode: ${before.ncode} is not found`);
-      return;
-    } else if (before.metadata.general_all_no !== after.metadata.general_all_no) {
-      // Notify to all users
-      after.followings.users.forEach(async (user: string) => {
-        await bot.users.send(
-          user,
-          `Novel **${after.metadata.title}** has been updated at ${
-            datetimeConverter(after.metadata.general_lastup).datetime
-          } (UTC)!`,
-        );
-      });
-      // Notify to all channels (@here)
-      after.followings.channels.forEach(async (channel: string) => {
-        await (bot.channels.cache.get(channel) as TextChannel).send(
-          `Novel **${after.metadata.title}** has been updated at ${
-            datetimeConverter(after.metadata.general_lastup).datetime
-          } (UTC)!`,
-        );
-      });
-    }
+  const ncodes = beforeUpdates.map((novel: IMongooseDocumentNovel) => novel.ncode);
+
+  await SyosetuAPI.saveNovelInfo(ncodes);
+
+  const afterUpdates = await Syosetu.find({}).exec();
+
+  const newUpdates = afterUpdates.filter((after: IMongooseDocumentNovel) =>
+    beforeUpdates.some(
+      (before: IMongooseDocumentNovel) =>
+        before.ncode === after.ncode && before.metadata.general_all_no !== after.metadata.general_all_no,
+    ),
+  );
+
+  console.log(`[${currentTime()}] ${cronName} found ${newUpdates.length} new updates.`);
+
+  newUpdates.forEach(async (newUpdate: IMongooseDocumentNovel) => {
+    // Notify to all users
+    newUpdate.followings.users.forEach(async (user: string) => {
+      await bot.users.send(
+        user,
+        `Novel **${newUpdate.metadata.title}** has been updated at ${
+          datetimeConverter(newUpdate.metadata.general_lastup).datetime
+        } (UTC)!`,
+      );
+    });
+    // Notify to all channels (@here)
+    newUpdate.followings.channels.forEach(async (channel: string) => {
+      await (bot.channels.cache.get(channel) as TextChannel).send(
+        `Novel **${newUpdate.metadata.title}** has been updated at ${
+          datetimeConverter(newUpdate.metadata.general_lastup).datetime
+        } (UTC)!`,
+      );
+    });
   });
 
   console.log(`[${currentTime()}] ${cronName} finished.`);

@@ -21,6 +21,7 @@ export default class SyosetuConstants {
     't', // title
     'w', // writer
     's', // story
+    'gf', // general_firstup
     'gl', // general_lastup
     'nt', // noveltype
     'e', // end

@@ -103,8 +103,8 @@ export interface ISyosetuNovel {
   genre: TSyosetuGenre; // ジャンル // Genre
   gensaku?: string; // 現在未使用項目(常に空文字列が返ります) // Currently unused item (always returns an empty string)
   keyword: string; // キーワード // Keyword
-  general_firstup: Date; // 初回掲載日（YYYY-MM-DD HH:MM:SSの形式） // First publication date (in the form of YYYY-MM-DD HH:MM:SS)
-  general_lastup: Date; // 最終掲載日（YYYY-MM-DD HH:MM:SSの形式） // Last publication date (in the form of YYYY-MM-DD HH:MM:SS)
+  general_firstup: string; // 初回掲載日（YYYY-MM-DD HH:MM:SSの形式） // First publication date (in the form of YYYY-MM-DD HH:MM:SS)
+  general_lastup: string; // 最終掲載日（YYYY-MM-DD HH:MM:SSの形式） // Last publication date (in the form of YYYY-MM-DD HH:MM:SS)
   novel_type: 1 | 2; // 連載の場合は1、短編の場合は2 // 1 for serial, 2 for short story
   end: 0 | 1; // 短編小説と完結済小説は0となっています。連載中は1です。 // Short stories and completed novels are 0. It is 1 if still ongoing.
   general_all_no: number; // 全掲載部分数です。短編の場合は1です。 // Total number of all publications. It is 1 for short stories.
@@ -131,8 +131,8 @@ export interface ISyosetuNovel {
   all_hyoka_cnt: number; // 評価者数 //　Number of evaluators
   sasie_cnt: number; // 挿絵の数 //　Number of illustrations
   kaiwaritu: number; // 会話率 //　Conversation rate
-  novelupdated_at: Date; // 小説の更新日時 //　Last novel update datetime
-  updated_at?: Date; // 最終更新日時 //　Last data update date time (this is for the system and has nothing to do with the novel update)
+  novelupdated_at: string; // 小説の更新日時 //　Last novel update datetime
+  updated_at?: string; // 最終更新日時 //　Last data update date time (this is for the system and has nothing to do with the novel update)
 }
 
 export interface ISyosetuMetadataFields
@@ -141,6 +141,7 @@ export interface ISyosetuMetadataFields
     | 'title'
     | 'writer'
     | 'story'
+    | 'general_firstup'
     | 'general_lastup'
     | 'novel_type'
     | 'end'

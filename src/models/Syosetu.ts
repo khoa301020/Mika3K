@@ -11,6 +11,7 @@ const SyosetuSchema = new mongoose.Schema<IMongooseDocumentNovel>({
     title: String,
     writer: String,
     story: String,
+    general_firstup: Date,
     general_lastup: Date,
     novel_type: Number,
     end: Number,

@@ -4,7 +4,7 @@ import { bot } from '../main.js';
 import Syosetu from '../models/Syosetu.js';
 import { SyosetuAPI } from '../services/syosetu.js';
 import { IMongooseDocumentNovel } from '../types/syosetu';
-import { currentTime } from '../utils/index.js';
+import { currentTime, datetimeConverter } from '../utils/index.js';
 
 const cronName = 'Check update Syosetu';
 
@@ -21,12 +21,19 @@ export const syosetuCheckUpdate = new CronJob('0 0 * * * *', async () => {
     } else if (before.metadata.general_all_no !== after.metadata.general_all_no) {
       // Notify to all users
       after.followings.users.forEach(async (user: string) => {
-        await bot.users.send(user, `Novel **${after.metadata.title}** has been updated!`);
+        await bot.users.send(
+          user,
+          `Novel **${after.metadata.title}** has been updated at ${
+            datetimeConverter(after.metadata.general_lastup).datetime
+          } (UTC)!`,
+        );
       });
       // Notify to all channels (@here)
       after.followings.channels.forEach(async (channel: string) => {
         await (bot.channels.cache.get(channel) as TextChannel).send(
-          `Novel **${after.metadata.title}** has been updated!`,
+          `Novel **${after.metadata.title}** has been updated at ${
+            datetimeConverter(after.metadata.general_lastup).datetime
+          } (UTC)!`,
         );
       });
     }

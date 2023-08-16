@@ -29,7 +29,11 @@ export const SyosetuAPI = {
     };
     const { data } = await SyosetuAPI.getNovel(request);
     if (!data || data[0].allcount < 1) throw new Error('❌ Novel not found');
-    const metadata = data[1];
+    const metadata = data[1] as IMongooseDocumentNovel['metadata'];
+    // Add JST offset to date
+    metadata.general_firstup += '+09:00';
+    metadata.general_lastup += '+09:00';
+    metadata.novelupdated_at += '+09:00';
     return await Syosetu.findOneAndUpdate(
       { ncode },
       { metadata, lastSystemUpdate: Date.now() },

@@ -48,5 +48,5 @@ export function queryBuilder(opts: INHentaiQueryParam): string {
   const query = Object.keys(opts)
     .map((key) => queryTransformer(key as INHentaiQueryKey, opts))
     .join(' ');
-  return encodeURIComponent(query.replace(/\s+/g, ' ').trim());
+  return encodeURIComponent(`+${query.replace(/\s+/g, ' ')}`.trim());
 }

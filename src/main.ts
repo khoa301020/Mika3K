@@ -8,7 +8,7 @@ import NodeCache from 'node-cache';
 import { config } from 'dotenv';
 import mongoose from 'mongoose';
 import { ErrorLogEmbed } from './providers/embeds/commonEmbed.js';
-import { currentTime } from './utils/index.js';
+import { getTime } from './utils/index.js';
 config();
 export const botPrefix = process.env.BOT_PREFIX ?? '$';
 export const cache = new NodeCache();
@@ -64,7 +64,7 @@ bot.once('ready', async () => {
 
 process.on('unhandledRejection', (error: Error) => {
   if (process.env.NODE_ENV === 'development') return console.error(error);
-  console.log(`[${currentTime()}] ERROR: ${error.message}`);
+  console.log(`[${getTime()}] ERROR: ${error.message}`);
 
   if (!process.env.LOG_CHANNEL_ID) {
     throw Error('Could not find LOG_CHANNEL_ID in your environment');

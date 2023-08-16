@@ -1,4 +1,5 @@
 import { randomBytes } from 'crypto';
+import dayjs from 'dayjs';
 import {
   ButtonInteraction,
   CommandInteraction,
@@ -11,6 +12,12 @@ import {
 } from 'discord.js';
 import QuickChart from 'quickchart-js';
 import { BaseUserConfig, table } from 'table';
+
+import timezone from 'dayjs/plugin/timezone.js'; // dependent on utc plugin
+import utc from 'dayjs/plugin/utc.js';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 /**
  * Return a random element from an array.
@@ -239,8 +246,11 @@ export const ttc = async (fn: Function, ...args: any[]) => {
 
 export const invertObject = (obj: Object) => Object.entries(obj).map(([key, value]) => [value, key]);
 
-export const currentTime = (timestamp: Date = new Date()) =>
-  new Date(timestamp).toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' }) + ' GMT+7';
+export const getTime = (
+  datetime: Date | string = new Date(),
+  timezone = 'Asia/Ho_Chi_Minh',
+  format = 'DD/MM/YYYY HH:mm:ss (UTCZ)',
+) => dayjs(datetime).tz(timezone).format(format);
 
 export const formatter = new Intl.RelativeTimeFormat(`en`, { style: `narrow` });
 

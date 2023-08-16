@@ -115,13 +115,13 @@ class SearchNHentai {
       category: category?.toString().split('|'),
     };
 
-    const queryString = `${keyword.trim() + queryBuilder(query).trim()}&sort=${sort}&page=${page}`;
+    const queryString = `${keyword.trim() + queryBuilder(query)}&sort=${sort}&page=${page}`;
 
     try {
       const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
 
       console.log(res.config.url);
-      if (!res.data || !res.data.result)
+      if (!res.data || res.data.result.length === 0)
         return await editOrReplyThenDelete(interaction, { content: '❌ No result found' });
       const list: Array<INHentai> = res.data.result;
       const pages = list.map((book: INHentai, index: number) => {
@@ -175,7 +175,8 @@ class SearchNHentai {
     try {
       const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
       console.log(res.config.url);
-      if (!res.data || !res.data.result) return await editOrReplyThenDelete(command.message, '❌ No result found');
+      if (!res.data || res.data.result.length === 0)
+        return await editOrReplyThenDelete(command.message, '❌ No result found');
 
       const list: Array<INHentai> = res.data.result;
       const pages = list.map((book: INHentai, index: number) => {
@@ -238,7 +239,8 @@ class SearchNHentai {
       } else {
         const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(query));
         console.log(res.config.url);
-        if (!res.data || !res.data.result) return await editOrReplyThenDelete(interaction, '❌ No result found');
+        if (!res.data || res.data.result.length === 0)
+          return await editOrReplyThenDelete(interaction, '❌ No result found');
 
         const list: Array<INHentai> = res.data.result;
         const pages = list.map((book: INHentai, index: number) => {

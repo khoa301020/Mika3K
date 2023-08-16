@@ -7,7 +7,7 @@ import NotifyChannel from '../models/NotifyChannel.js';
 import { fetchData } from '../services/bluearchive.js';
 import { ICommon } from '../types/bluearchive/common.js';
 import { ILocalization } from '../types/bluearchive/localization.js';
-import { currentTime } from '../utils/index.js';
+import { getTime } from '../utils/index.js';
 
 const cronName = 'Check update SchaleDB';
 
@@ -27,7 +27,7 @@ export async function cacheCommonData(): Promise<void> {
 }
 
 export const checkSchaleDB = new CronJob('0 0 * * * *', async () => {
-  console.log(`[${currentTime()}] ${cronName} started.`);
+  console.log(`[${getTime()}] ${cronName} started.`);
 
   const { data } = await axios.get('https://api.github.com/repos/lonqie/SchaleDB/branches/main');
 
@@ -75,7 +75,7 @@ export const checkSchaleDB = new CronJob('0 0 * * * *', async () => {
         const notifyChannels = NotifyChannel.find({ notifyType: 'Blue Archive' });
 
         const embed = new EmbedBuilder()
-          .setTitle(`[${currentTime(data.commit.commit.author.date)}] SchaleDB updated`)
+          .setTitle(`[${getTime(data.commit.commit.author.date)}] SchaleDB updated`)
           .setURL(data.commit.html_url)
           .setColor('#00ff00')
           .setDescription(data.commit.commit.message)
@@ -109,9 +109,9 @@ export const checkSchaleDB = new CronJob('0 0 * * * *', async () => {
       })
       .finally(() => {
         // Clear init cache
-        console.log(`[${currentTime()}] SchaleDB updated to [${data.commit.sha}]`);
+        console.log(`[${getTime()}] SchaleDB updated to [${data.commit.sha}]`);
       });
   }
 
-  console.log(`[${currentTime()}] ${cronName} finished.`);
+  console.log(`[${getTime()}] ${cronName} finished.`);
 });

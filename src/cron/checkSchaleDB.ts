@@ -1,15 +1,15 @@
 import axios from 'axios';
-import { CronJob } from 'cron';
 import { EmbedBuilder, TextChannel } from 'discord.js';
 import { BlueArchiveConstants } from '../constants/index.js';
 import { bot, cache } from '../main.js';
 import NotifyChannel from '../models/NotifyChannel.js';
+import Cron from '../providers/cron.js';
 import { fetchData } from '../services/bluearchive.js';
 import { ICommon } from '../types/bluearchive/common.js';
 import { ILocalization } from '../types/bluearchive/localization.js';
 import { getTime } from '../utils/index.js';
 
-const cronName = 'Check update SchaleDB';
+const cronName = 'CHECK SCHALEDB UPDATE';
 
 function getChanges(oldCount: number | undefined, newCount: number): string {
   if (!oldCount || oldCount === newCount) return '';
@@ -26,9 +26,7 @@ export async function cacheCommonData(): Promise<void> {
   cache.set('BA_Common', BACommon);
 }
 
-export const checkSchaleDB = new CronJob('0 0 * * * *', async () => {
-  console.log(`[${getTime()}] ${cronName} started.`);
-
+export const checkSchaleDB = new Cron(cronName, '0 0 * * * *', async () => {
   const { data } = await axios.get('https://api.github.com/repos/lonqie/SchaleDB/branches/main');
 
   if (cache.get('SchaleDB') !== data.commit.sha) {
@@ -112,6 +110,4 @@ export const checkSchaleDB = new CronJob('0 0 * * * *', async () => {
         console.log(`[${getTime()}] SchaleDB updated to [${data.commit.sha}]`);
       });
   }
-
-  console.log(`[${getTime()}] ${cronName} finished.`);
 });

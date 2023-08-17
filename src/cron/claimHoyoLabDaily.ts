@@ -1,25 +1,23 @@
 import axios from 'axios';
-import { CronJob } from 'cron';
 import { HoYoLABConstants } from '../constants/index.js';
 import { bot } from '../main.js';
 import HoYoLAB from '../models/HoYoLAB.js';
+import Cron from '../providers/cron.js';
 import { IHoYoLAB, IRedeemResultAccount } from '../types/hoyolab.js';
 import { getTime, timeout } from '../utils/index.js';
 
-const cronName = 'HoYoLAB Daily login';
+const cronName = 'HoYoLAB DAILY CLAIM';
 
-export const claimDaily = new CronJob('0 0 16 * * *', async () => {
-  console.log(`[${getTime()}] ${cronName} started.`);
-  // export const claimDaily = new CronJob('0 * * * * *', async () => {
+export const claimDaily = new Cron(cronName, '0 0 16 * * *', async () => {
   const listUsers: Array<IHoYoLAB> = await HoYoLAB.find({}).lean();
-  console.log(`[${getTime()} - ${cronName}] Found ${listUsers.length} users`);
+  console.log(`[${getTime()}] ${cronName} Found ${listUsers.length} users`);
 
   for (const user of listUsers) {
     if (user.hoyoUsers.length === 0) continue;
 
     let result: Array<any> = [];
 
-    console.log(`[${getTime()} - ${cronName}] Found ${user.hoyoUsers.length} HoYoLAB users for ${user.userId}`);
+    console.log(`[${getTime()}] ${cronName} Found ${user.hoyoUsers.length} HoYoLAB users for ${user.userId}`);
 
     for (const hoyoUser of user.hoyoUsers) {
       if (hoyoUser.gameAccounts.length === 0) continue;
@@ -30,7 +28,7 @@ export const claimDaily = new CronJob('0 0 16 * * *', async () => {
       });
 
       console.log(
-        `[${getTime()} - ${cronName}] Found ${hoyoUser.gameAccounts.length} game accounts for ${hoyoUser.remark}`,
+        `[${getTime()}] ${cronName} Found ${hoyoUser.gameAccounts.length} game accounts for ${hoyoUser.remark}`,
       );
 
       for (const account of hoyoUser.gameAccounts) {
@@ -124,6 +122,4 @@ export const claimDaily = new CronJob('0 0 16 * * *', async () => {
       ],
     });
   }
-
-  console.log(`[${getTime()}] ${cronName} finished.`);
 });

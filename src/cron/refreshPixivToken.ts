@@ -1,12 +1,11 @@
 import axios, { AxiosResponse } from 'axios';
-import { CronJob } from 'cron';
 import crypto from 'crypto';
 import { PixivConstants } from '../constants/index.js';
 import { cache } from '../main.js';
+import Cron from '../providers/cron.js';
 import { IPixivRefreshTokenResponse } from '../types/pixiv';
-import { getTime } from '../utils/index.js';
 
-const cronName = 'Pixiv Refresh token';
+const cronName = 'PIXIV REFRESH TOKEN';
 
 function getXClientTime() {
   return new Date().toISOString();
@@ -49,8 +48,4 @@ export async function cacheAccessToken() {
   cache.set('pixivAccessToken', accessToken, pixivRes.expires_in);
 }
 
-export const refreshPixivToken = new CronJob('0 */30 * * * *', async () => {
-  console.log(`[${getTime()}] ${cronName} started.`);
-  await cacheAccessToken();
-  console.log(`[${getTime()}] ${cronName} finished.`);
-});
+export const refreshPixivToken = new Cron(cronName, '0 */30 * * * *', async () => await cacheAccessToken());

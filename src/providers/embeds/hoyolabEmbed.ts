@@ -36,11 +36,13 @@ export const HoYoLABRedeemResultEmbed = (
       value: result.result
         .map((res: IRedeemResult) => {
           const accounts = res.accounts.map((account) => {
-            if (account.code) {
+            if (Number.isInteger(account.code)) {
               switch (account.code) {
-                case 0:
+                case 0: // Success
                   return ` - [${account.uid}] ${account.nickname} ✅`;
-                case -5003:
+                case -2017: // HSR
+                  return ` - [${account.uid}] ${account.nickname} ⏺`;
+                case -5003: // Genshin
                   return ` - [${account.uid}] ${account.nickname} ⏺`;
                 default:
                   return ` - [${account.uid}] ${account.nickname} ❌`;

@@ -62,9 +62,7 @@ export const claimDaily = new Cron(cronName, '0 0 16 * * *', async () => {
         switch (data.retcode) {
           case -5003:
             console.log(
-              `[${new Date().toLocaleString('en-GB', {
-                timeZone: 'Asia/Ho_Chi_Minh',
-              })} - ${cronName}] ${account.game?.toUpperCase()} account [${account.game_uid}] ${
+              `[${getTime()}] ${cronName} ${account.game?.toUpperCase()} account [${account.game_uid}] ${
                 account.nickname
               } has already claimed daily`,
             );
@@ -72,20 +70,16 @@ export const claimDaily = new Cron(cronName, '0 0 16 * * *', async () => {
             break;
           case 0:
             console.log(
-              `[${new Date().toLocaleString('en-GB', {
-                timeZone: 'Asia/Ho_Chi_Minh',
-              })} - ${cronName}] Claimed daily for ${account.game?.toUpperCase()} account [${account.game_uid}] ${
-                account.nickname
-              }`,
+              `[${getTime()}] ${cronName} Claimed daily for ${account.game?.toUpperCase()} account [${
+                account.game_uid
+              }] ${account.nickname}`,
             );
             symbol = '✅';
             break;
 
           default:
             console.log(
-              `[${new Date().toLocaleString('en-GB', {
-                timeZone: 'Asia/Ho_Chi_Minh',
-              })} - ${cronName}] Failed to claim daily for ${account.game?.toUpperCase()} user ${
+              `[${getTime()}] ${cronName} Failed to claim daily for ${account.game?.toUpperCase()} user ${
                 user.userId
               }, message: ${data.message}`,
             );

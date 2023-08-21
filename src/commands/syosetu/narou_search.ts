@@ -29,9 +29,9 @@ const defaultRequest: ISyosetuRequest = {
 };
 
 @Discord()
-@SlashGroup({ name: 'syosetu', description: 'Syosetu commands' })
+@SlashGroup({ name: 'novel', description: 'Novel commands' })
 class Syosetu {
-  @SlashGroup('syosetu')
+  @SlashGroup('syosetu', 'novel')
   @Slash({ name: 'search', description: 'Search Syosetu novels' })
   async searchSyosetu(
     @SlashChoice(

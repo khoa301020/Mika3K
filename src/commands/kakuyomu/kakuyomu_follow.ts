@@ -1,16 +1,17 @@
 import { ApplicationCommandOptionType, CommandInteraction } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
-import { SyosetuAPI } from '../../services/syosetu.js';
-import { IMongooseDocumentNovel, TFollowAction, TFollowTarget } from '../../types/syosetu.js';
+import { KakuyomuAPI } from '../../services/kakuyomu.js';
+import { IKakuyomuDocument } from '../../types/kakuyomu.js';
+import { TFollowAction, TFollowTarget } from '../../types/syosetu.js';
 import { editOrReplyThenDelete } from '../../utils/index.js';
 
 @Discord()
 @SlashGroup({ name: 'novel', description: 'Novel commands' })
-@SlashGroup({ name: 'syosetu', description: 'Syosetu commands', root: 'novel' })
-class Syosetu {
-  @SlashGroup('syosetu', 'novel')
+@SlashGroup({ name: 'kakuyomu', description: 'Kakuyomu commands', root: 'novel' })
+class Kakuyomu {
+  @SlashGroup('kakuyomu', 'novel')
   @Slash({ name: 'follow', description: 'Follow/unfollow a novel' })
-  async followSyosetu(
+  async followKakuyomu(
     @SlashChoice({ name: 'Follow', value: 'follow' }, { name: 'Unfollow', value: 'unfollow' })
     @SlashOption({
       description: 'Select action',
@@ -28,44 +29,48 @@ class Syosetu {
     })
     target: TFollowTarget,
     @SlashOption({
-      description: 'The Ncode of the novel',
-      name: 'ncode',
+      description: 'The ID of the novel',
+      name: 'novel-id',
       required: true,
       type: ApplicationCommandOptionType.String,
     })
-    ncode: string,
+    novelId: string,
     interaction: CommandInteraction,
   ): Promise<any> {
     await interaction.deferReply();
 
-    const isExists: [boolean, boolean] = await SyosetuAPI.checkNovelExists(ncode);
+    const isExists: [boolean, boolean] = await KakuyomuAPI.checkNovelExists(novelId);
     if (!isExists[0]) {
       return editOrReplyThenDelete(interaction, '❌ Novel not found');
     }
     if (!isExists[1]) {
-      await SyosetuAPI.saveNovelInfo([ncode]);
+      await KakuyomuAPI.saveNovelInfo([novelId]);
     }
 
-    let request: Promise<IMongooseDocumentNovel | null>;
+    let request: Promise<IKakuyomuDocument | null>;
     if (action === 'follow') {
-      request = SyosetuAPI.followNovel(target === 'users' ? interaction.user.id : interaction.channelId, ncode, target);
-    } else {
-      request = SyosetuAPI.unfollowNovel(
+      request = KakuyomuAPI.followNovel(
         target === 'users' ? interaction.user.id : interaction.channelId,
-        ncode,
+        novelId,
+        target,
+      );
+    } else {
+      request = KakuyomuAPI.unfollowNovel(
+        target === 'users' ? interaction.user.id : interaction.channelId,
+        novelId,
         target,
       );
     }
 
     return request
-      .then((res: IMongooseDocumentNovel | null) => {
+      .then((res: IKakuyomuDocument | null) => {
         if (!res) {
           return interaction.editReply('❌ Something went wrong');
         }
         interaction.editReply(
           `✅ ${target === 'users' ? `User <@${interaction.user.id}>` : `Channel <#${interaction.channelId}>`} has ${
             action === 'follow' ? 'followed' : 'unfollowed'
-          } the novel **${res.metadata.title}**`,
+          } the novel **${res.novelData.title}**`,
         );
       })
       .catch((err) => {

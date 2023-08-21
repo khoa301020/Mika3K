@@ -1,3 +1,4 @@
+import * as cheerio from 'cheerio';
 import { randomBytes } from 'crypto';
 import dayjs from 'dayjs';
 import {
@@ -13,6 +14,7 @@ import {
 import QuickChart from 'quickchart-js';
 import { BaseUserConfig, table } from 'table';
 
+import axios, { AxiosError } from 'axios';
 import timezone from 'dayjs/plugin/timezone.js'; // dependent on utc plugin
 import utc from 'dayjs/plugin/utc.js';
 
@@ -277,3 +279,18 @@ export async function editOrReplyThenDelete(
   // msg.delete().catch(() => console.error(`Failed to delete message: ${msg.id} in channel: ${msg.channel.id}`));
   else interaction.deleteReply();
 }
+
+export const getHtml = async (url: string) => {
+  try {
+    const { data } = await axios.get(url);
+    return cheerio.load(data);
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      if (error.response?.status === 404) {
+        return null;
+      } else {
+        throw error;
+      }
+    }
+  }
+};

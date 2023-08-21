@@ -5,9 +5,9 @@ import { SyosetuGenreListEmbed } from '../../providers/embeds/syosetuEmbed.js';
 import { I18n } from '../../types/common.js';
 
 @Discord()
-@SlashGroup({ name: 'syosetu', description: 'Syosetu commands' })
+@SlashGroup({ name: 'novel', description: 'Novel commands' })
 class Syosetu {
-  @SlashGroup('syosetu')
+  @SlashGroup('syosetu', 'novel')
   @Slash({ name: 'genres', description: 'List novel genres' })
   async syosetuGenreList(
     @SlashChoice({ name: '日本語', value: 'jp' }, { name: 'English', value: 'en' })

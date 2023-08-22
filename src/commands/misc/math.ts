@@ -12,9 +12,10 @@ class MathCalculation {
     const content = command.argString.trim();
     if (!content) return;
 
-    const result: number = await axios
+    const result: number | null = await axios
       .get(`${CommonConstants.MATHJS_API}${encodeURIComponent(content)}`)
-      .then((res) => parseFloat(res.data));
+      .then((res) => parseFloat(res.data))
+      .catch(() => null);
 
     if (!result) return editOrReplyThenDelete(command.message, { content: '❌ Invalid expression' });
 
@@ -34,9 +35,10 @@ class MathCalculation {
     interaction: CommandInteraction,
   ): Promise<InteractionResponse<boolean> | void> {
     try {
-      const result: number = await axios
+      const result: number | null = await axios
         .get(`${CommonConstants.MATHJS_API}${encodeURIComponent(expression)}`)
-        .then((res) => parseFloat(res.data));
+        .then((res) => parseFloat(res.data))
+        .catch(() => null);
 
       if (!result) return editOrReplyThenDelete(interaction, { content: '❌ Invalid expression', ephemeral: true });
 

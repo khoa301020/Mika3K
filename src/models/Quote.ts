@@ -17,7 +17,11 @@ const QuoteSchema = new mongoose.Schema({
       },
       value: {
         type: String,
-        required: true,
+        required: false,
+      },
+      embeds: {
+        type: Array,
+        required: false,
       },
     },
   },

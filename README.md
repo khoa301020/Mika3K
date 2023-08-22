@@ -34,9 +34,16 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 
 |         Feature        | Context menu |    Message command    |    Slash command   |
 |:----------------------:|:------------:|:---------------------:|:------------------:|
-|      Search novel      |      :x:     |          :x:          |  `/syosetu search` |
+|     Search novels      |      :x:     |          :x:          |  `/syosetu search` |
 |      List genres       |      :x:     |          :x:          |  `/syosetu genres` |
 | Follow/unfollow novel  |      :x:     |          :x:          |  `/syosetu follow` |
+
+## Kakuyomu
+
+|         Feature        | Context menu |    Message command    |    Slash command    |
+|:----------------------:|:------------:|:---------------------:|:-------------------:|
+|    Show novel info     |      :x:     |          :x:          |   `/kakuyomu info`  |
+| Follow/unfollow novel  |      :x:     |          :x:          |  `/kakuyomu follow` |
 
 ## HoYoLAB
 
@@ -50,16 +57,16 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 
 ## Quote
 
-|    Feature    | Context menu |      Message command     |   Slash command  |
-|:-------------:|:------------:|:------------------------:|:----------------:|
-| Create quote  |      :x:     |   `$$` / `$createquote`  |  `/quote create` |
-| Get quote     |      :x:     |    `$$$` / `$getquote`   |   `/quote get`   |
-| Edit quote    |      :x:     |   `$eq` / `$editquote`   |   `/quote edit`  |
-| Delete quote  |      :x:     |  `$dq` / `$deletequote`  |  `/quote delete` |
-| List quotes   |      :x:     |   `$lq` / `$listquotes`  |   `/quote list`  |
-| My quotes     |      :x:     |    `$mq` / `$myquotes`   |   `/quote mine`  |
-| Publish quote |      :x:     | `$plq` / `$publishquote` | `/quote publish` |
-| Private quote |      :x:     | `$prq` / `$privatequote` | `/quote private` |
+|    Feature    |    Context menu    |      Message command     |   Slash command  |
+|:-------------:|:------------------:|:------------------------:|:----------------:|
+| Create quote  | :heavy_check_mark: |   `$$` / `$createquote`  |  `/quote create` |
+| Get quote     |         :x:        |    `$$$` / `$getquote`   |   `/quote get`   |
+| Edit quote    |         :x:        |   `$eq` / `$editquote`   |   `/quote edit`  |
+| Delete quote  |         :x:        |  `$dq` / `$deletequote`  |  `/quote delete` |
+| List quotes   |         :x:        |   `$lq` / `$listquotes`  |   `/quote list`  |
+| My quotes     |         :x:        |    `$mq` / `$myquotes`   |   `/quote mine`  |
+| Publish quote |         :x:        | `$plq` / `$publishquote` | `/quote publish` |
+| Private quote |         :x:        | `$prq` / `$privatequote` | `/quote private` |
 
 ## Minigames
 
@@ -86,8 +93,10 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 # Dependencies
 
 - [QS](https://github.com/ljharb/qs)
-- [Table](https://github.com/gajus/table)
 - [Axios](https://axios-http.com)
+- [Day.js](https://day.js.org)
+- [Table](https://github.com/gajus/table)
+- [Cheerio](https://cheerio.js.org)
 - [Mongoose](https://mongoosejs.com)
 - [Node-cron](https://github.com/kelektiv/node-cron)
 - [Node-cache](https://github.com/node-cache/node-cache)

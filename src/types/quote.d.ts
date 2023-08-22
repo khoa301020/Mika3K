@@ -1,7 +1,9 @@
+import { APIEmbed } from 'discord.js';
 import { Types } from 'mongoose';
 export interface IQuote {
   key: string;
-  value: string;
+  value?: string;
+  embeds?: APIEmbed[];
 }
 
 export interface IUserQuote {

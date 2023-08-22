@@ -1,12 +1,23 @@
 import {
   APIAttachment,
+  APIEmbed,
+  ActionRowBuilder,
   ApplicationCommandOptionType,
+  ApplicationCommandType,
   CommandInteraction,
   InteractionResponse,
   Message,
+  MessageContextMenuCommandInteraction,
+  ModalBuilder,
+  ModalSubmitInteraction,
+  TextChannel,
+  TextInputBuilder,
+  TextInputStyle,
 } from 'discord.js';
 import {
+  ContextMenu,
   Discord,
+  ModalComponent,
   SimpleCommand,
   SimpleCommandMessage,
   SimpleCommandOption,
@@ -16,7 +27,7 @@ import {
   SlashOption,
 } from 'discordx';
 import { CommonConstants } from '../../constants/index.js';
-import { botPrefix } from '../../main.js';
+import { botPrefix, cache } from '../../main.js';
 import { ListQuoteEmbed } from '../../providers/embeds/commonEmbed.js';
 import { commonPagination } from '../../providers/pagination.js';
 import {
@@ -79,16 +90,22 @@ class QuoteCommand {
     key: string,
     command: SimpleCommandMessage,
   ): Promise<Message<boolean> | void> {
-    if (!key) return editOrReplyThenDelete(command.message, 'Keyword required.');
+    if (!key) return editOrReplyThenDelete(command.message, '❌ Keyword required.');
     const keyword = key.trim();
     const guildId = command.message.guildId;
     let quotes: IUserQuote[] = await getQuote(keyword, guildId!);
     if (quotes.length === 0) return editOrReplyThenDelete(command.message, '❌ No quote found.');
 
     quotes = quotes.filter((quote) => command.message.author.id === quote.user || quote.private === false);
-    if (quotes.length === 0) return editOrReplyThenDelete(command.message, '❌ Quote privated.');
+    if (quotes.length === 0) return editOrReplyThenDelete(command.message, '❌ The quote(s) is privated.');
 
-    return command.message.reply({ content: randomArray(quotes).quote?.value });
+    const selectedQuote = randomArray(quotes);
+
+    return command.message.reply({
+      content: selectedQuote.quote?.value,
+      embeds: selectedQuote.quote?.embeds,
+      allowedMentions: { repliedUser: false },
+    });
   }
 
   @SimpleCommand({ aliases: ['lq', 'listquotes'], description: 'Get list quote', argSplitter: ' ' })
@@ -269,9 +286,15 @@ class QuoteSlash {
     if (quotes.length === 0) return editOrReplyThenDelete(interaction, '❌ No quote found.');
 
     quotes = quotes.filter((quote) => interaction.user.id === quote.user || quote.private === false);
-    if (quotes.length === 0) return editOrReplyThenDelete(interaction, '❌ Quote privated.');
+    if (quotes.length === 0) return editOrReplyThenDelete(interaction, '❌ The quote(s) is privated.');
 
-    return interaction.reply({ content: randomArray(quotes).quote?.value, ephemeral: true });
+    const selectedQuote = randomArray(quotes);
+
+    return interaction.reply({
+      content: selectedQuote.quote?.value,
+      embeds: selectedQuote.quote?.embeds,
+      allowedMentions: { repliedUser: false },
+    });
   }
 
   @Slash({ name: 'list', description: 'List quotes' })
@@ -401,5 +424,79 @@ class QuoteSlash {
     const response = await deleteQuote(user!, id);
 
     return interaction.reply({ content: response, ephemeral: true });
+  }
+}
+
+@Discord()
+class QuoteContextMenu {
+  @ContextMenu({
+    name: 'Quote this message',
+    type: ApplicationCommandType.Message,
+  })
+  async saveQuoteContextMenu(interaction: MessageContextMenuCommandInteraction): Promise<void> {
+    const message: Message = await (interaction.channel as TextChannel).messages.fetch(interaction.targetId);
+    const embeds: APIEmbed[] = message.embeds.map((embed) => embed.toJSON());
+
+    /* Modal init */
+    const modal = new ModalBuilder()
+      .setTitle(`Save quote${embeds.length > 0 ? ' (embeds cannot be edited)' : ''}`)
+      .setCustomId('saveQuoteForm');
+
+    const remarkInputComponent = new TextInputBuilder()
+      .setCustomId('remarkField')
+      .setLabel('Quote remark (no space)')
+      .setRequired(true)
+      .setStyle(TextInputStyle.Short)
+      .setPlaceholder('Enter quote remark');
+
+    const contentInputComponent = new TextInputBuilder()
+      .setCustomId('contentField')
+      .setLabel(`Quote content${embeds.length > 0 ? ' (optional because embeds exist)' : ''}`)
+      .setRequired(embeds.length === 0)
+      .setStyle(TextInputStyle.Paragraph)
+      .setValue(`${message.content} ${message.attachments.map((a) => a.url).join(', ')}`.trim());
+
+    cache.set(`quote-${interaction.user.id}-embeds`, embeds, 10 * 60);
+
+    const remarkRow = new ActionRowBuilder<TextInputBuilder>().addComponents(remarkInputComponent);
+
+    const contentRow = new ActionRowBuilder<TextInputBuilder>().addComponents(contentInputComponent);
+
+    modal.addComponents(remarkRow, contentRow);
+
+    // Present the modal to the user
+    interaction.showModal(modal);
+  }
+
+  @ModalComponent()
+  async saveQuoteForm(interaction: ModalSubmitInteraction): Promise<void> {
+    const [remark, content] = ['remarkField', 'contentField'].map((id) => interaction.fields.getTextInputValue(id));
+
+    const embeds = cache.take(`quote-${interaction.user.id}-embeds`) as APIEmbed[];
+
+    if (!embeds && !content) return editOrReplyThenDelete(interaction, '❌ Content required.');
+
+    if (remark.includes(' ')) return editOrReplyThenDelete(interaction, '❌ Remark cannot contain space.');
+
+    const quote: IUserQuote = {
+      guild: interaction.guildId!,
+      user: interaction.user.id,
+      quote: {
+        key: remark,
+        value: content,
+        embeds,
+      },
+      createdAt: new Date(),
+    };
+
+    try {
+      createQuote(quote).then((quoteResponse) => {
+        if (!quoteResponse) return editOrReplyThenDelete(interaction, '❌ Error occured.');
+      });
+    } catch (error) {
+      return editOrReplyThenDelete(interaction, '❌ Error occured.');
+    }
+
+    return editOrReplyThenDelete(interaction, '✅ Quote added successfully.');
   }
 }

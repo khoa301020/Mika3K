@@ -9,6 +9,7 @@ import {
   Message,
   MessageContextMenuCommandInteraction,
   MessagePayload,
+  ModalSubmitInteraction,
   StringSelectMenuInteraction,
 } from 'discord.js';
 import QuickChart from 'quickchart-js';
@@ -263,6 +264,7 @@ export async function editOrReplyThenDelete(
     | CommandInteraction
     | ButtonInteraction
     | MessageContextMenuCommandInteraction
+    | ModalSubmitInteraction
     | StringSelectMenuInteraction
     | Message,
   options: string | InteractionReplyOptions | MessagePayload = '',

@@ -23,7 +23,7 @@ export const PixivIllustListEmbeds = (illust: IPixivIllust): Array<EmbedBuilder>
       })
       .setTitle(illust.title.slice(0, CommonConstants.EMBED_TITLE_LIMIT))
       .setDescription(
-        `#${illust.tags.map((tag) => tag.translated_name ?? tag.name).join(', #')}`.slice(
+        `#${illust.tags.map((tag) => tag.translated_name ?? tag.name).join('　#')}`.slice(
           0,
           CommonConstants.EMBED_DESCRIPTION_LIMIT,
         ),

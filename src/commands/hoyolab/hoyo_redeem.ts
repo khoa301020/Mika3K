@@ -14,7 +14,9 @@ export class HoYoLABRedeem {
   @Slash({ description: 'Redeem giftcode', name: 'redeem-giftcode' })
   async redeemGiftcode(
     @SlashChoice(
-      ...Object.entries(HoYoLABConstants.REDEEM_TARGET).map(([key, value]) => Object({ name: value.name, value: key })),
+      ...Object.entries(HoYoLABConstants.REDEEM_TARGET)
+        .filter(([, value]) => value.isRedeemable)
+        .map(([key, value]) => Object({ name: value.name, value: key })),
     )
     @SlashOption({
       description: 'Target game',

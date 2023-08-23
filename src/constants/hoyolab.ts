@@ -13,9 +13,9 @@ export default class HoYoLABConstants {
   public static readonly HOYOLAB_GET_USER =
     'https://api-account-os.hoyoverse.com/account/binding/api/getUserGameRolesByCookieToken';
   public static readonly REDEEM_TARGET = {
-    genshin: { name: 'Genshin Impact', prefix: 'hk4e', actId: 'e202102251931481', event: 'sol' },
-    hsr: { name: 'Honkai Star Rail', prefix: 'hkrpg', actId: 'e202303301540311', event: 'luna/os' },
-    hi3: { name: 'Honkai Impact 3rd', prefix: 'bh3', actId: 'e202110291205111', event: 'mani' },
+    genshin: { name: 'Genshin Impact', prefix: 'hk4e', actId: 'e202102251931481', event: 'sol', isRedeemable: true },
+    hsr: { name: 'Honkai Star Rail', prefix: 'hkrpg', actId: 'e202303301540311', event: 'luna/os', isRedeemable: true },
+    hi3: { name: 'Honkai Impact 3rd', prefix: 'bh3', actId: 'e202110291205111', event: 'mani', isRedeemable: false },
   };
   public static readonly REDEEM_CODE_API = {
     genshin: 'https://sg-hk4e-api.hoyoverse.com/common/apicdkey/api/webExchangeCdkey',

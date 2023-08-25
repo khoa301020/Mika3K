@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { EmbedBuilder, TextChannel } from 'discord.js';
-import { BlueArchiveConstants } from '../constants/index.js';
+import { BlueArchiveConstants, CommonConstants } from '../constants/index.js';
 import { bot, cache } from '../main.js';
 import NotifyChannel from '../models/NotifyChannel.js';
 import Cron from '../providers/cron.js';
@@ -70,7 +70,7 @@ export const checkSchaleDB = new Cron(cronName, '0 0 * * * *', async () => {
           summons: cache.get('BA_SummonCount'),
         };
 
-        const notifyChannels = NotifyChannel.find({ notifyType: 'Blue Archive' });
+        const notifyChannels = NotifyChannel.find({ notifyType: CommonConstants.NOTIFY_TYPE.BA_SCHALEDB_UPDATE });
 
         const embed = new EmbedBuilder()
           .setTitle(`[${getTime(data.commit.commit.author.date)}] SchaleDB updated`)

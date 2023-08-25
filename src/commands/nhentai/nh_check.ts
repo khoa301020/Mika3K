@@ -68,7 +68,7 @@ export default class CheckNHentaiCode {
         .replace(/<@!?\d+>/g, '') // remove all mentions
         .replace(/https?:\/\/\S+/g, ''); // remove all links (both http and https)
 
-      const codes: Array<string> | null = content.match(/\d{6}/g);
+      const codes: Array<string> | null = content.match(/(?<!\d)\d{6}(?!\d)/g);
       if (!codes) return editOrReplyThenDelete(command.message, { content: '❌ No code found in the message' });
       let results: Array<INHentai> = [];
       for (const code of codes) {

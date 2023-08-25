@@ -444,14 +444,14 @@ class QuoteContextMenu {
 
     const remarkInputComponent = new TextInputBuilder()
       .setCustomId('remarkField')
-      .setLabel('Quote remark (no space)')
+      .setLabel('Remark (no space and special characters)')
       .setRequired(true)
       .setStyle(TextInputStyle.Short)
       .setPlaceholder('Enter quote remark');
 
     const contentInputComponent = new TextInputBuilder()
       .setCustomId('contentField')
-      .setLabel(`Quote content${embeds.length > 0 ? ' (optional because embeds exist)' : ''}`)
+      .setLabel(`Content${embeds.length > 0 ? ' (optional because embeds exist)' : ''}`)
       .setRequired(embeds.length === 0)
       .setStyle(TextInputStyle.Paragraph)
       .setValue(`${message.content} ${message.attachments.map((a) => a.url).join(', ')}`.trim());
@@ -476,7 +476,8 @@ class QuoteContextMenu {
 
     if (!embeds && !content) return editOrReplyThenDelete(interaction, '❌ Content required.');
 
-    if (remark.includes(' ')) return editOrReplyThenDelete(interaction, '❌ Remark cannot contain space.');
+    if (remark.match(/[^a-zA-Z0-9]/g))
+      return editOrReplyThenDelete(interaction, '❌ Keyword cannot have special characters.');
 
     const quote: IUserQuote = {
       guild: interaction.guildId!,

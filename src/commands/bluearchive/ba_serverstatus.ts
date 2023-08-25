@@ -24,14 +24,6 @@ export class BlueArchiveSync {
       type: ApplicationCommandOptionType.Number,
     })
     regionId: number,
-    // @SlashChoice(...CommonConstants.TIMEZONE_OFFSET)
-    // @SlashOption({
-    //   description: 'Choose timezone (default: UTC)',
-    //   name: 'timezone-offset',
-    //   required: false,
-    //   type: ApplicationCommandOptionType.Number,
-    // })
-    // timezoneOffset: number = 0,
     interaction: CommandInteraction,
   ): Promise<any> {
     await interaction.deferReply();

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { CommonConstants } from '../constants/index.js';
 
 const NotifyChannelSchema = new mongoose.Schema({
   guildId: {
@@ -9,6 +10,7 @@ const NotifyChannelSchema = new mongoose.Schema({
   },
   notifyType: {
     type: String,
+    enum: Object.values(CommonConstants.NOTIFY_TYPE),
   },
 });
 

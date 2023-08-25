@@ -11,6 +11,8 @@ export default class CommonConstants {
   public static readonly EMBED_FIELD_LIMIT = 25;
   public static readonly EMBED_FOOTER_TEXT_LIMIT = 2048;
   public static readonly EMBED_AUTHOR_NAME_LIMIT = 256;
+  public static readonly EMBED_TOTAL_LIMIT = 6000;
+  public static readonly EMBED_LIMIT_PER_MESSAGE = 10;
 
   public static readonly REGEX_NUM = /^\d+$/;
   public static readonly REGEX_HTML_TAG = /<[^>]*>?/gm;
@@ -41,4 +43,8 @@ export default class CommonConstants {
   public static readonly CURRENCY_CONVERTER_API = (query: string) =>
     `https://free.currconv.com/api/v7/convert?q=${query}&compact=ultra&apiKey=${process.env.CURRENCY_CONVERTER_API_KEY}`;
   public static readonly CURRENCY_LIST_API = `https://free.currconv.com/api/v7/currencies?apiKey=${process.env.CURRENCY_CONVERTER_API_KEY}`;
+  public static readonly NOTIFY_TYPE = {
+    NHENTAI_AUTOVIEW: 'NHentai Autoview',
+    BA_SCHALEDB_UPDATE: 'SchaleDB Update',
+  };
 }

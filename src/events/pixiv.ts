@@ -50,7 +50,9 @@ export class CommonEvents {
     if (!message.channel.nsfw && illustRes.illust.x_restrict !== PixivConstants.PIXIV_SAFE_VALUE)
       return editOrReplyThenDelete(message, '❌ This illust is NSFW, preview is only available in NSFW channels.');
 
-    message.reply({
+    await message.suppressEmbeds(true);
+
+    await message.reply({
       embeds: [...PixivIllustListEmbeds(illustRes.illust)],
       allowedMentions: { repliedUser: false },
     });

@@ -167,7 +167,7 @@ class SearchNHentai {
       .replace(/<@!?\d+>/g, '') // remove all mentions
       .replace(/https?:\/\/\S+/g, ''); // remove all links (both http and https)
 
-    const codes: Array<string> | null = query.match(/\d{6}/g);
+    const codes: Array<string> | null = query.match(/(?<!\d)\d{6}(?!\d)/g);
     if (codes && codes.length > 0) return new CheckNHentaiCode().checkCodeCommand(query, command);
 
     const queryString = `${encodeURIComponent(query.toLowerCase())}&sort=${sort}&page=${page}`;
@@ -212,7 +212,7 @@ class SearchNHentai {
       .replace(/https?:\/\/\S+/g, ''); // remove all links (both http and https)
 
     try {
-      const codes: Array<string> | null = query.match(/\d{6}/g);
+      const codes: Array<string> | null = query.match(/(?<!\d)\d{6}(?!\d)/g);
       if (codes && codes.length > 0) {
         let results: Array<INHentai> = [];
         for (const code of codes) {

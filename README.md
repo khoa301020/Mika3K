@@ -16,19 +16,22 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 
 ## Blue Archive
 
-| Feature                                                                                       | Context menu | Message command |       Slash command      |
-|-----------------------------------------------------------------------------------------------|:------------:|:---------------:|:------------------------:|
-| Check server status                                                                           |      :x:     |       :x:       | `/buruaka server-status` |
-| Search student (with `show profile`, `show stats`, `show skills`, `show weapon` & `show gear` |      :x:     |       :x:       |    `/buruaka student`    |
-| Search raid                                                                                   |      :x:     |       :x:       |      `/buruaka raid`     |
+| Feature                                                                                        | Context menu |    Message command    |       Slash command      |
+|------------------------------------------------------------------------------------------------|:------------:|:---------------------:|:------------------------:|
+| Check server status                                                                            |      :x:     |          :x:          | `/buruaka server-status` |
+| Search student (with `show profile`, `show stats`, `show skills`, `show weapon` & `show gear`) |      :x:     |          :x:          |    `/buruaka student`    |
+| Search raid                                                                                    |      :x:     |          :x:          |      `/buruaka raid`     |
+| SchaleDB update notify                                                                         |      :x:     | `$bant` / `$banotify` |            :x:           |
 
 ## NHentai
 
-|    Feature   |     Context menu     |    Message command    |    Slash command   |
-|:------------:|:--------------------:|:---------------------:|:------------------:|
-| Check nuke   |          :x:         |   `$nh` / `$nhentai`  |  `/nhentai check`  |
-| Search nuke  |  :heavy_check_mark:  |  `$nhs` / `$nhsearch` |  `/nhentai search` |
-| Random nuke  |          :x:         | `$nhrd` / `$nhrandom` |  `/nhentai random` |
+|     Feature    |     Context menu     |     Message command    |    Slash command   |
+|:--------------:|:--------------------:|:----------- ----------:|:------------------:|
+| Check nuke     |          :x:         |   `$nh` / `$nhentai`   |  `/nhentai check`  |
+| Search nuke    |  :heavy_check_mark:  |  `$nhs` / `$nhsearch`  |  `/nhentai search` |
+| Random nuke    |          :x:         | `$nhrd` / `$nhrandom`  |  `/nhentai random` |
+| Set autoview   |          :x:         | `$nha` / `$nhautoview` |  `/nhentai random` |
+| Autoview nuke  |          :x:         |          :x:           |         :x:        |
 
 ## Syosetu
 
@@ -50,6 +53,7 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 |                  Feature                 | Context menu | Message command |       Slash command        |
 |:----------------------------------------:|:------------:|:---------------:|:--------------------------:|
 | My info                                  |      :x:     |       :x:       |       `/hoyolab info`      |
+| Get note (current status)                |      :x:     |       :x:       |       `/hoyolab note`      |
 | Save token (with account selection)      |      :x:     |       :x:       |    `/hoyolab save-token`   |
 | Redeem giftcode                          |      :x:     |       :x:       | `/hoyolab redeem-giftcode` |
 | Delete remark user                       |      :x:     |       :x:       |  `/hoyolab delete-remark`  |

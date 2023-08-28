@@ -1,9 +1,10 @@
-import axios from 'axios';
+import axios, { AxiosResponse, RawAxiosRequestHeaders } from 'axios';
+import { HydratedDocument } from 'mongoose';
 import qs from 'qs';
 import { HoYoLABConstants } from '../constants/index.js';
 import HoYoLAB from '../models/HoYoLAB.js';
 import { IHoYoLAB, IHoYoLABGameAccount, IHoYoLABUser, IRedeemResult, THoyoGame } from '../types/hoyolab.js';
-import { timeout } from '../utils/index.js';
+import { generateDS, timeout } from '../utils/index.js';
 
 export const hoyolabApi = {
   saveCredentials: async (
@@ -42,7 +43,8 @@ export const hoyolabApi = {
       }
     });
   },
-  getUserInfo: async (userId: string): Promise<any> => await HoYoLAB.findOne({ userId }).lean(),
+  getUserInfo: async (userId: string): Promise<HydratedDocument<IHoYoLAB> | null> =>
+    await HoYoLAB.findOne({ userId }).lean(),
   redeemCode: async (user: IHoYoLAB, target: THoyoGame, code: string): Promise<any> => {
     if (!user || !user.hoyoUsers || user.hoyoUsers.length === 0) throw '❌ Account data not found.';
     let result: Array<IRedeemResult> = [];
@@ -95,5 +97,32 @@ export const hoyolabApi = {
       hoyoUsers.splice(index, 1);
       return await HoYoLAB.findOneAndUpdate({ userId }, { hoyoUsers });
     });
+  },
+  getNote: async (gameAccount: IHoYoLABGameAccount, cookie: string): Promise<AxiosResponse> => {
+    const headers: RawAxiosRequestHeaders = {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': 'application/json',
+      'Accept-Encoding': 'gzip, deflate, br',
+      'sec-ch-ua': '"Chromium";v="112", "Microsoft Edge";v="112", "Not:A-Brand";v="99"',
+      'sec-ch-ua-mobile': '?0',
+      'sec-ch-ua-platform': '"Windows"',
+      'sec-fetch-dest': 'empty',
+      'sec-fetch-mode': 'cors',
+      'sec-fetch-site': 'same-site',
+      'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.46',
+      'x-rpc-app_version': '1.5.0',
+      'x-rpc-client_type': '5',
+      'x-rpc-language': 'en-us',
+      DS: generateDS(),
+      Cookie: cookie,
+    };
+
+    return await axios.get(
+      `${HoYoLABConstants.HOYOLAB_NOTE_API(gameAccount.game!)}?server=${gameAccount.region}&role_id=${
+        gameAccount.game_uid
+      }`,
+      { headers },
+    );
   },
 };

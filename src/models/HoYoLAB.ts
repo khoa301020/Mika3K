@@ -24,6 +24,7 @@ const HoYoLABSchema = new mongoose.Schema({
         gameAccounts: {
           type: [
             {
+              _id: false,
               game: {
                 type: String,
                 enum: ['genshin', 'hsr', 'hi3'],

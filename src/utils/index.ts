@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import { randomBytes } from 'crypto';
+import { createHash, randomBytes } from 'crypto';
 import dayjs from 'dayjs';
 import {
   ButtonInteraction,
@@ -231,6 +231,20 @@ export const getRelativeTimeBA = (epochStart: number, epochEnd: number) => {
   return isRunning ? `Ends in ${timeString}` : `Starts in ${timeString}`;
 };
 
+export const getRelativeTime = (seconds: number) => {
+  if (seconds <= 0) return 'Already reached';
+  const days = Math.floor(seconds / (24 * 60 * 60));
+  const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60));
+  const minutes = Math.floor((seconds % (60 * 60)) / 60);
+  const second = Math.floor(seconds % 60);
+
+  return `${days ? `${days.toString().padStart(2, '0')}d ` : ''}${
+    hours ? `${hours.toString().padStart(2, '0')}h ` : ''
+  }${minutes ? `${minutes.toString().padStart(2, '0')}m ` : ''}${
+    second ? `${second.toString().padStart(2, '0')}s` : ''
+  }`;
+};
+
 export const isEnded = (epoch: number): boolean => new Date().getTime() / 1000 >= epoch;
 
 export function convertTZ(date: Date, tzString: string) {
@@ -296,3 +310,26 @@ export const getHtml = async (url: string) => {
     }
   }
 };
+
+/**
+ * Generates a dynamic secret (DS) string for use in the Genshin Impact API.
+ *
+ * @returns The generated DS string.
+ */
+export function generateDS() {
+  const salt = '6s25p5ox5y14umn1p61aqyyvbvvl3lrt';
+  const date = new Date();
+  const time = Math.floor(date.getTime() / 1000);
+
+  let random = '';
+  const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for (let i = 0; i < 6; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    const randomChar = characters.charAt(randomIndex);
+    random += randomChar;
+  }
+
+  const hash = createHash('md5').update(`salt=${salt}&t=${time}&r=${random}`).digest('hex');
+
+  return `${time},${random},${hash}`;
+}

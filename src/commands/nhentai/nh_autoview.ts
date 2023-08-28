@@ -20,7 +20,7 @@ export class NHentai {
     if (!command.message.channel.nsfw)
       return editOrReplyThenDelete(command.message, '❌ This command is only available in NSFW channels.');
 
-    if (!action) return editOrReplyThenDelete(command.message, '❌ Invalid arguments');
+    if (!action) return editOrReplyThenDelete(command.message, '❌ Invalid arguments. Usage: `nhautoview <on|off>`');
 
     if (action === 'on') {
       return NotifyChannel.findOneAndUpdate(

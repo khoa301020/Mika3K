@@ -12,10 +12,37 @@ const getEventBaseUrl = (game: THoyoGame) => {
 export default class HoYoLABConstants {
   public static readonly HOYOLAB_GET_USER =
     'https://api-account-os.hoyoverse.com/account/binding/api/getUserGameRolesByCookieToken';
-  public static readonly REDEEM_TARGET = {
-    genshin: { name: 'Genshin Impact', prefix: 'hk4e', actId: 'e202102251931481', event: 'sol', isRedeemable: true },
-    hsr: { name: 'Honkai Star Rail', prefix: 'hkrpg', actId: 'e202303301540311', event: 'luna/os', isRedeemable: true },
-    hi3: { name: 'Honkai Impact 3rd', prefix: 'bh3', actId: 'e202110291205111', event: 'mani', isRedeemable: false },
+  public static readonly REDEEM_TARGET: { [key in THoyoGame]: any } = {
+    genshin: {
+      name: 'Genshin Impact',
+      prefix: 'hk4e',
+      actId: 'e202102251931481',
+      event: 'sol',
+      isRedeemable: true,
+      note: {
+        code: 'genshin',
+        path: 'dailyNote',
+      },
+    },
+    hsr: {
+      name: 'Honkai Star Rail',
+      prefix: 'hkrpg',
+      actId: 'e202303301540311',
+      event: 'luna/os',
+      isRedeemable: true,
+      note: {
+        code: 'hkrpg',
+        path: 'note',
+      },
+    },
+    hi3: {
+      name: 'Honkai Impact 3rd',
+      prefix: 'bh3',
+      actId: 'e202110291205111',
+      event: 'mani',
+      isRedeemable: false,
+      notePath: null,
+    },
   };
   public static readonly REDEEM_CODE_API = {
     genshin: 'https://sg-hk4e-api.hoyoverse.com/common/apicdkey/api/webExchangeCdkey',
@@ -33,6 +60,8 @@ export default class HoYoLABConstants {
   /* HoYoLAB API Endpoint */
   public static readonly USER_GAMES_LIST = `${this.ACCOUNT_API}/account/binding/api/getUserGameRolesByCookieToken`;
   public static readonly GAME_RECORD_CARD_API = `${this.BBS_API}/game_record/card/wapi/getGameRecordCard`;
+  public static readonly HOYOLAB_NOTE_API = (game: THoyoGame) =>
+    `${this.BBS_API}/game_record/${this.REDEEM_TARGET[game].note.code}/api/${this.REDEEM_TARGET[game].note.path}`;
 
   /* Daily check-in endpoint */
   public static readonly DAILY_INFO_API = (game: THoyoGame) => {

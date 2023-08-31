@@ -57,7 +57,7 @@ const studentGearBtn = (hasGear: boolean) =>
     .setCustomId('studentGear')
     .setDisabled(!hasGear);
 
-const studentRow = (hasSummon: boolean, hasGear: boolean) =>
+const studentRow = (hasGear: boolean) =>
   new ActionRowBuilder<MessageActionRowComponentBuilder>()
     .addComponents(studentMoreInfoBtn())
     .addComponents(studentStatsBtn())
@@ -289,7 +289,7 @@ export class BlueArchiveInfo {
         (student: IStudent, index: number): PaginationItem =>
           Object.assign({
             embeds: [BA_StudentEmbed(student, interaction.user, index + 1, students.length)],
-            components: [studentRow(student.Summons.length > 0, !isObjectEmpty(student.Gear))],
+            components: [studentRow(!isObjectEmpty(student.Gear))],
           }),
       );
       const names = students.map((student: IStudent) => student.Name);

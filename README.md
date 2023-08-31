@@ -8,11 +8,11 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 ## MyAnimeList
 
 |   Group   | Feature                                                                                                 | Context menu | Message command |      Slash command      |
-|:---------:|---------------------------------------------------------------------------------------------------------|:------------:|:---------------:|:-----------------------:|
-|   Anime   | Search anime (with `show characters`, `show episodes`, `show staffs`, `show themes` & `show statistics` |      :x:     |       :x:       |   `/mal anime search`   |
-|   Manga   | Search manga (with `show characters` & `show statistics`                                                |      :x:     |       :x:       | `/mal manga search`     |
-| Character | Search character                                                                                        |      :x:     |       :x:       | `/mal character search` |
-|   People  | Search people                                                                                           |      :x:     |       :x:       | `/mal people search`    |
+|:---------:|----------------------------------------------------------------------------------------------------------|:------------:|:---------------:|:-----------------------:|
+|   Anime   | Search anime (with `show characters`, `show episodes`, `show staffs`, `show themes` & `show statistics`) |      :x:     |       :x:       |   `/mal anime search`   |
+|   Manga   | Search manga (with `show characters` & `show statistics`)                                                |      :x:     |       :x:       | `/mal manga search`     |
+| Character | Search character                                                                                         |      :x:     |       :x:       | `/mal character search` |
+|   People  | Search people                                                                                            |      :x:     |       :x:       | `/mal people search`    |
 
 ## Blue Archive
 
@@ -26,7 +26,7 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 ## NHentai
 
 |     Feature    |     Context menu     |     Message command    |    Slash command   |
-|:--------------:|:--------------------:|:----------- ----------:|:------------------:|
+|:--------------:|:--------------------:|:----------------------:|:------------------:|
 | Check nuke     |          :x:         |   `$nh` / `$nhentai`   |  `/nhentai check`  |
 | Search nuke    |  :heavy_check_mark:  |  `$nhs` / `$nhsearch`  |  `/nhentai search` |
 | Random nuke    |          :x:         | `$nhrd` / `$nhrandom`  |  `/nhentai random` |

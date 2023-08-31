@@ -188,6 +188,14 @@ export default class BlueArchiveConstants {
     4: '😆',
     5: '😎',
   };
+  public static readonly ADAPTATION_RANK: { [key: number]: string } = {
+    0: 'D',
+    1: 'C',
+    2: 'B',
+    3: 'A',
+    4: 'S',
+    5: 'SS',
+  };
   public static readonly WEAPON_TYPE = ['SR', 'SG', 'AR', 'MG', 'SMG', 'HG', 'GL', 'MT', 'RG', 'RL', 'FT'];
   public static readonly WEAPON_MAX_LEVEL = 50;
   public static readonly CC_POWER = 100;
@@ -209,6 +217,7 @@ export default class BlueArchiveConstants {
     HOD: 7,
     Goz: 8,
     Gregorius: 9,
+    HoverCraft: 10,
   };
 
   public static readonly RAID_DIFFICULTIES: { [key: string]: number } = {

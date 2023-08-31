@@ -29,7 +29,7 @@ export class BlueArchiveSync {
     await interaction.deferReply();
     const common: ICommon | undefined = cache.get('BA_Common');
 
-    if (common === undefined) return editOrReplyThenDelete(interaction, '❌ Cache not found.');
+    if (!common) return editOrReplyThenDelete(interaction, '❌ Cache not found.');
 
     const region = common.regions[regionId];
 

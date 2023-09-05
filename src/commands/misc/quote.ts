@@ -41,7 +41,7 @@ import {
   publishQuote,
 } from '../../services/quote.js';
 import { IUserQuote } from '../../types/quote.js';
-import { editOrReplyThenDelete, randomArray, splitToChunks } from '../../utils/index.js';
+import { editOrReplyThenDelete, splitToChunks } from '../../utils/index.js';
 
 @Discord()
 @SlashGroup({ description: 'Quote commands', name: 'quote' })
@@ -93,17 +93,15 @@ class QuoteCommand {
     if (!key) return editOrReplyThenDelete(command.message, '❌ Keyword required.');
     const keyword = key.trim();
     const guildId = command.message.guildId;
-    let quotes: IUserQuote[] = await getQuote(keyword, guildId!);
-    if (quotes.length === 0) return editOrReplyThenDelete(command.message, '❌ No quote found.');
+    let quote = await getQuote(keyword, guildId!, command.message.author.id);
+    if (!quote) return editOrReplyThenDelete(command.message, '❌ No quote found.');
 
-    quotes = quotes.filter((quote) => command.message.author.id === quote.user || quote.private === false);
-    if (quotes.length === 0) return editOrReplyThenDelete(command.message, '❌ The quote(s) is privated.');
-
-    const selectedQuote = randomArray(quotes);
+    if (quote.private === true && quote.user !== command.message.author.id)
+      return editOrReplyThenDelete(command.message, '❌ The quote is privated.');
 
     return command.message.reply({
-      content: selectedQuote.quote?.value,
-      embeds: selectedQuote.quote?.embeds,
+      content: quote.quote?.value,
+      embeds: quote.quote?.embeds,
       allowedMentions: { repliedUser: false },
     });
   }
@@ -282,17 +280,15 @@ class QuoteSlash {
     interaction: CommandInteraction,
   ): Promise<InteractionResponse<boolean> | void> {
     const guildId = interaction.guildId;
-    let quotes: IUserQuote[] = await getQuote(keyword, guildId!);
-    if (quotes.length === 0) return editOrReplyThenDelete(interaction, '❌ No quote found.');
+    let quote = await getQuote(keyword, guildId!, interaction.user.id);
+    if (!quote) return editOrReplyThenDelete(interaction, '❌ No quote found.');
 
-    quotes = quotes.filter((quote) => interaction.user.id === quote.user || quote.private === false);
-    if (quotes.length === 0) return editOrReplyThenDelete(interaction, '❌ The quote(s) is privated.');
-
-    const selectedQuote = randomArray(quotes);
+    if (quote.private === true && quote.user !== interaction.user.id)
+      return editOrReplyThenDelete(interaction, '❌ The quote(s) is privated.');
 
     return interaction.reply({
-      content: selectedQuote.quote?.value,
-      embeds: selectedQuote.quote?.embeds,
+      content: quote.quote?.value,
+      embeds: quote.quote?.embeds,
       allowedMentions: { repliedUser: false },
     });
   }

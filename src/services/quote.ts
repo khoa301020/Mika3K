@@ -1,5 +1,4 @@
 import { GuildMember } from 'discord.js';
-import mongoose from 'mongoose';
 import Quote from '../models/Quote.js';
 import type { IUserQuote } from '../types/quote.js';
 
@@ -7,9 +6,8 @@ export async function createQuote(userQuote: IUserQuote): Promise<any> {
   return await Quote.create(userQuote);
 }
 
-export async function getQuote(keyword: string, guildId: string): Promise<Array<IUserQuote>> {
-  const query = mongoose.Types.ObjectId.isValid(keyword) ? { _id: keyword } : { 'quote.key': keyword };
-  return await Quote.find({ ...query, guild: guildId }).lean();
+export async function getQuote(keyword: string, guildId: string, userId: string): Promise<IUserQuote | null> {
+  return await Quote.getRandomQuote(keyword, guildId, userId);
 }
 
 export async function getUserQuotes(user: GuildMember): Promise<Array<IUserQuote>> {

@@ -11,6 +11,7 @@ export interface IUserQuote {
   guild: string;
   user: string;
   quote: IQuote;
+  hits?: { [key: string]: number };
   private?: Boolean;
   createdAt: Date;
 }

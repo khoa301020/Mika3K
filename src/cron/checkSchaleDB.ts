@@ -73,7 +73,7 @@ export const checkSchaleDB = new Cron(cronName, '0 0 * * * *', async () => {
         const notifyChannels = NotifyChannel.find({ notifyType: CommonConstants.NOTIFY_TYPE.BA_SCHALEDB_UPDATE });
 
         const embed = new EmbedBuilder()
-          .setTitle(`[${getTime(data.commit.commit.author.date)}] SchaleDB updated`)
+          .setTitle(`[${getTime(data.commit.commit.committer.date)}] SchaleDB updated`)
           .setURL(data.commit.html_url)
           .setColor('#00ff00')
           .setDescription(data.commit.commit.message)

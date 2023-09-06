@@ -14,6 +14,7 @@ export interface IUserQuote {
   hits?: { [key: string]: number };
   private?: Boolean;
   createdAt: Date;
+  isOnly?: boolean;
 }
 
 export interface IQuoteList {

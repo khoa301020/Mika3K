@@ -4,9 +4,13 @@ import {
   ActionRowBuilder,
   ApplicationCommandOptionType,
   ApplicationCommandType,
+  ButtonBuilder,
+  ButtonInteraction,
+  ButtonStyle,
   CommandInteraction,
   InteractionResponse,
   Message,
+  MessageActionRowComponentBuilder,
   MessageContextMenuCommandInteraction,
   ModalBuilder,
   ModalSubmitInteraction,
@@ -15,6 +19,7 @@ import {
   TextInputStyle,
 } from 'discord.js';
 import {
+  ButtonComponent,
   ContextMenu,
   Discord,
   ModalComponent,
@@ -41,7 +46,12 @@ import {
   publishQuote,
 } from '../../services/quote.js';
 import { IUserQuote } from '../../types/quote.js';
-import { editOrReplyThenDelete, splitToChunks } from '../../utils/index.js';
+import { editOrReplyThenDelete, splitToChunks, timeout } from '../../utils/index.js';
+
+const refreshQuoteBtn = () =>
+  new ButtonBuilder().setLabel('🔄').setStyle(ButtonStyle.Primary).setCustomId('refreshQuote');
+
+const quoteRow = () => new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(refreshQuoteBtn());
 
 @Discord()
 @SlashGroup({ description: 'Quote commands', name: 'quote' })
@@ -99,11 +109,19 @@ class QuoteCommand {
     if (quote.private === true && quote.user !== command.message.author.id)
       return editOrReplyThenDelete(command.message, '❌ The quote is privated.');
 
-    return command.message.reply({
-      content: quote.quote?.value,
-      embeds: quote.quote?.embeds,
-      allowedMentions: { repliedUser: false },
-    });
+    return command.message
+      .reply({
+        content: quote.quote?.value,
+        embeds: quote.quote?.embeds,
+        allowedMentions: { repliedUser: false },
+        components: quote.isOnly ? [] : [quoteRow()],
+      })
+      .then(async (message) => {
+        await timeout(60 * 1000);
+        message.edit({
+          components: [],
+        });
+      });
   }
 
   @SimpleCommand({ aliases: ['lq', 'listquotes'], description: 'Get list quote', argSplitter: ' ' })
@@ -495,5 +513,30 @@ class QuoteContextMenu {
     }
 
     return editOrReplyThenDelete(interaction, '✅ Quote added successfully.');
+  }
+
+  @ButtonComponent({ id: 'refreshQuote' })
+  async profileBtnComponent(interaction: ButtonInteraction): Promise<Message<boolean> | void> {
+    const commandMessage = interaction.message.channel?.messages.cache.get(interaction.message.reference?.messageId!);
+    if (interaction.user.id !== commandMessage?.author.id)
+      return editOrReplyThenDelete(interaction, {
+        content: '❌ Only message author can retry.',
+        ephemeral: true,
+      });
+
+    await interaction.deferUpdate();
+
+    const quote = await getQuote(
+      commandMessage.content.split(' ')[1],
+      commandMessage.guildId!,
+      commandMessage.author.id,
+    );
+
+    await interaction.message.edit({
+      content: quote!.quote?.value,
+      embeds: quote!.quote?.embeds,
+      components: [quoteRow()],
+      allowedMentions: { repliedUser: false },
+    });
   }
 }

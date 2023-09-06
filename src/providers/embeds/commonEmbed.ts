@@ -4,7 +4,7 @@ import { CommonConstants } from '../../constants/index.js';
 import { bot } from '../../main.js';
 import { ICurrencyExchange } from '../../types/common.js';
 import { IUserQuote } from '../../types/quote.js';
-import { datetimeConverter, tableConverter, timeDiff } from '../../utils/index.js';
+import { datetimeConverter, timeDiff } from '../../utils/index.js';
 
 export const ErrorLogEmbed = (error: Error): EmbedBuilder => {
   const embed = new EmbedBuilder()
@@ -68,31 +68,29 @@ export const UserInfoEmbed = (author: User, user: GuildMember): EmbedBuilder => 
 };
 
 export const ListQuoteEmbed = (author: User, quotes: Array<IUserQuote>, page: Number, total: Number): EmbedBuilder => {
-  let list = quotes.map((quote: IUserQuote) =>
+  const list = quotes.map((quote: IUserQuote) =>
     Object({
       id: quote._id,
-      keyword: quote.quote.key,
       author: quote.user,
+      keyword: quote.quote.key,
+      hits: quote.hits ? Object.entries(quote.hits).reduce((acc, [, value]) => acc + value, 0) : 0,
     }),
   );
 
-  const columnConfigs: Array<any> = [{ alignment: 'left' }, { alignment: 'right' }, { alignment: 'right' }];
-
-  return (
-    new EmbedBuilder()
-      .setColor(0x0099ff)
-      .setTitle('Server quotes list')
-      .setAuthor({
-        name: `${author.username}#${author.discriminator}`,
-        iconURL: author.displayAvatarURL(),
-      })
-      .setDescription(`\`${tableConverter(list, columnConfigs)}\``)
-      // .setDescription(tableConverter(list))
-      // .setThumbnail()
-      // .addFields({})
-      .setTimestamp()
-      .setFooter({ text: `${bot.user?.displayName} (${page}/${total})`, iconURL: bot.user!.displayAvatarURL() })
-  );
+  return new EmbedBuilder()
+    .setColor(0x0099ff)
+    .setTitle(`Server quotes list, page ${page}`)
+    .setAuthor({
+      name: `${author.username}#${author.discriminator}`,
+      iconURL: author.displayAvatarURL(),
+    })
+    .setDescription(
+      `${list
+        .map((quote) => `\`${quote.id}\` **${quote.keyword.toUpperCase()}** (${quote.hits}) by <@${quote.author}>`)
+        .join('\n')}`,
+    )
+    .setTimestamp()
+    .setFooter({ text: `${bot.user?.displayName} (${page}/${total})`, iconURL: bot.user!.displayAvatarURL() });
 };
 
 export const MathEmbed = (expression: string, result: string): EmbedBuilder => {

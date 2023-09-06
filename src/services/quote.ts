@@ -6,7 +6,7 @@ export async function createQuote(userQuote: IUserQuote): Promise<any> {
   return await Quote.create(userQuote);
 }
 
-export async function getQuote(keyword: string, guildId: string, userId: string): Promise<IUserQuote | null> {
+export async function getQuote(keyword: string, guildId: string, userId: string): Promise<Required<IUserQuote> | null> {
   return await Quote.getRandomQuote(keyword, guildId, userId);
 }
 

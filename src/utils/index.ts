@@ -333,3 +333,5 @@ export function generateDS() {
 
   return `${time},${random},${hash}`;
 }
+
+export const isInstanceOfAny = (obj: any, types: any[]): boolean => types.some((type) => obj instanceof type);

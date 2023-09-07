@@ -1,14 +1,15 @@
+import { AxiosError } from 'axios';
 import type { GuildMember, User } from 'discord.js';
 import { DiscordAPIError, EmbedBuilder } from 'discord.js';
 import { CommonConstants } from '../../constants/index.js';
 import { bot } from '../../main.js';
 import { ICurrencyExchange } from '../../types/common.js';
 import { IUserQuote } from '../../types/quote.js';
-import { datetimeConverter, timeDiff } from '../../utils/index.js';
+import { datetimeConverter, isInstanceOfAny, timeDiff } from '../../utils/index.js';
 
 export const ErrorLogEmbed = (error: Error): EmbedBuilder => {
   const embed = new EmbedBuilder()
-    .setColor(error instanceof DiscordAPIError ? 0x0099ff : 0xff0000)
+    .setColor(isInstanceOfAny(error, [DiscordAPIError, AxiosError]) ? 0x0099ff : 0xff0000)
     .setTitle('Error')
     .addFields({ name: 'Name', value: error.name }, { name: 'Message', value: error.message })
     .addFields()
@@ -19,6 +20,14 @@ export const ErrorLogEmbed = (error: Error): EmbedBuilder => {
     embed.addFields(
       { name: 'Code', value: error.code.toString(), inline: true },
       { name: 'Method', value: error.method, inline: true },
+    );
+
+  if (error instanceof AxiosError)
+    embed.addFields(
+      { name: 'URL', value: error.config?.url ?? 'No URL', inline: true },
+      { name: 'Headers', value: error.config ? JSON.stringify(error.config?.headers) : 'No headers', inline: true },
+      { name: 'Status', value: error.response?.status.toString() ?? 'No status', inline: true },
+      { name: 'Response', value: error.response ? JSON.stringify(error.response?.data) : 'No response', inline: true },
     );
 
   embed.addFields({ name: 'Stack', value: `\`\`\`${error.stack}\`\`\`` });

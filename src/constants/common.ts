@@ -1,4 +1,5 @@
 import { TPaginationType } from '../types/common';
+import { QuoteSort } from '../types/quote';
 
 export default class CommonConstants {
   public static readonly USER_AGENT =
@@ -46,5 +47,10 @@ export default class CommonConstants {
   public static readonly NOTIFY_TYPE = {
     NHENTAI_AUTOVIEW: 'NHentai Autoview',
     BA_SCHALEDB_UPDATE: 'SchaleDB Update',
+  };
+
+  public static readonly QUOTE_LIST_SORT_BY: { [key in QuoteSort]: string } = {
+    key: 'quote.key',
+    hits: 'sumHits',
   };
 }

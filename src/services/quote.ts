@@ -1,6 +1,8 @@
 import { GuildMember } from 'discord.js';
+import { SortValues } from 'mongoose';
+import CommonConstants from '../constants/common.js';
 import Quote from '../models/Quote.js';
-import type { IUserQuote } from '../types/quote.js';
+import type { IUserQuote, QuoteSort } from '../types/quote.js';
 
 export async function createQuote(userQuote: IUserQuote): Promise<any> {
   return await Quote.create(userQuote);
@@ -17,8 +19,27 @@ export async function getUserQuotes(user: GuildMember): Promise<Array<IUserQuote
   return await Quote.find({ user: userId, guild: guildId });
 }
 
-export async function getListQuotes(guildId: string): Promise<Array<IUserQuote>> {
-  return await Quote.find({ guild: guildId }).sort({ 'quote.key': 1 }).lean();
+export async function getListQuotes(
+  guildId: string,
+  sort: QuoteSort = 'key',
+  order: Extract<SortValues, 1 | -1> = 1,
+): Promise<Array<IUserQuote> | undefined> {
+  return await Quote.aggregate([
+    { $match: { guild: guildId } },
+    {
+      $addFields: {
+        sumHits: {
+          $sum: {
+            $map: {
+              input: { $objectToArray: '$hits' },
+              in: '$$this.v',
+            },
+          },
+        },
+      },
+    },
+    { $sort: { [CommonConstants.QUOTE_LIST_SORT_BY[sort]]: order } },
+  ]);
 }
 
 export async function editQuote(user: GuildMember, quoteId: string, content: string): Promise<string> {

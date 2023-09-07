@@ -28,9 +28,11 @@ import {
   SimpleCommandOption,
   SimpleCommandOptionType,
   Slash,
+  SlashChoice,
   SlashGroup,
   SlashOption,
 } from 'discordx';
+import { SortValues } from 'mongoose';
 import { CommonConstants } from '../../constants/index.js';
 import { botPrefix, cache } from '../../main.js';
 import { ListQuoteEmbed } from '../../providers/embeds/commonEmbed.js';
@@ -45,7 +47,7 @@ import {
   privateQuote,
   publishQuote,
 } from '../../services/quote.js';
-import { IUserQuote } from '../../types/quote.js';
+import { IUserQuote, QuoteSort } from '../../types/quote.js';
 import { editOrReplyThenDelete, splitToChunks, timeout } from '../../utils/index.js';
 
 const refreshQuoteBtn = () =>
@@ -125,17 +127,25 @@ class QuoteCommand {
   }
 
   @SimpleCommand({ aliases: ['lq', 'listquotes'], description: 'Get list quote', argSplitter: ' ' })
-  async getListQuotesCommand(command: SimpleCommandMessage): Promise<any> {
+  async getListQuotesCommand(
+    @SimpleCommandOption({ name: 'sort', type: SimpleCommandOptionType.String })
+    sort: QuoteSort = 'key',
+    @SimpleCommandOption({ name: 'order', type: SimpleCommandOptionType.String })
+    order: 'asc' | 'desc' = 'asc',
+    command: SimpleCommandMessage,
+  ): Promise<any> {
     const guildId = command.message.guildId;
-    let quotes: IUserQuote[] = await getListQuotes(guildId!);
+    if (sort && !CommonConstants.QUOTE_LIST_SORT_BY[sort]) sort = 'key';
+    if (order && !['asc', 'desc'].includes(order.toString())) order = 'asc';
 
-    if (quotes.length === 0) return editOrReplyThenDelete(command.message, '❌ No quote found.');
+    let quotes = await getListQuotes(guildId!, sort, order === 'asc' ? 1 : -1);
+
+    if (!quotes || quotes.length === 0) return editOrReplyThenDelete(command.message, '❌ No quote found.');
 
     let splitedQuotes = splitToChunks(quotes, CommonConstants.QUOTES_PER_PAGE);
 
     const pages = splitedQuotes.map((chunk: IUserQuote[], index: number) => {
       const embed = ListQuoteEmbed(command.message.author, chunk, index + 1, splitedQuotes.length);
-
       return { embeds: [embed] };
     });
 
@@ -313,11 +323,29 @@ class QuoteSlash {
 
   @Slash({ name: 'list', description: 'List quotes' })
   @SlashGroup('quote')
-  async listquotes(interaction: CommandInteraction): Promise<any> {
+  async listquotes(
+    @SlashChoice({ name: 'Keyword', value: 'key' }, { name: 'Hits', value: 'hits' })
+    @SlashOption({
+      description: 'Sort by, default: key',
+      name: 'sort',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    sort: QuoteSort = 'key',
+    @SlashChoice({ name: 'Ascending', value: 1 }, { name: 'Descending', value: -1 })
+    @SlashOption({
+      description: 'Order by, default: asc',
+      name: 'order',
+      required: false,
+      type: ApplicationCommandOptionType.Number,
+    })
+    order: Extract<SortValues, 1 | -1> = 1,
+    interaction: CommandInteraction,
+  ): Promise<any> {
     const guildId = interaction.guildId;
-    let quotes: IUserQuote[] = await getListQuotes(guildId!);
+    let quotes = await getListQuotes(guildId!, sort, order);
 
-    if (quotes.length === 0) return editOrReplyThenDelete(interaction, '❌ No quote found.');
+    if (!quotes || quotes.length === 0) return editOrReplyThenDelete(interaction, '❌ No quote found.');
 
     let splitedQuotes = splitToChunks(quotes, CommonConstants.QUOTES_PER_PAGE);
 

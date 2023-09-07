@@ -10,7 +10,7 @@ export interface IUserQuote {
   _id?: Types.ObjectId;
   guild: string;
   user: string;
-  quote: IQuote;
+  quote?: IQuote;
   hits?: { [key: string]: number };
   private?: Boolean;
   createdAt: Date;
@@ -23,3 +23,5 @@ export interface IQuoteList {
   user: string;
   createdAt: string;
 }
+
+export type QuoteSort = 'key' | 'hits';

@@ -46,7 +46,7 @@ const QuoteSchema = new mongoose.Schema(
       async getRandomQuote(keyword: string, guildId: string, userId: string) {
         const query = mongoose.Types.ObjectId.isValid(keyword)
           ? { _id: keyword }
-          : { 'quote.key': { $regex: keyword, $options: 'i' } };
+          : { 'quote.key': { $regex: `^${keyword}$`, $options: 'i' } };
         const quotes = await this.find({ ...query, guild: guildId }).lean();
         if (quotes.length === 0) return null;
         const filteredQuotes = quotes.filter((quote) => !quote.private || quote.user === userId);

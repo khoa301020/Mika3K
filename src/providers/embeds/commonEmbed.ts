@@ -81,7 +81,7 @@ export const ListQuoteEmbed = (author: User, quotes: Array<IUserQuote>, page: Nu
     Object({
       id: quote._id,
       author: quote.user,
-      keyword: quote.quote.key,
+      keyword: quote.quote?.key,
       hits: quote.hits ? Object.entries(quote.hits).reduce((acc, [, value]) => acc + value, 0) : 0,
     }),
   );

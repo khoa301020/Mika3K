@@ -190,7 +190,7 @@ export const BA_StudentEmbed = (student: IStudent, author: User, page?: number, 
       },
       { name: 'Introduction', value: `\`\`\`${decode(student.ProfileIntroduction)}\`\`\`` },
     )
-    .setImage(BlueArchiveConstants.SCHALE_STUDENT_PORTRAIT_URL + 'Portrait_' + student.DevName + '.webp')
+    .setImage(BlueArchiveConstants.SCHALE_STUDENT_PORTRAIT_URL(student.Id))
     .setTimestamp()
     .setFooter({
       text: `SCHALE.gg ${page !== null && total !== null && `(${page?.toString()}/${total?.toString()})`}`,
@@ -213,7 +213,7 @@ export const BA_StudentProfileEmbed = (
       iconURL: author.displayAvatarURL(),
     })
     .setDescription(`[${student.Id}] ${student.FamilyName} ${student.PersonalName}`)
-    .setThumbnail(BlueArchiveConstants.SCHALE_STUDENT_ICON_URL + student.CollectionTexture + '.png')
+    .setThumbnail(BlueArchiveConstants.SCHALE_STUDENT_ICON_URL(student.Id))
     .addFields(
       { name: 'Hobbies', value: `\`\`\`${student.Hobby}\`\`\`` },
       {
@@ -244,7 +244,7 @@ export const BA_StudentProfileEmbed = (
         value: `Unlocks after reaching relationship **rank ${student.MemoryLobby[0]}** with **${student.Name}**.`,
       },
     )
-    .setImage(BlueArchiveConstants.SCHALE_STUDENT_LOBBY_URL(student.DevName))
+    .setImage(BlueArchiveConstants.SCHALE_STUDENT_LOBBY_URL(student.Id))
     .setTimestamp()
     .setFooter({
       text: `SCHALE.gg`,
@@ -263,7 +263,7 @@ export const BA_StudentStatsEmbed = (student: IStudent, author: User): EmbedBuil
       iconURL: author.displayAvatarURL(),
     })
     .setDescription(`[${student.Id}] ${student.FamilyName} ${student.PersonalName}`)
-    .setThumbnail(BlueArchiveConstants.SCHALE_STUDENT_ICON_URL + student.CollectionTexture + '.png')
+    .setThumbnail(BlueArchiveConstants.SCHALE_STUDENT_ICON_URL(student.Id))
     .addFields(
       {
         name: 'Base main stats',
@@ -315,7 +315,7 @@ export const BA_StudentSkillsEmbed = (student: IStudent, author: User): EmbedBui
       iconURL: author.displayAvatarURL(),
     })
     .setDescription(`[${student.Id}] ${student.FamilyName} ${student.PersonalName}`)
-    .setThumbnail(BlueArchiveConstants.SCHALE_STUDENT_ICON_URL + student.CollectionTexture + '.png')
+    .setThumbnail(BlueArchiveConstants.SCHALE_STUDENT_ICON_URL(student.Id))
     .addFields(
       { name: `[EX] ${exSkill?.Name} \`(COST: ${exSkill?.Cost?.join('->')})\``, value: `\`\`\`${exSkill?.Desc}\`\`\`` },
       { name: `[Normal] ${normalSkill?.Name}`, value: `\`\`\`${normalSkill?.Desc}\`\`\`` },
@@ -345,7 +345,7 @@ export const BA_StudentWeaponEmbed = (student: IStudent, author: User): EmbedBui
       iconURL: author.displayAvatarURL(),
     })
     .setDescription(`[${student.Id}] ${student.FamilyName} ${student.PersonalName}`)
-    .setThumbnail(BlueArchiveConstants.SCHALE_STUDENT_ICON_URL + student.CollectionTexture + '.png')
+    .setThumbnail(BlueArchiveConstants.SCHALE_STUDENT_ICON_URL(student.Id))
     .addFields(
       { name: 'Name', value: `\`\`\`[${student.WeaponType}] ${student.Weapon.Name}\`\`\`` },
       { name: `[Skill upgrade] ${passiveSkillUpgrade.Name}`, value: `\`\`\`${passiveSkillUpgrade.Desc}\`\`\`` },
@@ -376,7 +376,7 @@ export const BA_StudentWeaponEmbed = (student: IStudent, author: User): EmbedBui
         value: `\`\`\`HP   : ${student.Weapon.MaxHP1} / ${weaponStats.MaxHP}\nATK  : ${student.Weapon.AttackPower1} / ${weaponStats.AttackPower}\nHEAL : ${student.Weapon.HealPower1} / ${weaponStats.HealPower}\`\`\``,
       },
     )
-    .setImage(BlueArchiveConstants.SCHALE_STUDENT_WEAPON_URL + student.WeaponImg + '.png')
+    .setImage(BlueArchiveConstants.SCHALE_STUDENT_WEAPON_URL(student.WeaponImg))
     .setTimestamp()
     .setFooter({
       text: `SCHALE.gg`,
@@ -403,7 +403,7 @@ export const BA_StudentGearEmbed = (student: IStudent, author: User): EmbedBuild
       iconURL: author.displayAvatarURL(),
     })
     .setDescription(`[${student.Id}] ${student.FamilyName} ${student.PersonalName}`)
-    .setThumbnail(BlueArchiveConstants.SCHALE_STUDENT_ICON_URL + student.CollectionTexture + '.png')
+    .setThumbnail(BlueArchiveConstants.SCHALE_STUDENT_ICON_URL(student.Id))
     .addFields(
       { name: 'Name', value: `\`\`\`${student.Gear.Name!}\`\`\`` },
       { name: 'Description', value: `\`\`\`${student.Gear.Desc!}\`\`\`` },
@@ -422,7 +422,7 @@ export const BA_StudentGearEmbed = (student: IStudent, author: User): EmbedBuild
           .join('\n')}\`\`\``,
       },
     )
-    .setImage(BlueArchiveConstants.SCHALE_STUDENT_GEAR_URL + student.Gear.Icon + '.png')
+    .setImage(BlueArchiveConstants.SCHALE_STUDENT_GEAR_URL(student.Id))
     .setTimestamp()
     .setFooter({
       text: `SCHALE.gg`,

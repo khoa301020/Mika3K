@@ -32,16 +32,16 @@ export default class BlueArchiveConstants {
   public static readonly SCHALE_GG_LOGO = 'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/schale.png';
   public static readonly SCHALE_GG_ARONA =
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/ui/Image_Char_Arona2.png';
-  public static readonly SCHALE_STUDENT_PORTRAIT_URL =
-    'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/student/portrait/';
-  public static readonly SCHALE_STUDENT_ICON_URL =
-    'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/student/icon/';
-  public static readonly SCHALE_STUDENT_WEAPON_URL =
-    'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/weapon/';
-  public static readonly SCHALE_STUDENT_GEAR_URL =
-    'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/gear/';
-  public static readonly SCHALE_STUDENT_LOBBY_URL = (devName: string) =>
-    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/student/lobby/Lobbyillust_Icon_${devName}_01.png`;
+  public static readonly SCHALE_STUDENT_PORTRAIT_URL = (id: number) =>
+    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/student/portrait/${id}.webp`;
+  public static readonly SCHALE_STUDENT_ICON_URL = (id: number) =>
+    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/student/icon/${id}.webp`;
+  public static readonly SCHALE_STUDENT_LOBBY_URL = (id: number) =>
+    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/student/lobby/${id}.webp`;
+  public static readonly SCHALE_STUDENT_WEAPON_URL = (weaponImg: string) =>
+    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/weapon/${weaponImg}.webp`;
+  public static readonly SCHALE_STUDENT_GEAR_URL = (id: number) =>
+    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/gear/icon/${id}.webp`;
   public static readonly SCHALE_RAID_ICON_URL = (pathName: string, isFromInsane: boolean) =>
     `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/icon/Icon_${pathName}${
       isFromInsane ? '_Insane' : ''

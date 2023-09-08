@@ -63,7 +63,7 @@ export interface IStudent {
   FavorAlts: number[];
   MemoryLobby: number[];
   MemoryLobbyBGM: string;
-  FurnitureInteraction: Array<number[]>;
+  FurnitureInteraction: Array<Array<number[]>>;
   FavorItemTags: string[];
   FavorItemUniqueTags: string[];
   IsLimited: number;

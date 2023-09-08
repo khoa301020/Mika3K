@@ -313,7 +313,9 @@ export class BlueArchiveInfo {
         return;
       }
 
-      const furnitures: Array<IFurniture> = await getData.getFurnitures(student.FurnitureInteraction[0]);
+      const furnitures: Array<IFurniture> = await getData.getFurnitures(
+        student.FurnitureInteraction[0].map((subArr) => subArr[0]),
+      );
 
       const embed = BA_StudentProfileEmbed(student, interaction.user, furnitures);
 

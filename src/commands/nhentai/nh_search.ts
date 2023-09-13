@@ -206,7 +206,7 @@ class SearchNHentai {
     await interaction.deferReply({ ephemeral: !(interaction.channel as TextChannel)?.nsfw });
     const message: Message = await (interaction.channel as TextChannel).messages.fetch(interaction.targetId);
 
-    const query = message.content
+    const query = `${message.content} ${message.embeds.length > 0 && message.embeds.map((e) => e.title).join(' ')}`
       .replace(/<a?:.+?:\d+>/g, '') // remove all emojis
       .replace(/<@!?\d+>/g, '') // remove all mentions
       .replace(/https?:\/\/\S+/g, ''); // remove all links (both http and https)

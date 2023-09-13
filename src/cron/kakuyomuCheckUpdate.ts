@@ -1,4 +1,5 @@
 import { TextChannel } from 'discord.js';
+import KakuyomuConstants from '../constants/kakuyomu.js';
 import { bot } from '../main.js';
 import Kakuyomu from '../models/Kakuyomu.js';
 import Cron from '../providers/cron.js';
@@ -27,10 +28,12 @@ export const kakuyomuCheckUpdate = new Cron(cronName, '0 0 * * * *', async () =>
   console.log(`[${getTime()}] ${cronName} found ${newUpdates.length} new updates.`);
 
   newUpdates.forEach(async (newUpdate: IKakuyomuDocument) => {
-    const message = `Novel **${newUpdate.novelData.title}** has been updated at ${getTime(
-      newUpdate.novelData.lastUpdate,
-      'Asia/Tokyo',
-    )}!`;
+    const lastEpisode = newUpdate.novelData.chapters.pop()?.episodes.pop();
+    const message = `Novel **${newUpdate.novelData.title}** has been ${
+      lastEpisode
+        ? `[updated](${KakuyomuConstants.NOVEL_EPISODE_URL(newUpdate.novelId, lastEpisode.episodeId)})`
+        : 'updated'
+    } at ${getTime(newUpdate.novelData.lastUpdate, 'Asia/Tokyo')}!`;
 
     // Notify to all users
     newUpdate.followings.users.forEach(async (user: string) => {

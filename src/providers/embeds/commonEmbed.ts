@@ -25,9 +25,12 @@ export const ErrorLogEmbed = (error: Error): EmbedBuilder => {
   if (error instanceof AxiosError)
     embed.addFields(
       { name: 'URL', value: error.config?.url ?? 'No URL', inline: true },
-      { name: 'Headers', value: error.config ? JSON.stringify(error.config?.headers) : 'No headers', inline: true },
       { name: 'Status', value: error.response?.status.toString() ?? 'No status', inline: true },
-      { name: 'Response', value: error.response ? JSON.stringify(error.response?.data) : 'No response', inline: true },
+      { name: 'Headers', value: error.config ? `\`\`\`${JSON.stringify(error.config?.headers)}\`\`\`` : 'No headers' },
+      {
+        name: 'Response',
+        value: error.response ? `\`\`\`${JSON.stringify(error.response?.data)}\`\`\`` : 'No response',
+      },
     );
 
   embed.addFields({ name: 'Stack', value: `\`\`\`${error.stack}\`\`\`` });

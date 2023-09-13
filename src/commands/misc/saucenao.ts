@@ -172,7 +172,7 @@ class SauceNAO {
     const attachments = message.attachments.map((a) => a.url);
 
     if (!url && attachments.length === 0) return editOrReplyThenDelete(interaction, '❌ Url or attachment required.');
-    if (attachments.length > 1) return editOrReplyThenDelete(interaction, '❌ Too many attachments.');
+    // if (attachments.length > 1) return editOrReplyThenDelete(interaction, '❌ Too many attachments.');
     if (attachments.length > 0) url = attachments[0];
     // if (url && !Constants.REGEX_IMAGE_URL.test(url)) return editOrReplyThenDelete(interaction, 'Image URL is not valid.');
 

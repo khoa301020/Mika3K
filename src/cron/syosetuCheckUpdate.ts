@@ -1,4 +1,5 @@
 import { TextChannel } from 'discord.js';
+import SyosetuConstants from '../constants/syosetu.js';
 import { bot } from '../main.js';
 import Syosetu from '../models/Syosetu.js';
 import Cron from '../providers/cron.js';
@@ -27,10 +28,9 @@ export const syosetuCheckUpdate = new Cron(cronName, '0 0 * * * *', async () => 
   console.log(`[${getTime()}] ${cronName} found ${newUpdates.length} new updates.`);
 
   newUpdates.forEach(async (newUpdate: IMongooseDocumentNovel) => {
-    const message = `Novel **${newUpdate.metadata.title}** has been updated at ${getTime(
-      newUpdate.metadata.general_lastup,
-      'Asia/Tokyo',
-    )}!`;
+    const message = `Novel **${newUpdate.metadata.title}** has been [updated](${
+      SyosetuConstants.NCODE_NOVEL_BASE_URL + newUpdate.metadata.general_all_no
+    }) at ${getTime(newUpdate.metadata.general_lastup, 'Asia/Tokyo')}!`;
 
     // Notify to all users
     newUpdate.followings.users.forEach(async (user: string) => {

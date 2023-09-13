@@ -1,6 +1,6 @@
 import type { User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
-import { SauceNAOConstants } from '../../constants/index.js';
+import { NHentaiConstants, SauceNAOConstants } from '../../constants/index.js';
 import { resultsToEmbedFields } from '../../services/saucenao.js';
 import { ISaucenaoSearchResponseResult } from '../../types/saucenao.js';
 export const SauceNAOResultEmbed = (
@@ -9,14 +9,26 @@ export const SauceNAOResultEmbed = (
   page?: number,
   total?: number,
 ): EmbedBuilder => {
+  const nuke =
+    SauceNAOConstants.SAUCENAO_SOURCES[result.header?.index_id!] === 'NHentai'
+      ? {
+          code: result.header?.thumbnail!.match(/res\/nhentai\/(\d+)/)?.[1],
+          get url() {
+            return `${NHentaiConstants.NHENTAI_BASE_URL}/g/${this.code}`;
+          },
+          get title() {
+            return `[${this.code}] ${result.data.source}`;
+          },
+        }
+      : null;
   return new EmbedBuilder()
     .setColor(0x0099ff)
     .setTitle(
-      `[${SauceNAOConstants.SAUCENAO_SOURCES[result.header?.index_id!.toString() as keyof Object]}] ${
-        result.data?.title ?? ''
+      `[${SauceNAOConstants.SAUCENAO_SOURCES[result.header?.index_id!]}] ${
+        nuke ? nuke.title : result.data?.title
       } \`${result.header?.similarity}%\``,
     )
-    .setURL(result.header?.thumbnail ?? null)
+    .setURL(nuke ? nuke.url : result.header?.thumbnail ?? null)
     .setAuthor({
       name: `${author.username}#${author.discriminator}`,
       iconURL: author.displayAvatarURL(),

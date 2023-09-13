@@ -7,7 +7,7 @@ export default class SauceNAOConstants {
   public static readonly SAUCENAO_API = 'https://saucenao.com/search.php';
   public static readonly SAUCENAO_LOGO =
     'https://f-droid.org/repo/com.luk.saucenao/en-US/icon_hchmnK2H6QtbwWR4cV6mtdp_7xBJ7eSdIiulErczfOc=.png';
-  public static readonly SAUCENAO_SOURCES = {
+  public static readonly SAUCENAO_SOURCES: { [key: number]: string } = {
     3: 'DoujinMangaLexicon',
     4: 'DoujinMangaLexicon',
     5: 'Pixiv',

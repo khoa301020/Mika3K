@@ -54,6 +54,8 @@ export interface INoteResponse {
 }
 
 export interface INoteHSRData {
+  id?: string;
+  nickname?: string;
   current_stamina: number;
   max_stamina: number;
   stamina_recover_time: number;
@@ -76,6 +78,8 @@ export interface IExpeditionHSR {
 }
 
 export interface INoteGenshinData {
+  id?: string;
+  nickname?: string;
   current_resin: number;
   max_resin: number;
   resin_recovery_time: string;

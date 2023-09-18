@@ -75,6 +75,28 @@ export class HoYoLABRedeem {
     }
 
     const embed = HoYoLABRedeemResultEmbed(results);
-    return interaction.editReply({ embeds: [embed] });
+    interaction.editReply({ embeds: [embed] });
+
+    // Redeem for all other users
+    const users = await hoyolabApi.getAllOtherUsers(userId);
+    if (!users) return;
+    console.log(`Found ${users.length} other users. Redeeming...`);
+    for (const user of users) {
+      console.log(`Redeeming for ${user.userId}`);
+      for (let index = 0; index < giftcodes.length; index++) {
+        await hoyolabApi
+          .redeemCode(user, target, giftcodes[index]!)
+          .then(() => console.log(`Redeemed for ${user.userId} with giftcode ${giftcodes[index]}`))
+          .catch((err) => {
+            return editOrReplyThenDelete(interaction, { content: err });
+          });
+        if (giftcodes[index + 1]) {
+          timeout += 5555;
+          await setTimeout(timeout);
+        }
+      }
+    }
+    console.log('Done redeeming for all users.');
+    return;
   }
 }

@@ -62,7 +62,7 @@ export const HoYoLABRedeemResultEmbed = (
           });
           return `${res.remark}\n${accounts.join('\n')}`;
         })
-        .join('\n\n'),
+        .join('\n'),
     });
 
   return new EmbedBuilder()
@@ -123,7 +123,7 @@ export const HoYoLABNoteEmbed = (
 
   return new EmbedBuilder()
     .setColor(0x0099ff)
-    .setTitle(`Your ${HoYoLABConstants.REDEEM_TARGET[game].name} note`)
+    .setTitle(`[${note.id}] ${note.nickname}'s ${HoYoLABConstants.REDEEM_TARGET[game].name} note`)
     .setDescription(description)
     .setTimestamp()
     .setFooter({ text: `${bot.user?.displayName}`, iconURL: bot.user!.displayAvatarURL() });

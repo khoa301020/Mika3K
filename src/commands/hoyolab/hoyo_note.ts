@@ -50,7 +50,12 @@ export class HoYoLABInfo {
         ) => {
           const { cookie } = gameAccount;
           const { data }: { data: INoteResponse } = await hoyolabApi.getNote(gameAccount, cookie);
-          return data.data;
+          const noteData = data.data;
+          if (noteData) {
+            noteData.id = gameAccount.game_uid;
+            noteData.nickname = gameAccount.nickname;
+          }
+          return noteData;
         },
       ),
     );

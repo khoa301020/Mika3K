@@ -45,6 +45,8 @@ export const hoyolabApi = {
   },
   getUserInfo: async (userId: string): Promise<HydratedDocument<IHoYoLAB> | null> =>
     await HoYoLAB.findOne({ userId }).lean(),
+  getAllOtherUsers: async (userIdToExclude: string): Promise<Array<HydratedDocument<IHoYoLAB>> | null> =>
+    await HoYoLAB.find({ userId: { $ne: userIdToExclude } }).lean(),
   redeemCode: async (user: IHoYoLAB, target: THoyoGame, code: string): Promise<any> => {
     if (!user || !user.hoyoUsers || user.hoyoUsers.length === 0) throw '❌ Account data not found.';
     let result: Array<IRedeemResult> = [];

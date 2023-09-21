@@ -27,8 +27,7 @@ export class CommonEvents {
       .replace(/<a?:.+?:\d+>/g, '') // remove all emojis
       .replace(/<@!?\d+>/g, '') // remove all mentions
       .replace(/https?:\/\/\S+/g, '') // remove all links (both http and https)
-      // match all 6 digits separated by space, comma, or newline
-      .match(/(?<!\d)\d{6}(?!\d)/g);
+      .match(/(?<!\d)\d{6}(?!\d)/g); // match all 6 digits separated by space, comma, or newline
 
     if (!codes || codes.length === 0) return;
 

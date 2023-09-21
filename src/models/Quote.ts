@@ -50,7 +50,7 @@ const QuoteSchema = new mongoose.Schema(
         const quotes = await this.find({ ...query, guild: guildId }).lean();
         if (quotes.length === 0) return null;
         const filteredQuotes = quotes.filter((quote) => !quote.private || quote.user === userId);
-        const quote = randomArray(filteredQuotes.length === 0 ? quotes : filteredQuotes);
+        const quote = randomArray(filteredQuotes.length === 0 ? quotes : filteredQuotes)[0];
         if (!quote.private || quote.user === userId)
           await this.updateOne({ _id: quote._id }, { $inc: { [`hits.${userId}`]: 1 } });
         quote.isOnly = filteredQuotes.length <= 1 && quotes.length <= 1;

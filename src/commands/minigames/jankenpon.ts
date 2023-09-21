@@ -58,7 +58,7 @@ class JanKenPon {
   @ButtonComponent({ id: 'rock' })
   async rockBtnComponent(interaction: ButtonInteraction): Promise<void> {
     const user = `${interaction.user.username}#${interaction.user.discriminator}`;
-    const resultValue = randomArray(jankenponTable) as keyof Object;
+    const resultValue = randomArray(jankenponTable)[0] as keyof Object;
 
     await interaction.message.edit({ content: 'Rock, Scissor, Paper!', components: [] });
 
@@ -75,7 +75,7 @@ class JanKenPon {
   @ButtonComponent({ id: 'scissor' })
   async scissorBtnComponent(interaction: ButtonInteraction): Promise<Promise<void>> {
     const user = `${interaction.user.username}#${interaction.user.discriminator}`;
-    const resultValue = randomArray(jankenponTable) as keyof Object;
+    const resultValue = randomArray(jankenponTable)[0] as keyof Object;
 
     await interaction.message.edit({ content: 'Rock, Scissor, Paper!', components: [] });
 
@@ -92,7 +92,7 @@ class JanKenPon {
   @ButtonComponent({ id: 'paper' })
   async paperBtnComponent(interaction: ButtonInteraction): Promise<Promise<void>> {
     const user = `${interaction.user.username}#${interaction.user.discriminator}`;
-    const resultValue = randomArray(jankenponTable) as keyof Object;
+    const resultValue = randomArray(jankenponTable)[0] as keyof Object;
 
     await interaction.message.edit({ content: 'Rock, Scissor, Paper!', components: [] });
 

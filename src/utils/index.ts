@@ -23,11 +23,33 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 /**
+ * Shuffles array in place using the Fisher-Yates algorithm.
+ * @param {Array} array - The array you want to shuffle.
+ * @returns The shuffled array.
+ */
+export const shuffle = (array: Array<any>) => {
+  let currentIndex = array.length,
+    randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex > 0) {
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
+};
+
+/**
  * Return a random element from an array.
  * @param array - The array you want to get a random element from.
  * @returns The random element from the array.
  */
-export const randomArray = (array: Array<any>) => array[Math.floor(Math.random() * array.length)];
+export const randomArray = (array: Array<any>, amount: number = 1): Array<any> => shuffle(array).slice(0, amount);
 
 /**
  * It takes a timestamp and returns an object with three properties: date, time, and datetime

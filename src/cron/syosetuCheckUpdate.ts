@@ -29,8 +29,8 @@ export const syosetuCheckUpdate = new Cron(cronName, '0 0 * * * *', async () => 
 
   newUpdates.forEach(async (newUpdate: IMongooseDocumentNovel) => {
     const message = `Novel **${newUpdate.metadata.title}** has been [updated](${
-      SyosetuConstants.NCODE_NOVEL_BASE_URL + newUpdate.metadata.general_all_no
-    }) at ${getTime(newUpdate.metadata.general_lastup, 'Asia/Tokyo')}!`;
+      SyosetuConstants.NCODE_NOVEL_BASE_URL + newUpdate.ncode
+    }/${newUpdate.metadata.general_all_no}) at ${getTime(newUpdate.metadata.general_lastup, 'Asia/Tokyo')}!`;
 
     // Notify to all users
     newUpdate.followings.users.forEach(async (user: string) => {

@@ -18,6 +18,8 @@ import { BaseUserConfig, table } from 'table';
 import axios, { AxiosError } from 'axios';
 import timezone from 'dayjs/plugin/timezone.js'; // dependent on utc plugin
 import utc from 'dayjs/plugin/utc.js';
+import { bot } from '../main.js';
+import { ErrorLogEmbed } from '../providers/embeds/commonEmbed.js';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -357,3 +359,19 @@ export function generateDS() {
 }
 
 export const isInstanceOfAny = (obj: any, types: any[]): boolean => types.some((type) => obj instanceof type);
+
+export const errorHandler = (err: Error) => {
+  if (process.env.NODE_ENV !== 'production') return console.error(err);
+  console.log(`[${getTime()}] ERROR: ${err.message}`);
+
+  if (!process.env.LOG_CHANNEL_ID) {
+    throw Error('Could not find LOG_CHANNEL_ID in your environment');
+  }
+  const logChannel = bot.channels.cache.get(process.env.LOG_CHANNEL_ID);
+  if (!logChannel?.isTextBased()) {
+    throw Error('Could not find log channel');
+  }
+  logChannel.send({
+    embeds: [ErrorLogEmbed(err)],
+  });
+};

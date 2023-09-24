@@ -7,8 +7,7 @@ import NodeCache from 'node-cache';
 
 import { config } from 'dotenv';
 import mongoose from 'mongoose';
-import { ErrorLogEmbed } from './providers/embeds/commonEmbed.js';
-import { getTime } from './utils/index.js';
+import { errorHandler } from './utils/index.js';
 config();
 export const botPrefix = process.env.BOT_PREFIX ?? '$';
 export const cache = new NodeCache();
@@ -59,23 +58,15 @@ bot.once('ready', async () => {
   //    ...bot.guilds.cache.map((g) => g.id)
   //  );
 
-  console.log('Bot started');
+  console.log(`Bot started, env: ${process.env.NODE_ENV}`);
 });
 
 process.on('unhandledRejection', (error: Error) => {
-  if (process.env.NODE_ENV !== 'production') return console.error(error);
-  console.log(`[${getTime()}] ERROR: ${error.message}`);
+  errorHandler(error);
+});
 
-  if (!process.env.LOG_CHANNEL_ID) {
-    throw Error('Could not find LOG_CHANNEL_ID in your environment');
-  }
-  const logChannel = bot.channels.cache.get(process.env.LOG_CHANNEL_ID);
-  if (!logChannel?.isTextBased()) {
-    throw Error('Could not find log channel');
-  }
-  logChannel.send({
-    embeds: [ErrorLogEmbed(error)],
-  });
+process.on('uncaughtException', (error: Error) => {
+  errorHandler(error);
 });
 
 bot.on('interactionCreate', (interaction: Interaction) => {

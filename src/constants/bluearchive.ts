@@ -5,8 +5,9 @@ export default class BlueArchiveConstants {
   public static readonly SCHALE_STUDENT_URL = this.SCHALE_GG_BASE + '/?chara=';
   public static readonly SCHALE_RAID_URL = this.SCHALE_GG_BASE + '/?raid=';
   public static readonly REGIONS: { [key: string]: number } = {
-    JP: 0,
+    JAPAN: 0,
     GLOBAL: 1,
+    CHINA: 2,
   };
 
   /* Regex */
@@ -43,12 +44,10 @@ export default class BlueArchiveConstants {
   public static readonly SCHALE_STUDENT_GEAR_URL = (id: number) =>
     `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/gear/icon/${id}.webp`;
   public static readonly SCHALE_RAID_ICON_URL = (pathName: string, isFromInsane: boolean) =>
-    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/icon/Icon_${pathName}${
-      isFromInsane ? '_Insane' : ''
+    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/icon/Icon_${pathName}${isFromInsane ? '_Insane' : ''
     }.png`;
   public static readonly SCHALE_RAID_PORTRAIT_URL = (pathName: string, isFromInsane: boolean) =>
-    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/Boss_Portrait_${pathName}${
-      isFromInsane ? '_Insane' : ''
+    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/Boss_Portrait_${pathName}${isFromInsane ? '_Insane' : ''
     }_Lobby.png`;
   public static readonly CURRENCY_DATA_URL =
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/currency.json';

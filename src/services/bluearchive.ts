@@ -175,11 +175,7 @@ export const importData = {
 export const getData = {
   getStudentCount: async (regionId: number): Promise<number> =>
     await SchaleDB.Student.countDocuments(
-      regionId === BlueArchiveConstants.REGIONS.JP
-        ? {
-            $or: [{ IsReleased: [true, false] }, { IsReleased: [true, true] }],
-          }
-        : { IsReleased: [true, true] },
+      { [`IsReleased.${regionId}`]: true }
     ),
   getStudent: async (sort: any, query?: FilterQuery<IStudent>): Promise<Array<IStudent>> =>
     await SchaleDB.Student.find(query ?? {})
@@ -201,23 +197,19 @@ export const getData = {
     }
 
     const query = Object.assign(
-      { PathName: { $regex: /^[^_]*$/i }, BirthDay: { $in: birthdayStudents } },
-      regionId === BlueArchiveConstants.REGIONS.JP
-        ? {
-            $or: [{ IsReleased: [true, false] }, { IsReleased: [true, true] }],
-          }
-        : { IsReleased: [true, true] },
+      {
+        PathName: { $regex: /^[^_]*$/i },
+        BirthDay: { $in: birthdayStudents },
+        [`IsReleased.${regionId}`]: true
+      },
+
     );
 
     return await SchaleDB.Student.find(query).sort({ BirthDay: 1 }).lean();
   },
   getRaidCount: async (regionId: number): Promise<number> =>
     await SchaleDB.Raid.countDocuments(
-      regionId === BlueArchiveConstants.REGIONS.JP
-        ? {
-            $or: [{ IsReleased: [true, false] }, { IsReleased: [true, true] }],
-          }
-        : { IsReleased: [true, true] },
+      { [`IsReleased.${regionId}`]: true }
     ),
   getRaidById: async (id: number): Promise<IRaid | null> => await SchaleDB.Raid.findOne({ Id: id }).lean(),
   getTimeAttackById: async (id: number): Promise<ITimeAttack | null> =>
@@ -277,9 +269,8 @@ export const transformStudentSkillStat = (skill: Skill, localization?: ILocaliza
   return skill;
 };
 export const transformRaidSkillStat = (skill: RaidSkill, difficulty: number, localization?: ILocalization) => {
-  skill.Name = `[${skill.SkillType}] ${decode(skill.Name).replace(CommonConstants.REGEX_HTML_TAG, '')}${
-    skill.ATGCost > 0 ? ` \`ATG: ${skill.ATGCost}\`` : ''
-  }`;
+  skill.Name = `[${skill.SkillType}] ${decode(skill.Name).replace(CommonConstants.REGEX_HTML_TAG, '')}${skill.ATGCost > 0 ? ` \`ATG: ${skill.ATGCost}\`` : ''
+    }`;
   skill.Desc = decode(
     skill.Desc?.replace(BlueArchiveConstants.REGEX_PARAMETERS_REPLACEMENT, (match, key) => {
       return skill.Parameters![parseInt(key) - 1][difficulty];

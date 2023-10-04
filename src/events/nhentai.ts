@@ -1,4 +1,3 @@
-// import type { ArgsOf, Client } from 'discordx';
 import { ChannelType, MessageReaction } from 'discord.js';
 import { ArgsOf, Discord, On } from 'discordx';
 import { CommonConstants, NHentaiConstants } from '../constants/index.js';

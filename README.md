@@ -87,6 +87,7 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 | SauceNAO          | :heavy_check_mark: |  `$sn` / `$saucenao`   |      `/saucenao`      |
 | Math              |         :x:        |     `$m` / `$math`     |     `/math`           |
 | Currency exchange |         :x:        |     `$ce` / `$curr`    | `/currency-exchange`  |
+| Pick options      |         :x:        |     `$p` / `$pick`     |          :x:          |
 
 # Resources
 

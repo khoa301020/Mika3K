@@ -1,4 +1,3 @@
-// import type { ArgsOf, Client } from 'discordx';
 import { ArgsOf, Client, Discord, On } from 'discordx';
 
 @Discord()

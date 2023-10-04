@@ -1,4 +1,3 @@
-// import type { ArgsOf, Client } from 'discordx';
 import axios, { AxiosResponse } from 'axios';
 import { ChannelType } from 'discord.js';
 import { ArgsOf, Discord, On } from 'discordx';

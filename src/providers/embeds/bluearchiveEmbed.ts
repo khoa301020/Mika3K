@@ -4,7 +4,7 @@ import { decode } from 'html-entities';
 import { BlueArchiveConstants, CommonConstants } from '../../constants/index.js';
 import { cache } from '../../main.js';
 import { SchaleMath, transformRaidSkillStat, transformStudentSkillStat } from '../../services/bluearchive.js';
-import { CurrentEvent, CurrentGacha, CurrentRaid, Region } from '../../types/bluearchive/common.js';
+import { CurrentEvent, CurrentGacha, CurrentRaid, Region } from '../../types/bluearchive/config.js';
 import { IEnemy } from '../../types/bluearchive/enemy.js';
 import { IFurniture } from '../../types/bluearchive/furniture.js';
 import { ILocalization } from '../../types/bluearchive/localization.js';
@@ -16,14 +16,14 @@ import { convertTZ, datetimeConverter, getRelativeTimeBA, isEnded } from '../../
 
 export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: number = 0): EmbedBuilder => {
   const localization: ILocalization | undefined = cache.get('BA_Localization');
-  const raids: Array<CurrentRaid & { info?: any }> = region.current_raid.filter(
+  const raids: Array<CurrentRaid & { info?: any }> = region.CurrentRaid.filter(
     (region) => region.raid.toString().length < 4 && !isEnded(region.end),
   );
-  const timeAttacks: Array<CurrentRaid & { info?: any }> = region.current_raid.filter(
+  const timeAttacks: Array<CurrentRaid & { info?: any }> = region.CurrentRaid.filter(
     (region) => region.raid.toString().length >= 4 && !isEnded(region.end),
   );
-  region.current_gacha = region.current_gacha.filter((gacha: CurrentGacha) => !isEnded(gacha.end));
-  region.current_events = region.current_events.filter((event: CurrentEvent) => !isEnded(event.end));
+  region.CurrentGacha = region.CurrentGacha.filter((gacha: CurrentGacha) => !isEnded(gacha.end));
+  region.CurrentEvents = region.CurrentEvents.filter((event: CurrentEvent) => !isEnded(event.end));
 
   const today = new Date();
   const todayJP = datetimeConverter(convertTZ(today, 'Asia/Tokyo')).studentBirthday;
@@ -34,31 +34,29 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
     { name: 'No. students', value: `${region.studentsCount!}`, inline: true },
     { name: 'No. raids', value: `${region.raidsCount!}`, inline: true },
     { name: 'No. events', value: `${region.eventsCount} (${region.rerunEventsCount})`, inline: true },
-    { name: 'Student', value: `Level ${region.studentlevel_max}`, inline: true },
-    { name: 'Weapon', value: `Level ${region.weaponlevel_max}`, inline: true },
-    { name: 'Bond', value: `Level ${region.bondlevel_max}`, inline: true },
-    { name: 'Gear', value: `Tier ${region.gear1_max}/${region.gear2_max}/${region.gear3_max}`, inline: true },
-    { name: 'Mission', value: `Area ${region.campaign_max}`, inline: true },
-    { name: 'Bounty', value: `Stage ${region.bounty_max}`, inline: true },
-    { name: 'Scrimmage', value: `Stage ${region.schooldungeon_max}`, inline: true },
-    { name: 'Commission', value: `Stage ${region.commission_max}`, inline: true },
+    { name: 'Student', value: `Level ${region.StudentMaxLevel}`, inline: true },
+    { name: 'Weapon', value: `Level ${region.WeaponMaxLevel}`, inline: true },
+    { name: 'Bond', value: `Level ${region.BondMaxLevel}`, inline: true },
+    { name: 'Gear', value: `Tier ${region.EquipmentMaxLevel.join('/')}`, inline: true },
+    { name: 'Mission', value: `Area ${region.CampaignMax}`, inline: true },
+    { name: 'Bounty', value: `Stage ${region.ChaserMax}`, inline: true },
+    { name: 'Scrimmage', value: `Stage ${region.SchoolDungeonMax}`, inline: true },
+    { name: 'Commission', value: `Stage ${region.BloodMax}`, inline: true },
     {
       name: 'Decagrammaton',
-      value: `Stage ${region.event_701_max} (${region.event_701_challenge_max})`,
+      value: `Stage ${region.Event701Max[0]} (${region.Event701Max[1]} - ${region.Event701Max[2]})`,
       inline: true,
     },
   ];
-  region.current_gacha.length > 0 &&
+  region.CurrentGacha.length > 0 &&
     fields.push({
       name: 'Current banner',
-      value: `${region.current_gacha
-        .map(
-          (currentGacha: CurrentGacha) =>
-            `• *${getRelativeTimeBA(currentGacha.start, currentGacha.end)}* \nㅤ- ${currentGacha.characters
-              .map((character: any) => `[${`★`.repeat(character.StarGrade)}] ${character.Name}`)
-              .join('\nㅤ- ')} `,
-        )
-        .join('\n')}`,
+      value: `${region.CurrentGacha.map(
+        (currentGacha: CurrentGacha) =>
+          `• *${getRelativeTimeBA(currentGacha.start, currentGacha.end)}* \nㅤ- ${currentGacha.characters
+            .map((character: any) => `[${`★`.repeat(character.StarGrade)}] ${character.Name}`)
+            .join('\nㅤ- ')} `,
+      ).join('\n')}`,
     });
   region.incomingBirthdayStudents &&
     region.incomingBirthdayStudents.length > 0 &&
@@ -67,24 +65,24 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
       value: `${region.incomingBirthdayStudents
         .map(
           (student: IStudent) =>
-            `ㅤ- [${student.Birthday}] ${student.Name} ${student.BirthDay === todayJP ? 'ー **TODAY!**' : student.BirthDay === tomorrowJP ? 'ー **TOMORROW!**' : ''
+            `ㅤ- [${student.Birthday}] ${student.Name} ${
+              student.BirthDay === todayJP ? 'ー **TODAY!**' : student.BirthDay === tomorrowJP ? 'ー **TOMORROW!**' : ''
             }`,
         )
         .join('\n')}`,
     });
 
-  region.current_events.length > 0 &&
+  region.CurrentEvents.length > 0 &&
     fields.push({
       name: 'Current & upcoming events',
-      value: `${region.current_events
-        .map(
-          (currentEvent: CurrentEvent) =>
-            `- ${!/^10/.test(currentEvent.event.toString())
+      value: `${region.CurrentEvents.map(
+        (currentEvent: CurrentEvent) =>
+          `- ${
+            !/^10/.test(currentEvent.event.toString())
               ? localization?.EventName[currentEvent.event.toString()]
               : `[Rerun] ${localization?.EventName[currentEvent.event.toString().slice(2)]}`
-            } *(${getRelativeTimeBA(currentEvent.start, currentEvent.end)})*`,
-        )
-        .join('\n')}`,
+          } *(${getRelativeTimeBA(currentEvent.start, currentEvent.end)})*`,
+      ).join('\n')}`,
     });
   raids.length > 0 &&
     fields.push({
@@ -105,7 +103,8 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
       value: `${timeAttacks
         .map(
           (currentRaid: CurrentRaid & { info?: any }) =>
-            `- [${localization?.AdaptationType[currentRaid.info.Terrain]}] ${currentRaid.info.DungeonType
+            `- [${localization?.AdaptationType[currentRaid.info.Terrain]}] ${
+              currentRaid.info.DungeonType
             } *(${getRelativeTimeBA(currentRaid.start, currentRaid.end)})*`,
         )
         .join('\n')}`,
@@ -114,7 +113,7 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
   return (
     new EmbedBuilder()
       .setColor(CommonConstants.DEFAULT_EMBED_COLOR)
-      .setTitle(`${region.name.toUpperCase()} server's status`)
+      .setTitle(`${region.Name.toUpperCase()} server's status`)
       .setAuthor({
         name: `${author.username}#${author.discriminator}`,
         iconURL: author.displayAvatarURL(),
@@ -146,8 +145,9 @@ export const BA_StudentEmbed = (student: IStudent, author: User, page?: number, 
     .addFields(
       {
         name: 'Release status',
-        value: `${student.IsReleased[1] ? 'Global' : 'JP only'} (${BlueArchiveConstants.STUDENT_TYPE[student.IsLimited]
-          })`,
+        value: `${student.IsReleased[1] ? 'Global' : 'JP only'} (${
+          BlueArchiveConstants.STUDENT_TYPE[student.IsLimited]
+        })`,
         inline: true,
       },
       {
@@ -180,8 +180,9 @@ export const BA_StudentEmbed = (student: IStudent, author: User, page?: number, 
       { name: 'Use cover', value: student.Cover ? 'Yes' : 'No', inline: true },
       {
         name: 'Adaptation',
-        value: `\`\`\`Urban: ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation]}, Indoor: ${BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation]
-          }, Outdoor: ${BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation]}\`\`\``,
+        value: `\`\`\`Urban: ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation]}, Indoor: ${
+          BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation]
+        }, Outdoor: ${BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation]}\`\`\``,
       },
       { name: 'Introduction', value: `\`\`\`${decode(student.ProfileIntroduction)}\`\`\`` },
     )
@@ -217,10 +218,11 @@ export const BA_StudentProfileEmbed = (
       },
       {
         name: 'Furniture interaction',
-        value: `\`\`\`${furnitures?.length > 0
+        value: `\`\`\`${
+          furnitures?.length > 0
             ? furnitures.map((furniture: IFurniture) => `[${furniture.Rarity}] ${furniture.Name}`).join('\n')
             : 'N/A'
-          }\`\`\``,
+        }\`\`\``,
       },
       {
         name: 'Relationship rank bonus',
@@ -267,9 +269,11 @@ export const BA_StudentStatsEmbed = (student: IStudent, author: User): EmbedBuil
         name: 'Base sub stats',
         value: `\`\`\`RANGE  : ${student.Range}\nSTABLE : ${student.StabilityPoint} (${SchaleMath.stabilityRate(
           student.StabilityPoint,
-        )}%)\nACC    : ${student.AccuracyPoint}\nEVA    : ${student.DodgePoint}\nCRIT.R : ${student.CriticalPoint
-          }\nCRIT.D : ${SchaleMath.criticalRate(student.CriticalDamageRate)}%\nREC    : ${student.RegenCost}\nCC.P   : ${BlueArchiveConstants.CC_POWER
-          }\nCC.R   : ${BlueArchiveConstants.CC_RESISTANCE}\nAMMO   : ${student.AmmoCount}(${student.AmmoCost})\`\`\``,
+        )}%)\nACC    : ${student.AccuracyPoint}\nEVA    : ${student.DodgePoint}\nCRIT.R : ${
+          student.CriticalPoint
+        }\nCRIT.D : ${SchaleMath.criticalRate(student.CriticalDamageRate)}%\nREC    : ${student.RegenCost}\nCC.P   : ${
+          BlueArchiveConstants.CC_POWER
+        }\nCC.R   : ${BlueArchiveConstants.CC_RESISTANCE}\nAMMO   : ${student.AmmoCount}(${student.AmmoCost})\`\`\``,
       },
     )
     .setTimestamp()
@@ -343,19 +347,25 @@ export const BA_StudentWeaponEmbed = (student: IStudent, author: User): EmbedBui
       { name: `[Skill upgrade] ${passiveSkillUpgrade.Name}`, value: `\`\`\`${passiveSkillUpgrade.Desc}\`\`\`` },
       {
         name: `[Adaptation upgrade] ${student.Weapon.AdaptationType}`,
-        value: `\`\`\`Urban   : ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation]}${student.Weapon.AdaptationType === 'Street'
-            ? ` -> ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation + student.Weapon.AdaptationValue]
-            }`
+        value: `\`\`\`Urban   : ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation]}${
+          student.Weapon.AdaptationType === 'Street'
+            ? ` -> ${
+                BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation + student.Weapon.AdaptationValue]
+              }`
             : ''
-          }\nIndoor  : ${BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation]}${student.Weapon.AdaptationType === 'Indoor'
-            ? ` -> ${BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation + student.Weapon.AdaptationValue]
-            }`
+        }\nIndoor  : ${BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation]}${
+          student.Weapon.AdaptationType === 'Indoor'
+            ? ` -> ${
+                BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation + student.Weapon.AdaptationValue]
+              }`
             : ''
-          }\nOutdoor : ${BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation]}${student.Weapon.AdaptationType === 'Outdoor'
-            ? ` -> ${BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation + student.Weapon.AdaptationValue]
-            }`
+        }\nOutdoor : ${BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation]}${
+          student.Weapon.AdaptationType === 'Outdoor'
+            ? ` -> ${
+                BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation + student.Weapon.AdaptationValue]
+              }`
             : ''
-          }\`\`\``,
+        }\`\`\``,
       },
       {
         name: 'Stats',
@@ -379,7 +389,8 @@ export const BA_StudentGearEmbed = (student: IStudent, author: User): EmbedBuild
   return new EmbedBuilder()
     .setColor(BlueArchiveConstants.BULLET_COLOR[student.BulletType])
     .setTitle(
-      `[${'★'.repeat(student.StarGrade)}] ${student.Name}'s gear \`${student.Gear.Released![1] ? 'Global' : 'JP only'
+      `[${'★'.repeat(student.StarGrade)}] ${student.Name}'s gear \`${
+        student.Gear.Released![1] ? 'Global' : 'JP only'
       }\``,
     )
     .setURL(BlueArchiveConstants.SCHALE_STUDENT_URL + student.PathName)
@@ -478,12 +489,14 @@ export const BA_RaidEmbed = (raid: IRaid, difficulty: string, author: User): Emb
       }))(boss);
       const stats = Object.entries(pickedStats).map(
         ([key, value]) =>
-          `${localization!.Stat[key === 'CriticalResistPoint' ? 'CriticalChanceResistPoint' : key.replace(/[0-9]/g, '')]
+          `${
+            localization!.Stat[key === 'CriticalResistPoint' ? 'CriticalChanceResistPoint' : key.replace(/[0-9]/g, '')]
           }: ${value}`,
       );
       fields.push({
-        name: `[Stats] Lv.${BlueArchiveConstants.RAID_LEVEL[BlueArchiveConstants.RAID_DIFFICULTIES[difficulty]]} ${boss.Name
-          }`,
+        name: `[Stats] Lv.${BlueArchiveConstants.RAID_LEVEL[BlueArchiveConstants.RAID_DIFFICULTIES[difficulty]]} ${
+          boss.Name
+        }`,
         value: `Traits: ${boss.Tags.map((tag: string) => `\`${tag}\``).join(' ')}\n\`\`\`${stats.join('\n')}\`\`\``,
       });
     });
@@ -503,12 +516,14 @@ export const BA_RaidEmbed = (raid: IRaid, difficulty: string, author: User): Emb
       iconURL: author.displayAvatarURL(),
     })
     .setDescription(
-      `${CommonConstants.BOOLEAN_MAP[
-      (raid.MaxDifficulty[0] >= BlueArchiveConstants.RAID_DIFFICULTIES[difficulty]).toString()
-      ]
-      } JP ー ${CommonConstants.BOOLEAN_MAP[
-      (raid.MaxDifficulty[1] >= BlueArchiveConstants.RAID_DIFFICULTIES[difficulty] && raid.IsReleased[1]).toString()
-      ]
+      `${
+        CommonConstants.BOOLEAN_MAP[
+          (raid.MaxDifficulty[0] >= BlueArchiveConstants.RAID_DIFFICULTIES[difficulty]).toString()
+        ]
+      } JP ー ${
+        CommonConstants.BOOLEAN_MAP[
+          (raid.MaxDifficulty[1] >= BlueArchiveConstants.RAID_DIFFICULTIES[difficulty] && raid.IsReleased[1]).toString()
+        ]
       } GLOBAL`,
     )
     .setThumbnail(

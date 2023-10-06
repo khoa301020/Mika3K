@@ -4,7 +4,7 @@ import { BlueArchiveConstants } from '../../constants/index.js';
 import { cache } from '../../main.js';
 import { BA_ServerEmbed } from '../../providers/embeds/bluearchiveEmbed.js';
 import { getData } from '../../services/bluearchive.js';
-import { CurrentGacha, CurrentRaid, ICommon } from '../../types/bluearchive/common.js';
+import { CurrentGacha, CurrentRaid, IConfig } from '../../types/bluearchive/config.js';
 import { IStudent } from '../../types/bluearchive/student.js';
 import { editOrReplyThenDelete } from '../../utils/index.js';
 
@@ -27,22 +27,22 @@ export class BlueArchiveSync {
     interaction: CommandInteraction,
   ): Promise<any> {
     await interaction.deferReply();
-    const common: ICommon | undefined = cache.get('BA_Common');
+    const config: IConfig | undefined = cache.get('BA_Common');
 
-    if (!common) return editOrReplyThenDelete(interaction, '❌ Cache not found.');
+    if (!config) return editOrReplyThenDelete(interaction, '❌ Cache not found.');
 
-    const region = common.regions[regionId];
+    const region = config.Regions[regionId];
 
     region.studentsCount = await getData.getStudentCount(regionId);
     region.raidsCount = await getData.getRaidCount(regionId);
-    region.eventsCount = region.events.length;
-    region.rerunEventsCount = region.events.filter((event: number) => /^10/.test(event.toString())).length;
+    region.eventsCount = region.Events.length;
+    region.rerunEventsCount = region.Events.filter((event: number) => /^10/.test(event.toString())).length;
     region.incomingBirthdayStudents = await getData.getStudentHasBirthdayNextWeek(regionId);
 
-    const raids: Array<CurrentRaid & { info?: any }> = region.current_raid.filter(
+    const raids: Array<CurrentRaid & { info?: any }> = region.CurrentRaid.filter(
       (region) => region.raid.toString().length < 4,
     );
-    const timeAttacks: Array<CurrentRaid & { info?: any }> = region.current_raid.filter(
+    const timeAttacks: Array<CurrentRaid & { info?: any }> = region.CurrentRaid.filter(
       (region) => region.raid.toString().length >= 4,
     );
     let raidPromises: Array<Promise<any>> = [];
@@ -65,7 +65,7 @@ export class BlueArchiveSync {
 
     const gachaPromises: Array<Promise<any>> = [];
 
-    region.current_gacha.forEach((gacha: CurrentGacha, index: number, characterArray: any) => {
+    region.CurrentGacha.forEach((gacha: CurrentGacha, index: number, characterArray: any) => {
       gachaPromises.push(
         getData.getStudentByIds(gacha.characters).then((students: Array<IStudent>) => {
           if (students.length > 0) characterArray[index].characters = students;

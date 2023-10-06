@@ -44,10 +44,12 @@ export default class BlueArchiveConstants {
   public static readonly SCHALE_STUDENT_GEAR_URL = (id: number) =>
     `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/gear/icon/${id}.webp`;
   public static readonly SCHALE_RAID_ICON_URL = (pathName: string, isFromInsane: boolean) =>
-    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/icon/Icon_${pathName}${isFromInsane ? '_Insane' : ''
+    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/icon/Icon_${pathName}${
+      isFromInsane ? '_Insane' : ''
     }.png`;
   public static readonly SCHALE_RAID_PORTRAIT_URL = (pathName: string, isFromInsane: boolean) =>
-    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/Boss_Portrait_${pathName}${isFromInsane ? '_Insane' : ''
+    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/Boss_Portrait_${pathName}${
+      isFromInsane ? '_Insane' : ''
     }_Lobby.png`;
   public static readonly CURRENCY_DATA_URL =
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/currency.json';
@@ -65,7 +67,7 @@ export default class BlueArchiveConstants {
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/students.json';
   public static readonly SUMMONS_DATA_URL =
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/summons.json';
-  public static readonly COMMON_DATA_URL = 'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/common.json';
+  public static readonly CONFIG_DATA_URL = 'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/config.json';
 
   /* Icon urls */
 

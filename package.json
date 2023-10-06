@@ -13,7 +13,7 @@
     "watch": "nodemon --exec ts-node-esm src/main.ts"
   },
   "dependencies": {
-    "@discordx/importer": "^1.2.2",
+    "@discordx/importer": "^1.2.3",
     "@discordx/koa": "^1.1.2",
     "@discordx/pagination": "^3.4.1",
     "@koa/router": "^12.0.0",

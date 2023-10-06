@@ -5,7 +5,7 @@ import { bot, cache } from '../main.js';
 import NotifyChannel from '../models/NotifyChannel.js';
 import Cron from '../providers/cron.js';
 import { fetchData } from '../services/bluearchive.js';
-import { ICommon } from '../types/bluearchive/common.js';
+import { IConfig } from '../types/bluearchive/config.js';
 import { ILocalization } from '../types/bluearchive/localization.js';
 import { getTime } from '../utils/index.js';
 
@@ -22,7 +22,7 @@ export async function cacheCommonData(): Promise<void> {
   cache.set('BA_Localization', BALocalization);
 
   // Cache common
-  const BACommon: ICommon = await (await axios.get(BlueArchiveConstants.COMMON_DATA_URL)).data;
+  const BACommon: IConfig = await (await axios.get(BlueArchiveConstants.CONFIG_DATA_URL)).data;
   cache.set('BA_Common', BACommon);
 }
 

@@ -19,15 +19,6 @@ import {
 } from '../../types/syosetu.js';
 import { editOrReplyThenDelete } from '../../utils/index.js';
 
-const defaultRequest: ISyosetuRequest = {
-  out: 'json',
-  lim: 20,
-  title: 1,
-  ex: 1,
-  keyword: 1,
-  wname: 1,
-};
-
 @Discord()
 @SlashGroup({ name: 'novel', description: 'Novel commands' })
 class Syosetu {
@@ -224,6 +215,15 @@ class Syosetu {
   ): Promise<any> {
     await interaction.deferReply();
 
+    const defaultRequest: ISyosetuRequest = {
+      out: 'json',
+      lim: 20,
+      title: 1,
+      ex: 1,
+      keyword: 1,
+      wname: 1,
+    };
+
     let biggenre: Array<TSyosetuBigGenre> = [],
       notbiggenre: Array<TSyosetuBigGenre> = [],
       genre: Array<TSyosetuGenre> = [],
@@ -284,7 +284,14 @@ class Syosetu {
 
     const pages = novels.map((novel: ISyosetuNovel, index) => {
       return {
-        embeds: [SyosetuNovelEmbed(novel, interaction.user, index + 1, defaultRequest.lim)],
+        embeds: [
+          SyosetuNovelEmbed(
+            novel,
+            interaction.user,
+            index + 1,
+            defaultRequest.lim! < meta.allcount ? defaultRequest.lim : meta.allcount,
+          ),
+        ],
       };
     });
 

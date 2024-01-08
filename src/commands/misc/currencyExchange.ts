@@ -42,20 +42,24 @@ class CurrencyExchange {
   ): Promise<Promise<Message<boolean> | void> | undefined> {
     if (!from || !to || !amount)
       return editOrReplyThenDelete(command.message, { content: '❌ Invalid arguments', ephemeral: true });
-    const currencies: Array<ICurrency> | undefined = cache.get('currencies');
+    const currencies: ICurrency | undefined = cache.get('currencies');
     if (!currencies)
       return editOrReplyThenDelete(command.message, { content: '❌ Currencies not cached', ephemeral: true });
 
-    const fromCurrency = currencies.find((currency) => currency.id === from.toUpperCase());
-    const toCurrency = currencies.find((currency) => currency.id === to.toUpperCase());
+    from = from.toUpperCase();
+    to = to.toUpperCase();
+
+    const fromCurrency = currencies[from];
+    const toCurrency = currencies[to];
 
     if (!fromCurrency || !toCurrency)
       return editOrReplyThenDelete(command.message, { content: '❌ Invalid currency', ephemeral: true });
 
-    const result = await exchangeCurrency(fromCurrency.id, toCurrency.id, amount);
+    const query = { from, to, amount };
+    const result = await exchangeCurrency(query);
 
     return command.message.reply({
-      embeds: [CurrencyExchangeEmbed(from, to, amount, result)],
+      embeds: [CurrencyExchangeEmbed(result)],
     });
   }
 
@@ -89,25 +93,21 @@ class CurrencyExchange {
     if (interaction.isAutocomplete()) {
       const focusedValue = interaction.options.getFocused();
       interaction.respond(
-        (cache.get('currencies') as Array<any>)!
-          .map((currency) => ({
-            name: currency.currencyName,
-            value: currency.id,
-          }))
-          .filter(
-            (currency) =>
-              currency.name.toLowerCase().includes(focusedValue?.toLowerCase() ?? '') ||
-              currency.value.toLowerCase().includes(focusedValue?.toLowerCase() ?? ''),
-          )
-          .slice(0, 25),
+        Object.entries((cache.get('currencies') as ICurrency) || {})
+          .filter(([key, value]: [string, string]) => key.toLowerCase().includes(focusedValue?.toLowerCase())
+            || value.toLowerCase().includes(focusedValue?.toLowerCase()))
+          .map(([key, value]: [string, string]) => Object({ name: value, value: key }))
+          .slice(0, 25)
       );
     } else {
       const calculatedAmount: number = eval(amount.toString());
       if (!calculatedAmount || calculatedAmount < 0)
         return editOrReplyThenDelete(interaction, { content: '❌ Invalid amount', ephemeral: true });
-      const result = await exchangeCurrency(from.toUpperCase(), to.toUpperCase(), calculatedAmount);
+      const query = { from: from.toUpperCase(), to: to.toUpperCase(), amount: calculatedAmount };
+      const result = await exchangeCurrency(query);
+
       return interaction.reply({
-        embeds: [CurrencyExchangeEmbed(from, to, calculatedAmount, result)],
+        embeds: [CurrencyExchangeEmbed(result)],
       });
     }
   }

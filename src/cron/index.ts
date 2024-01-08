@@ -1,7 +1,6 @@
 import { cacheCurrencies } from '../services/common.js';
 import { cacheCommonData, checkSchaleDB } from './checkSchaleDB.js';
 import { claimDaily } from './claimHoyoLabDaily.js';
-import { kakuyomuCheckUpdate } from './kakuyomuCheckUpdate.js';
 import { refreshCf, refreshNHentaiCfToken } from './refreshNhentaiCfToken.js';
 import { cacheAccessToken, refreshPixivToken } from './refreshPixivToken.js';
 import { syosetuCheckUpdate } from './syosetuCheckUpdate.js';
@@ -25,7 +24,6 @@ function initCronJobs(): void {
     refreshPixivToken.start(); // Refresh Pixiv token every 30 minutes
     if (process.env.NHENTAI_USE_ORIGIN === 'false') refreshNHentaiCfToken.start(); // Refresh NHentai Cloudflare token every 20 minutes
     syosetuCheckUpdate.start(); // Check update Syosetu every 1 hour
-    kakuyomuCheckUpdate.start(); // Check update Kakuyomu every 1 hour
   }
 }
 

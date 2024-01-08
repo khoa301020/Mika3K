@@ -3,7 +3,7 @@ import type { GuildMember, User } from 'discord.js';
 import { DiscordAPIError, EmbedBuilder } from 'discord.js';
 import { CommonConstants } from '../../constants/index.js';
 import { bot } from '../../main.js';
-import { ICurrencyExchange } from '../../types/common.js';
+import { IExchangeResult } from '../../types/currencies.js';
 import { IUserQuote } from '../../types/quote.js';
 import { datetimeConverter, isInstanceOfAny, timeDiff } from '../../utils/index.js';
 
@@ -115,21 +115,16 @@ export const MathEmbed = (expression: string, result: string): EmbedBuilder => {
     .setFooter({ text: bot.user!.displayName, iconURL: bot.user!.displayAvatarURL() });
 };
 
-export const CurrencyExchangeEmbed = (
-  from: string,
-  to: string,
-  amount: number,
-  exchangeRes: ICurrencyExchange,
-): EmbedBuilder => {
+export const CurrencyExchangeEmbed = (exchangeRes: IExchangeResult): EmbedBuilder => {
   const embed = new EmbedBuilder()
     .setColor(0x0099ff)
-    .addFields({ name: `From ${from.toUpperCase()}`, value: `\`\`\`${amount.toLocaleString()}\`\`\`` })
-    .addFields({ name: `To ${to.toUpperCase()}`, value: `\`\`\`${exchangeRes.result.toLocaleString()}\`\`\`` })
+    .addFields({ name: `From ${exchangeRes.query.from.toUpperCase()}`, value: `\`\`\`${exchangeRes.query.amount.toLocaleString()}\`\`\`` })
+    .addFields({ name: `To ${exchangeRes.query.to.toUpperCase()}`, value: `\`\`\`${exchangeRes.result.toLocaleString()}\`\`\`` })
     .setTimestamp()
     .setFooter({ text: bot.user!.displayName, iconURL: bot.user!.displayAvatarURL() });
 
-  if (amount > 1)
-    embed.setTitle(`Rate: 1 ${from.toUpperCase()} = ${exchangeRes.rate.toLocaleString()} ${to.toUpperCase()}`);
+  if (exchangeRes.query.amount > 1)
+    embed.setTitle(`Rate: 1 ${exchangeRes.query.from.toUpperCase()} = ${exchangeRes.info.rate.toLocaleString()} ${exchangeRes.query.to.toUpperCase()}`);
 
   return embed;
 };

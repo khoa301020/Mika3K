@@ -5,6 +5,7 @@ import { IntentsBitField } from 'discord.js';
 import { Client } from 'discordx';
 import NodeCache from 'node-cache';
 
+import axios from 'axios';
 import { config } from 'dotenv';
 import mongoose from 'mongoose';
 import { errorHandler } from './utils/index.js';
@@ -39,6 +40,7 @@ export const bot = new Client({
 mongoose.set('strictQuery', true);
 const mongoUri = process.env.MONGO_URI;
 await mongoose.connect(mongoUri!).then(async () => {
+  axios.defaults.headers.common["Accept-Encoding"] = "gzip";
   cache.set('init', true);
   console.log('MongoDB connected');
 });

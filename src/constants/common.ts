@@ -42,8 +42,9 @@ export default class CommonConstants {
   };
   public static readonly MATHJS_API = 'http://api.mathjs.org/v4/?expr=';
   public static readonly CURRENCY_CONVERTER_API = (query: string) =>
-    `https://free.currconv.com/api/v7/convert?q=${query}&compact=ultra&apiKey=${process.env.CURRENCY_CONVERTER_API_KEY}`;
-  public static readonly CURRENCY_LIST_API = `https://free.currconv.com/api/v7/currencies?apiKey=${process.env.CURRENCY_CONVERTER_API_KEY}`;
+    `http://api.exchangeratesapi.io/v1/latest?access_key=${process.env.CURRENCY_CONVERTER_API_KEY}&${query}`;
+  public static readonly CURRENCY_LIST_API =
+    `http://api.exchangeratesapi.io/v1/symbols?access_key=${process.env.CURRENCY_CONVERTER_API_KEY}`;
   public static readonly NOTIFY_TYPE = {
     NHENTAI_AUTOVIEW: 'NHentai Autoview',
     BA_SCHALEDB_UPDATE: 'SchaleDB Update',

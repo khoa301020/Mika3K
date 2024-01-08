@@ -41,13 +41,6 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 |      List genres       |      :x:     |          :x:          |  `/syosetu genres` |
 | Follow/unfollow novel  |      :x:     |          :x:          |  `/syosetu follow` |
 
-## Kakuyomu
-
-|         Feature        | Context menu |    Message command    |    Slash command    |
-|:----------------------:|:------------:|:---------------------:|:-------------------:|
-|    Show novel info     |      :x:     |          :x:          |   `/kakuyomu info`  |
-| Follow/unfollow novel  |      :x:     |          :x:          |  `/kakuyomu follow` |
-
 ## HoYoLAB
 
 |                  Feature                 | Context menu | Message command |       Slash command        |

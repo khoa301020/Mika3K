@@ -6,6 +6,7 @@ import { INHentaiQueryKey, INHentaiQueryParam } from '../types/nhentai';
 
 export async function simulateNHentaiRequest(url: string): Promise<AxiosResponse> {
   // return await axios.get(url);
+  axios.defaults.headers.common["Accept-Encoding"] = "gzip";
 
   if (process.env.NHENTAI_USE_ORIGIN === 'true')
     return await axios.get(
@@ -26,7 +27,7 @@ export async function simulateNHentaiRequest(url: string): Promise<AxiosResponse
   return await axios.get(url, {
     httpsAgent: new HttpsCookieAgent({ cookies: { jar } }),
     headers: {
-      'User-Agent': process.env.USER_AGENT || CommonConstants.USER_AGENT,
+      'User-Agent': process.env.NHENTAI_USER_AGENT || CommonConstants.USER_AGENT,
     },
     validateStatus(status) {
       return (status >= 200 && status < 300) || status == 404;
@@ -38,8 +39,8 @@ function queryTransformer(key: INHentaiQueryKey, opts: INHentaiQueryParam) {
   return opts && opts[key]
     ? Array.isArray(opts[key])
       ? opts[key]!.map((e) =>
-          e && e.length > 1 ? (e.charAt(0) === '-' ? `-${key}:"${e.substring(1)}" ` : `${key}:"${e}" `) : '',
-        ).join('')
+        e && e.length > 1 ? (e.charAt(0) === '-' ? `-${key}:"${e.substring(1)}" ` : `${key}:"${e}" `) : '',
+      ).join('')
       : `${key}:"${opts[key]}"`
     : '';
 }

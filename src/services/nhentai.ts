@@ -6,7 +6,6 @@ import { INHentaiQueryKey, INHentaiQueryParam } from '../types/nhentai';
 
 export async function simulateNHentaiRequest(url: string): Promise<AxiosResponse> {
   // return await axios.get(url);
-  axios.defaults.headers.common["Accept-Encoding"] = "gzip";
 
   if (process.env.NHENTAI_USE_ORIGIN === 'true')
     return await axios.get(

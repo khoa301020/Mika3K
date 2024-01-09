@@ -359,7 +359,7 @@ export function generateDS() {
 export const isInstanceOfAny = (obj: any, types: any[]): boolean => types.some((type) => obj instanceof type);
 
 export const errorHandler = (err: Error) => {
-  if (process.env.NODE_ENV !== 'production') return console.error(err);
+  if (process.env.BOT_ENV !== 'production') return console.error(err);
   console.log(`[${getTime()}] ERROR: ${err.message}`);
 
   if (!process.env.LOG_CHANNEL_ID) {

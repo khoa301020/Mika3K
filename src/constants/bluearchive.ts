@@ -44,12 +44,10 @@ export default class BlueArchiveConstants {
   public static readonly SCHALE_STUDENT_GEAR_URL = (id: number) =>
     `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/gear/icon/${id}.webp`;
   public static readonly SCHALE_RAID_ICON_URL = (pathName: string, isFromInsane: boolean) =>
-    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/icon/Icon_${pathName}${
-      isFromInsane ? '_Insane' : ''
+    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/icon/Icon_${pathName}${isFromInsane ? '_Insane' : ''
     }.png`;
   public static readonly SCHALE_RAID_PORTRAIT_URL = (pathName: string, isFromInsane: boolean) =>
-    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/Boss_Portrait_${pathName}${
-      isFromInsane ? '_Insane' : ''
+    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/Boss_Portrait_${pathName}${isFromInsane ? '_Insane' : ''
     }_Lobby.png`;
   public static readonly CURRENCY_DATA_URL =
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/currency.json';
@@ -209,16 +207,17 @@ export default class BlueArchiveConstants {
   public static readonly RAID_LEVEL = [17, 25, 35, 50, 70, 80, 90];
 
   public static readonly RAIDS: { [key: string]: number } = {
-    Binah: 1,
-    Chesed: 2,
-    ShiroKuro: 3,
+    BINAH: 1,
+    CHESED: 2,
+    "Shiro & Kuro": 3,
     Hieronymus: 4,
-    KAITEN: 5,
+    "KAITEN FX Mk.0": 5,
     Perorodzilla: 6,
     HOD: 7,
     Goz: 8,
     Gregorius: 9,
-    HoverCraft: 10,
+    Hovercraft: 10,
+    Kurokage: 11,
   };
 
   public static readonly RAID_DIFFICULTIES: { [key: string]: number } = {

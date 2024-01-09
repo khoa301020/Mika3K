@@ -58,7 +58,7 @@ bot.once('ready', async () => {
   //    ...bot.guilds.cache.map((g) => g.id)
   //  );
 
-  console.log(`Bot started, env: ${process.env.NODE_ENV}`);
+  console.log(`Bot started, env: ${process.env.BOT_ENV}`);
 });
 
 process.on('unhandledRejection', (error: Error) => {

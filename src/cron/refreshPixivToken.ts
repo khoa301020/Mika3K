@@ -4,6 +4,7 @@ import { PixivConstants } from '../constants/index.js';
 import { cache } from '../main.js';
 import Cron from '../providers/cron.js';
 import { IPixivRefreshTokenResponse } from '../types/pixiv';
+import { getTime } from '../utils/index.js';
 
 const cronName = 'PIXIV REFRESH TOKEN';
 
@@ -31,19 +32,16 @@ async function refreshToken(): Promise<AxiosResponse> {
     'X-Client-Time': clientTime,
     'X-Client-Hash': getXClientHash(clientTime),
   };
-
-  return await axios.post(PixivConstants.PIXIV_AUTH_URL, new URLSearchParams(params).toString(), {
-    headers,
-  });
+  return await axios.post(PixivConstants.PIXIV_AUTH_URL, new URLSearchParams(params).toString(), { headers });
 }
 
 export async function cacheAccessToken() {
-  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') return;
+  if (!process.env.BOT_ENV || process.env.BOT_ENV === 'development') return;
   if (!process.env.PIXIV_CLIENT_ID || !process.env.PIXIV_CLIENT_SECRET || !process.env.PIXIV_REFRESH_TOKEN) return;
   const response = await refreshToken();
   const pixivRes: IPixivRefreshTokenResponse = response.data;
   if (!pixivRes) return;
-
+  console.log(`[${getTime()}] ${cronName} success`);
   const accessToken = pixivRes.access_token;
   cache.set('pixivAccessToken', accessToken, pixivRes.expires_in);
 }

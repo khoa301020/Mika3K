@@ -12,7 +12,6 @@ export const ErrorLogEmbed = (error: Error): EmbedBuilder => {
     .setColor(isInstanceOfAny(error, [DiscordAPIError, AxiosError]) ? 0x0099ff : 0xff0000)
     .setTitle('Error')
     .addFields({ name: 'Name', value: error.name }, { name: 'Message', value: error.message })
-    .addFields()
     .setTimestamp()
     .setFooter({ text: bot.user!.displayName, iconURL: bot.user!.displayAvatarURL() });
 
@@ -22,16 +21,19 @@ export const ErrorLogEmbed = (error: Error): EmbedBuilder => {
       { name: 'Method', value: error.method, inline: true },
     );
 
-  if (error instanceof AxiosError)
+  if (error instanceof AxiosError) {
     embed.addFields(
       { name: 'URL', value: error.config?.url ?? 'No URL', inline: true },
       { name: 'Status', value: error.response?.status.toString() ?? 'No status', inline: true },
       { name: 'Headers', value: error.config ? `\`\`\`${JSON.stringify(error.config?.headers)}\`\`\`` : 'No headers' },
       {
         name: 'Response',
-        value: error.response ? `\`\`\`${JSON.stringify(error.response?.data)}\`\`\`` : 'No response',
+        value: error.response && error.response.data instanceof Object
+          ? `\`\`\`${JSON.stringify(error.response.data)}\`\`\``
+          : 'No response',
       },
     );
+  }
 
   embed.addFields({ name: 'Stack', value: `\`\`\`${error.stack}\`\`\`` });
 

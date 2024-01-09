@@ -102,6 +102,7 @@ class QuoteCommand {
     key: string,
     command: SimpleCommandMessage,
   ): Promise<Message<boolean> | void> {
+    if (!cmd.startsWith(botPrefix.repeat(2))) key = cmd;
     if (!key) return editOrReplyThenDelete(command.message, '❌ Keyword required.');
     const keyword = key.trim();
     const guildId = command.message.guildId;

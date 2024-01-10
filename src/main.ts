@@ -5,6 +5,7 @@ import { IntentsBitField } from 'discord.js';
 import { Client } from 'discordx';
 import NodeCache from 'node-cache';
 
+import axios from 'axios';
 import { config } from 'dotenv';
 import mongoose from 'mongoose';
 import { errorHandler } from './utils/index.js';
@@ -103,10 +104,15 @@ async function run() {
 
   // api: let's start the server now
   const port = process.env.PORT ?? 3000;
-  server.listen(port, () => {
-    console.log(`discord api server started on ${port}`);
-    console.log(`visit localhost:${port}/guilds`);
+  server.listen(port, async () => {
+    const serverIp = await axios.get('https://api.ipify.org?format=json').then((res) => res.data.ip);
+    console.log(`discord api server started on port ${port}. Public ip: ${serverIp}`);
+    console.log(`visit ${serverIp}:${port}/guilds`);
   });
 }
 
+/**
+ * TODO: Booru fetch
+ * TODO: Starboard
+ */
 run();

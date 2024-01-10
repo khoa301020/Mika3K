@@ -8,12 +8,12 @@ import { IPixivIllustResponse } from '../types/pixiv';
 import { editOrReplyThenDelete } from '../utils/index.js';
 
 @Discord()
-export class CommonEvents {
+export class PixivEvents {
   /**
    * Pixiv preview
    *
    * @param {ArgsOf<'messageCreate'>} [message]
-   * @memberof CommonEvents
+   * @memberof PixivEvents
    *
    */
   @On({ event: 'messageCreate' })

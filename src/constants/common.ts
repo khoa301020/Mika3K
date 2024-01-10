@@ -4,6 +4,7 @@ import { QuoteSort } from '../types/quote';
 export default class CommonConstants {
   public static readonly USER_AGENT =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36 Edg/115.0.1901.203';
+  public static readonly BOT_USER_AGENT = 'Discordbot/2.0 (+https://discordapp.com)';
   public static readonly DEFAULT_EMBED_COLOR = 0x0099ff;
   public static readonly EMBED_TITLE_LIMIT = 256;
   public static readonly EMBED_DESCRIPTION_LIMIT = 4096;
@@ -43,15 +44,14 @@ export default class CommonConstants {
   public static readonly MATHJS_API = 'http://api.mathjs.org/v4/?expr=';
   public static readonly CURRENCY_CONVERTER_API = (query: string) =>
     `http://api.exchangeratesapi.io/v1/latest?access_key=${process.env.CURRENCY_CONVERTER_API_KEY}&${query}`;
-  public static readonly CURRENCY_LIST_API =
-    `http://api.exchangeratesapi.io/v1/symbols?access_key=${process.env.CURRENCY_CONVERTER_API_KEY}`;
+  public static readonly CURRENCY_LIST_API = `http://api.exchangeratesapi.io/v1/symbols?access_key=${process.env.CURRENCY_CONVERTER_API_KEY}`;
   public static readonly NOTIFY_TYPE = {
     NHENTAI_AUTOVIEW: 'NHentai Autoview',
     BA_SCHALEDB_UPDATE: 'SchaleDB Update',
   };
-
   public static readonly QUOTE_LIST_SORT_BY: { [key in QuoteSort]: string } = {
     key: 'quote.key',
     hits: 'sumHits',
   };
+  public static readonly TWITTER_URL_REGEX = /https:\/\/(twitter|x)\.com\/.+?\/status\/\d+/g;
 }

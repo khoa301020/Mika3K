@@ -74,13 +74,14 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 
 ## Misc
 
-|      Feature      |    Context menu    |     Message command    |     Slash command     |
-|:-----------------:|:------------------:|:----------------------:|:---------------------:|
-| Check user info   | :heavy_check_mark: | `$info` / `$userinfo`  |     `/check-info`     |
-| SauceNAO          | :heavy_check_mark: |  `$sn` / `$saucenao`   |      `/saucenao`      |
-| Math              |         :x:        |     `$m` / `$math`     |     `/math`           |
-| Currency exchange |         :x:        |     `$ce` / `$curr`    | `/currency-exchange`  |
-| Pick options      |         :x:        |     `$p` / `$pick`     |          :x:          |
+|        Feature        |    Context menu    |     Message command    |     Slash command     |
+|:------------――-------:|:------------------:|:----------------------:|:---------------------:|
+| Check user info       | :heavy_check_mark: | `$info` / `$userinfo`  |     `/check-info`     |
+| SauceNAO              | :heavy_check_mark: |  `$sn` / `$saucenao`   |      `/saucenao`      |
+| Math                  |         :x:        |     `$m` / `$math`     |     `/math`           |
+| Currency exchange     |         :x:        |     `$ce` / `$curr`    | `/currency-exchange`  |
+| Pick options          |         :x:        |     `$p` / `$pick`     |          :x:          |
+| Twitter embed support |         :x:        |           :x:          |          :x:          |
 
 # Resources
 

@@ -8,12 +8,12 @@ import { INHentai } from '../types/nhentai.js';
 import { timeout } from '../utils/index.js';
 
 @Discord()
-export class CommonEvents {
+export class NHentaiEvents {
   /**
    * NHentai autoview
    *
    * @param {ArgsOf<'messageCreate'>} [message]
-   * @memberof CommonEvents
+   * @memberof NHentaiEvents
    *
    */
   @On({ event: 'messageCreate' })

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { ChannelType } from 'discord.js';
+import { AttachmentBuilder, ChannelType, MessagePayload, MessageReplyOptions } from 'discord.js';
 import { ArgsOf, Discord, On } from 'discordx';
 import qs from 'qs';
 import { CommonConstants } from '../constants/index.js';
@@ -74,9 +74,22 @@ export class FxTwitterEvents {
 
     await message.suppressEmbeds(true);
 
-    await message.reply({
-      embeds: [...tweets.map((tweet) => FxTwitterEmbed(tweet))],
-      allowedMentions: { repliedUser: false },
+    const replyMessages = tweets.map((tweet) => {
+      const msg: string | MessagePayload | MessageReplyOptions = {
+        embeds: [FxTwitterEmbed(tweet)],
+        allowedMentions: { repliedUser: false },
+        files: [],
+      };
+
+      if (tweet.video) {
+        msg.files!.push(new AttachmentBuilder(tweet.video.url!));
+      }
+
+      return msg;
+    });
+
+    return replyMessages.forEach(async (replyMessage) => {
+      await message.reply(replyMessage);
     });
   }
 }

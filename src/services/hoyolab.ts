@@ -37,7 +37,8 @@ export const hoyolabApi = {
         if (index === -1) {
           hoyoUsers.push(hoyoUser);
         } else {
-          hoyoUsers[index] = hoyoUser;
+          hoyoUsers.splice(index, 1);
+          hoyoUsers.push(hoyoUser);
         }
         return await HoYoLAB.findOneAndUpdate({ userId }, { hoyoUsers });
       }
@@ -121,8 +122,7 @@ export const hoyolabApi = {
     };
 
     return await axios.get(
-      `${HoYoLABConstants.HOYOLAB_NOTE_API(gameAccount.game!)}?server=${gameAccount.region}&role_id=${
-        gameAccount.game_uid
+      `${HoYoLABConstants.HOYOLAB_NOTE_API(gameAccount.game!)}?server=${gameAccount.region}&role_id=${gameAccount.game_uid
       }`,
       { headers },
     );

@@ -13,22 +13,24 @@ export const FxTwitterEmbed = (tweet: IFxTweet): EmbedBuilder => {
     },
     title: tweet.title.slice(0, CommonConstants.EMBED_TITLE_LIMIT),
     description: tweet.description.slice(0, CommonConstants.EMBED_DESCRIPTION_LIMIT),
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `${bot.user?.displayName}・Twitter/X`,
+      icon_url: 'https://about.twitter.com/content/dam/about-twitter/x/brand-toolkit/logo-black.png.twimg.1920.png',
+    },
   };
 
-  if (tweet.video) {
-    embed.video = {
-      url: tweet.video.url,
-      proxy_url: tweet.video.url,
-      height: tweet.video.height,
-      width: tweet.video.width,
+  if (tweet.video) return EmbedBuilder.from(embed);
+
+  if (tweet.image.includes('profile_images')) {
+    embed.thumbnail = {
+      url: tweet.image,
+    };
+  } else {
+    embed.image = {
+      url: tweet.image,
     };
   }
 
-  return EmbedBuilder.from(embed)
-    .setImage(tweet.image)
-    .setTimestamp()
-    .setFooter({
-      text: `${bot.user?.displayName}・Twitter/X`,
-      iconURL: 'https://about.twitter.com/content/dam/about-twitter/x/brand-toolkit/logo-black.png.twimg.1920.png',
-    });
+  return EmbedBuilder.from(embed);
 };

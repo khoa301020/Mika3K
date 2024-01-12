@@ -33,11 +33,10 @@ export default class CheckNHentaiCode {
   ): Promise<void | Message<boolean>> {
     await interaction.deferReply({ ephemeral: !(interaction.channel as TextChannel)?.nsfw ?? true });
     try {
-      const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_GALLERY_ENDPOINT(code));
-      if (!res.data) return await editOrReplyThenDelete(interaction, { content: '❌ Internal error' });
-      if (res.data.status === 400) return await editOrReplyThenDelete(interaction, { content: '❌ Error occur' });
+      const data = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_GALLERY_ENDPOINT(code));
+      if (!data) return await editOrReplyThenDelete(interaction, { content: '❌ Internal error' });
 
-      const embed = NHentaiEmbed(res.data, interaction.user);
+      const embed = NHentaiEmbed(data, interaction.user);
       return await interaction.editReply({ embeds: [embed] });
     } catch (err: any) {
       await editOrReplyThenDelete(interaction, { content: err.message });
@@ -72,9 +71,9 @@ export default class CheckNHentaiCode {
       if (!codes) return editOrReplyThenDelete(command.message, { content: '❌ No code found in the message' });
       let results: Array<INHentai> = [];
       for (const code of codes) {
-        const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_GALLERY_ENDPOINT(code));
-        if (!res.data || res.status === 404) continue;
-        results.push(res.data);
+        const data = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_GALLERY_ENDPOINT(code));
+        if (!data) continue;
+        results.push(data);
         await timeout(3333);
       }
       if (results.length === 0) return await editOrReplyThenDelete(command.message, { content: '❌ No code found' });

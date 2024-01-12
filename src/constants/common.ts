@@ -1,4 +1,4 @@
-import { TPaginationType } from '../types/common';
+import { TDiscordTimestamp, TPaginationType } from '../types/common';
 import { QuoteSort } from '../types/quote';
 
 export default class CommonConstants {
@@ -53,5 +53,17 @@ export default class CommonConstants {
     key: 'quote.key',
     hits: 'sumHits',
   };
-  public static readonly TWITTER_URL_REGEX = /https:\/\/(twitter|x)\.com\/.+?\/status\/\d+/g;
+  public static readonly TWITTER_URL_REGEX = /(https:\/\/|^)(twitter|x)\.com\/.+?\/status\/\d+/g;
+  public static readonly TWITTER_LOGO =
+    'https://about.twitter.com/content/dam/about-twitter/x/brand-toolkit/logo-black.png.twimg.1920.png';
+  public static readonly DISCORD_TIMESTAMP_TYPE: { [key in TDiscordTimestamp]: string } = {
+    DEFAULT: '',
+    RELATIVE_TIME: ':R',
+    SHORT_TIME: ':t',
+    LONG_TIME: ':T',
+    SHORT_DATE: ':d',
+    LONG_DATE: ':D',
+    SHORT_DATETIME: ':f',
+    LONG_DATETIME: ':F',
+  };
 }

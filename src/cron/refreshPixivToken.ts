@@ -44,6 +44,7 @@ export async function cacheAccessToken() {
   console.log(`[${getTime()}] ${cronName} success`);
   const accessToken = pixivRes.access_token;
   cache.set('pixivAccessToken', accessToken, pixivRes.expires_in);
+  console.log(`Access token: ${accessToken}`);
 }
 
 export const refreshPixivToken = new Cron(cronName, '0 */30 * * * *', async () => await cacheAccessToken());

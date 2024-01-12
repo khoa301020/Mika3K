@@ -1,4 +1,5 @@
 import { cacheCurrencies } from '../services/common.js';
+import { setCloudflareCookie } from '../services/nhentai.js';
 import { cacheCommonData, checkSchaleDB } from './checkSchaleDB.js';
 import { claimDaily } from './claimHoyoLabDaily.js';
 import { refreshCf, refreshNHentaiCfToken } from './refreshNhentaiCfToken.js';
@@ -6,14 +7,16 @@ import { cacheAccessToken, refreshPixivToken } from './refreshPixivToken.js';
 import { syosetuCheckUpdate } from './syosetuCheckUpdate.js';
 
 async function initFunctions(): Promise<void> {
-  // Production only
+  await setCloudflareCookie().then(() => console.log('Cached NHentai Cloudflare cookie')); // Set NHentai Cloudflare cookie
+  await cacheCommonData().then(() => console.log('Cached SchaleDB common data')); // Cache common data
+  await cacheCurrencies().then(() => console.log('Cached currencies')); // Cache currencies
+
+  // Production only  
   if (process.env.BOT_ENV && process.env.BOT_ENV === 'production') {
     await cacheAccessToken(); // Cache Pixiv access token
-    if (process.env.NHENTAI_USE_ORIGIN === 'false') await refreshCf(); // Refresh Cloudflare token
+    // if (process.env.NHENTAI_USE_ORIGIN === 'false')
+    // await refreshCf().then(() => console.log('Refreshed Cloudflare token')); // Cache NHentai Cloudflare token
   }
-
-  await cacheCommonData(); // Cache common data
-  await cacheCurrencies(); // Cache currencies
 }
 
 function initCronJobs(): void {
@@ -22,7 +25,8 @@ function initCronJobs(): void {
     checkSchaleDB.start(); // Check SchaleDB every 1 hour
     claimDaily.start(); // Claim HoYoLAB daily everyday at 00:00 UTC+8
     refreshPixivToken.start(); // Refresh Pixiv token every 30 minutes
-    if (process.env.NHENTAI_USE_ORIGIN === 'false') refreshNHentaiCfToken.start(); // Refresh NHentai Cloudflare token every 20 minutes
+    // if (process.env.NHENTAI_USE_ORIGIN === 'false')
+    // refreshNHentaiCfToken.start(); // Refresh NHentai Cloudflare token every 20 minutes
     syosetuCheckUpdate.start(); // Check update Syosetu every 1 hour
   }
 }

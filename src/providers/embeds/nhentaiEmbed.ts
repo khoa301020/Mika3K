@@ -2,7 +2,7 @@ import type { User } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { NHentaiConstants } from '../../constants/index.js';
 import { INHentai, Tag } from '../../types/nhentai.js';
-import { datetimeConverter, sortArray } from '../../utils/index.js';
+import { discordTimestamp, sortArray } from '../../utils/index.js';
 
 // export const NHentaiEmbed = (nhentai: INHentai, author: User, page?: number, total?: number): EmbedBuilder => {
 export const NHentaiEmbed = (nhentai: INHentai, author: User, page?: number, total?: number): EmbedBuilder => {
@@ -35,7 +35,10 @@ export const NHentaiEmbed = (nhentai: INHentai, author: User, page?: number, tot
   return (
     new EmbedBuilder()
       .setColor(color)
-      .setTitle(`[${nhentai.id}] ${nhentai.title.japanese ? nhentai.title.japanese : nhentai.title.pretty}`)
+      .setTitle(
+        `[${nhentai.id}] ${nhentai.title.japanese ? nhentai.title.japanese : nhentai.title.pretty}` +
+          ` ${discordTimestamp(nhentai.upload_date, 'RELATIVE_TIME')}`,
+      )
       .setURL(`${NHentaiConstants.NHENTAI_BASE_URL}/g/${nhentai.id}`)
       .setAuthor({
         name: `${author.username}#${author.discriminator}`,
@@ -59,10 +62,6 @@ export const NHentaiEmbed = (nhentai: INHentai, author: User, page?: number, tot
           inline: true,
         },
       )
-      .addFields({
-        name: 'Upload time',
-        value: `${datetimeConverter(nhentai.upload_date * 1000).datetime}`,
-      })
       // .setImage(
       //   NHentaiConstants.NHENTAI_COVER(nhentai.media_id, nhentai.images.pages[0].t.split('.').pop()?.charAt(0) as T),
       // )

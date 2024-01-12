@@ -40,6 +40,7 @@ export const bot = new Client({
 mongoose.set('strictQuery', true);
 const mongoUri = process.env.MONGO_URI;
 await mongoose.connect(mongoUri!).then(async () => {
+  // axios.defaults.headers.common['Accept-Encoding'] = 'gzip';
   cache.set('init', true);
   console.log('MongoDB connected');
 });
@@ -111,8 +112,12 @@ async function run() {
   });
 }
 
-/**
- * TODO: Booru fetch
- * TODO: Starboard
- */
+// TODO: Gelbooru/Danbooru search img
+// TODO: Starboard to highlights
+// TODO: Auto certain meme in channel in specific time
+// TODO: Message history
+// TODO: NHentai bypass cloudflare with flaresolver
+// TODO: Poll
+// TODO: Ultility command to tell bot edit its msg, react, say sth, set role, delete a certain msg, or show msg in channels
+// TODO: Use discord timestamp indicator to ultilize bot functions
 run();

@@ -16,7 +16,7 @@ export const FxTwitterEmbed = (tweet: IFxTweet): EmbedBuilder => {
     timestamp: new Date().toISOString(),
     footer: {
       text: `${bot.user?.displayName}・Twitter/X`,
-      icon_url: 'https://about.twitter.com/content/dam/about-twitter/x/brand-toolkit/logo-black.png.twimg.1920.png',
+      icon_url: CommonConstants.TWITTER_LOGO,
     },
   };
 

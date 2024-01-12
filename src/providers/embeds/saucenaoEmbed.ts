@@ -25,7 +25,7 @@ export const SauceNAOResultEmbed = (
     .setColor(0x0099ff)
     .setTitle(
       `[${SauceNAOConstants.SAUCENAO_SOURCES[result.header?.index_id!]}] ${
-        nuke ? nuke.title : result.data?.title
+        nuke ? nuke.title : result.data?.title || 'N/A'
       } \`${result.header?.similarity}%\``,
     )
     .setURL(nuke ? nuke.url : result.header?.thumbnail ?? null)
@@ -38,5 +38,5 @@ export const SauceNAOResultEmbed = (
     .setThumbnail(SauceNAOConstants.SAUCENAO_LOGO)
     .setImage(result.header?.thumbnail ?? null)
     .setTimestamp()
-    .setFooter({ text: `SauceNAO (${page}/${total})`, iconURL: SauceNAOConstants.SAUCENAO_LOGO });
+    .setFooter({ text: `SauceNAO${page ? ` (${page}/${total})` : ''}`, iconURL: SauceNAOConstants.SAUCENAO_LOGO });
 };

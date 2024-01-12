@@ -20,9 +20,12 @@ export class FxTwitterEvents {
   async FxTwitter([message]: ArgsOf<'messageCreate'>): Promise<void> {
     if (message.channel.type !== ChannelType.GuildText) return;
     if (!message.content.match(CommonConstants.TWITTER_URL_REGEX)?.length) return;
-    const matches = message.content
-      .match(CommonConstants.TWITTER_URL_REGEX)
-      ?.map((match) => match.replace('twitter.com', 'fxtwitter.com').replace('x.com', 'fixupx.com'));
+    const matches = message.content.match(CommonConstants.TWITTER_URL_REGEX)?.map((match) =>
+      match
+        .replace('twitter.com', 'fxtwitter.com')
+        .replace('x.com', 'fixupx.com')
+        .replace(/^(?!https?:\/\/)/, 'https://'),
+    );
 
     if (!matches || message.embeds.length > 0) return;
 
@@ -42,11 +45,7 @@ export class FxTwitterEvents {
             const oembed = qs.parse($('link[rel="alternate"]').attr('href')!.split('?')[1]);
             const tweet: IFxTweet = {
               url: $('meta[property="og:url"]').attr('content')!,
-              title: decodeURIComponent(
-                $('meta[property="og:video"]').attr('content')
-                  ? oembed.provider?.toString()!
-                  : oembed.text?.toString()!,
-              ),
+              title: decodeURIComponent(oembed.provider ? oembed.provider.toString() : oembed.text?.toString()!),
               author: {
                 name:
                   $('meta[property="og:title"]').attr('content') || $('meta[name="twitter:title"]').attr('content')!,

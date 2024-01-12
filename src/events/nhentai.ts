@@ -42,10 +42,11 @@ export class NHentaiEvents {
 
     let results: Array<INHentai> = [];
     try {
+      message.channel.sendTyping();
       for (const code of codes) {
-        const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_GALLERY_ENDPOINT(code));
-        if (!res.data || res.status === 404) continue;
-        results.push(res.data);
+        const data = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_GALLERY_ENDPOINT(code));
+        if (!data) continue;
+        results.push(data);
         await timeout(3333);
       }
     } catch (err: any) {

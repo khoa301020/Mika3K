@@ -78,6 +78,11 @@ class SauceNAO {
     if (data.results?.length === 0)
       return editOrReplyThenDelete(command.message, { content: `❌ The results' similarity is too low.` });
 
+    if (data.results?.length === 1)
+      return await command.message.reply({
+        embeds: [SauceNAOResultEmbed(command.message.author, data.results.shift()!)],
+      });
+
     const pages = data.results!.map((result: ISaucenaoSearchResponseResult, index: number) => {
       const embed = SauceNAOResultEmbed(command.message.author, result, index + 1, data.results!.length);
 
@@ -150,6 +155,9 @@ class SauceNAO {
     if (data.results?.length === 0)
       return editOrReplyThenDelete(interaction, { content: `❌ The results' similarity is too low.` });
 
+    if (data.results?.length === 1)
+      return await interaction.editReply({ embeds: [SauceNAOResultEmbed(interaction.user, data.results.shift()!)] });
+
     const pages = data.results!.map((result: ISaucenaoSearchResponseResult, index: number) => {
       const embed = SauceNAOResultEmbed(interaction.user, result, index + 1, data.results!.length);
 
@@ -204,9 +212,11 @@ class SauceNAO {
     if (data.results?.length === 0)
       return editOrReplyThenDelete(interaction, { content: `❌ The results' similarity is too low.` });
 
+    if (data.results?.length === 1)
+      return await interaction.editReply({ embeds: [SauceNAOResultEmbed(interaction.user, data.results.shift()!)] });
+
     const pages = data.results!.map((result: ISaucenaoSearchResponseResult, index: number) => {
       const embed = SauceNAOResultEmbed(interaction.user, result, index + 1, data.results!.length);
-
       return { embeds: [embed] };
     });
 

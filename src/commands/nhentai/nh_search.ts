@@ -118,14 +118,12 @@ class SearchNHentai {
     const queryString = `${keyword.trim() + queryBuilder(query)}&sort=${sort}&page=${page}`;
 
     try {
-      const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
-
-      console.log(res.config.url);
-      if (!res.data || res.data.result.length === 0)
+      const data = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
+      if (!data || data.result.length === 0)
         return await editOrReplyThenDelete(interaction, { content: '❌ No result found' });
-      const list: Array<INHentai> = res.data.result;
+      const list: Array<INHentai> = data.result;
       const pages = list.map((book: INHentai, index: number) => {
-        book.total_search_page = res.data.num_pages;
+        book.total_search_page = data.num_pages;
         book.current_search_page = page;
         const embed = NHentaiEmbed(book, interaction.user, index + 1, list.length);
         return {
@@ -157,7 +155,7 @@ class SearchNHentai {
 
     let query: string, sort: string, page: string;
     if (!command.argString) [query, sort, page] = ['+', 'popular', '1'];
-    else [query, sort, page] = command.argString.split('|').map((e) => e.trim());
+    else[query, sort, page] = command.argString.split('|').map((e) => e.trim());
 
     sort = sort ?? NHentaiConstants.NHENTAI_DEFAULT_SORT;
     page = page ?? NHentaiConstants.NHENTAI_DEFAULT_PAGE;
@@ -173,14 +171,13 @@ class SearchNHentai {
     const queryString = `${encodeURIComponent(query.toLowerCase())}&sort=${sort}&page=${page}`;
 
     try {
-      const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
-      console.log(res.config.url);
-      if (!res.data || res.data.result.length === 0)
+      const data = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(queryString));
+      if (!data || data.result.length === 0)
         return await editOrReplyThenDelete(command.message, '❌ No result found');
 
-      const list: Array<INHentai> = res.data.result;
+      const list: Array<INHentai> = data.result;
       const pages = list.map((book: INHentai, index: number) => {
-        book.total_search_page = res.data.num_pages;
+        book.total_search_page = data.num_pages;
         book.current_search_page = parseInt(page);
         const embed = NHentaiEmbed(book, command.message.author, index + 1, list.length);
         return {
@@ -216,9 +213,9 @@ class SearchNHentai {
       if (codes && codes.length > 0) {
         let results: Array<INHentai> = [];
         for (const code of codes) {
-          const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_GALLERY_ENDPOINT(code));
-          if (!res.data || res.status === 404) continue;
-          results.push(res.data);
+          const data = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_GALLERY_ENDPOINT(code));
+          if (!data) continue;
+          results.push(data);
           await timeout(3333);
         }
         if (results.length === 0) return await editOrReplyThenDelete(interaction, { content: '❌ No code found' });
@@ -237,14 +234,13 @@ class SearchNHentai {
           return await pagination.send();
         }
       } else {
-        const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(query));
-        console.log(res.config.url);
-        if (!res.data || res.data.result.length === 0)
+        const data = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_SEARCH_ENDPOINT(query));
+        if (!data || data.result.length === 0)
           return await editOrReplyThenDelete(interaction, '❌ No result found');
 
-        const list: Array<INHentai> = res.data.result;
+        const list: Array<INHentai> = data.result;
         const pages = list.map((book: INHentai, index: number) => {
-          book.total_search_page = res.data.num_pages;
+          book.total_search_page = data.num_pages;
           book.current_search_page = 1;
           const embed = NHentaiEmbed(book, interaction.user, index + 1, list.length);
           return {

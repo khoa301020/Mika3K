@@ -4,8 +4,8 @@ import { AttachmentBuilder, ChannelType, MessagePayload, MessageReplyOptions } f
 import { ArgsOf, Discord, On } from 'discordx';
 import qs from 'qs';
 import { CommonConstants } from '../constants/index.js';
-import { FxTwitterEmbed } from '../providers/embeds/fxTwitterEmbed.js';
-import { IFxTweet } from '../types/twitter.js';
+import { FxSnsEmbed } from '../providers/embeds/FxSnsEmbed.js';
+import { IFxEmbed } from '../types/snsEmbed';
 
 @Discord()
 export class FxTwitterEvents {
@@ -30,7 +30,7 @@ export class FxTwitterEvents {
     if (!matches || message.embeds.length > 0) return;
 
     message.channel.sendTyping();
-    let tweets: Array<IFxTweet> = [];
+    let tweets: Array<IFxEmbed> = [];
 
     for (const url of matches) {
       tweets.push(
@@ -43,7 +43,8 @@ export class FxTwitterEvents {
           .then((res) => {
             const $ = cheerio.load(res.data);
             const oembed = qs.parse($('link[rel="alternate"]').attr('href')!.split('?')[1]);
-            const tweet: IFxTweet = {
+            const tweet: IFxEmbed = {
+              source: 'Twitter/X',
               url: $('meta[property="og:url"]').attr('content')!,
               title: decodeURIComponent(oembed.provider ? oembed.provider.toString() : oembed.text?.toString()!),
               author: {
@@ -57,6 +58,7 @@ export class FxTwitterEvents {
               description: $('meta[property="og:description"]').attr('content') || '',
               image:
                 $('meta[property="og:image"]').attr('content') || $('meta[name="twitter:image"]').attr('content') || '',
+              icon: CommonConstants.TWITTER_LOGO,
             };
 
             if ($('meta[property="og:video"]').attr('content'))
@@ -75,7 +77,7 @@ export class FxTwitterEvents {
 
     const replyMessages = tweets.map((tweet) => {
       const msg: string | MessagePayload | MessageReplyOptions = {
-        embeds: [FxTwitterEmbed(tweet)],
+        embeds: [FxSnsEmbed(tweet)],
         allowedMentions: { repliedUser: false },
         files: [],
       };

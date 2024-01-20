@@ -1,6 +1,6 @@
 ## Untagged
 
-- Update: [NHentai] Bypass Cloudflare ([5861b0](https://github.com/khoa301020/Mika3K/commit/5861b07b0f1645b2a79d62fb6f2e4aba1b097514))
+- Update: [NHentai] Bypass Cloudflare ([aefd5d](https://github.com/khoa301020/Mika3K/commit/aefd5d038ca2ce8eb63089d781e34793dd711d08))
 - Update: [Common] Support video(s) for Twitter embed ([780059](https://github.com/khoa301020/Mika3K/commit/78005930ebed363da0cea7b8b47db37df1c48fc3))
 - Feature: [Common] Twitter embed support ([d43c62](https://github.com/khoa301020/Mika3K/commit/d43c62bcb8cf5d4b4b4db662ca5a9e8ffadefad3))
 - Update: [BA] Add raid Kurokage ([fdf163](https://github.com/khoa301020/Mika3K/commit/fdf163691694d50ff77f8b71d2334ee4793236a9))
@@ -26,7 +26,7 @@
 - Feature: [Kakuyomu] Info, follow & auto check update ([38e35c](https://github.com/khoa301020/Mika3K/commit/38e35c27f385ea15d67428c4885182a7dff55268))
 - Fix: [HoYoLAB] Case retcode = 0 has confused if-statement ([1ba6f2](https://github.com/khoa301020/Mika3K/commit/1ba6f29fe71646064fee6f56046e1196112d49af))
 - Change: Use class to manage cron jobs ([f676e9](https://github.com/khoa301020/Mika3K/commit/f676e9fc0798f2a33d4dea720846f8ef6d747926))
-- Fix: [NHentai] Seperate `keyword` from other query params ([4d4e13](https://github.com/khoa301020/Mika3K/commit/4d4e135e76c65dd95ed78a7b0b702a1fb2500dd6))
+- [Fix]: [NHentai] Seperate `keyword` from other query params ([4d4e13](https://github.com/khoa301020/Mika3K/commit/4d4e135e76c65dd95ed78a7b0b702a1fb2500dd6))
 - Update: [Syosetu] Optimize reduce query by using BulkWrite ([7d4151](https://github.com/khoa301020/Mika3K/commit/7d4151b2b389dd51b13b6796a9f8360b7e1166b4))
 - Update: [Syosetu] add `general_firstup` to metadata & add last update time to notification ([af9c03](https://github.com/khoa301020/Mika3K/commit/af9c03b0079f2fccf114d19a6b5ce7ed9583d5ca))
 - Update: Log start/finish time for all cron jobs ([96d625](https://github.com/khoa301020/Mika3K/commit/96d625375ac031d1fdb3854d5122675a2c8feb2d))

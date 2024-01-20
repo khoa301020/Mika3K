@@ -82,6 +82,7 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 | Currency exchange     |         :x:        |     `$ce` / `$curr`    | `/currency-exchange`  |
 | Pick options          |         :x:        |     `$p` / `$pick`     |          :x:          |
 | Twitter embed support |         :x:        |           :x:          |          :x:          |
+| Tiktok embed support  |         :x:        |           :x:          |          :x:          |
 
 # Resources
 

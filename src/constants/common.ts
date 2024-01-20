@@ -4,7 +4,7 @@ import { QuoteSort } from '../types/quote';
 export default class CommonConstants {
   public static readonly USER_AGENT =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36 Edg/115.0.1901.203';
-  public static readonly BOT_USER_AGENT = 'Discordbot/2.0 (+https://discordapp.com)';
+  public static readonly BOT_USER_AGENT = 'Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)';
   public static readonly DEFAULT_EMBED_COLOR = 0x0099ff;
   public static readonly EMBED_TITLE_LIMIT = 256;
   public static readonly EMBED_DESCRIPTION_LIMIT = 4096;
@@ -56,6 +56,9 @@ export default class CommonConstants {
   public static readonly TWITTER_URL_REGEX = /(https:\/\/|^)(twitter|x)\.com\/.+?\/status\/\d+/g;
   public static readonly TWITTER_LOGO =
     'https://about.twitter.com/content/dam/about-twitter/x/brand-toolkit/logo-black.png.twimg.1920.png';
+  public static readonly TIKTOK_URL_REGEX = /(https:\/\/|^)(\w+\.)?tiktok\.com\/.+?\/video\/\d+/g;
+  public static readonly TIKTOK_SHORT_URL_REGEX = /(https:\/\/|^)(\w+\.)?tiktok\.com\/[\w\d]+\/?$/g;
+  public static readonly TIKTOK_LOGO = 'https://img.freepik.com/premium-vector/tik-tok-logo_578229-290.jpg';
   public static readonly DISCORD_TIMESTAMP_TYPE: { [key in TDiscordTimestamp]: string } = {
     DEFAULT: '',
     RELATIVE_TIME: ':R',

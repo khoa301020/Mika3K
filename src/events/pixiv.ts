@@ -5,7 +5,7 @@ import { PixivConstants } from '../constants/index.js';
 import { cache } from '../main.js';
 import { PixivIllustListEmbeds } from '../providers/embeds/pixivEmbed.js';
 import { IPixivIllustResponse } from '../types/pixiv';
-import { editOrReplyThenDelete } from '../utils/index.js';
+import { editOrReplyThenDelete, isTextBasedChannel } from '../utils/index.js';
 
 @Discord()
 export class PixivEvents {
@@ -19,7 +19,7 @@ export class PixivEvents {
   @On({ event: 'messageCreate' })
   async PixivPreview([message]: ArgsOf<'messageCreate'>): Promise<void> {
     if (message.author.bot) return;
-    if (message.channel.type !== ChannelType.GuildText) return;
+    if (!isTextBasedChannel(message.channel.type)) return;
     if (!message.content.match(PixivConstants.PIXIV_ILLUST_URL_REGEX)) return;
     const match = message.content.match(PixivConstants.PIXIV_ILLUST_URL_REGEX);
 
@@ -46,7 +46,7 @@ export class PixivEvents {
     const illustRes: IPixivIllustResponse = response.data;
     if (!illustRes || !illustRes.illust) return;
 
-    if (!message.channel.nsfw && illustRes.illust.x_restrict !== PixivConstants.PIXIV_SAFE_VALUE)
+    if (message.channel.type === ChannelType.GuildText && !message.channel.nsfw && illustRes.illust.x_restrict !== PixivConstants.PIXIV_SAFE_VALUE)
       return editOrReplyThenDelete(message, '❌ This illust is NSFW, preview is only available in NSFW channels.');
 
     await message.suppressEmbeds(true);

@@ -2,7 +2,7 @@ import { ChannelType } from 'discord.js';
 import { Discord, SimpleCommand, SimpleCommandMessage, SimpleCommandOption, SimpleCommandOptionType } from 'discordx';
 import CommonConstants from '../../constants/common.js';
 import NotifyChannel from '../../models/NotifyChannel.js';
-import { editOrReplyThenDelete } from '../../utils/index.js';
+import { editOrReplyThenDelete, isTextBasedChannel } from '../../utils/index.js';
 
 @Discord()
 export class NHentai {
@@ -14,10 +14,10 @@ export class NHentai {
   ): Promise<any> {
     if (command.message.author.id !== process.env.OWNER_ID)
       return editOrReplyThenDelete(command.message, '❌ Only the bot owner can use this command');
-    if (command.message.channel.type !== ChannelType.GuildText)
+    if (!isTextBasedChannel(command.message.channel.type))
       return editOrReplyThenDelete(command.message, '❌ This command is only available in guilds text channels.');
 
-    if (!command.message.channel.nsfw)
+    if (command.message.channel.type === ChannelType.GuildText && !command.message.channel.nsfw)
       return editOrReplyThenDelete(command.message, '❌ This command is only available in NSFW channels.');
 
     if (!action) return editOrReplyThenDelete(command.message, '❌ Invalid arguments. Usage: `nhautoview <on|off>`');

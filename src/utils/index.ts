@@ -3,6 +3,7 @@ import { createHash, randomBytes } from 'crypto';
 import dayjs from 'dayjs';
 import {
   ButtonInteraction,
+  ChannelType,
   CommandInteraction,
   InteractionReplyOptions,
   InteractionResponse,
@@ -264,11 +265,9 @@ export const getRelativeTime = (seconds: number) => {
   const minutes = Math.floor((seconds % (60 * 60)) / 60);
   const second = Math.floor(seconds % 60);
 
-  return `${days ? `${days.toString().padStart(2, '0')}d ` : ''}${
-    hours ? `${hours.toString().padStart(2, '0')}h ` : ''
-  }${minutes ? `${minutes.toString().padStart(2, '0')}m ` : ''}${
-    second ? `${second.toString().padStart(2, '0')}s` : ''
-  }`;
+  return `${days ? `${days.toString().padStart(2, '0')}d ` : ''}${hours ? `${hours.toString().padStart(2, '0')}h ` : ''
+    }${minutes ? `${minutes.toString().padStart(2, '0')}m ` : ''}${second ? `${second.toString().padStart(2, '0')}s` : ''
+    }`;
 };
 
 export const isEnded = (epoch: number): boolean => new Date().getTime() / 1000 >= epoch;
@@ -382,3 +381,8 @@ export const getRandomInteger = (min: number, max: number) => Math.floor(Math.ra
 
 export const discordTimestamp = (timestamp: number | string, type: TDiscordTimestamp = 'DEFAULT') =>
   `<t:${timestamp}${CommonConstants.DISCORD_TIMESTAMP_TYPE[type]}>`;
+
+export const isTextBasedChannel = (channel: ChannelType) =>
+  [ChannelType.GuildText, ChannelType.PublicThread, ChannelType.PrivateThread].includes(
+    channel,
+  );

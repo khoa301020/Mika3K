@@ -5,7 +5,7 @@ import NotifyChannel from '../models/NotifyChannel.js';
 import { NHentaiEmbed } from '../providers/embeds/nhentaiEmbed.js';
 import { simulateNHentaiRequest } from '../services/nhentai.js';
 import { INHentai } from '../types/nhentai.js';
-import { timeout } from '../utils/index.js';
+import { isTextBasedChannel, timeout } from '../utils/index.js';
 
 @Discord()
 export class NHentaiEvents {
@@ -19,9 +19,9 @@ export class NHentaiEvents {
   @On({ event: 'messageCreate' })
   async NHentaiAutoview([message]: ArgsOf<'messageCreate'>): Promise<void | MessageReaction> {
     if (message.author.bot) return;
-    if (message.channel.type !== ChannelType.GuildText) return;
+    if (!isTextBasedChannel(message.channel.type)) return;
     if (process.env.BOT_PREFIX && message.content.startsWith(process.env.BOT_PREFIX)) return;
-    if (!message.channel.nsfw) return;
+    if (message.channel.type === ChannelType.GuildText && !message.channel.nsfw) return;
 
     let codes: Array<string> | null = message.content
       .replace(/<a?:.+?:\d+>/g, '') // remove all emojis

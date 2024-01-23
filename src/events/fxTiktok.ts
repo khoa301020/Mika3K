@@ -1,11 +1,12 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { AttachmentBuilder, ChannelType, MessagePayload, MessageReplyOptions } from 'discord.js';
+import { AttachmentBuilder, MessagePayload, MessageReplyOptions } from 'discord.js';
 import { ArgsOf, Discord, On } from 'discordx';
 import qs from 'qs';
 import { CommonConstants } from '../constants/index.js';
 import { FxSnsEmbed } from '../providers/embeds/FxSnsEmbed.js';
 import { IFxEmbed } from '../types/snsEmbed.js';
+import { isTextBasedChannel } from '../utils/index.js';
 
 @Discord()
 export class FxTiktokEvents {
@@ -18,7 +19,7 @@ export class FxTiktokEvents {
    */
   @On({ event: 'messageCreate' })
   async FxTiktok([message]: ArgsOf<'messageCreate'>): Promise<void> {
-    if (message.channel.type !== ChannelType.GuildText) return;
+    if (!isTextBasedChannel(message.channel.type)) return;
     if (
       !message.content.match(CommonConstants.TIKTOK_URL_REGEX)?.length &&
       !message.content.match(CommonConstants.TIKTOK_SHORT_URL_REGEX)?.length
@@ -44,11 +45,17 @@ export class FxTiktokEvents {
     }
 
     const post = await axios
-      .get(url.replace('tiktok.com', 'vxtiktok.com').replace(/^(?!https?:\/\/)/, 'https://'), {
-        headers: {
-          'User-Agent': CommonConstants.BOT_USER_AGENT,
+      .get(
+        url
+          .replace('tiktok.com', 'vxtiktok.com')
+          .replace(/^(?!https?:\/\/)/, 'https://')
+          .replace('/photo/', '/video/'),
+        {
+          headers: {
+            'User-Agent': CommonConstants.BOT_USER_AGENT,
+          },
         },
-      })
+      )
       .then(async (res) => {
         const $ = cheerio.load(res.data);
         const oembed = qs.parse($('link[type="application/json+oembed"]').attr('href')!.split('?')[1]);

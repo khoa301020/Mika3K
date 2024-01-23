@@ -6,6 +6,7 @@ import qs from 'qs';
 import { CommonConstants } from '../constants/index.js';
 import { FxSnsEmbed } from '../providers/embeds/FxSnsEmbed.js';
 import { IFxEmbed } from '../types/snsEmbed';
+import { isTextBasedChannel } from '../utils/index.js';
 
 @Discord()
 export class FxTwitterEvents {
@@ -18,7 +19,7 @@ export class FxTwitterEvents {
    */
   @On({ event: 'messageCreate' })
   async FxTwitter([message]: ArgsOf<'messageCreate'>): Promise<void> {
-    if (message.channel.type !== ChannelType.GuildText) return;
+    if (!isTextBasedChannel(message.channel.type)) return;
     if (!message.content.match(CommonConstants.TWITTER_URL_REGEX)?.length) return;
     const matches = message.content.match(CommonConstants.TWITTER_URL_REGEX)?.map((match) =>
       match

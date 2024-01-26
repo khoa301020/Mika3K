@@ -84,7 +84,9 @@ export class FxTiktokEvents {
           };
 
         return post;
-      });
+      }).catch(() => null);
+
+    if (!post) return;
 
     await message.suppressEmbeds(true);
 

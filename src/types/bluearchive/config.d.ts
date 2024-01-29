@@ -1,10 +1,17 @@
 import { IStudent } from './student';
 
 export interface IConfig {
+  links: Link[];
   build: number;
   Regions: Region[];
+  CommonFavorItemTags: string[];
   TypeEffectiveness: TypeEffectiveness;
   GachaGroups: GachaGroup[];
+}
+
+export interface Changelog {
+  date: string;
+  contents: string[];
 }
 
 export interface GachaGroup {
@@ -18,6 +25,8 @@ export interface Region {
   WeaponMaxLevel: number;
   BondMaxLevel: number;
   EquipmentMaxLevel: number[];
+  GearUnlock: boolean;
+  GearBondReq: number[];
   CampaignMax: number;
   CampaignExtra: boolean;
   Events: number[];
@@ -53,7 +62,8 @@ export interface CurrentGacha {
 export interface CurrentRaid {
   type: string;
   raid: number;
-  terrain?: string;
+  terrain: string;
+  season: number;
   start: number;
   end: number;
 }
@@ -73,4 +83,16 @@ export interface ArmorEffectiveness {
   Structure: number;
   ElasticArmor: number;
   Normal: number;
+}
+
+export interface Link {
+  section: string;
+  content: Content[];
+}
+
+export interface Content {
+  title: string;
+  description: string;
+  url: string;
+  author: string;
 }

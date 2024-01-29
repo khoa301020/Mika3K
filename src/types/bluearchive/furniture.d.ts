@@ -3,8 +3,10 @@ export interface IFurniture {
   IsReleased: boolean[];
   Rarity: Rarity;
   Icon: string;
+  Craftable: boolean[];
   ComfortBonus: number;
   Category: Category;
+  Size: number[];
   Tags: string[];
   SynthQuality?: number[];
   SubCategory: SubCategory;
@@ -12,6 +14,7 @@ export interface IFurniture {
   Name: string;
   Desc: string;
   Interaction: boolean[];
+  Templates?: Array<number[]>;
 }
 
 export type Category = 'Interiors' | 'Decorations' | 'Furnitures';

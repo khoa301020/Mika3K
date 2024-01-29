@@ -40,7 +40,7 @@ export const bot = new Client({
 mongoose.set('strictQuery', true);
 const mongoUri = process.env.MONGO_URI;
 await mongoose.connect(mongoUri!).then(async () => {
-  // axios.defaults.headers.common['Accept-Encoding'] = 'gzip';
+  axios.defaults.headers.common['Accept-Encoding'] = 'gzip';
   cache.set('init', true);
   console.log('MongoDB connected');
 });

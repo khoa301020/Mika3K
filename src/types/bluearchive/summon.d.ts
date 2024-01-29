@@ -36,9 +36,12 @@ export interface ISummon {
 export interface Skill {
   SkillType: SkillType;
   Effects: Effect[];
+  Radius?: Radius[];
   Name?: string;
   Desc?: string;
   Parameters?: Array<string[]>;
+  Duration?: number;
+  Range?: number;
   Icon?: string;
   IsSummonSkill?: boolean;
 }
@@ -50,6 +53,8 @@ export interface Effect {
   Frames?: Frames;
   HitsParameter?: number;
   IgnoreDef?: number[];
+  Chance?: string;
+  Icon?: string;
 }
 
 export interface Frames {
@@ -61,7 +66,15 @@ export interface Frames {
   AttackReloadDuration: number;
 }
 
-export type EffectType = 'DMGSingle' | 'Heal' | 'DMGMulti';
+export type EffectType = 'DMGSingle' | 'Heal' | 'DMGMulti' | 'CrowdControl';
+
+export interface Radius {
+  Type: RadiusType;
+  Radius: number;
+  Degree?: number;
+}
+
+export type RadiusType = 'Circle' | 'Fan' | 'Bounce';
 
 export type SkillType = 'autoattack' | 'normal' | 'passive';
 

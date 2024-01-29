@@ -11,10 +11,11 @@ export interface ILocalization {
   BossFaction: { [key: string]: string };
   Stat: { [key: string]: string };
   IsLimited: { [key: string]: string };
+  FurnitureTemplate: { [key: string]: string };
   FurnitureSet: { [key: string]: string };
   ItemCategory: { [key: string]: string };
   ArtifactClass: { [key: string]: string };
-  EnemyTags: { [key: string]: string };
+  CharacterSize: { [key: string]: string };
   EventName: { [key: string]: string };
   StageType: { [key: string]: string };
   TimeAttackStage: { [key: string]: string };
@@ -32,4 +33,7 @@ export interface ILocalization {
   ServerName: { [key: string]: string };
   ShopCategory: { [key: string]: string };
   GroggyCondition: { [key: string]: string };
+  RaidChangePhase: { [key: string]: string };
+  VoiceClipGroup: { [key: string]: string };
+  VoiceClip: { [key: string]: string };
 }

@@ -361,6 +361,51 @@ export class BlueArchiveInfo {
         return;
       }
 
+      // Add summons skill if exist
+      if (student.Summons.length > 0) {
+        const summonsIds = student.Summons.map((summon) => summon.Id);
+        const summons = await getData.getSummons(summonsIds);
+        summons.sort((a, b) => summonsIds.indexOf(a.Id) - summonsIds.indexOf(b.Id));
+        student.Summons.forEach((summon, index) => (summon.Info = summons[index]));
+      }
+
+      // Add TSA skill if TSA partner exist
+      if (student.TSAId) {
+        const TsaStudent = await getData.getStudentById(student.TSAId);
+        const TsaSkills = TsaStudent?.Skills.filter((skill) => skill.ExtraSkills?.find((extraSkill) => extraSkill.TSAId === student.Id));
+        if (TsaSkills && TsaSkills.length > 0) {
+          student.Skills.forEach((skill) => {
+            const extraSkill = TsaSkills.find((TsaSkill) => TsaSkill.SkillType === skill.SkillType)?.ExtraSkills?.find((tsaExtraSkill) => tsaExtraSkill.TSAId === student.Id);
+            if (extraSkill) {
+              extraSkill.TSAId = TsaStudent?.Id;
+              extraSkill.TSAName = TsaStudent?.Name;
+              if (!skill.ExtraSkills) skill.ExtraSkills = [];
+              skill.ExtraSkills.push(extraSkill);
+            }
+          });
+        }
+      }
+
+      // Set TSA partner name if TSA extra skill exist
+      if (student.Skills.find((skill) => skill.ExtraSkills?.find((extraSkill) => extraSkill.TSAId))) {
+        const allTsaPartnerIds = student.Skills.reduce((acc, skill) => {
+          const extraSkills = skill.ExtraSkills?.filter((extraSkill) => extraSkill.TSAId);
+          if (extraSkills) acc.push(...extraSkills.map((extraSkill) => extraSkill.TSAId!));
+          return acc;
+        }, [] as number[]);
+
+        const allTsaPartners = await getData.getStudentByIds(allTsaPartnerIds);
+
+        student.Skills.forEach((skill) => {
+          if (skill.ExtraSkills) {
+            skill.ExtraSkills.forEach((extraSkill) => {
+              const tsaPartner = allTsaPartners.find((tsaPartner) => tsaPartner.Id === extraSkill.TSAId);
+              if (tsaPartner) extraSkill.TSAName = tsaPartner.Name;
+            });
+          }
+        });
+      }
+
       const embed = BA_StudentSkillsEmbed(student, interaction.user);
 
       await interaction.editReply({ embeds: [embed] });

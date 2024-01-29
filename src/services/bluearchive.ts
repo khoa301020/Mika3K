@@ -216,6 +216,7 @@ export const getData = {
     await SchaleDB.TimeAttack.findOne({ Id: id }).lean(),
   getFurnitures: async (ids: Array<number>): Promise<Array<IFurniture>> =>
     await SchaleDB.Furniture.find({ Id: { $in: ids } }).lean(),
+  getSummons: async (ids: Array<number>): Promise<Array<ISummon>> => await SchaleDB.Summon.find({ Id: { $in: ids } }).lean(),
 };
 
 export const transformStudentSkillStat = (skill: Skill, localization?: ILocalization) => {

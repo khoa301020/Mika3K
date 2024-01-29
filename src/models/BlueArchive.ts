@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import init from '../cron/index.js';
 import { cache } from '../main.js';
 import { ICurrency } from '../types/bluearchive/currency';
-import { IEnemy } from '../types/bluearchive/enemy';
+import { IEnemy, PhaseChange } from '../types/bluearchive/enemy';
 import { Shop as EquipmentShop, IEquipment } from '../types/bluearchive/equipment';
 import { IFurniture } from '../types/bluearchive/furniture';
 import { IItem, Shop as ItemShop } from '../types/bluearchive/item';
@@ -32,12 +32,10 @@ const StudentSchema = new mongoose.Schema<IStudent>(
     DevName: String,
     Name: String,
     School: String,
-    SchoolLong: String,
     Club: String,
     StarGrade: Number,
     SquadType: String,
     TacticRole: String,
-    TacticRoleLong: String,
     Summons: Array<Summon>,
     Position: String,
     BulletType: String,
@@ -50,9 +48,7 @@ const StudentSchema = new mongoose.Schema<IStudent>(
     Cover: Boolean,
     Equipment: Array<String>,
     CollectionBG: String,
-    CollectionTexture: String,
     FamilyName: String,
-    FamilyNameRuby: String,
     PersonalName: String,
     SchoolYear: String,
     CharacterAge: String,
@@ -99,6 +95,7 @@ const StudentSchema = new mongoose.Schema<IStudent>(
     SkillExMaterialAmount: Array<Number[]>,
     SkillMaterial: Array<Number[]>,
     SkillMaterialAmount: Array<Number[]>,
+    TSAId: Number,
   },
   {
     strict: false,
@@ -125,7 +122,7 @@ const EnemySchema = new mongoose.Schema<IEnemy>(
     BulletType: String,
     ArmorType: String,
     WeaponType: String,
-    Tags: Array<String>,
+    Size: String,
     Icon: String,
     StabilityPoint: Number,
     StabilityRate: Number,
@@ -146,16 +143,18 @@ const EnemySchema = new mongoose.Schema<IEnemy>(
     Range: Number,
     DamagedRatio: Number,
     Transcendence: Array<Number[]>,
+    Skills: Array<Number>,
     StreetBattleAdaptation: Number,
     IndoorBattleAdaptation: Number,
+    OutdoorBattleAdaptation: Number,
     GroggyGauge: Number,
     GroggyTime: Number,
-    OutdoorBattleAdaptation: Number,
-    Skills: Array<Number>,
+    PhaseChange: Array<PhaseChange>,
     OppressionPower: Number,
     OppressionResist: Number,
     DefensePenetration1: Number,
     DefensePenetration100: Number,
+    IsNPC: Boolean,
   },
   { strict: false },
 );

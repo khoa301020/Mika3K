@@ -5,7 +5,10 @@ export interface IItem {
   Rarity: Rarity;
   Quality: number;
   Tags: string[];
+  ExpiryTime?: (number | null)[];
   Shops: Shop[];
+  Craftable: boolean[];
+  StageDrop: boolean[];
   Icon: string;
   Name: string;
   Desc: string;
@@ -15,6 +18,9 @@ export interface IItem {
   ConsumeType?: ConsumeType;
   ImmediateUse?: boolean;
   Contains?: Array<number[]>;
+  ContainsCn?: Array<number[]>;
+  EventBonusGlobal?: Array<number[]>;
+  EventBonusCn?: Array<number[]>;
   ContainsGlobal?: Array<number[]>;
 }
 
@@ -42,4 +48,12 @@ export interface Shop {
 
 export type CostType = 'Currency' | 'Item';
 
-export type ShopCategory = 'General' | 'Raid' | 'Arena' | 'TimeAttack' | 'MasterCoin' | 'Chaser' | 'SecretStoneGrowth';
+export type ShopCategory =
+  | 'General'
+  | 'Raid'
+  | 'Arena'
+  | 'TimeAttack'
+  | 'MasterCoin'
+  | 'SecretStoneGrowth'
+  | 'Chaser'
+  | 'EliminateRaid';

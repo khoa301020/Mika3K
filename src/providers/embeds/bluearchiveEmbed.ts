@@ -3,14 +3,14 @@ import { EmbedBuilder } from 'discord.js';
 import { decode } from 'html-entities';
 import { BlueArchiveConstants, CommonConstants } from '../../constants/index.js';
 import { cache } from '../../main.js';
-import { SchaleMath, transformRaidSkillStat, transformStudentSkillStat } from '../../services/bluearchive.js';
+import { SchaleMath, getData, transformRaidSkillStat, transformStudentSkillStat } from '../../services/bluearchive.js';
 import { CurrentEvent, CurrentGacha, CurrentRaid, Region } from '../../types/bluearchive/config.js';
 import { IEnemy } from '../../types/bluearchive/enemy.js';
 import { IFurniture } from '../../types/bluearchive/furniture.js';
 import { ILocalization } from '../../types/bluearchive/localization.js';
 import { IRaid, RaidSkill } from '../../types/bluearchive/raid.js';
 import { Equipment, IStudent, Skill } from '../../types/bluearchive/student.js';
-import { convertTZ, datetimeConverter, getRelativeTimeBA, isEnded } from '../../utils/index.js';
+import { average, convertTZ, datetimeConverter, formatString, getRelativeTimeBA, isEnded } from '../../utils/index.js';
 
 /* Server embed */
 
@@ -65,8 +65,7 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
       value: `${region.incomingBirthdayStudents
         .map(
           (student: IStudent) =>
-            `ㅤ- [${student.Birthday}] ${student.Name} ${
-              student.BirthDay === todayJP ? 'ー **TODAY!**' : student.BirthDay === tomorrowJP ? 'ー **TOMORROW!**' : ''
+            `ㅤ- [${student.Birthday}] ${student.Name} ${student.BirthDay === todayJP ? 'ー **TODAY!**' : student.BirthDay === tomorrowJP ? 'ー **TOMORROW!**' : ''
             }`,
         )
         .join('\n')}`,
@@ -77,10 +76,9 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
       name: 'Current & upcoming events',
       value: `${region.CurrentEvents.map(
         (currentEvent: CurrentEvent) =>
-          `- ${
-            !/^10/.test(currentEvent.event.toString())
-              ? localization?.EventName[currentEvent.event.toString()]
-              : `[Rerun] ${localization?.EventName[currentEvent.event.toString().slice(2)]}`
+          `- ${!/^10/.test(currentEvent.event.toString())
+            ? localization?.EventName[currentEvent.event.toString()]
+            : `[Rerun] ${localization?.EventName[currentEvent.event.toString().slice(2)]}`
           } *(${getRelativeTimeBA(currentEvent.start, currentEvent.end)})*`,
       ).join('\n')}`,
     });
@@ -103,8 +101,7 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
       value: `${timeAttacks
         .map(
           (currentRaid: CurrentRaid & { info?: any }) =>
-            `- [${localization?.AdaptationType[currentRaid.info.Terrain]}] ${
-              currentRaid.info.DungeonType
+            `- [${localization?.AdaptationType[currentRaid.info.Terrain]}] ${currentRaid.info.DungeonType
             } *(${getRelativeTimeBA(currentRaid.start, currentRaid.end)})*`,
         )
         .join('\n')}`,
@@ -145,9 +142,8 @@ export const BA_StudentEmbed = (student: IStudent, author: User, page?: number, 
     .addFields(
       {
         name: 'Release status',
-        value: `${student.IsReleased[1] ? 'Global' : 'JP only'} (${
-          BlueArchiveConstants.STUDENT_TYPE[student.IsLimited]
-        })`,
+        value: `${student.IsReleased[1] ? 'Global' : 'JP only'} (${BlueArchiveConstants.STUDENT_TYPE[student.IsLimited]
+          })`,
         inline: true,
       },
       {
@@ -180,9 +176,8 @@ export const BA_StudentEmbed = (student: IStudent, author: User, page?: number, 
       { name: 'Use cover', value: student.Cover ? 'Yes' : 'No', inline: true },
       {
         name: 'Adaptation',
-        value: `\`\`\`Urban: ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation]}, Indoor: ${
-          BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation]
-        }, Outdoor: ${BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation]}\`\`\``,
+        value: `\`\`\`Urban: ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation]}, Indoor: ${BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation]
+          }, Outdoor: ${BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation]}\`\`\``,
       },
       { name: 'Introduction', value: `\`\`\`${decode(student.ProfileIntroduction)}\`\`\`` },
     )
@@ -218,11 +213,10 @@ export const BA_StudentProfileEmbed = (
       },
       {
         name: 'Furniture interaction',
-        value: `\`\`\`${
-          furnitures?.length > 0
-            ? furnitures.map((furniture: IFurniture) => `[${furniture.Rarity}] ${furniture.Name}`).join('\n')
-            : 'N/A'
-        }\`\`\``,
+        value: `\`\`\`${furnitures?.length > 0
+          ? furnitures.map((furniture: IFurniture) => `[${furniture.Rarity}] ${furniture.Name}`).join('\n')
+          : 'N/A'
+          }\`\`\``,
       },
       {
         name: 'Relationship rank bonus',
@@ -269,11 +263,9 @@ export const BA_StudentStatsEmbed = (student: IStudent, author: User): EmbedBuil
         name: 'Base sub stats',
         value: `\`\`\`RANGE  : ${student.Range}\nSTABLE : ${student.StabilityPoint} (${SchaleMath.stabilityRate(
           student.StabilityPoint,
-        )}%)\nACC    : ${student.AccuracyPoint}\nEVA    : ${student.DodgePoint}\nCRIT.R : ${
-          student.CriticalPoint
-        }\nCRIT.D : ${SchaleMath.criticalRate(student.CriticalDamageRate)}%\nREC    : ${student.RegenCost}\nCC.P   : ${
-          BlueArchiveConstants.CC_POWER
-        }\nCC.R   : ${BlueArchiveConstants.CC_RESISTANCE}\nAMMO   : ${student.AmmoCount}(${student.AmmoCost})\`\`\``,
+        )}%)\nACC    : ${student.AccuracyPoint}\nEVA    : ${student.DodgePoint}\nCRIT.R : ${student.CriticalPoint
+          }\nCRIT.D : ${SchaleMath.criticalRate(student.CriticalDamageRate)}%\nREC    : ${student.RegenCost}\nCC.P   : ${BlueArchiveConstants.CC_POWER
+          }\nCC.R   : ${BlueArchiveConstants.CC_RESISTANCE}\nAMMO   : ${student.AmmoCount}(${student.AmmoCost})\`\`\``,
       },
     )
     .setTimestamp()
@@ -284,23 +276,61 @@ export const BA_StudentStatsEmbed = (student: IStudent, author: User): EmbedBuil
 };
 export const BA_StudentSkillsEmbed = (student: IStudent, author: User): EmbedBuilder => {
   const localization: ILocalization | undefined = cache.get('BA_Localization');
+  const fields: Array<APIEmbedField> = [];
 
-  const exSkill: Skill = transformStudentSkillStat(
-    student.Skills.find((skill: Skill) => skill.SkillType === 'ex')!,
-    localization,
-  );
-  const normalSkill: Skill = transformStudentSkillStat(
-    student.Skills.find((skill: Skill) => skill.SkillType === 'normal')!,
-    localization,
-  );
-  const passiveSkill: Skill = transformStudentSkillStat(
-    student.Skills.find((skill: Skill) => skill.SkillType === 'passive')!,
-    localization,
-  );
-  const subSkill: Skill = transformStudentSkillStat(
-    student.Skills.find((skill: Skill) => skill.SkillType === 'sub')!,
-    localization,
-  );
+  const skillOrder = ['ex', 'normal', 'passive', 'sub'];
+  const skills = student.Skills.filter((skill: Skill) =>
+    ['ex', 'normal', 'passive', 'sub'].includes(skill.SkillType),
+  ).map((skill: Skill) => transformStudentSkillStat(skill, localization));
+  // sort skill in order ['ex', 'normal', 'passive', 'sub']
+  skills.sort((a: Skill, b: Skill) => skillOrder.indexOf(a.SkillType) - skillOrder.indexOf(b.SkillType));
+  skills.forEach(async (skill: Skill) => {
+    let title = `[${BlueArchiveConstants.SKILL_MAP[skill.SkillType]}] ${skill.Name}`;
+
+    const skillSummons = student.Summons.filter((summon) => summon.SourceSkill === skill.SkillType);
+    const summonSkills: Array<APIEmbedField> = [];
+    if (skillSummons.length > 0) {
+      skillSummons.forEach((summon) => {
+        summon
+          .Info!.Skills.filter((summonSkill) => summonSkill.SkillType !== 'passive')
+          .forEach((summonSkill) => {
+            if (summonSkill.SkillType === 'autoattack') {
+              const attack = summonSkill.Effects.shift();
+              const scale = attack?.Scale.shift();
+              const hits = attack?.Hits;
+              skill.Desc += `\n\n[${summon.Info?.Name}]: Attack deals ${scale! / 100}% damage (${average(hits!) / 100
+                }% x ${hits?.length!} hits).`;
+            } else {
+              const transformedSummonSkill = transformStudentSkillStat(summonSkill, localization);
+              summonSkills.push({
+                name: `[${BlueArchiveConstants.SKILL_MAP[summon.SourceSkill]}] [${summon.Info?.Name}] ${transformedSummonSkill.Name
+                  }`,
+                value: `\`\`\`${transformedSummonSkill.Desc}\`\`\``,
+              });
+            }
+          });
+      });
+    }
+
+    if (skill.SkillType === 'ex') title += ` \`(COST: ${skill.Cost?.join('->')})\``;
+    fields.push({
+      name: title,
+      value: `\`\`\`${skill.Desc}\`\`\``,
+    });
+    fields.push(...summonSkills);
+
+    if (skill.ExtraSkills?.length) {
+      skill.ExtraSkills.forEach((extraSkill) => {
+        const extraSkillDesc = transformStudentSkillStat(extraSkill, localization);
+        let skillName = `[${BlueArchiveConstants.SKILL_MAP[extraSkill.SkillType]}] ${extraSkillDesc.Name}`;
+        if (extraSkill.TSAId) skillName += ` \`(TSA: ${extraSkill.TSAName})\``;
+        fields.push({
+          name: skillName,
+          value: `\`\`\`${extraSkillDesc.Desc}\`\`\``,
+        });
+      });
+    }
+  });
 
   return new EmbedBuilder()
     .setColor(BlueArchiveConstants.BULLET_COLOR[student.BulletType])
@@ -312,12 +342,7 @@ export const BA_StudentSkillsEmbed = (student: IStudent, author: User): EmbedBui
     })
     .setDescription(`[${student.Id}] ${student.FamilyName} ${student.PersonalName}`)
     .setThumbnail(BlueArchiveConstants.SCHALE_STUDENT_ICON_URL(student.Id))
-    .addFields(
-      { name: `[EX] ${exSkill?.Name} \`(COST: ${exSkill?.Cost?.join('->')})\``, value: `\`\`\`${exSkill?.Desc}\`\`\`` },
-      { name: `[Normal] ${normalSkill?.Name}`, value: `\`\`\`${normalSkill?.Desc}\`\`\`` },
-      { name: `[Passive] ${passiveSkill?.Name}`, value: `\`\`\`${passiveSkill?.Desc}\`\`\`` },
-      { name: `[Sub] ${subSkill?.Name}`, value: `\`\`\`${subSkill?.Desc}\`\`\`` },
-    )
+    .addFields(fields)
     .setTimestamp()
     .setFooter({
       text: `SCHALE.gg`,
@@ -347,25 +372,19 @@ export const BA_StudentWeaponEmbed = (student: IStudent, author: User): EmbedBui
       { name: `[Skill upgrade] ${passiveSkillUpgrade.Name}`, value: `\`\`\`${passiveSkillUpgrade.Desc}\`\`\`` },
       {
         name: `[Adaptation upgrade] ${student.Weapon.AdaptationType}`,
-        value: `\`\`\`Urban   : ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation]}${
-          student.Weapon.AdaptationType === 'Street'
-            ? ` -> ${
-                BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation + student.Weapon.AdaptationValue]
-              }`
+        value: `\`\`\`Urban   : ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation]}${student.Weapon.AdaptationType === 'Street'
+          ? ` -> ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation + student.Weapon.AdaptationValue]
+          }`
+          : ''
+          }\nIndoor  : ${BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation]}${student.Weapon.AdaptationType === 'Indoor'
+            ? ` -> ${BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation + student.Weapon.AdaptationValue]
+            }`
             : ''
-        }\nIndoor  : ${BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation]}${
-          student.Weapon.AdaptationType === 'Indoor'
-            ? ` -> ${
-                BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation + student.Weapon.AdaptationValue]
-              }`
+          }\nOutdoor : ${BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation]}${student.Weapon.AdaptationType === 'Outdoor'
+            ? ` -> ${BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation + student.Weapon.AdaptationValue]
+            }`
             : ''
-        }\nOutdoor : ${BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation]}${
-          student.Weapon.AdaptationType === 'Outdoor'
-            ? ` -> ${
-                BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation + student.Weapon.AdaptationValue]
-              }`
-            : ''
-        }\`\`\``,
+          }\`\`\``,
       },
       {
         name: 'Stats',
@@ -389,8 +408,7 @@ export const BA_StudentGearEmbed = (student: IStudent, author: User): EmbedBuild
   return new EmbedBuilder()
     .setColor(BlueArchiveConstants.BULLET_COLOR[student.BulletType])
     .setTitle(
-      `[${'★'.repeat(student.StarGrade)}] ${student.Name}'s gear \`${
-        student.Gear.Released![1] ? 'Global' : 'JP only'
+      `[${'★'.repeat(student.StarGrade)}] ${student.Name}'s gear \`${student.Gear.Released![1] ? 'Global' : 'JP only'
       }\``,
     )
     .setURL(BlueArchiveConstants.SCHALE_STUDENT_URL + student.PathName)
@@ -454,6 +472,7 @@ export const BA_RaidEmbed = (raid: IRaid, difficulty: string, author: User): Emb
     { name: 'Terrain', value: raid.Terrain.join(', '), inline: true },
   ];
 
+  // Extract bosses stats
   if (raid.BossList && raid.BossList.length > 0)
     raid.BossList[BlueArchiveConstants.RAID_DIFFICULTIES[difficulty]].forEach((boss: IEnemy) => {
       const pickedStats = (({
@@ -489,16 +508,23 @@ export const BA_RaidEmbed = (raid: IRaid, difficulty: string, author: User): Emb
       }))(boss);
       const stats = Object.entries(pickedStats).map(
         ([key, value]) =>
-          `${
-            localization!.Stat[key === 'CriticalResistPoint' ? 'CriticalChanceResistPoint' : key.replace(/[0-9]/g, '')]
+          `${localization!.Stat[key === 'CriticalResistPoint' ? 'CriticalChanceResistPoint' : key.replace(/[0-9]/g, '')]
           }: ${value}`,
       );
       fields.push({
-        name: `[Stats] Lv.${BlueArchiveConstants.RAID_LEVEL[BlueArchiveConstants.RAID_DIFFICULTIES[difficulty]]} ${
-          boss.Name
-        }`,
-        value: `Traits: ${boss.Tags.map((tag: string) => `\`${tag}\``).join(' ')}\n\`\`\`${stats.join('\n')}\`\`\``,
+        name: `[Stats] Lv.${BlueArchiveConstants.RAID_LEVEL[BlueArchiveConstants.RAID_DIFFICULTIES[difficulty]]} ${boss.Name
+          }`,
+        value: `\`\`\`${stats.join('\n')}\`\`\``,
       });
+      if (boss.PhaseChange && boss.PhaseChange.length > 0) {
+        const title = `[Phases] Lv.${BlueArchiveConstants.RAID_LEVEL[BlueArchiveConstants.RAID_DIFFICULTIES[difficulty]]} ${boss.Name}`;
+        const desc = `Begins phase 1 with ${boss.MaxHP100} HP.\n` +
+          boss.PhaseChange.map((phase) => formatString(localization?.RaidChangePhase[phase.Trigger]!, [phase.Phase + 1, phase.Argument])).join('\n');
+        fields.push({
+          name: title,
+          value: `\`\`\`${desc}\`\`\``,
+        });
+      }
     });
 
   skills.forEach((skill: RaidSkill) => {
@@ -516,15 +542,16 @@ export const BA_RaidEmbed = (raid: IRaid, difficulty: string, author: User): Emb
       iconURL: author.displayAvatarURL(),
     })
     .setDescription(
-      `${
-        CommonConstants.BOOLEAN_MAP[
-          (raid.MaxDifficulty[0] >= BlueArchiveConstants.RAID_DIFFICULTIES[difficulty]).toString()
-        ]
-      } JP ー ${
-        CommonConstants.BOOLEAN_MAP[
-          (raid.MaxDifficulty[1] >= BlueArchiveConstants.RAID_DIFFICULTIES[difficulty] && raid.IsReleased[1]).toString()
-        ]
-      } GLOBAL`,
+      `${CommonConstants.BOOLEAN_MAP[
+      (raid.MaxDifficulty[0] >= BlueArchiveConstants.RAID_DIFFICULTIES[difficulty]).toString()
+      ]
+      } JP ー ${CommonConstants.BOOLEAN_MAP[
+      (raid.MaxDifficulty[1] >= BlueArchiveConstants.RAID_DIFFICULTIES[difficulty] && raid.IsReleased[1]).toString()
+      ]
+      } GLOBAL ー ${CommonConstants.BOOLEAN_MAP[
+      (raid.MaxDifficulty[2] >= BlueArchiveConstants.RAID_DIFFICULTIES[difficulty] && raid.IsReleased[2]).toString()
+      ]
+      } CN`,
     )
     .setThumbnail(
       BlueArchiveConstants.SCHALE_RAID_ICON_URL(raid.PathName, BlueArchiveConstants.RAID_DIFFICULTIES[difficulty] >= 5),

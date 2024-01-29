@@ -7,7 +7,7 @@ export interface IEnemy {
   BulletType: BulletType;
   ArmorType: ArmorType;
   WeaponType: WeaponType;
-  Tags: string[];
+  Size: Size | null;
   Icon?: string;
   StabilityPoint: number;
   StabilityRate?: number;
@@ -28,23 +28,35 @@ export interface IEnemy {
   Range: number;
   DamagedRatio: number;
   Transcendence?: Array<number[]>;
+  Skills?: string[];
   StreetBattleAdaptation?: number;
   IndoorBattleAdaptation?: number;
+  OutdoorBattleAdaptation?: number;
   GroggyGauge?: number;
   GroggyTime?: number;
-  OutdoorBattleAdaptation?: number;
-  Skills?: string[];
+  PhaseChange?: PhaseChange[];
   OppressionPower?: number;
   OppressionResist?: number;
   DefensePenetration1?: number;
   DefensePenetration100?: number;
+  IsNPC?: boolean;
 }
 
-export type ArmorType = 'LightArmor' | 'HeavyArmor' | 'Unarmed' | 'Normal' | 'ElasticArmor';
+export type ArmorType = 'LightArmor' | 'HeavyArmor' | 'Unarmed' | 'ElasticArmor' | 'Normal';
 
-export type BulletType = 'Normal' | 'Explosion' | 'Mystic' | 'Pierce';
+export type BulletType = 'Normal' | 'Explosion' | 'Mystic' | 'Pierce' | 'Sonic';
+
+export interface PhaseChange {
+  Phase: number;
+  Trigger: Trigger;
+  Argument: number;
+}
+
+export type Trigger = 'HPUnder';
 
 export type Rank = 'Minion' | 'Elite' | 'Champion' | 'Boss' | 'Summoned' | 'Hallucination' | 'DestructibleProjectile';
+
+export type Size = 'Medium' | 'Small' | 'Large' | 'XLarge';
 
 export type SquadType = 'Main' | 'Support';
 
@@ -61,8 +73,9 @@ export type WeaponType =
   | 'Vulcan'
   | 'Missile'
   | 'Cannon'
+  | 'FT'
   | 'MT'
+  | 'RG'
   | 'Taser'
   | 'Binah'
-  | 'Relic'
-  | 'RG';
+  | 'Relic';

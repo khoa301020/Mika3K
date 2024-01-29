@@ -1,3 +1,4 @@
+import { School, Skill, SkillType } from '../types/bluearchive/student.js';
 import CommonConstants from './common.js';
 
 export default class BlueArchiveConstants {
@@ -141,13 +142,15 @@ export default class BlueArchiveConstants {
   };
   public static readonly STUDENT_AGE = [
     '11 years old',
+    '12 years old',
+    '14 years old',
     '15 years old',
     '16 years old',
     '17 years old',
     '18 years old',
     'Top Secret',
     'Age Unknown',
-    '?? years old',
+    'Unknown',
   ];
   public static readonly EQUIPMENT_TYPES: { [key: string]: string } = {
     Hat: '🎩',
@@ -162,7 +165,7 @@ export default class BlueArchiveConstants {
   };
   public static readonly FAVOR_STAT_TYPES = ['AttackPower', 'MaxHP', 'DefensePower', 'HealPower', 'CriticalPoint'];
   public static readonly POSITION = ['Back', 'Front', 'Middle'];
-  public static readonly SCHOOL = [
+  public static readonly SCHOOL: School[] = [
     'Gehenna',
     'Millennium',
     'Trinity',
@@ -173,7 +176,8 @@ export default class BlueArchiveConstants {
     'Valkyrie',
     'SRT',
     'Arius',
-    'ETC',
+    'Tokiwadai',
+    'Sakugawa',
   ];
   public static readonly SCHOOL_YEAR = ['1st Year', '2nd Year', '3rd Year', 'Suspended'];
   public static readonly SQUAD_TYPES = ['Main', 'Support'];
@@ -196,6 +200,16 @@ export default class BlueArchiveConstants {
     5: 'SS',
   };
   public static readonly WEAPON_TYPE = ['SR', 'SG', 'AR', 'MG', 'SMG', 'HG', 'GL', 'MT', 'RG', 'RL', 'FT'];
+  public static readonly SKILL_TYPE: SkillType[] = ['ex', 'normal', 'autoattack', 'gearnormal', 'passive', 'weaponpassive', 'sub'];
+  public static readonly SKILL_MAP: { [key in SkillType]: string } = {
+    ex: 'EX',
+    normal: 'Normal',
+    autoattack: 'Auto Attack',
+    gearnormal: 'Gear',
+    passive: 'Passive',
+    weaponpassive: 'Weapon Passive',
+    sub: 'Sub',
+  };
   public static readonly WEAPON_MAX_LEVEL = 50;
   public static readonly CC_POWER = 100;
   public static readonly CC_RESISTANCE = 100;

@@ -1,3 +1,5 @@
+import { ISummon } from "./summon";
+
 export interface IStudent {
   Id: number;
   IsReleased: boolean[];
@@ -24,9 +26,7 @@ export interface IStudent {
   Cover: boolean;
   Equipment: Equipment[];
   CollectionBG: string;
-  CollectionTexture: string;
   FamilyName: string;
-  FamilyNameRuby: string;
   PersonalName: string;
   SchoolYear: SchoolYear;
   CharacterAge: CharacterAge;
@@ -73,21 +73,24 @@ export interface IStudent {
   SkillExMaterialAmount: Array<number[]>;
   SkillMaterial: Array<number[]>;
   SkillMaterialAmount: Array<number[]>;
+  TSAId?: number;
 }
 
 export type ArmorType = 'LightArmor' | 'HeavyArmor' | 'Unarmed' | 'ElasticArmor';
 
-export type BulletType = 'Explosion' | 'Mystic' | 'Pierce';
+export type BulletType = 'Explosion' | 'Mystic' | 'Pierce' | 'Sonic';
 
 export type CharacterAge =
-  | '16 years old'
-  | '15 years old'
-  | '17 years old'
-  | 'Top Secret'
-  | '18 years old'
-  | 'Age Unknown'
   | '11 years old'
-  | '?? years old';
+  | '12 years old'
+  | '14 years old'
+  | '15 years old'
+  | '16 years old'
+  | '17 years old'
+  | '18 years old'
+  | 'Top Secret'
+  | 'Age Unknown'
+  | 'Unknown';
 
 export type Equipment = 'Hat' | 'Hairpin' | 'Watch' | 'Shoes' | 'Bag' | 'Charm' | 'Necklace' | 'Gloves' | 'Badge';
 
@@ -99,7 +102,6 @@ export interface Gear {
   StatValue?: Array<number[]>;
   Name?: string;
   Desc?: string;
-  Icon?: string;
   TierUpMaterial?: Array<number[]>;
   TierUpMaterialAmount?: Array<number[]>;
 }
@@ -117,20 +119,28 @@ export type School =
   | 'Valkyrie'
   | 'ETC'
   | 'SRT'
-  | 'Arius';
+  | 'Arius'
+  | 'Tokiwadai'
+  | 'Sakugawa';
 
-export type SchoolYear = '2nd Year' | '1st Year' | '3rd Year' | '' | 'Suspended';
+export type SchoolYear = '1st Year' | '2nd Year' | '3rd Year' | 'Suspended';
 
 export interface Skill {
   SkillType: SkillType;
-  Effects: Effect[];
+  Effects: SkillEffect[];
   Name?: string;
   Desc?: string;
   Parameters?: Array<string[]>;
   Cost?: number[];
+  Duration?: number;
+  Range?: number;
+  Radius?: SkillRadius[];
   Icon?: string;
   EffectCombine?: EffectCombine[];
   EffectCombineLabel?: EffectCombineLabel;
+  ExtraSkills?: ExtraSkill[];
+  InheritScale?: InheritScale;
+  HideCalculation?: boolean;
 }
 
 export type EffectCombine =
@@ -147,7 +157,7 @@ export type EffectCombine =
   | 'FormChange'
   | 'DMGZone'
   | 'DMGDot'
-  | 'IgnoreDelay'
+  | 'Knockback'
   | 'BuffAlly'
   | 'HealZone'
   | 'Accumulation'
@@ -160,23 +170,24 @@ export interface EffectCombineLabel {
   StackLabel?: string[];
 }
 
-export interface Effect {
+export interface SkillEffect {
   Type: EffectCombine;
   Hits?: number[];
   Scale?: number[];
   Frames?: Frames;
   CriticalCheck?: CriticalCheck;
   Stat?: string;
+  Value?: Array<number[]>;
+  Channel?: number;
   Duration?: string;
   Period?: string;
   HitsParameter?: number;
   Chance?: string;
   Icon?: string;
-  Value?: Array<number[]>;
-  Channel?: number;
   SubstituteCondition?: string;
   SubstituteScale?: number[];
   HitFrames?: number[];
+  IgnoreDelay?: number[];
   StackSame?: number;
   IgnoreDef?: number[];
   Restrictions?: Restriction[];
@@ -218,11 +229,60 @@ export interface Restriction {
   Value: Value;
 }
 
-export type Operand = 'NotEqual' | 'Equal' | 'Contains';
+export type Operand = 'NotEqual' | 'Equal';
 
 export type Value = number | string;
 
+export interface ExtraSkill {
+  Id: string;
+  SkillType: SkillType;
+  Name: string;
+  Desc: string;
+  Parameters: Array<string[]>;
+  Radius?: ExtraSkillRadius[];
+  Icon: string;
+  Effects: ExtraSkillEffect[];
+  Duration?: number;
+  Range?: number;
+  Cost?: number[];
+  TSAId?: number;
+  TSAName?: string;
+}
+
+export interface ExtraSkillEffect {
+  Type: EffectCombine;
+  CriticalCheck: CriticalCheck;
+  Hits?: number[];
+  HitsParameter?: number;
+  Scale: number[];
+  IgnoreDef?: number[];
+}
+
+export interface ExtraSkillRadius {
+  Type: Type;
+  Radius?: number;
+  Width?: number;
+  Height?: number;
+}
+
+export type Type = 'Circle' | 'Fan' | 'Obb' | 'Bounce' | 'Donut';
+
 export type SkillType = 'ex' | 'normal' | 'autoattack' | 'gearnormal' | 'passive' | 'weaponpassive' | 'sub';
+
+export interface InheritScale {
+  Skill: SkillType;
+  EffectId: number;
+  Parameter: number;
+}
+
+export interface SkillRadius {
+  Type: Type;
+  Radius?: number;
+  Degree?: number;
+  Width?: number;
+  Height?: number;
+  ExcludeRadius?: number;
+}
 
 export type SquadType = 'Main' | 'Support';
 
@@ -231,6 +291,9 @@ export interface Summon {
   SourceSkill: SkillType;
   InheritCasterStat: FavorStatType[];
   InheritCasterAmount: Array<number[]>;
+  ObstacleMaxHP1?: number;
+  ObstacleMaxHP100?: number;
+  Info?: ISummon;
 }
 
 export type TacticRole = 'DamageDealer' | 'Tanker' | 'Supporter' | 'Healer' | 'Vehicle';

@@ -383,6 +383,9 @@ export const discordTimestamp = (timestamp: number | string, type: TDiscordTimes
   `<t:${timestamp}${CommonConstants.DISCORD_TIMESTAMP_TYPE[type]}>`;
 
 export const isTextBasedChannel = (channel: ChannelType) =>
-  [ChannelType.GuildText, ChannelType.PublicThread, ChannelType.PrivateThread].includes(
-    channel,
-  );
+  [ChannelType.GuildText, ChannelType.PublicThread, ChannelType.PrivateThread].includes(channel);
+
+export const average = (array: number[]) => array.reduce((a, b) => a + b) / array.length;
+
+export const formatString = (str: string, replacements: Array<string | number>) =>
+  str.replace(/{(\d+)}/g, (match, number) => (replacements[number] ? replacements[number].toString() : match));

@@ -419,7 +419,7 @@ export class BlueArchiveInfo {
   async weaponBtnComponent(interaction: ButtonInteraction): Promise<void> {
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
     await interaction.deferReply({ ephemeral: isEphemeral });
-    const student_id = interaction.message.embeds[0].data.description?.match(MALConstants.REGEX_GET_ID)![1];
+    const student_id = interaction.message.embeds.shift()?.data.description?.match(MALConstants.REGEX_GET_ID)![1];
 
     try {
       const student: IStudent | null = await getData.getStudentById(parseInt(student_id!));

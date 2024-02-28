@@ -73,11 +73,11 @@ export default class BlueArchiveConstants {
   public static readonly COMMON_WEAPON_ICON =
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/ui/Common_Icon_CharacterWeapon_off.png';
   public static readonly COMMON_ROLE_ICON: { [key: string]: string } = {
-    DamageDealer: 'https://github.com/lonqie/SchaleDB/raw/main/images/ui/Role_DamageDealer.png',
-    Tanker: 'https://github.com/lonqie/SchaleDB/raw/main/images/ui/Role_Tanker.png',
-    Supporter: 'https://github.com/lonqie/SchaleDB/raw/main/images/ui/Role_Supporter.png',
-    Healer: 'https://github.com/lonqie/SchaleDB/raw/main/images/ui/Role_Healer.png',
-    Vehicle: 'https://github.com/lonqie/SchaleDB/raw/main/images/ui/Role_Vehicle.png',
+    DamageDealer: 'https://schale.gg/images/ui/Role_DamageDealer.png',
+    Tanker: 'https://schale.gg/images/ui/Role_Tanker.png',
+    Supporter: 'https://schale.gg/images/ui/Role_Supporter.png',
+    Healer: 'https://schale.gg/images/ui/Role_Healer.png',
+    Vehicle: 'https://schale.gg/images/ui/Role_Vehicle.png',
   };
 
   public static readonly STUDENT_SCHOOL_LOGO: { [key: string]: string } = {
@@ -124,7 +124,7 @@ export default class BlueArchiveConstants {
     1: 'Limited',
     2: 'Event',
   };
-  public static readonly STUDENT_MAX_LEVEL = 87;
+  public static readonly STUDENT_MAX_LEVEL = 90;
   public static readonly ARMOR_TYPES = ['LightArmor', 'HeavyArmor', 'Unarmed', 'ElasticArmor'];
   public static readonly BULLET_TYPES = ['Explosion', 'Mystic', 'Pierce', 'Sonic'];
   public static readonly BULLET_COLOR: { [key: string]: number } = {

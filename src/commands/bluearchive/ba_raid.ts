@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType, CommandInteraction } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
-import { BlueArchiveConstants } from '../../constants/index.js';
+import { BlueArchiveConstants, SystemMessages } from '../../constants/index.js';
 import { BA_RaidEmbed } from '../../providers/embeds/bluearchiveEmbed.js';
 import { getData } from '../../services/bluearchive.js';
 import { editOrReplyThenDelete } from '../../utils/index.js';
@@ -30,7 +30,7 @@ export class BlueArchiveSync {
     raidId: number,
     @SlashChoice(...Object.keys(BlueArchiveConstants.RAID_DIFFICULTIES))
     @SlashOption({
-      description: "Select raid's difficulty",
+      description: 'Select raid\'s difficulty',
       name: 'raid-difficulty',
       required: true,
       type: ApplicationCommandOptionType.String,
@@ -42,9 +42,11 @@ export class BlueArchiveSync {
 
     const raid = await getData.getRaidById(raidId);
 
-    if (!raid) return await editOrReplyThenDelete(interaction, '❌ Raid not found');
+    if (!raid) return await editOrReplyThenDelete(interaction, SystemMessages.error('BA_RAID_NOT_FOUND'));
     if (BlueArchiveConstants.RAID_DIFFICULTIES[raidDifficulty] > raid.MaxDifficulty[0])
-      return await interaction.editReply(`❌ Unavailable difficulty **${raidDifficulty}** in raid **${raid.Name}**.`);
+      return await interaction.editReply(
+        SystemMessages.error('BA_RAID_DIFFICULTY_UNAVAILABLE', raidDifficulty, raid.Name).toString()
+      );
 
     const embed = BA_RaidEmbed(raid, raidDifficulty, interaction.user);
 

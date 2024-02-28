@@ -21,9 +21,9 @@ export const commonPagination = (
       placeholder: 'Please select...',
     },
     type === 'menu' &&
-      labels && {
-        pageText: labels,
-      },
+    labels && {
+      pageText: labels,
+    },
     type === 'button' && {
       start: { label: '⏮️' },
       previous: { label: '◀️' },

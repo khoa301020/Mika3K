@@ -21,7 +21,7 @@ export const SyosetuNovelEmbed = (novel: ISyosetuNovel, author: User, page?: num
   const statusFields: Array<string> = Object.keys(SyosetuConstants.NOVEL_STATUS).reduce((acc, key) => {
     acc.push(
       SyosetuConstants.NOVEL_STATUS[key as keyof ISyosetuNovelStatusFields][
-        novel[key as keyof ISyosetuNovel] as number
+      novel[key as keyof ISyosetuNovel] as number
       ][lang],
     );
     return acc;
@@ -63,7 +63,7 @@ export const SyosetuNovelEmbed = (novel: ISyosetuNovel, author: User, page?: num
     .setURL(`${SyosetuConstants.NCODE_NOVEL_BASE_URL}${novel.ncode?.toLowerCase()}`)
     .setDescription(
       `#${novel.keyword?.replace(/\s+/g, '　#')}`.substring(0, CommonConstants.EMBED_DESCRIPTION_LIMIT) ??
-        'キーワードなし',
+      'キーワードなし',
     )
     .setAuthor({
       name: `${author.username}#${author.discriminator}`.substring(0, CommonConstants.EMBED_AUTHOR_NAME_LIMIT),
@@ -78,8 +78,7 @@ export const SyosetuNovelEmbed = (novel: ISyosetuNovel, author: User, page?: num
       value: `\`\`\`${Object.keys(SyosetuConstants.NOVEL_POINTS)
         .reduce((acc, key) => {
           acc.push(
-            `${SyosetuConstants.NOVEL_POINTS[key as keyof ISyosetuNovelPointsFields][lang]}: ${
-              novel[key as keyof ISyosetuNovel]
+            `${SyosetuConstants.NOVEL_POINTS[key as keyof ISyosetuNovelPointsFields][lang]}: ${novel[key as keyof ISyosetuNovel]
             }`,
           );
           return acc;

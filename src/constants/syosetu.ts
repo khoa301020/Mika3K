@@ -113,64 +113,64 @@ export default class SyosetuConstants {
   public static readonly FIELDS: {
     [key in keyof ISyosetuGeneralFields]: I18n;
   } = {
-    title: { jp: '小説名', en: 'Novel name' },
-    ncode: { jp: 'Nコード', en: 'NCode' },
-    userid: { jp: '作者のユーザID', en: "Author's user ID" },
-    writer: { jp: '作者名', en: 'Author name' },
-    story: { jp: '小説のあらすじ', en: 'Novel synopsis' },
-    biggenre: { jp: '大ジャンル', en: 'Big genre' },
-    genre: { jp: 'ジャンル', en: ' Genre' },
-    keyword: { jp: 'キーワード', en: 'Keyword' },
-    general_firstup: { jp: '初回掲載日', en: 'First publication date' },
-    general_lastup: { jp: '最終掲載日', en: 'Last publication date' },
-    general_all_no: { jp: '全掲載部分数', en: 'Total publications' },
-    length: { jp: '小説文字数', en: 'Novel length (in characters)' },
-    time: { jp: '読了時間(分単位)', en: 'Reading time (in minutes)' },
-    sasie_cnt: { jp: '挿絵の数', en: 'Number of illustrations' },
-    kaiwaritu: { jp: '会話率', en: 'Conversation rate' },
-    novelupdated_at: { jp: '小説の更新日時', en: 'Last novel update datetime' },
-    updated_at: { jp: '最終更新日時（システム用）', en: 'Last data update datetime' },
-  };
+      title: { jp: '小説名', en: 'Novel name' },
+      ncode: { jp: 'Nコード', en: 'NCode' },
+      userid: { jp: '作者のユーザID', en: "Author's user ID" },
+      writer: { jp: '作者名', en: 'Author name' },
+      story: { jp: '小説のあらすじ', en: 'Novel synopsis' },
+      biggenre: { jp: '大ジャンル', en: 'Big genre' },
+      genre: { jp: 'ジャンル', en: ' Genre' },
+      keyword: { jp: 'キーワード', en: 'Keyword' },
+      general_firstup: { jp: '初回掲載日', en: 'First publication date' },
+      general_lastup: { jp: '最終掲載日', en: 'Last publication date' },
+      general_all_no: { jp: '全掲載部分数', en: 'Total publications' },
+      length: { jp: '小説文字数', en: 'Novel length (in characters)' },
+      time: { jp: '読了時間(分単位)', en: 'Reading time (in minutes)' },
+      sasie_cnt: { jp: '挿絵の数', en: 'Number of illustrations' },
+      kaiwaritu: { jp: '会話率', en: 'Conversation rate' },
+      novelupdated_at: { jp: '小説の更新日時', en: 'Last novel update datetime' },
+      updated_at: { jp: '最終更新日時（システム用）', en: 'Last data update datetime' },
+    };
 
   public static readonly NOVEL_TAGS: {
     [key in keyof ISyosetuNovelTagsFields]: I18n;
   } = {
-    isr15: { jp: 'R15', en: 'R15' },
-    isbl: { jp: 'ボーイズラブ', en: 'Yaoi' },
-    isgl: { jp: 'ガールズラブ', en: 'Yuri' },
-    iszankoku: { jp: '残酷な描写あり', en: 'Cruel' },
-    istensei: { jp: '異世界転生', en: 'Tensei' },
-    istenni: { jp: '異世界転移', en: 'Tenni' },
-  };
+      isr15: { jp: 'R15', en: 'R15' },
+      isbl: { jp: 'ボーイズラブ', en: 'Yaoi' },
+      isgl: { jp: 'ガールズラブ', en: 'Yuri' },
+      iszankoku: { jp: '残酷な描写あり', en: 'Cruel' },
+      istensei: { jp: '異世界転生', en: 'Tensei' },
+      istenni: { jp: '異世界転移', en: 'Tenni' },
+    };
 
   public static readonly NOVEL_STATUS: {
     [key in keyof ISyosetuNovelStatusFields]: { [key: number]: I18n };
   } = {
-    end: {
-      0: { jp: '完結済み', en: 'Completed' },
-      1: { jp: '連載中', en: 'Ongoing' },
-    },
-    isstop: {
-      0: { jp: '長期連載中', en: 'Long-term serializing' },
-      1: { jp: '長期連載停止中', en: 'Long-term serialization suspension' },
-    },
-  };
+      end: {
+        0: { jp: '完結済み', en: 'Completed' },
+        1: { jp: '連載中', en: 'Ongoing' },
+      },
+      isstop: {
+        0: { jp: '長期連載中', en: 'Long-term serializing' },
+        1: { jp: '長期連載停止中', en: 'Long-term serialization suspension' },
+      },
+    };
 
   public static readonly NOVEL_POINTS: {
     [key in keyof ISyosetuNovelPointsFields]: I18n;
   } = {
-    global_point: { jp: '総合評価ポイント', en: 'Overall evaluation points' },
-    daily_point: { jp: '日間ポイント', en: 'Daily points' },
-    weekly_point: { jp: '週間ポイント', en: 'Weekly points' },
-    monthly_point: { jp: '月間ポイント', en: 'Monthly points' },
-    quarter_point: { jp: '四半期ポイント', en: 'Quarterly points' },
-    yearly_point: { jp: '年間ポイント', en: 'Annual points' },
-    fav_novel_cnt: { jp: 'ブックマーク数', en: 'Number of bookmarks' },
-    impression_cnt: { jp: '感想数', en: 'Number of impressions' },
-    review_cnt: { jp: 'レビュー数', en: 'Number of reviews' },
-    all_point: { jp: '評価ポイント', en: 'Evaluation points' },
-    all_hyoka_cnt: { jp: '評価者数', en: 'Number of evaluators' },
-  };
+      global_point: { jp: '総合評価ポイント', en: 'Overall evaluation points' },
+      daily_point: { jp: '日間ポイント', en: 'Daily points' },
+      weekly_point: { jp: '週間ポイント', en: 'Weekly points' },
+      monthly_point: { jp: '月間ポイント', en: 'Monthly points' },
+      quarter_point: { jp: '四半期ポイント', en: 'Quarterly points' },
+      yearly_point: { jp: '年間ポイント', en: 'Annual points' },
+      fav_novel_cnt: { jp: 'ブックマーク数', en: 'Number of bookmarks' },
+      impression_cnt: { jp: '感想数', en: 'Number of impressions' },
+      review_cnt: { jp: 'レビュー数', en: 'Number of reviews' },
+      all_point: { jp: '評価ポイント', en: 'Evaluation points' },
+      all_hyoka_cnt: { jp: '評価者数', en: 'Number of evaluators' },
+    };
 
   public static readonly NOVEL_TYPE: { [key in 1 | 2]: I18n } = {
     1: { jp: '連載', en: 'Serializing' },

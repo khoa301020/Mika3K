@@ -1,6 +1,7 @@
 import { Message } from 'discord.js';
 import { Discord, SimpleCommand, SimpleCommandMessage } from 'discordx';
 import { editOrReplyThenDelete, getRandomInteger, randomArray } from '../../utils/index.js';
+import SystemMessages from '../../constants/messages.js';
 
 @Discord()
 class Pick {
@@ -12,7 +13,7 @@ class Pick {
     const range = options.map((x) => x.match(/(-?\d+)\s*-\s*(-?\d+)/)).filter((x) => x); // match range including minus 0 number
 
     if (amount < 1 || amount > options.length) // amount must be greater than 0 and less than or equal to options length
-      return await editOrReplyThenDelete(command.message, '❌ Invalid arguments');
+      return await editOrReplyThenDelete(command.message, SystemMessages.error('INVALID_ARGUMENTS'));
     if (options.length < 2 && !range) editOrReplyThenDelete(command.message, '❌ Please provide at least 2 options');
 
     let result;

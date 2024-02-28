@@ -58,9 +58,8 @@ export class MAL_User {
       return editOrReplyThenDelete(interaction, { content: '❌ User invalid or your token is still valid.' });
 
     return interaction.editReply({
-      content: `Token refreshed. Your login session will expire at : **${
-        datetimeConverter(refreshedUser.expiresAt!).datetime
-      } (UTC)**`,
+      content: `Token refreshed. Your login session will expire at : **${datetimeConverter(refreshedUser.expiresAt!).datetime
+        } (UTC)**`,
     });
   }
   @SlashGroup('user', 'mal')

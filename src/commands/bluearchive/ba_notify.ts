@@ -2,9 +2,10 @@ import { Discord, SimpleCommand, SimpleCommandMessage, SimpleCommandOption, Simp
 import CommonConstants from '../../constants/common.js';
 import NotifyChannel from '../../models/NotifyChannel.js';
 import { editOrReplyThenDelete } from '../../utils/index.js';
+import SystemMessages from '../../constants/messages.js';
 
 @Discord()
-export class BlueArchiveSync {
+export class BlueArchiveNotify {
   @SimpleCommand({ aliases: ['bant', 'banotify'], description: 'Notify', argSplitter: ' ' })
   async BAChannelNotify(
     @SimpleCommandOption({ name: 'action', type: SimpleCommandOptionType.String })
@@ -12,9 +13,9 @@ export class BlueArchiveSync {
     command: SimpleCommandMessage,
   ): Promise<any> {
     if (command.message.author.id !== process.env.OWNER_ID)
-      return editOrReplyThenDelete(command.message, '❌ Only the bot owner can use this command');
+      return editOrReplyThenDelete(command.message, SystemMessages.error('OWNER_ONLY'));
 
-    if (!action) return editOrReplyThenDelete(command.message, '❌ Invalid arguments');
+    if (!action) return editOrReplyThenDelete(command.message, SystemMessages.error('INVALID_ARGUMENTS'));
 
     if (action === 'add') {
       return NotifyChannel.findOneAndUpdate(
@@ -29,12 +30,12 @@ export class BlueArchiveSync {
         {
           upsert: true,
         },
-      ).then(() => editOrReplyThenDelete(command.message, '✅ Notify channel added'));
+      ).then(() => editOrReplyThenDelete(command.message, SystemMessages.success('BA_NOTIFY_ADDED')));
     } else if (action === 'remove') {
       return NotifyChannel.deleteOne({
         channelId: command.message.channelId,
         notifyType: CommonConstants.NOTIFY_TYPE.BA_SCHALEDB_UPDATE,
-      }).then(() => editOrReplyThenDelete(command.message, '✅ Notify channel removed'));
+      }).then(() => editOrReplyThenDelete(command.message, SystemMessages.success('BA_NOTIFY_REMOVED')));
     }
   }
 }

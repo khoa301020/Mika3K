@@ -13,6 +13,7 @@ import { CurrencyExchangeEmbed } from '../../providers/embeds/commonEmbed.js';
 import { exchangeCurrency } from '../../services/common.js';
 import { ICurrency } from '../../types/currencies.js';
 import { editOrReplyThenDelete } from '../../utils/index.js';
+import SystemMessages from '../../constants/messages.js';
 
 const currencies: Array<ICurrency> | undefined = cache.get('currencies');
 
@@ -41,7 +42,10 @@ class CurrencyExchange {
     command: SimpleCommandMessage,
   ): Promise<Promise<Message<boolean> | void> | undefined> {
     if (!from || !to || !amount)
-      return editOrReplyThenDelete(command.message, { content: '❌ Invalid arguments', ephemeral: true });
+      return editOrReplyThenDelete(command.message, {
+        content: SystemMessages.error('INVALID_ARGUMENTS').toString(),
+        ephemeral: true
+      });
     const currencies: ICurrency | undefined = cache.get('currencies');
     if (!currencies)
       return editOrReplyThenDelete(command.message, { content: '❌ Currencies not cached', ephemeral: true });

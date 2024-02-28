@@ -3,6 +3,7 @@ import { Discord, SimpleCommand, SimpleCommandMessage, SimpleCommandOption, Simp
 import CommonConstants from '../../constants/common.js';
 import NotifyChannel from '../../models/NotifyChannel.js';
 import { editOrReplyThenDelete, isTextBasedChannel } from '../../utils/index.js';
+import SystemMessages from '../../constants/messages.js';
 
 @Discord()
 export class NHentai {
@@ -13,14 +14,15 @@ export class NHentai {
     command: SimpleCommandMessage,
   ): Promise<any> {
     if (command.message.author.id !== process.env.OWNER_ID)
-      return editOrReplyThenDelete(command.message, '❌ Only the bot owner can use this command');
+      return editOrReplyThenDelete(command.message, SystemMessages.error('OWNER_ONLY'));
     if (!isTextBasedChannel(command.message.channel.type))
       return editOrReplyThenDelete(command.message, '❌ This command is only available in guilds text channels.');
 
     if (command.message.channel.type === ChannelType.GuildText && !command.message.channel.nsfw)
       return editOrReplyThenDelete(command.message, '❌ This command is only available in NSFW channels.');
 
-    if (!action) return editOrReplyThenDelete(command.message, '❌ Invalid arguments. Usage: `nhautoview <on|off>`');
+    if (!action)
+      return editOrReplyThenDelete(command.message, SystemMessages.error('INVALID_ARGUMENTS_WITH_HINT', 'nhautoview <on|off>'));
 
     if (action === 'on') {
       return NotifyChannel.findOneAndUpdate(

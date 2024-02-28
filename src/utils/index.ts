@@ -23,6 +23,7 @@ import CommonConstants from '../constants/common.js';
 import { bot } from '../main.js';
 import { ErrorLogEmbed } from '../providers/embeds/commonEmbed.js';
 import { TDiscordTimestamp } from '../types/common.js';
+import SystemMessages from '../constants/messages.js';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -306,10 +307,11 @@ export async function editOrReplyThenDelete(
     | ModalSubmitInteraction
     | StringSelectMenuInteraction
     | Message,
-  options: string | InteractionReplyOptions | MessagePayload = '',
+  options: string | InteractionReplyOptions | SystemMessages | MessagePayload = '',
   delay = 5000,
 ): Promise<void> {
   let msg: Message;
+  if (options instanceof SystemMessages) options = options.toString();
   if (interaction instanceof Message) msg = await interaction.reply(options as string | MessagePayload);
   else if (interaction.deferred) msg = await interaction.editReply(options);
   else msg = await interaction.reply(options).then(async (res: InteractionResponse) => await res.fetch());

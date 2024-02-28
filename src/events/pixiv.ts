@@ -33,15 +33,15 @@ export class PixivEvents {
     let response: AxiosResponse;
     if (cache.has('pixivAccessToken'))
       try {
-        response = await axios.get(PixivConstants.PIXIV_ILLUST_API(illustIds[0]), {
+        response = await axios.get(PixivConstants.PIXIV_ILLUST_API(illustIds.shift()!), {
           headers: {
             'User-Agent': 'PixivAndroidApp/5.0.64 (Android 6.0)',
           },
         });
       } catch (error) {
-        response = await axios.get(PixivConstants.HIBIAPI_ILLUST_API(illustIds[0]));
+        response = await axios.get(PixivConstants.HIBIAPI_ILLUST_API(illustIds.shift()!));
       }
-    else response = await axios.get(PixivConstants.HIBIAPI_ILLUST_API(illustIds[0]));
+    else response = await axios.get(PixivConstants.HIBIAPI_ILLUST_API(illustIds.shift()!));
 
     const illustRes: IPixivIllustResponse = response.data;
     if (!illustRes || !illustRes.illust) return;

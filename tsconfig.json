@@ -11,7 +11,8 @@
     "esModuleInterop": true,
     "emitDecoratorMetadata": false,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
   },
   "exclude": [
     "build",

@@ -8,13 +8,13 @@ import {
   Slash,
   SlashOption,
 } from 'discordx';
-import { cache } from '../../main.js';
 import { CurrencyExchangeEmbed } from '../../providers/embeds/commonEmbed.js';
+import _currencies from '../../resources/json/currencies.json' assert { type: 'json' };
 import { exchangeCurrency } from '../../services/common.js';
 import { ICurrency } from '../../types/currencies.js';
 import { editOrReplyThenDelete } from '../../utils/index.js';
 
-const currencies: Array<ICurrency> | undefined = cache.get('currencies');
+const currencies: ICurrency = _currencies;
 
 @Discord()
 class CurrencyExchange {
@@ -42,9 +42,6 @@ class CurrencyExchange {
   ): Promise<Promise<Message<boolean> | void> | undefined> {
     if (!from || !to || !amount)
       return editOrReplyThenDelete(command.message, { content: '❌ Invalid arguments', ephemeral: true });
-    const currencies: ICurrency | undefined = cache.get('currencies');
-    if (!currencies)
-      return editOrReplyThenDelete(command.message, { content: '❌ Currencies not cached', ephemeral: true });
 
     from = from.toUpperCase();
     to = to.toUpperCase();
@@ -93,11 +90,14 @@ class CurrencyExchange {
     if (interaction.isAutocomplete()) {
       const focusedValue = interaction.options.getFocused();
       interaction.respond(
-        Object.entries((cache.get('currencies') as ICurrency) || {})
-          .filter(([key, value]: [string, string]) => key.toLowerCase().includes(focusedValue?.toLowerCase())
-            || value.toLowerCase().includes(focusedValue?.toLowerCase()))
+        Object.entries(currencies)
+          .filter(
+            ([key, value]: [string, string]) =>
+              key.toLowerCase().includes(focusedValue?.toLowerCase()) ||
+              value.toLowerCase().includes(focusedValue?.toLowerCase()),
+          )
           .map(([key, value]: [string, string]) => Object({ name: value, value: key }))
-          .slice(0, 25)
+          .slice(0, 25),
       );
     } else {
       const calculatedAmount: number = eval(amount.toString());

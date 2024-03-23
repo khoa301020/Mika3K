@@ -1,17 +1,14 @@
-import { cacheCurrencies } from '../services/common.js';
 import { setCloudflareCookie } from '../services/nhentai.js';
 import { cacheCommonData, checkSchaleDB } from './checkSchaleDB.js';
 import { claimDaily } from './claimHoyoLabDaily.js';
-import { refreshCf, refreshNHentaiCfToken } from './refreshNhentaiCfToken.js';
 import { cacheAccessToken, refreshPixivToken } from './refreshPixivToken.js';
 import { syosetuCheckUpdate } from './syosetuCheckUpdate.js';
 
 async function initFunctions(): Promise<void> {
   await setCloudflareCookie().then(() => console.log('Cached NHentai Cloudflare cookie')); // Set NHentai Cloudflare cookie
   await cacheCommonData().then(() => console.log('Cached SchaleDB common data')); // Cache common data
-  await cacheCurrencies().then(() => console.log('Cached currencies')); // Cache currencies
 
-  // Production only  
+  // Production only
   if (process.env.BOT_ENV && process.env.BOT_ENV === 'production') {
     await cacheAccessToken(); // Cache Pixiv access token
     // if (process.env.NHENTAI_USE_ORIGIN === 'false')

@@ -25,12 +25,16 @@ export const ErrorLogEmbed = (error: Error): EmbedBuilder => {
     embed.addFields(
       { name: 'URL', value: error.config?.url ?? 'No URL', inline: true },
       { name: 'Status', value: error.response?.status.toString() ?? 'No status', inline: true },
-      { name: 'Headers', value: error.config ? `\`\`\`${JSON.stringify(error.config?.headers)}\`\`\`` : 'No headers' },
+      {
+        name: 'Headers',
+        value: error.config?.headers ? `\`\`\`${JSON.stringify(error.config?.headers)}\`\`\`` : 'No headers',
+      },
       {
         name: 'Response',
-        value: error.response && error.response.data instanceof Object
-          ? `\`\`\`${JSON.stringify(error.response.data)}\`\`\``
-          : 'No response',
+        value:
+          error.response && error.response.data instanceof Object
+            ? `\`\`\`${JSON.stringify(error.response.data)}\`\`\``
+            : 'No response',
       },
     );
   }
@@ -120,13 +124,21 @@ export const MathEmbed = (expression: string, result: string): EmbedBuilder => {
 export const CurrencyExchangeEmbed = (exchangeRes: IExchangeResult): EmbedBuilder => {
   const embed = new EmbedBuilder()
     .setColor(0x0099ff)
-    .addFields({ name: `From ${exchangeRes.query.from.toUpperCase()}`, value: `\`\`\`${exchangeRes.query.amount.toLocaleString()}\`\`\`` })
-    .addFields({ name: `To ${exchangeRes.query.to.toUpperCase()}`, value: `\`\`\`${exchangeRes.result.toLocaleString()}\`\`\`` })
+    .addFields({
+      name: `From ${exchangeRes.query.from.toUpperCase()}`,
+      value: `\`\`\`${exchangeRes.query.amount.toLocaleString()}\`\`\``,
+    })
+    .addFields({
+      name: `To ${exchangeRes.query.to.toUpperCase()}`,
+      value: `\`\`\`${exchangeRes.result.toLocaleString()}\`\`\``,
+    })
     .setTimestamp()
     .setFooter({ text: bot.user!.displayName, iconURL: bot.user!.displayAvatarURL() });
 
   if (exchangeRes.query.amount > 1)
-    embed.setTitle(`Rate: 1 ${exchangeRes.query.from.toUpperCase()} = ${exchangeRes.info.rate.toLocaleString()} ${exchangeRes.query.to.toUpperCase()}`);
+    embed.setTitle(
+      `Rate: 1 ${exchangeRes.query.from.toUpperCase()} = ${exchangeRes.info.rate.toLocaleString()} ${exchangeRes.query.to.toUpperCase()}`,
+    );
 
   return embed;
 };

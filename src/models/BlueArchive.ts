@@ -7,20 +7,13 @@ import { Shop as EquipmentShop, IEquipment } from '../types/bluearchive/equipmen
 import { IFurniture } from '../types/bluearchive/furniture';
 import { IItem, Shop as ItemShop } from '../types/bluearchive/item';
 import { ILocalization } from '../types/bluearchive/localization';
-import {
-  Formation,
-  IRaid,
-  ITimeAttack,
-  IWorldRaid,
-  RaidSkill,
-  Reward,
-  Season,
-  Terrain,
-  TimeAttackRule,
-  WorldRaidSkill,
-} from '../types/bluearchive/raid';
+import { IMultiFloorRaid, RaidSkill as MultiFloorRaidSkill, RaidFloor } from '../types/bluearchive/multiFloorRaid.js';
+import { IRaid, RaidSkill, Terrain } from '../types/bluearchive/raid';
+import { Season } from '../types/bluearchive/raidSeason.js';
 import { IStudent, Skill, Summon } from '../types/bluearchive/student';
 import { ISummon } from '../types/bluearchive/summon';
+import { Formation, ITimeAttack, Rule } from '../types/bluearchive/timeAttack.js';
+import { IWorldRaid, Reward as WorldRaidReward } from '../types/bluearchive/worldRaid.js';
 import { isObjectEmpty } from '../utils/index.js';
 
 const StudentSchema = new mongoose.Schema<IStudent>(
@@ -85,7 +78,7 @@ const StudentSchema = new mongoose.Schema<IStudent>(
     FavorAlts: Array<Number>,
     MemoryLobby: Array<Number>,
     MemoryLobbyBGM: String,
-    FurnitureInteraction: Array<Number[]>,
+    FurnitureInteraction: Array<Array<Number[]>>,
     FavorItemTags: Array<String>,
     FavorItemUniqueTags: Array<String>,
     IsLimited: Number,
@@ -96,6 +89,8 @@ const StudentSchema = new mongoose.Schema<IStudent>(
     SkillMaterial: Array<Number[]>,
     SkillMaterialAmount: Array<Number[]>,
     TSAId: Number,
+    DefensePenetration1: Number,
+    DefensePenetration100: Number,
   },
   {
     strict: false,
@@ -185,7 +180,9 @@ const FurnitureSchema = new mongoose.Schema<IFurniture>(
     ComfortBonus: String,
     Category: String,
     Tags: Array<String>,
-    SynthQuality: Array<Number>,
+    ShiftingCraftQuality: Number,
+    ShiftingCraftQualityCn: Number,
+    ShiftingCraftQualityGlobal: Number,
     SubCategory: String,
     SetGroupId: Number,
     Name: String,
@@ -203,15 +200,21 @@ const ItemSchema = new mongoose.Schema<IItem>(
     Quality: Number,
     Tags: Array<String>,
     Shops: Array<ItemShop>,
+    Craftable: Array<Boolean>,
+    StageDrop: Array<Boolean>,
     Icon: String,
     Name: String,
     Desc: String,
     ExpValue: Number,
-    SynthQuality: Array<Number>,
+    ShiftingCraftQuality: Number,
     EventBonus: Array<Number[]>,
     ConsumeType: String,
     ImmediateUse: Boolean,
     Contains: Array<Number[]>,
+    ContainsCn: Array<Number[]>,
+    ExpiryTime: Array<Number | null>,
+    EventBonusGlobal: Array<Number[]>,
+    EventBonusCn: Array<Number[]>,
     ContainsGlobal: Array<Number[]>,
   },
   { strict: false },
@@ -222,6 +225,7 @@ const RaidSchema = new mongoose.Schema<IRaid>(
     IsReleased: Array<Boolean>,
     MaxDifficulty: Array<Number>,
     PathName: String,
+    GroupName: String,
     Faction: String,
     Terrain: Array<Terrain>,
     BulletType: String,
@@ -229,7 +233,8 @@ const RaidSchema = new mongoose.Schema<IRaid>(
     ArmorType: String,
     EnemyList: Array<Number[]>,
     RaidSkill: Array<RaidSkill>,
-    ExcludeNormalAttack: Array<Number>,
+    HasNormalAttack: Array<Number>,
+    BattleDuration: Array<Number>,
     Name: String,
     Profile: String,
     Icon: String,
@@ -239,8 +244,10 @@ const RaidSchema = new mongoose.Schema<IRaid>(
 );
 const RaidSeasonSchema = new mongoose.Schema<Season>(
   {
-    RegionId: Number,
-    Season: Number,
+    SeasonId: Number,
+    SeasonDisplay: Number || String,
+    ArmorTypes: Array<String>,
+    TormentArmorType: String,
     RaidId: Number,
     Terrain: String,
     Start: Number,
@@ -263,7 +270,8 @@ const TimeAttackSchema = new mongoose.Schema<ITimeAttack>(
     ArmorType: String,
     EnemyLevel: Array<Number>,
     Formations: Array<Formation>,
-    Rules: Array<TimeAttackRule[] | Number[]>,
+    Rules: Array<Rule[]>,
+    BattleDuration: Array<Number>,
   },
   { strict: false },
 );
@@ -272,23 +280,47 @@ const WorldRaidSchema = new mongoose.Schema<IWorldRaid>(
   {
     Id: Number,
     IsReleased: Array<Boolean>,
-    DifficultyMax: Array<Number>,
+    MaxDifficulty: Array<Number>,
     DifficultyName: Array<String>,
     PathName: String,
     IconBG: String,
-    Terrain: Array<Terrain>,
+    Terrain: Array<String>,
     BulletType: String,
     ArmorType: String,
     WorldBossHP: Number,
     Level: Array<Number>,
-    EnemyList: Array<Array<Number>>,
-    RaidSkill: Array<WorldRaidSkill>,
+    EnemyList: Array<Number[]>,
+    RaidSkill: Array<RaidSkill>,
+    HasNormalAttack: Array<any>,
     Name: String,
-    Rewards: Array<Reward>,
-    EntryCost: Array<Array<Number>>,
-    RewardsGlobal: Array<Reward>,
+    Rewards: Array<WorldRaidReward>,
+    RewardsRerun: Array<WorldRaidReward>,
+    EntryCost: Array<Number[]>,
+    BattleDuration: Array<Number>,
+    RewardsGlobal: Array<WorldRaidReward>,
+    RewardsRerunGlobal: Array<WorldRaidReward>,
     BulletTypeInsane: String,
     UseRaidSkillList: Number,
+  },
+  { strict: false },
+);
+
+const MultiFloorRaidSchema = new mongoose.Schema<IMultiFloorRaid>(
+  {
+    Id: Number,
+    IsReleased: Array<Boolean>,
+    MaxDifficulty: Array<Number>,
+    DifficultyStartFloor: Array<Number>,
+    PathName: String,
+    Terrain: Array<String>,
+    BulletType: Array<String>,
+    ArmorType: String,
+    EnemyList: Array<Number[]>,
+    RaidSkill: Array<MultiFloorRaidSkill>,
+    HasNormalAttack: Array<any>,
+    Name: String,
+    BattleDuration: Number,
+    RaidFloors: Array<RaidFloor>,
   },
   { strict: false },
 );
@@ -348,7 +380,7 @@ RaidSchema.post('findOne', async function (res: IRaid, next) {
   if (isObjectEmpty(res)) return;
   res.BossList = [];
   let promises: Array<Promise<any>> = [];
-  res.EnemyList.forEach((enemies: Array<number>, index: number, array: Array<number[]>) =>
+  res.EnemyList.forEach((enemies: Array<number>, index: number) =>
     promises.push(
       SchaleDB.Enemy.find({ Id: { $in: enemies }, Rank: 'Boss' }).then((bosses) => (res.BossList![index] = bosses)),
     ),
@@ -371,5 +403,6 @@ export const SchaleDB = {
   RaidSeason: conn.model<Season>('RaidSeason', RaidSeasonSchema, 'RaidSeasons'),
   TimeAttack: conn.model<ITimeAttack>('TimeAttack', TimeAttackSchema, 'TimeAttacks'),
   WorldRaid: conn.model<IWorldRaid>('WorldRaid', WorldRaidSchema, 'WorldRaids'),
+  MultiFloorRaid: conn.model<IMultiFloorRaid>('MultiFloorRaid', MultiFloorRaidSchema, 'MultiFloorRaids'),
   Summon: conn.model<ISummon>('Summon', SummonSchema, 'Summons'),
 };

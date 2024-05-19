@@ -53,7 +53,7 @@ export interface Effect {
   Frames?: Frames;
   HitsParameter?: number;
   IgnoreDef?: number[];
-  Chance?: string;
+  Chance?: number;
   Icon?: string;
 }
 

@@ -10,17 +10,13 @@ import { IEquipment } from '../types/bluearchive/equipment';
 import { IFurniture } from '../types/bluearchive/furniture';
 import { IItem } from '../types/bluearchive/item';
 import { ILocalization } from '../types/bluearchive/localization.js';
-import {
-  IRaid,
-  IRaidSeason,
-  ITimeAttack,
-  IWorldRaid,
-  RaidSkill,
-  Season,
-  TimeAttackRule,
-} from '../types/bluearchive/raid.js';
-import { IStudent, Skill } from '../types/bluearchive/student';
-import { ISummon } from '../types/bluearchive/summon';
+import { IMultiFloorRaid } from '../types/bluearchive/multiFloorRaid.js';
+import { IRaid, RaidSkill } from '../types/bluearchive/raid.js';
+import { IRaidSeason, Season } from '../types/bluearchive/raidSeason.js';
+import { IStudent, Skill as StudentSkill } from '../types/bluearchive/student';
+import { ISummon, Skill as SummonSkill } from '../types/bluearchive/summon';
+import { ITimeAttack, ITimeAttackRule, Rule } from '../types/bluearchive/timeAttack.js';
+import { IWorldRaid } from '../types/bluearchive/worldRaid.js';
 import { datetimeConverter } from '../utils/index.js';
 
 const curl = async (url: string) => await axios.get(url);
@@ -93,7 +89,12 @@ export const fetchData = {
     const raidSeasons: Array<IRaidSeason> = await (await curl(url)).data.RaidSeasons;
     const seasons: Array<Season> = raidSeasons
       .map((raidSeason: IRaidSeason, index: number) => {
-        return raidSeason.Seasons.map((season: Season) => Object.assign(season, { RegionId: index }));
+        return raidSeason.Seasons.map((season: Season) => {
+          if (season.SeasonDisplay === 'BETA') {
+            season.SeasonDisplay = 0;
+          }
+          return Object.assign(season, { RegionId: index });
+        });
       })
       .flat();
     const promises: Array<Promise<Season>> = seasons
@@ -106,19 +107,17 @@ export const fetchData = {
   timeAttack: async function sync() {
     const url = BlueArchiveConstants.RAIDS_DATA_URL;
     const raids = await (await curl(url)).data;
-    const timeAttacks = raids.TimeAttack;
-    const timeAttackRules: Array<TimeAttackRule> = raids.TimeAttackRules;
+    const timeAttacks: Array<ITimeAttack> = raids.TimeAttack;
+    const timeAttackRules: Array<ITimeAttackRule> = raids.TimeAttackRules;
 
-    timeAttacks.forEach((timeAttack: ITimeAttack) => {
-      timeAttack.Rules.forEach((rules: Array<TimeAttackRule | number>) => {
-        rules.forEach(
-          (ruleToConvert: TimeAttackRule | number, index: number, ruleArray: Array<TimeAttackRule | number>) => {
-            const indexProjected = timeAttackRules.findIndex((rule: TimeAttackRule) => rule.Id! === ruleToConvert);
-            if (indexProjected !== -1) ruleArray[index] = timeAttackRules[indexProjected];
-          },
-        );
+    timeAttacks.reduce((acc: Array<ITimeAttack>, timeAttack: ITimeAttack) => {
+      const rules: Array<ITimeAttackRule[]> = timeAttack.Rules.map((rule: Rule[]) => {
+        return rule.map((rule: Rule) => timeAttackRules.find((timeAttackRule) => timeAttackRule.Id === rule.Id)!);
       });
-    });
+      timeAttack.Rules = rules;
+      acc.push(timeAttack);
+      return acc;
+    }, []);
 
     const promises: Array<Promise<ITimeAttack>> = timeAttacks.map(
       async (timeAttack: ITimeAttack) => await importData.timeAttack(timeAttack),
@@ -135,6 +134,16 @@ export const fetchData = {
     );
     cache.set('BA_WorldRaidCount', promises.length);
     console.log(`WorldRaids: ${promises.length}`);
+    return await Promise.all(promises);
+  },
+  multiFloorRaid: async function sync() {
+    const url = BlueArchiveConstants.RAIDS_DATA_URL;
+    const multiFloorRaids = await (await curl(url)).data.MultiFloorRaid;
+    const promises: Array<Promise<IMultiFloorRaid>> = multiFloorRaids.map(
+      async (multiFloorRaid: IMultiFloorRaid) => await importData.multiFloorRaid(multiFloorRaid),
+    );
+    cache.set('BA_MultiFloorRaidCount', promises.length);
+    console.log(`MultiFloorRaids: ${promises.length}`);
     return await Promise.all(promises);
   },
   summon: async function sync() {
@@ -161,7 +170,7 @@ export const importData = {
   raid: async (raid: IRaid) => await SchaleDB.Raid.findOneAndUpdate({ Id: raid.Id }, raid, { upsert: true, new: true }),
   raidSeason: async (raidSeason: Season) =>
     await SchaleDB.RaidSeason.findOneAndUpdate(
-      { RegionId: raidSeason.RegionId, Season: raidSeason.Season, RaidId: raidSeason.RaidId },
+      { RegionId: raidSeason.RegionId, Season: raidSeason.SeasonId, RaidId: raidSeason.RaidId },
       raidSeason,
       { upsert: true, new: true },
     ),
@@ -169,14 +178,17 @@ export const importData = {
     await SchaleDB.TimeAttack.findOneAndUpdate({ Id: timeAttack.Id }, timeAttack, { upsert: true, new: true }),
   worldRaid: async (worldRaid: IWorldRaid) =>
     await SchaleDB.WorldRaid.findOneAndUpdate({ Id: worldRaid.Id }, worldRaid, { upsert: true, new: true }),
+  multiFloorRaid: async (multiFloorRaid: IMultiFloorRaid) =>
+    await SchaleDB.MultiFloorRaid.findOneAndUpdate({ Id: multiFloorRaid.Id }, multiFloorRaid, {
+      upsert: true,
+      new: true,
+    }),
   summon: async (summon: ISummon) =>
     await SchaleDB.Summon.findOneAndUpdate({ Id: summon.Id }, summon, { upsert: true, new: true }),
 };
 export const getData = {
   getStudentCount: async (regionId: number): Promise<number> =>
-    await SchaleDB.Student.countDocuments(
-      { [`IsReleased.${regionId}`]: true }
-    ),
+    await SchaleDB.Student.countDocuments({ [`IsReleased.${regionId}`]: true }),
   getStudent: async (sort: any, query?: FilterQuery<IStudent>): Promise<Array<IStudent>> =>
     await SchaleDB.Student.find(query ?? {})
       .sort(sort)
@@ -196,30 +208,26 @@ export const getData = {
       birthdayStudents.push(datetimeConverter(nextDate.setDate(currentDate.getDate() + i)).studentBirthday);
     }
 
-    const query = Object.assign(
-      {
-        PathName: { $regex: /^[^_]*$/i },
-        BirthDay: { $in: birthdayStudents },
-        [`IsReleased.${regionId}`]: true
-      },
-
-    );
+    const query = Object.assign({
+      PathName: { $regex: /^[^_]*$/i },
+      BirthDay: { $in: birthdayStudents },
+      [`IsReleased.${regionId}`]: true,
+    });
 
     return await SchaleDB.Student.find(query).sort({ BirthDay: 1 }).lean();
   },
   getRaidCount: async (regionId: number): Promise<number> =>
-    await SchaleDB.Raid.countDocuments(
-      { [`IsReleased.${regionId}`]: true }
-    ),
+    await SchaleDB.Raid.countDocuments({ [`IsReleased.${regionId}`]: true }),
   getRaidById: async (id: number): Promise<IRaid | null> => await SchaleDB.Raid.findOne({ Id: id }).lean(),
   getTimeAttackById: async (id: number): Promise<ITimeAttack | null> =>
     await SchaleDB.TimeAttack.findOne({ Id: id }).lean(),
   getFurnitures: async (ids: Array<number>): Promise<Array<IFurniture>> =>
     await SchaleDB.Furniture.find({ Id: { $in: ids } }).lean(),
-  getSummons: async (ids: Array<number>): Promise<Array<ISummon>> => await SchaleDB.Summon.find({ Id: { $in: ids } }).lean(),
+  getSummons: async (ids: Array<number>): Promise<Array<ISummon>> =>
+    await SchaleDB.Summon.find({ Id: { $in: ids } }).lean(),
 };
 
-export const transformStudentSkillStat = (skill: Skill, localization?: ILocalization) => {
+export const transformStudentSkillStat = (skill: StudentSkill | SummonSkill, localization?: ILocalization) => {
   skill.Name = decode(skill.Name).replace(CommonConstants.REGEX_HTML_TAG, '');
   skill.Desc = decode(
     skill.Desc?.replace(BlueArchiveConstants.REGEX_PARAMETERS_REPLACEMENT, (match, key) => {
@@ -270,8 +278,9 @@ export const transformStudentSkillStat = (skill: Skill, localization?: ILocaliza
   return skill;
 };
 export const transformRaidSkillStat = (skill: RaidSkill, difficulty: number, localization?: ILocalization) => {
-  skill.Name = `[${skill.SkillType}] ${decode(skill.Name).replace(CommonConstants.REGEX_HTML_TAG, '')}${skill.ATGCost > 0 ? ` \`ATG: ${skill.ATGCost}\`` : ''
-    }`;
+  skill.Name = `[${skill.SkillType}] ${decode(skill.Name).replace(CommonConstants.REGEX_HTML_TAG, '')}${
+    skill.ATGCost > 0 ? ` \`ATG: ${skill.ATGCost}\`` : ''
+  }`;
   skill.Desc = decode(
     skill.Desc?.replace(BlueArchiveConstants.REGEX_PARAMETERS_REPLACEMENT, (match, key) => {
       return skill.Parameters![parseInt(key) - 1][difficulty];

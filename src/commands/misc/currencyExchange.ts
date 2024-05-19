@@ -9,12 +9,9 @@ import {
   SlashOption,
 } from 'discordx';
 import { CurrencyExchangeEmbed } from '../../providers/embeds/commonEmbed.js';
-import _currencies from '../../resources/json/currencies.json' assert { type: 'json' };
+import { currencies } from '../../resources/json/currencies.js';
 import { exchangeCurrency } from '../../services/common.js';
-import { ICurrency } from '../../types/currencies.js';
 import { editOrReplyThenDelete } from '../../utils/index.js';
-
-const currencies: ICurrency = _currencies;
 
 @Discord()
 class CurrencyExchange {

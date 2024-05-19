@@ -265,9 +265,11 @@ export const getRelativeTime = (seconds: number) => {
   const minutes = Math.floor((seconds % (60 * 60)) / 60);
   const second = Math.floor(seconds % 60);
 
-  return `${days ? `${days.toString().padStart(2, '0')}d ` : ''}${hours ? `${hours.toString().padStart(2, '0')}h ` : ''
-    }${minutes ? `${minutes.toString().padStart(2, '0')}m ` : ''}${second ? `${second.toString().padStart(2, '0')}s` : ''
-    }`;
+  return `${days ? `${days.toString().padStart(2, '0')}d ` : ''}${
+    hours ? `${hours.toString().padStart(2, '0')}h ` : ''
+  }${minutes ? `${minutes.toString().padStart(2, '0')}m ` : ''}${
+    second ? `${second.toString().padStart(2, '0')}s` : ''
+  }`;
 };
 
 export const isEnded = (epoch: number): boolean => new Date().getTime() / 1000 >= epoch;
@@ -369,6 +371,7 @@ export const errorHandler = (err: Error) => {
     throw Error('Could not find LOG_CHANNEL_ID in your environment');
   }
   const logChannel = bot.channels.cache.get(process.env.LOG_CHANNEL_ID);
+
   if (!logChannel?.isTextBased()) {
     throw Error('Could not find log channel');
   }

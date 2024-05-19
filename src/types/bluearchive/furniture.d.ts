@@ -8,13 +8,15 @@ export interface IFurniture {
   Category: Category;
   Size: number[];
   Tags: string[];
-  SynthQuality?: number[];
+  ShiftingCraftQuality?: number;
+  ShiftingCraftQualityCn?: number;
   SubCategory: SubCategory;
   SetGroupId: number;
   Name: string;
   Desc: string;
   Interaction: boolean[];
   Templates?: Array<number[]>;
+  ShiftingCraftQualityGlobal?: number;
 }
 
 export type Category = 'Interiors' | 'Decorations' | 'Furnitures';

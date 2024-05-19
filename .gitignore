@@ -4,13 +4,14 @@
 .env
 .env.local
 package-lock.json
-yarn.lock
 
 # folders
 build
 node_modules
 
 # yarn
+.yarn/*
+.yarnrc.yml
 yarn.lock
 yarn-error.log
 

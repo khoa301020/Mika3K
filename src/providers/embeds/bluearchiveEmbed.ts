@@ -3,7 +3,7 @@ import { EmbedBuilder } from 'discord.js';
 import { decode } from 'html-entities';
 import { BlueArchiveConstants, CommonConstants } from '../../constants/index.js';
 import { cache } from '../../main.js';
-import { SchaleMath, getData, transformRaidSkillStat, transformStudentSkillStat } from '../../services/bluearchive.js';
+import { SchaleMath, transformRaidSkillStat, transformStudentSkillStat } from '../../services/bluearchive.js';
 import { CurrentEvent, CurrentGacha, CurrentRaid, Region } from '../../types/bluearchive/config.js';
 import { IEnemy } from '../../types/bluearchive/enemy.js';
 import { IFurniture } from '../../types/bluearchive/furniture.js';
@@ -65,7 +65,8 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
       value: `${region.incomingBirthdayStudents
         .map(
           (student: IStudent) =>
-            `ㅤ- [${student.Birthday}] ${student.Name} ${student.BirthDay === todayJP ? 'ー **TODAY!**' : student.BirthDay === tomorrowJP ? 'ー **TOMORROW!**' : ''
+            `ㅤ- [${student.Birthday}] ${student.Name} ${
+              student.BirthDay === todayJP ? 'ー **TODAY!**' : student.BirthDay === tomorrowJP ? 'ー **TOMORROW!**' : ''
             }`,
         )
         .join('\n')}`,
@@ -76,9 +77,10 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
       name: 'Current & upcoming events',
       value: `${region.CurrentEvents.map(
         (currentEvent: CurrentEvent) =>
-          `- ${!/^10/.test(currentEvent.event.toString())
-            ? localization?.EventName[currentEvent.event.toString()]
-            : `[Rerun] ${localization?.EventName[currentEvent.event.toString().slice(2)]}`
+          `- ${
+            !/^10/.test(currentEvent.event.toString())
+              ? localization?.EventName[currentEvent.event.toString()]
+              : `[Rerun] ${localization?.EventName[currentEvent.event.toString().slice(2)]}`
           } *(${getRelativeTimeBA(currentEvent.start, currentEvent.end)})*`,
       ).join('\n')}`,
     });
@@ -101,7 +103,8 @@ export const BA_ServerEmbed = (region: Region, author: User, timezoneOffset: num
       value: `${timeAttacks
         .map(
           (currentRaid: CurrentRaid & { info?: any }) =>
-            `- [${localization?.AdaptationType[currentRaid.info.Terrain]}] ${currentRaid.info.DungeonType
+            `- [${localization?.AdaptationType[currentRaid.info.Terrain]}] ${
+              currentRaid.info.DungeonType
             } *(${getRelativeTimeBA(currentRaid.start, currentRaid.end)})*`,
         )
         .join('\n')}`,
@@ -142,8 +145,9 @@ export const BA_StudentEmbed = (student: IStudent, author: User, page?: number, 
     .addFields(
       {
         name: 'Release status',
-        value: `${student.IsReleased[1] ? 'Global' : 'JP only'} (${BlueArchiveConstants.STUDENT_TYPE[student.IsLimited]
-          })`,
+        value: `${student.IsReleased[1] ? 'Global' : 'JP only'} (${
+          BlueArchiveConstants.STUDENT_TYPE[student.IsLimited]
+        })`,
         inline: true,
       },
       {
@@ -176,8 +180,9 @@ export const BA_StudentEmbed = (student: IStudent, author: User, page?: number, 
       { name: 'Use cover', value: student.Cover ? 'Yes' : 'No', inline: true },
       {
         name: 'Adaptation',
-        value: `\`\`\`Urban: ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation]}, Indoor: ${BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation]
-          }, Outdoor: ${BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation]}\`\`\``,
+        value: `\`\`\`Urban: ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation]}, Indoor: ${
+          BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation]
+        }, Outdoor: ${BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation]}\`\`\``,
       },
       { name: 'Introduction', value: `\`\`\`${decode(student.ProfileIntroduction)}\`\`\`` },
     )
@@ -213,10 +218,11 @@ export const BA_StudentProfileEmbed = (
       },
       {
         name: 'Furniture interaction',
-        value: `\`\`\`${furnitures?.length > 0
-          ? furnitures.map((furniture: IFurniture) => `[${furniture.Rarity}] ${furniture.Name}`).join('\n')
-          : 'N/A'
-          }\`\`\``,
+        value: `\`\`\`${
+          furnitures?.length > 0
+            ? furnitures.map((furniture: IFurniture) => `[${furniture.Rarity}] ${furniture.Name}`).join('\n')
+            : 'N/A'
+        }\`\`\``,
       },
       {
         name: 'Relationship rank bonus',
@@ -263,9 +269,11 @@ export const BA_StudentStatsEmbed = (student: IStudent, author: User): EmbedBuil
         name: 'Base sub stats',
         value: `\`\`\`RANGE  : ${student.Range}\nSTABLE : ${student.StabilityPoint} (${SchaleMath.stabilityRate(
           student.StabilityPoint,
-        )}%)\nACC    : ${student.AccuracyPoint}\nEVA    : ${student.DodgePoint}\nCRIT.R : ${student.CriticalPoint
-          }\nCRIT.D : ${SchaleMath.criticalRate(student.CriticalDamageRate)}%\nREC    : ${student.RegenCost}\nCC.P   : ${BlueArchiveConstants.CC_POWER
-          }\nCC.R   : ${BlueArchiveConstants.CC_RESISTANCE}\nAMMO   : ${student.AmmoCount}(${student.AmmoCost})\`\`\``,
+        )}%)\nACC    : ${student.AccuracyPoint}\nEVA    : ${student.DodgePoint}\nCRIT.R : ${
+          student.CriticalPoint
+        }\nCRIT.D : ${SchaleMath.criticalRate(student.CriticalDamageRate)}%\nREC    : ${student.RegenCost}\nCC.P   : ${
+          BlueArchiveConstants.CC_POWER
+        }\nCC.R   : ${BlueArchiveConstants.CC_RESISTANCE}\nAMMO   : ${student.AmmoCount}(${student.AmmoCost})\`\`\``,
       },
     )
     .setTimestamp()
@@ -298,13 +306,15 @@ export const BA_StudentSkillsEmbed = (student: IStudent, author: User): EmbedBui
               const attack = summonSkill.Effects.shift();
               const scale = attack?.Scale.shift();
               const hits = attack?.Hits;
-              skill.Desc += `\n\n[${summon.Info?.Name}]: Attack deals ${scale! / 100}% damage (${average(hits!) / 100
-                }% x ${hits?.length!} hits).`;
+              skill.Desc += `\n\n[${summon.Info?.Name}]: Attack deals ${scale! / 100}% damage (${
+                average(hits!) / 100
+              }% x ${hits?.length!} hits).`;
             } else {
               const transformedSummonSkill = transformStudentSkillStat(summonSkill, localization);
               summonSkills.push({
-                name: `[${BlueArchiveConstants.SKILL_MAP[summon.SourceSkill]}] [${summon.Info?.Name}] ${transformedSummonSkill.Name
-                  }`,
+                name: `[${BlueArchiveConstants.SKILL_MAP[summon.SourceSkill]}] [${summon.Info?.Name}] ${
+                  transformedSummonSkill.Name
+                }`,
                 value: `\`\`\`${transformedSummonSkill.Desc}\`\`\``,
               });
             }
@@ -372,19 +382,25 @@ export const BA_StudentWeaponEmbed = (student: IStudent, author: User): EmbedBui
       { name: `[Skill upgrade] ${passiveSkillUpgrade.Name}`, value: `\`\`\`${passiveSkillUpgrade.Desc}\`\`\`` },
       {
         name: `[Adaptation upgrade] ${student.Weapon.AdaptationType}`,
-        value: `\`\`\`Urban   : ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation]}${student.Weapon.AdaptationType === 'Street'
-          ? ` -> ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation + student.Weapon.AdaptationValue]
-          }`
-          : ''
-          }\nIndoor  : ${BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation]}${student.Weapon.AdaptationType === 'Indoor'
-            ? ` -> ${BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation + student.Weapon.AdaptationValue]
-            }`
+        value: `\`\`\`Urban   : ${BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation]}${
+          student.Weapon.AdaptationType === 'Street'
+            ? ` -> ${
+                BlueArchiveConstants.ADAPTATION_ICON[student.StreetBattleAdaptation + student.Weapon.AdaptationValue]
+              }`
             : ''
-          }\nOutdoor : ${BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation]}${student.Weapon.AdaptationType === 'Outdoor'
-            ? ` -> ${BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation + student.Weapon.AdaptationValue]
-            }`
+        }\nIndoor  : ${BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation]}${
+          student.Weapon.AdaptationType === 'Indoor'
+            ? ` -> ${
+                BlueArchiveConstants.ADAPTATION_ICON[student.IndoorBattleAdaptation + student.Weapon.AdaptationValue]
+              }`
             : ''
-          }\`\`\``,
+        }\nOutdoor : ${BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation]}${
+          student.Weapon.AdaptationType === 'Outdoor'
+            ? ` -> ${
+                BlueArchiveConstants.ADAPTATION_ICON[student.OutdoorBattleAdaptation + student.Weapon.AdaptationValue]
+              }`
+            : ''
+        }\`\`\``,
       },
       {
         name: 'Stats',
@@ -408,7 +424,8 @@ export const BA_StudentGearEmbed = (student: IStudent, author: User): EmbedBuild
   return new EmbedBuilder()
     .setColor(BlueArchiveConstants.BULLET_COLOR[student.BulletType])
     .setTitle(
-      `[${'★'.repeat(student.StarGrade)}] ${student.Name}'s gear \`${student.Gear.Released![1] ? 'Global' : 'JP only'
+      `[${'★'.repeat(student.StarGrade)}] ${student.Name}'s gear \`${
+        student.Gear.Released![1] ? 'Global' : 'JP only'
       }\``,
     )
     .setURL(BlueArchiveConstants.SCHALE_STUDENT_URL + student.PathName)
@@ -469,7 +486,11 @@ export const BA_RaidEmbed = (raid: IRaid, difficulty: string, author: User): Emb
       inline: true,
     },
     { name: 'Armor type', value: localization ? localization.ArmorType[raid.ArmorType] : raid.ArmorType, inline: true },
-    { name: 'Terrain', value: raid.Terrain.join(', '), inline: true },
+    {
+      name: 'Terrain',
+      value: raid.Terrain.map((terrain) => `\`${terrain}\``).join(' '),
+      inline: true,
+    },
   ];
 
   // Extract bosses stats
@@ -508,18 +529,23 @@ export const BA_RaidEmbed = (raid: IRaid, difficulty: string, author: User): Emb
       }))(boss);
       const stats = Object.entries(pickedStats).map(
         ([key, value]) =>
-          `${localization!.Stat[key === 'CriticalResistPoint' ? 'CriticalChanceResistPoint' : key.replace(/[0-9]/g, '')]
+          `${
+            localization!.Stat[key === 'CriticalResistPoint' ? 'CriticalChanceResistPoint' : key.replace(/[0-9]/g, '')]
           }: ${value}`,
       );
       fields.push({
-        name: `[Stats] Lv.${BlueArchiveConstants.RAID_LEVEL[BlueArchiveConstants.RAID_DIFFICULTIES[difficulty]]} ${boss.Name
-          }`,
+        name: `[Stats] Lv.${BlueArchiveConstants.RAID_LEVEL[BlueArchiveConstants.RAID_DIFFICULTIES[difficulty]]} ${
+          boss.Name
+        }`,
         value: `\`\`\`${stats.join('\n')}\`\`\``,
       });
       if (boss.PhaseChange && boss.PhaseChange.length > 0) {
         const title = `[Phases] Lv.${BlueArchiveConstants.RAID_LEVEL[BlueArchiveConstants.RAID_DIFFICULTIES[difficulty]]} ${boss.Name}`;
-        const desc = `Begins phase 1 with ${boss.MaxHP100} HP.\n` +
-          boss.PhaseChange.map((phase) => formatString(localization?.RaidChangePhase[phase.Trigger]!, [phase.Phase + 1, phase.Argument])).join('\n');
+        const desc =
+          `Begins phase 1 with ${boss.MaxHP100} HP.\n` +
+          boss.PhaseChange.map((phase) =>
+            formatString(localization?.RaidChangePhase[phase.Trigger]!, [phase.Phase + 1, phase.Argument]),
+          ).join('\n');
         fields.push({
           name: title,
           value: `\`\`\`${desc}\`\`\``,
@@ -542,15 +568,18 @@ export const BA_RaidEmbed = (raid: IRaid, difficulty: string, author: User): Emb
       iconURL: author.displayAvatarURL(),
     })
     .setDescription(
-      `${CommonConstants.BOOLEAN_MAP[
-      (raid.MaxDifficulty[0] >= BlueArchiveConstants.RAID_DIFFICULTIES[difficulty]).toString()
-      ]
-      } JP ー ${CommonConstants.BOOLEAN_MAP[
-      (raid.MaxDifficulty[1] >= BlueArchiveConstants.RAID_DIFFICULTIES[difficulty] && raid.IsReleased[1]).toString()
-      ]
-      } GLOBAL ー ${CommonConstants.BOOLEAN_MAP[
-      (raid.MaxDifficulty[2] >= BlueArchiveConstants.RAID_DIFFICULTIES[difficulty] && raid.IsReleased[2]).toString()
-      ]
+      `${
+        CommonConstants.BOOLEAN_MAP[
+          (raid.MaxDifficulty[0] >= BlueArchiveConstants.RAID_DIFFICULTIES[difficulty]).toString()
+        ]
+      } JP ー ${
+        CommonConstants.BOOLEAN_MAP[
+          (raid.MaxDifficulty[1] >= BlueArchiveConstants.RAID_DIFFICULTIES[difficulty] && raid.IsReleased[1]).toString()
+        ]
+      } GLOBAL ー ${
+        CommonConstants.BOOLEAN_MAP[
+          (raid.MaxDifficulty[2] >= BlueArchiveConstants.RAID_DIFFICULTIES[difficulty] && raid.IsReleased[2]).toString()
+        ]
       } CN`,
     )
     .setThumbnail(

@@ -1,4 +1,4 @@
-import { ISummon } from "./summon";
+import { ISummon } from './summon';
 
 export interface IStudent {
   Id: number;
@@ -8,12 +8,12 @@ export interface IStudent {
   DevName: string;
   Name: string;
   School: School;
-  SchoolLong?: string;
+  SchoolLong?: string; // custom property
   Club: string;
   StarGrade: number;
   SquadType: SquadType;
   TacticRole: TacticRole;
-  TacticRoleLong?: string;
+  TacticRoleLong?: string; // custom property
   Summons: Summon[];
   Position: Position;
   BulletType: BulletType;
@@ -74,6 +74,8 @@ export interface IStudent {
   SkillMaterial: Array<number[]>;
   SkillMaterialAmount: Array<number[]>;
   TSAId?: number;
+  DefensePenetration1?: number;
+  DefensePenetration100?: number;
 }
 
 export type ArmorType = 'LightArmor' | 'HeavyArmor' | 'Unarmed' | 'ElasticArmor';
@@ -123,7 +125,7 @@ export type School =
   | 'Tokiwadai'
   | 'Sakugawa';
 
-export type SchoolYear = '1st Year' | '2nd Year' | '3rd Year' | 'Suspended';
+export type SchoolYear = '1st Year' | '2nd Year' | '3rd Year' | '' | 'Suspended';
 
 export interface Skill {
   SkillType: SkillType;
@@ -148,16 +150,16 @@ export type EffectCombine =
   | 'BuffSelf'
   | 'DMGMulti'
   | 'HealDot'
-  | 'CrowdControl'
+  | 'Heal'
   | 'BuffTarget'
   | 'DMGEcho'
+  | 'Knockback'
+  | 'CrowdControl'
   | 'Shield'
-  | 'Heal'
   | 'DMGEchoWithScaling'
   | 'FormChange'
   | 'DMGZone'
   | 'DMGDot'
-  | 'Knockback'
   | 'BuffAlly'
   | 'HealZone'
   | 'Accumulation'
@@ -179,17 +181,22 @@ export interface SkillEffect {
   Stat?: string;
   Value?: Array<number[]>;
   Channel?: number;
-  Duration?: string;
-  Period?: string;
+  Duration?: number;
+  Period?: number;
+  ExtraStatSource?: string;
+  ExtraStatRate?: number[];
   HitsParameter?: number;
-  Chance?: string;
+  Chance?: number;
   Icon?: string;
   SubstituteCondition?: string;
   SubstituteScale?: number[];
+  MultiplySource?: string;
+  MultiplierConstant?: number[];
   HitFrames?: number[];
   IgnoreDelay?: number[];
   StackSame?: number;
   IgnoreDef?: number[];
+  OverrideSlot?: SkillType;
   Restrictions?: Restriction[];
   ZoneHitInterval?: number;
   ZoneDuration?: number;
@@ -223,15 +230,17 @@ export interface Frames {
   AttackReadyEndDuration?: number;
 }
 
+export type SkillType = 'ex' | 'normal' | 'autoattack' | 'gearnormal' | 'passive' | 'weaponpassive' | 'sub';
+
 export interface Restriction {
-  Property: string;
+  Property: Property;
   Operand: Operand;
-  Value: Value;
+  Value: number | string;
 }
 
 export type Operand = 'NotEqual' | 'Equal';
 
-export type Value = number | string;
+export type Property = 'Id' | 'SquadType' | 'Size' | 'BulletType' | 'ArmorType';
 
 export interface ExtraSkill {
   Id: string;
@@ -246,7 +255,7 @@ export interface ExtraSkill {
   Range?: number;
   Cost?: number[];
   TSAId?: number;
-  TSAName?: string;
+  TSAName?: string; // custom property
 }
 
 export interface ExtraSkillEffect {
@@ -256,6 +265,7 @@ export interface ExtraSkillEffect {
   HitsParameter?: number;
   Scale: number[];
   IgnoreDef?: number[];
+  ApplyStability?: boolean;
 }
 
 export interface ExtraSkillRadius {
@@ -266,8 +276,6 @@ export interface ExtraSkillRadius {
 }
 
 export type Type = 'Circle' | 'Fan' | 'Obb' | 'Bounce' | 'Donut';
-
-export type SkillType = 'ex' | 'normal' | 'autoattack' | 'gearnormal' | 'passive' | 'weaponpassive' | 'sub';
 
 export interface InheritScale {
   Skill: SkillType;
@@ -293,7 +301,7 @@ export interface Summon {
   InheritCasterAmount: Array<number[]>;
   ObstacleMaxHP1?: number;
   ObstacleMaxHP100?: number;
-  Info?: ISummon;
+  Info?: ISummon; // custom property
 }
 
 export type TacticRole = 'DamageDealer' | 'Tanker' | 'Supporter' | 'Healer' | 'Vehicle';

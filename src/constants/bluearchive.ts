@@ -1,4 +1,12 @@
-import { School, Skill, SkillType } from '../types/bluearchive/student.js';
+import {
+  AdaptationType,
+  School,
+  SchoolYear,
+  SkillType,
+  SquadType,
+  TacticRole,
+  WeaponType,
+} from '../types/bluearchive/student.js';
 import CommonConstants from './common.js';
 
 export default class BlueArchiveConstants {
@@ -45,10 +53,12 @@ export default class BlueArchiveConstants {
   public static readonly SCHALE_STUDENT_GEAR_URL = (id: number) =>
     `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/gear/icon/${id}.webp`;
   public static readonly SCHALE_RAID_ICON_URL = (pathName: string, isFromInsane: boolean) =>
-    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/icon/Icon_${pathName}${isFromInsane ? '_Insane' : ''
+    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/icon/Icon_${pathName}${
+      isFromInsane ? '_Insane' : ''
     }.png`;
   public static readonly SCHALE_RAID_PORTRAIT_URL = (pathName: string, isFromInsane: boolean) =>
-    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/Boss_Portrait_${pathName}${isFromInsane ? '_Insane' : ''
+    `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/Boss_Portrait_${pathName}${
+      isFromInsane ? '_Insane' : ''
     }_Lobby.png`;
   public static readonly CURRENCY_DATA_URL =
     'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/currency.json';
@@ -124,7 +134,7 @@ export default class BlueArchiveConstants {
     1: 'Limited',
     2: 'Event',
   };
-  public static readonly STUDENT_MAX_LEVEL = 87;
+  public static readonly STUDENT_MAX_LEVEL = 90;
   public static readonly ARMOR_TYPES = ['LightArmor', 'HeavyArmor', 'Unarmed', 'ElasticArmor'];
   public static readonly BULLET_TYPES = ['Explosion', 'Mystic', 'Pierce', 'Sonic'];
   public static readonly BULLET_COLOR: { [key: string]: number } = {
@@ -178,11 +188,12 @@ export default class BlueArchiveConstants {
     'Arius',
     'Tokiwadai',
     'Sakugawa',
+    'ETC',
   ];
-  public static readonly SCHOOL_YEAR = ['1st Year', '2nd Year', '3rd Year', 'Suspended'];
-  public static readonly SQUAD_TYPES = ['Main', 'Support'];
-  public static readonly TACTIC_ROLE = ['DamageDealer', 'Tanker', 'Supporter', 'Healer', 'Vehicle'];
-  public static readonly ADAPTATION_TYPE = ['Street', 'Outdoor', 'Indoor'];
+  public static readonly SCHOOL_YEAR: SchoolYear[] = ['1st Year', '2nd Year', '3rd Year', 'Suspended'];
+  public static readonly SQUAD_TYPES: SquadType[] = ['Main', 'Support'];
+  public static readonly TACTIC_ROLE: TacticRole[] = ['DamageDealer', 'Tanker', 'Supporter', 'Healer', 'Vehicle'];
+  public static readonly ADAPTATION_TYPE: AdaptationType[] = ['Street', 'Outdoor', 'Indoor'];
   public static readonly ADAPTATION_ICON: { [key: number]: string } = {
     0: '😣',
     1: '😞',
@@ -199,8 +210,28 @@ export default class BlueArchiveConstants {
     4: 'S',
     5: 'SS',
   };
-  public static readonly WEAPON_TYPE = ['SR', 'SG', 'AR', 'MG', 'SMG', 'HG', 'GL', 'MT', 'RG', 'RL', 'FT'];
-  public static readonly SKILL_TYPE: SkillType[] = ['ex', 'normal', 'autoattack', 'gearnormal', 'passive', 'weaponpassive', 'sub'];
+  public static readonly WEAPON_TYPE: WeaponType[] = [
+    'SR',
+    'SG',
+    'AR',
+    'MG',
+    'SMG',
+    'HG',
+    'GL',
+    'MT',
+    'RG',
+    'RL',
+    'FT',
+  ];
+  public static readonly SKILL_TYPE: SkillType[] = [
+    'ex',
+    'normal',
+    'autoattack',
+    'gearnormal',
+    'passive',
+    'weaponpassive',
+    'sub',
+  ];
   public static readonly SKILL_MAP: { [key in SkillType]: string } = {
     ex: 'EX',
     normal: 'Normal',
@@ -223,9 +254,9 @@ export default class BlueArchiveConstants {
   public static readonly RAIDS: { [key: string]: number } = {
     BINAH: 1,
     CHESED: 2,
-    "Shiro & Kuro": 3,
+    'Shiro & Kuro': 3,
     Hieronymus: 4,
-    "KAITEN FX Mk.0": 5,
+    'KAITEN FX Mk.0': 5,
     Perorodzilla: 6,
     HOD: 7,
     Goz: 8,

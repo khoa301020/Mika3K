@@ -5,7 +5,6 @@ export interface IItem {
   Rarity: Rarity;
   Quality: number;
   Tags: string[];
-  ExpiryTime?: (number | null)[];
   Shops: Shop[];
   Craftable: boolean[];
   StageDrop: boolean[];
@@ -13,12 +12,13 @@ export interface IItem {
   Name: string;
   Desc: string;
   ExpValue?: number;
-  SynthQuality?: number[];
+  ShiftingCraftQuality?: number;
   EventBonus?: Array<number[]>;
   ConsumeType?: ConsumeType;
   ImmediateUse?: boolean;
   Contains?: Array<number[]>;
   ContainsCn?: Array<number[]>;
+  ExpiryTime?: Array<number | null>;
   EventBonusGlobal?: Array<number[]>;
   EventBonusCn?: Array<number[]>;
   ContainsGlobal?: Array<number[]>;

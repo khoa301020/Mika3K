@@ -81,7 +81,11 @@ export class HoYoLABRedeem {
     const users = await hoyolabApi.getAllOtherUsers(userId);
     if (!users) return;
     console.log(`Found ${users.length} other users. Redeeming...`);
+    if (users.length === 0) return;
     for (const user of users) {
+      if (!user || !user.hoyoUsers || user.hoyoUsers.length === 0)
+        continue;
+
       console.log(`Redeeming for ${user.userId}`);
       for (let index = 0; index < giftcodes.length; index++) {
         await hoyolabApi

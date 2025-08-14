@@ -103,7 +103,7 @@ class SearchNHentai {
     sort: INHentaiQuerySort = NHentaiConstants.NHENTAI_DEFAULT_SORT,
     interaction: CommandInteraction,
   ): Promise<any> {
-    await interaction.deferReply({ ephemeral: !(interaction.channel as TextChannel)?.nsfw ?? true });
+    await interaction.deferReply({ ephemeral: (interaction.channel as TextChannel)?.nsfw ?? true });
 
     const query: INHentaiQueryParam = {
       tag: tags?.toString().split('|'),
@@ -200,7 +200,7 @@ class SearchNHentai {
     type: ApplicationCommandType.Message,
   })
   async checkCodeContextMenu(interaction: MessageContextMenuCommandInteraction): Promise<any> {
-    await interaction.deferReply({ ephemeral: !(interaction.channel as TextChannel)?.nsfw });
+    await interaction.deferReply({ ephemeral: (interaction.channel as TextChannel)?.nsfw });
     const message: Message = await (interaction.channel as TextChannel).messages.fetch(interaction.targetId);
 
     const query = `${message.content} ${message.embeds.length > 0 && message.embeds.map((e) => e.title).join(' ')}`

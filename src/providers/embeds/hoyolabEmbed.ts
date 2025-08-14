@@ -18,7 +18,7 @@ export const HoYoLABInfoEmbed = (user: IHoYoLAB): EmbedBuilder => {
     .addFields(
       ...user.hoyoUsers.map(
         (account): APIEmbedField => ({
-          name: account.remark,
+          name: account.remark!,
           value: account.gameAccounts
             .map((gameAccount: IHoYoLABGameAccount) => {
               return `- [${gameAccount.game?.toUpperCase()}${gameAccount.game_uid}] ${gameAccount.nickname}`;
@@ -82,42 +82,35 @@ export const HoYoLABNoteEmbed = (
   switch (game) {
     case 'genshin':
       note = note as INoteGenshinData;
-      description = `- Daily Missions: ${note.finished_task_num}/${note.total_task_num}${
-        note.is_extra_task_reward_received ? ' ✅' : ''
-      }\n- Expedition: ${note.current_expedition_num}/${note.max_expedition_num}\n- Transformer: ${
-        !note.transformer.obtained
+      description = `- Daily Missions: ${note.finished_task_num}/${note.total_task_num}${note.is_extra_task_reward_received ? ' ✅' : ''
+        }\n- Expedition: ${note.current_expedition_num}/${note.max_expedition_num}\n- Transformer: ${!note.transformer.obtained
           ? "**Haven't obtained**"
           : note.transformer.recovery_time.reached
-          ? '**Ready**'
-          : `In **${note.transformer.recovery_time.Day ? `${note.transformer.recovery_time.Day}d ` : ''}${
-              note.transformer.recovery_time.Hour ? `${note.transformer.recovery_time.Hour}h ` : ''
-            }${note.transformer.recovery_time.Minute ? `${note.transformer.recovery_time.Minute}m ` : ''}${
-              note.transformer.recovery_time.Second ? `${note.transformer.recovery_time.Second}s ` : ''
+            ? '**Ready**'
+            : `In **${note.transformer.recovery_time.Day ? `${note.transformer.recovery_time.Day}d ` : ''}${note.transformer.recovery_time.Hour ? `${note.transformer.recovery_time.Hour}h ` : ''
+            }${note.transformer.recovery_time.Minute ? `${note.transformer.recovery_time.Minute}m ` : ''}${note.transformer.recovery_time.Second ? `${note.transformer.recovery_time.Second}s ` : ''
             }**`
-      }\n- Resin: ${note.current_resin}/${note.max_resin} - **${getRelativeTime(
-        parseInt(note.resin_recovery_time),
-      )}**\n- Serenitea Pot: ${note.current_home_coin}/${note.max_home_coin} - **${getRelativeTime(
-        parseInt(note.home_coin_recovery_time),
-      )}**`;
+        }\n- Resin: ${note.current_resin}/${note.max_resin} - **${getRelativeTime(
+          parseInt(note.resin_recovery_time),
+        )}**\n- Serenitea Pot: ${note.current_home_coin}/${note.max_home_coin} - **${getRelativeTime(
+          parseInt(note.home_coin_recovery_time),
+        )}**`;
       break;
     case 'hsr':
       note = note as INoteHSRData;
-      description = `- Daily Missions: ${note.current_train_score}/${note.max_train_score}\n- Simulated Universe: ${
-        note.current_rogue_score
-      }/${note.max_rogue_score}\n- Echo of War: ${note.weekly_cocoon_cnt}/${note.weekly_cocoon_limit}\n- Stamina: ${
-        note.current_stamina
-      }/${note.max_stamina} - **${getRelativeTime(note.stamina_recover_time)}**\n- Expedition: ${
-        note.expeditions.length === 0
+      description = `- Daily Missions: ${note.current_train_score}/${note.max_train_score}\n- Simulated Universe: ${note.current_rogue_score
+        }/${note.max_rogue_score}\n- Echo of War: ${note.weekly_cocoon_cnt}/${note.weekly_cocoon_limit}\n- Stamina: ${note.current_stamina
+        }/${note.max_stamina} - **${getRelativeTime(note.stamina_recover_time)}**\n- Expedition: ${note.expeditions.length === 0
           ? 'Currently no expedition'
           : '\n - ' +
-            note.expeditions
-              .map((expedition) => {
-                return `[*${expedition.status}*] ${expedition.name} - **${getRelativeTime(
-                  expedition.remaining_time,
-                )}**`;
-              })
-              .join('\n - ')
-      }`;
+          note.expeditions
+            .map((expedition) => {
+              return `[*${expedition.status}*] ${expedition.name} - **${getRelativeTime(
+                expedition.remaining_time,
+              )}**`;
+            })
+            .join('\n - ')
+        }`;
       break;
   }
 

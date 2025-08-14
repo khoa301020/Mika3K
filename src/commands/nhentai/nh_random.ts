@@ -11,7 +11,7 @@ class RandomNHentaiCode {
   @SlashGroup('nhentai')
   @Slash({ description: 'Random NHentai', name: 'random' })
   async randomNHentaiSlash(interaction: CommandInteraction): Promise<void | Message<boolean>> {
-    await interaction.deferReply({ ephemeral: !(interaction.channel as TextChannel)?.nsfw ?? true });
+    await interaction.deferReply({ ephemeral: (interaction.channel as TextChannel)?.nsfw ?? true });
     // const res = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_RANDOM_ENDPOINT);
     try {
       const data = await simulateNHentaiRequest(

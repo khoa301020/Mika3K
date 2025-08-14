@@ -31,7 +31,7 @@ export default class CheckNHentaiCode {
     code: string,
     interaction: CommandInteraction,
   ): Promise<void | Message<boolean>> {
-    await interaction.deferReply({ ephemeral: !(interaction.channel as TextChannel)?.nsfw ?? true });
+    await interaction.deferReply({ ephemeral: (interaction.channel as TextChannel)?.nsfw ?? true });
     try {
       const data = await simulateNHentaiRequest(NHentaiConstants.NHENTAI_GALLERY_ENDPOINT(code));
       if (!data) return await editOrReplyThenDelete(interaction, { content: '❌ Internal error' });

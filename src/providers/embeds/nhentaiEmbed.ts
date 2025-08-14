@@ -37,7 +37,7 @@ export const NHentaiEmbed = (nhentai: INHentai, author: User, page?: number, tot
       .setColor(color)
       .setTitle(
         `[${nhentai.id}] ${nhentai.title.japanese ? nhentai.title.japanese : nhentai.title.pretty}` +
-          ` ${discordTimestamp(nhentai.upload_date, 'RELATIVE_TIME')}`,
+        ` ${discordTimestamp(nhentai.upload_date, 'RELATIVE_TIME')}`,
       )
       .setURL(`${NHentaiConstants.NHENTAI_BASE_URL}/g/${nhentai.id}`)
       .setAuthor({

@@ -14,3 +14,8 @@ export type TDiscordTimestamp =
   | 'LONG_DATE'
   | 'SHORT_DATETIME'
   | 'LONG_DATETIME';
+
+export interface IDiscordPerks {
+  name: string;
+  uploadLimit: number; // in bytes
+}

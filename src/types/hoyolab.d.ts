@@ -1,18 +1,18 @@
 export interface IHoYoLAB {
   userId: string;
-  expiresAt?: Date;
+  expiresAt?: Date | null;
   hoyoUsers: Array<IHoYoLABUser>;
-  receiveNotify?: boolean;
+  receiveNotify?: boolean | null;
 }
 
 export interface IHoYoLABUser {
-  remark: string;
+  remark?: string | null;
   cookieString: string;
   gameAccounts: Array<IHoYoLABGameAccount>;
 }
 
 export class IHoYoLABGameAccount {
-  game?: THoyoGame;
+  game?: THoyoGame | null;
   game_biz: string;
   region: string;
   game_uid: string;

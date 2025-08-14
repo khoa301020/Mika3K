@@ -3,8 +3,10 @@ import { createHash, randomBytes } from 'crypto';
 import dayjs from 'dayjs';
 import {
   ButtonInteraction,
+  Channel,
   ChannelType,
   CommandInteraction,
+  InteractionEditReplyOptions,
   InteractionReplyOptions,
   InteractionResponse,
   Message,
@@ -19,13 +21,16 @@ import { BaseUserConfig, table } from 'table';
 import axios, { AxiosError } from 'axios';
 import timezone from 'dayjs/plugin/timezone.js'; // dependent on utc plugin
 import utc from 'dayjs/plugin/utc.js';
+import relativeTime from 'dayjs/plugin/relativeTime.js'
 import CommonConstants from '../constants/common.js';
 import { bot } from '../main.js';
 import { ErrorLogEmbed } from '../providers/embeds/commonEmbed.js';
 import { TDiscordTimestamp } from '../types/common.js';
+import { channel } from 'diagnostics_channel';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.extend(relativeTime);
 
 /**
  * Shuffles array in place using the Fisher-Yates algorithm.
@@ -265,11 +270,9 @@ export const getRelativeTime = (seconds: number) => {
   const minutes = Math.floor((seconds % (60 * 60)) / 60);
   const second = Math.floor(seconds % 60);
 
-  return `${days ? `${days.toString().padStart(2, '0')}d ` : ''}${
-    hours ? `${hours.toString().padStart(2, '0')}h ` : ''
-  }${minutes ? `${minutes.toString().padStart(2, '0')}m ` : ''}${
-    second ? `${second.toString().padStart(2, '0')}s` : ''
-  }`;
+  return `${days ? `${days.toString().padStart(2, '0')}d ` : ''}${hours ? `${hours.toString().padStart(2, '0')}h ` : ''
+    }${minutes ? `${minutes.toString().padStart(2, '0')}m ` : ''}${second ? `${second.toString().padStart(2, '0')}s` : ''
+    }`;
 };
 
 export const isEnded = (epoch: number): boolean => new Date().getTime() / 1000 >= epoch;
@@ -308,13 +311,13 @@ export async function editOrReplyThenDelete(
     | ModalSubmitInteraction
     | StringSelectMenuInteraction
     | Message,
-  options: string | InteractionReplyOptions | MessagePayload = '',
+  options: string | InteractionReplyOptions | InteractionEditReplyOptions | MessagePayload = '',
   delay = 5000,
 ): Promise<void> {
   let msg: Message;
   if (interaction instanceof Message) msg = await interaction.reply(options as string | MessagePayload);
-  else if (interaction.deferred) msg = await interaction.editReply(options);
-  else msg = await interaction.reply(options).then(async (res: InteractionResponse) => await res.fetch());
+  else if (interaction.deferred) msg = await interaction.editReply(options as InteractionEditReplyOptions);
+  else msg = await interaction.reply(options as InteractionReplyOptions).then(async (res: InteractionResponse) => await res.fetch());
 
   await timeout(delay);
 
@@ -365,19 +368,25 @@ export const isInstanceOfAny = (obj: any, types: any[]): boolean => types.some((
 
 export const errorHandler = (err: Error) => {
   if (process.env.BOT_ENV !== 'production') return console.error(err);
-  console.log(`[${getTime()}] ERROR: ${err.message}`);
+  // console.log(`[${getTime()}] ERROR: ${err.message}`);
+  console.log(err.stack);
 
   if (!process.env.LOG_CHANNEL_ID) {
     throw Error('Could not find LOG_CHANNEL_ID in your environment');
   }
-  const logChannel = bot.channels.cache.get(process.env.LOG_CHANNEL_ID);
+  const logChannel: Channel | undefined = bot.channels.cache.get(process.env.LOG_CHANNEL_ID);
 
   if (!logChannel?.isTextBased()) {
-    throw Error('Could not find log channel');
+    console.error(err);
+    // throw Error('Could not find log channel'); // TODO: Fix later
   }
-  logChannel.send({
-    embeds: [ErrorLogEmbed(err)],
-  });
+  if (!logChannel?.isDMBased()) {
+    console.error(err);
+    // throw Error('Log channel cannot be a DM channel'); // TODO: Fix later
+  }
+  // logChannel.send({
+  //   embeds: [ErrorLogEmbed(err)],
+  // });
 };
 
 export const getRandomInteger = (min: number, max: number) => Math.floor(Math.random() * (max - min)) + min;
@@ -392,3 +401,22 @@ export const average = (array: number[]) => array.reduce((a, b) => a + b) / arra
 
 export const formatString = (str: string, replacements: Array<string | number>) =>
   str.replace(/{(\d+)}/g, (match, number) => (replacements[number] ? replacements[number].toString() : match));
+
+// Convert number to a standardized string like 100.5K, 7.8M, etc.
+export const formatNumber = (num: number): string => {
+  if (num >= 1e9) return `${(num / 1e9).toFixed(1)}B`;
+  if (num >= 1e6) return `${(num / 1e6).toFixed(1)}M`;
+  if (num >= 1e3) return `${(num / 1e3).toFixed(1)}K`;
+  return num.toString();
+};
+
+export async function checkVideoSize(url: string): Promise<number> {
+  try {
+    const response = await axios.head(url);
+    const contentLength = response.headers['content-length'];
+    return contentLength ? parseInt(contentLength, 10) : 0;
+  } catch (error) {
+    console.error(`Error fetching video size for ${url}:`, error);
+    return 0;
+  }
+}

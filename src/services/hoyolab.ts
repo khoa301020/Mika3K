@@ -44,9 +44,9 @@ export const hoyolabApi = {
       }
     });
   },
-  getUserInfo: async (userId: string): Promise<HydratedDocument<IHoYoLAB> | null> =>
+  getUserInfo: async (userId: string): Promise<IHoYoLAB | null> =>
     await HoYoLAB.findOne({ userId }).lean(),
-  getAllOtherUsers: async (userIdToExclude: string): Promise<Array<HydratedDocument<IHoYoLAB>> | null> =>
+  getAllOtherUsers: async (userIdToExclude: string): Promise<Array<IHoYoLAB | null>> =>
     await HoYoLAB.find({ userId: { $ne: userIdToExclude } }).lean(),
   redeemCode: async (user: IHoYoLAB, target: THoyoGame, code: string): Promise<any> => {
     if (!user || !user.hoyoUsers || user.hoyoUsers.length === 0) throw '❌ Account data not found.';
@@ -58,7 +58,7 @@ export const hoyolabApi = {
       if (redeemAccounts.length === 0) continue;
 
       result.push({
-        remark: hoyoUser.remark,
+        remark: hoyoUser.remark!,
         accounts: [],
       });
 
@@ -122,8 +122,7 @@ export const hoyolabApi = {
     };
 
     return await axios.get(
-      `${HoYoLABConstants.HOYOLAB_NOTE_API(gameAccount.game!)}?server=${gameAccount.region}&role_id=${
-        gameAccount.game_uid
+      `${HoYoLABConstants.HOYOLAB_NOTE_API(gameAccount.game!)}?server=${gameAccount.region}&role_id=${gameAccount.game_uid
       }`,
       { headers },
     );

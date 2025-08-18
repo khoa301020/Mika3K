@@ -6,6 +6,7 @@ import {
   Channel,
   ChannelType,
   CommandInteraction,
+  DMChannel,
   InteractionEditReplyOptions,
   InteractionReplyOptions,
   InteractionResponse,
@@ -13,6 +14,7 @@ import {
   MessageContextMenuCommandInteraction,
   MessagePayload,
   ModalSubmitInteraction,
+  PartialGroupDMChannel,
   StringSelectMenuInteraction,
 } from 'discord.js';
 import QuickChart from 'quickchart-js';
@@ -26,7 +28,6 @@ import CommonConstants from '../constants/common.js';
 import { bot } from '../main.js';
 import { ErrorLogEmbed } from '../providers/embeds/commonEmbed.js';
 import { TDiscordTimestamp } from '../types/common.js';
-import { channel } from 'diagnostics_channel';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -368,26 +369,32 @@ export const isInstanceOfAny = (obj: any, types: any[]): boolean => types.some((
 
 export const errorHandler = (err: Error) => {
   if (process.env.BOT_ENV !== 'production') return console.error(err);
-  // console.log(`[${getTime()}] ERROR: ${err.message}`);
-  console.log(err.stack);
+  console.log(`[${getTime()}] ERROR: ${err.message}`);
 
   if (!process.env.LOG_CHANNEL_ID) {
-    throw Error('Could not find LOG_CHANNEL_ID in your environment');
+    console.log('Could not find LOG_CHANNEL_ID in your environment');
+    return console.error(err);
   }
   const logChannel: Channel | undefined = bot.channels.cache.get(process.env.LOG_CHANNEL_ID);
 
+  if (
+    logChannel instanceof DMChannel ||
+    logChannel instanceof PartialGroupDMChannel
+  ) return;
+
   if (!logChannel?.isTextBased()) {
-    console.error(err);
-    // throw Error('Could not find log channel'); // TODO: Fix later
+    console.log('Could not find log channel'); // TODO: Fix later
+    return console.error(err);
   }
   if (!logChannel?.isDMBased()) {
-    console.error(err);
-    // throw Error('Log channel cannot be a DM channel'); // TODO: Fix later
+    console.log('Log channel cannot be a DM channel'); // TODO: Fix later
+    return console.error(err);
   }
-  // logChannel.send({
-  //   embeds: [ErrorLogEmbed(err)],
-  // });
-};
+
+  logChannel.send({
+    embeds: [ErrorLogEmbed(err)],
+  });
+}
 
 export const getRandomInteger = (min: number, max: number) => Math.floor(Math.random() * (max - min)) + min;
 
@@ -419,4 +426,27 @@ export async function checkVideoSize(url: string): Promise<number> {
     console.error(`Error fetching video size for ${url}:`, error);
     return 0;
   }
+}
+
+export function filterObj<T extends object>(
+  obj: T,
+  f: (key: keyof T) => boolean
+): Partial<T> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([k]) => f(k as keyof T))
+  ) as Partial<T>;
+}
+
+export function select<T extends object, K extends keyof T>(
+  obj: T,
+  ...props: K[]
+): Pick<T, K> {
+  return filterObj(obj, k => props.includes(k as K)) as Pick<T, K>;
+}
+
+export function omit<T extends object, K extends keyof T>(
+  obj: T,
+  ...props: K[]
+): Omit<T, K> {
+  return filterObj(obj, k => !props.includes(k as K)) as Omit<T, K>;
 }

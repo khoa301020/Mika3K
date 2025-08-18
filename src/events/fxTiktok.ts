@@ -1,15 +1,16 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { AttachmentBuilder, MessagePayload, MessageReplyOptions } from 'discord.js';
+import dayjs from 'dayjs';
+import { AttachmentBuilder, Message, MessagePayload, MessageReplyOptions } from 'discord.js';
 import { ArgsOf, Discord, On } from 'discordx';
-import qs from 'qs';
 import { CommonConstants } from '../constants/index.js';
 import { FxSnsEmbed } from '../providers/embeds/FxSnsEmbed.js';
+import { IFxTiktokResponse, MediaAttachment } from '../types/fxtiktok.js';
 import { IFxEmbed } from '../types/snsEmbed.js';
-import { isTextBasedChannel } from '../utils/index.js';
+import { checkVideoSize, discordTimestamp, editOrReplyThenDelete, isTextBasedChannel } from '../utils/index.js';
 
 @Discord()
-export class FxTiktokEvents { //Currently disabled
+export class FxTiktokEvents {
   /**
    * Tiktok embed
    *
@@ -17,102 +18,107 @@ export class FxTiktokEvents { //Currently disabled
    * @memberof FxTiktokEvents
    *
    */
-  // @On({ event: 'messageCreate' })
-  // async FxTiktok([message]: ArgsOf<'messageCreate'>): Promise<void> {
-  //   if (!isTextBasedChannel(message.channel.type)) return;
-  //   if (
-  //     !message.content.match(CommonConstants.TIKTOK_URL_REGEX)?.length &&
-  //     !message.content.match(CommonConstants.TIKTOK_SHORT_URL_REGEX)?.length
-  //   )
-  //     return;
+  @On({ event: 'messageCreate' })
+  async FxTiktok([message]: ArgsOf<'messageCreate'>): Promise<void> {
+    if (!isTextBasedChannel(message.channel.type)) return;
+    if (message.author.bot) return;
 
-  //   let url =
-  //     message.content.match(CommonConstants.TIKTOK_URL_REGEX)?.shift() ??
-  //     message.content.match(CommonConstants.TIKTOK_SHORT_URL_REGEX)?.shift() ??
-  //     '';
+    let url =
+      message.content.match(CommonConstants.TIKTOK_URL_REGEX)?.shift() ??
+      message.content.match(CommonConstants.TIKTOK_SHORT_URL_REGEX)?.shift() ??
+      '';
 
-  //   await message.channel.sendTyping();
+    if (!url) return;
 
-  //   if (RegExp(CommonConstants.TIKTOK_SHORT_URL_REGEX).test(url)) {
-  //     url =
-  //       (await axios
-  //         .get(url, {
-  //           headers: {
-  //             'User-Agent': CommonConstants.BOT_USER_AGENT,
-  //           },
-  //         })
-  //         .then((res) => cheerio.load(res.data)('meta[property="og:url"]').attr('content')?.split('?').shift())) ?? '';
-  //   }
+    await message.channel.sendTyping();
 
-  //   const post = await axios
-  //     .get(
-  //       url
-  //         .replace('tiktok.com', 'vxtiktok.com')
-  //         .replace(/^(?!https?:\/\/)/, 'https://')
-  //         .replace('/photo/', '/video/'),
-  //       {
-  //         headers: {
-  //           'User-Agent': CommonConstants.BOT_USER_AGENT,
-  //         },
-  //       },
-  //     )
-  //     .then(async (res) => {
-  //       const $ = cheerio.load(res.data);
-  //       const oembed = qs.parse($('link[type="application/json+oembed"]').attr('href')!.split('?')[1]);
-  //       const videoUrl = $('meta[property="og:video"]').attr('content')!;
-  //       const post: IFxEmbed = {
-  //         source: 'Tiktok',
-  //         url: $('meta[property="og:url"]').attr('content')!,
-  //         title: decodeURIComponent(oembed.provider ? oembed.provider.toString() : oembed.text?.toString()!),
-  //         author: {
-  //           name: $('meta[name="twitter:title"]').attr('content') || $('meta[name="tiktok:title"]').attr('content')!,
-  //           url: $('meta[property="og:url"]').attr('content')!.split('/status')[0],
-  //         },
-  //         themeColor:
-  //           Number($('meta[property="theme-color"]').attr('content')?.replace('#', '0x')) ||
-  //           CommonConstants.DEFAULT_EMBED_COLOR,
-  //         description: $('meta[property="og:description"]').attr('content') || '',
-  //         image: $('meta[property="og:image"]').attr('content') || $('meta[name="tiktok:image"]').attr('content') || '',
-  //         icon: CommonConstants.TIKTOK_LOGO,
-  //       };
+    if (RegExp(CommonConstants.TIKTOK_SHORT_URL_REGEX).test(url)) {
+      url =
+        (await axios
+          .get(url, {
+            headers: {
+              'User-Agent': CommonConstants.BOT_USER_AGENT,
+            },
+          })
+          .then((res) => cheerio.load(res.data)('meta[property="og:url"]').attr('content')?.split('?').shift())) ?? '';
+    }
 
-  //       if ($('meta[property="og:url"]').attr('content'))
-  //         post.video = {
-  //           url: videoUrl,
-  //           width: parseInt($('meta[property="og:video:width"]').attr('content')!),
-  //           height: parseInt($('meta[property="og:video:height"]').attr('content')!),
-  //         };
+    if (!url || !RegExp(CommonConstants.TIKTOK_URL_REGEX).test(url))
+      return await fetchFailed(message, 'Invalid Tiktok URL');
 
-  //       return post;
-  //     })
-  //     .catch(() => null);
+    const postId = url.match(CommonConstants.TIKTOK_ID_REGEX)?.[1];
 
-  //   if (!post) return;
+    if (!postId)
+      return await fetchFailed(message, 'Invalid Tiktok URL (post ID not found)');
 
-  //   await message.suppressEmbeds(true);
+    const post: IFxTiktokResponse = (await axios.get(CommonConstants.FXTIKTOK_API(postId))).data;
 
-  //   let video;
+    if (!post)
+      return await fetchFailed(message, 'Tiktok post not found');
 
-  //   if (post.video)
-  //     if (post.video.url.includes('slideshow.mp4')) {
-  //       await axios.get(post.video.url, { headers: { 'User-Agent': CommonConstants.BOT_USER_AGENT } });
-  //       video = new AttachmentBuilder(`https://renders.vxtiktok.com/${post.video.url.split('/').pop()}.mp4`);
-  //     } else {
-  //       const buffer = await axios
-  //         .get(post.video.url, {
-  //           headers: { 'User-Agent': CommonConstants.BOT_USER_AGENT },
-  //           responseType: 'arraybuffer',
-  //         })
-  //         .then((res) => res.data);
-  //       video = new AttachmentBuilder(buffer, { name: 'video.mp4' });
-  //     }
+    if (post.visibility !== 'public')
+      return await fetchFailed(message, 'Tiktok post is not public');
 
-  //   const msg: string | MessagePayload | MessageReplyOptions = {
-  //     embeds: [FxSnsEmbed(post)],
-  //     allowedMentions: { repliedUser: false },
-  //     files: video ? [video] : [],
-  //   };
+    await message.suppressEmbeds(true);
 
-  //   await message.reply(msg);
-  // }
+    let videos: AttachmentBuilder[] = [];
+    let videoSizeLimitFlag = 0;
+
+    const imageUrls: string[] = post.media_attachments.map((media: MediaAttachment) => media.url);
+    const videoUrl: string | undefined = post.media_attachments.find((media: MediaAttachment) => media.type === 'video')?.url;
+
+    if (videoUrl) {
+      const videoSizeLimit = CommonConstants.DISCORD_PERKS[message.guild?.premiumTier || 0].uploadLimit;
+      const videoSize = await checkVideoSize(videoUrl); // Tiktok videos are usually single
+      const videoAttachment = videoSize <= videoSizeLimit ? new AttachmentBuilder(videoUrl) : null;
+
+      if (!videoAttachment) {
+        videoSizeLimitFlag++;
+      } else {
+        videoAttachment.setName(`tiktok-${postId}.mp4`);
+        videos.push(videoAttachment);
+      }
+    }
+
+    const convertedData: Partial<IFxEmbed> = convertToEmbed(post);
+    convertedData.images = imageUrls;
+
+    FxSnsEmbed(convertedData as IFxEmbed).forEach(async (embeds, index) => {
+      const msg: MessagePayload | MessageReplyOptions = {
+        content: videoSizeLimitFlag > 0 && !index ? '⚠️ Video size exceeds Discord limit, not included.' : '',
+        embeds: embeds,
+        allowedMentions: { repliedUser: false },
+        files: videos
+      };
+      await message.reply(msg);
+    })
+  }
+}
+
+async function fetchFailed(message: Message, content: string): Promise<void> {
+  return await editOrReplyThenDelete(message, {
+    content,
+    allowedMentions: { repliedUser: false },
+  });
+}
+
+function convertToEmbed(post: IFxTiktokResponse): Partial<IFxEmbed> {
+  const $ = cheerio.load(post.content);
+  const stats = $('b').text().trim();
+
+  $('b, br').remove();
+  const content = $('body').text().trim();
+
+  return {
+    themeColor: 0x69c9d0, // Tiktok brand color
+    url: post.url,
+    author: {
+      name: `${post.account.display_name} (@${post.account.username})${post.account.locked ? ' 🔒' : ''}`,
+      url: post.account.url,
+    },
+    thumbnail: post.account.avatar_static,
+    title: `${stats} 🕑 ${discordTimestamp(dayjs(post.created_at).unix(), 'RELATIVE_TIME')}`,
+    description: content,
+    icon: CommonConstants.TIKTOK_LOGO
+  }
 }

@@ -20,6 +20,7 @@ export class FxTwitterEvents {
   @On({ event: 'messageCreate' })
   async FxTwitter([message]: ArgsOf<'messageCreate'>): Promise<void> {
     if (!isTextBasedChannel(message.channel.type)) return;
+    if (message.author.bot) return;
     if (!message.content.match(CommonConstants.TWITTER_URL_REGEX)?.length) return;
 
     const [_, user, tweetid] = message.content.match(CommonConstants.TWITTER_URL_REGEX)?.filter(Boolean) || [];
@@ -45,8 +46,7 @@ export class FxTwitterEvents {
 
     // Size check for videos
     if (type === 'tweet' && convertedData.videos?.length) {
-      const guild = message.guild;
-      const videoSizeLimit = CommonConstants.DISCORD_PERKS[guild?.premiumTier || 0].uploadLimit;
+      const videoSizeLimit = CommonConstants.DISCORD_PERKS[message.guild?.premiumTier || 0].uploadLimit;
 
       // Check all video sizes in parallel
       const videoChecks = await Promise.all(
@@ -67,7 +67,7 @@ export class FxTwitterEvents {
 
     const msg: string | MessagePayload | MessageReplyOptions = {
       content: videoSizeLimitFlag > 0 ? `⚠️ ${videoSizeLimitFlag} video(s) were not included due to size limits.` : '',
-      embeds: FxSnsEmbed(convertedData),
+      embeds: FxSnsEmbed(convertedData).flat(),
       allowedMentions: { repliedUser: false },
       files: videos,
     };

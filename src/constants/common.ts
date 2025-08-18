@@ -15,6 +15,7 @@ export default class CommonConstants {
   public static readonly EMBED_FOOTER_TEXT_LIMIT = 2048;
   public static readonly EMBED_AUTHOR_NAME_LIMIT = 256;
   public static readonly EMBED_TOTAL_LIMIT = 6000;
+  public static readonly EMBED_IMAGE_LIMIT = 4;
   public static readonly EMBED_LIMIT_PER_MESSAGE = 10;
 
   public static readonly REGEX_NUM = /^\d+$/;
@@ -59,8 +60,11 @@ export default class CommonConstants {
     `https://api.fxtwitter.com/${user || ''}${tweetId ? `/status/${tweetId}` : ''}`;
   public static readonly TWITTER_LOGO =
     'https://about.twitter.com/content/dam/about-twitter/x/brand-toolkit/logo-black.png.twimg.1920.png';
-  public static readonly TIKTOK_URL_REGEX = /(https:\/\/|^)((\w|\d)+\.)?tiktok\.com\/.+?\/video\/\d+/g;
-  public static readonly TIKTOK_SHORT_URL_REGEX = /(https:\/\/|^)((\w|\d)+\.)?tiktok\.com\/[\w\d]+\/?$/g;
+  public static readonly TIKTOK_URL_REGEX = /(https:\/\/|^)((\w|\d)+\.)?tiktok\.com\/.+?\/(video|photo)\/\d+/g;
+  public static readonly TIKTOK_ID_REGEX = /tiktok\.com\/@[^/]*\/(?:video|photo)\/(\d+)(?=[/?#]|$)/;
+  public static readonly TIKTOK_SHORT_URL_REGEX = /(https:\/\/|^)((\w|\d)+\.)?tiktok\.com\/[\w\d\-]+\/?$/g;
+  public static readonly FXTIKTOK_API = (id?: string) =>
+    `https://offload.tnktok.com/api/v1/statuses/${id}`;
   public static readonly TIKTOK_LOGO = 'https://img.freepik.com/premium-vector/tik-tok-logo_578229-290.jpg';
   public static readonly DISCORD_TIMESTAMP_TYPE: { [key in TDiscordTimestamp]: string } = {
     DEFAULT: '',

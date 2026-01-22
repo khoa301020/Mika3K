@@ -65,7 +65,7 @@ export const authApi = {
   },
   refreshToken: async (userId: string): Promise<any> => {
     const user = await MAL.findOne({ userId }).select('refreshToken expiresAt');
-    if (!user || new Date().getTime() <= new Date(user!.expiresAt).getTime()) return null;
+    if (!user || new Date().getTime() <= new Date(user.expiresAt ?? 0).getTime()) return null;
 
     const response: AxiosResponse = await axios({
       method: 'POST',
@@ -102,16 +102,16 @@ export const userApi = {
   getMyAnimeList: async (userId: string, params: any): Promise<AxiosResponse> => {
     let user = await MAL.findOne({ userId }).select('accessToken expiresAt');
     if (!user) throw new Error('User not found, please login.');
-    if (new Date().getTime() > new Date(user!.expiresAt).getTime()) user = await authApi.refreshToken(userId);
+    if (new Date().getTime() > new Date(user!.expiresAt ?? 0).getTime()) user = await authApi.refreshToken(userId);
     const query = qs.stringify(params);
     return await axios.get(`${MALConstants.MAL_API}/users/@me/animelist?${query}`, {
       headers: { Authorization: `Bearer ${user?.accessToken}` },
     });
   },
   getMyMangaList: async (userId: string, params: any): Promise<AxiosResponse> => {
-    let user = await MAL.findOne({ userId }).select('accessToken');
+    let user = await MAL.findOne({ userId }).select('accessToken expiresAt');
     if (!user) throw new Error('User not found, please login.');
-    if (new Date().getTime() <= new Date(user!.expiresAt).getTime()) user = await authApi.refreshToken(userId);
+    if (new Date().getTime() > new Date(user!.expiresAt ?? 0).getTime()) user = await authApi.refreshToken(userId);
     const query = qs.stringify(params);
     return await axios.get(`${MALConstants.MAL_API}/users/@me/mangalist?${query}`, {
       headers: { Authorization: `Bearer ${user?.accessToken}` },

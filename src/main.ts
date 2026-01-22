@@ -45,7 +45,7 @@ await mongoose.connect(mongoUri!).then(async () => {
   console.log('MongoDB connected');
 });
 
-bot.once('ready', async () => {
+bot.once('clientReady', async () => {
   // Make sure all guilds are cached
   await bot.guilds.fetch();
 

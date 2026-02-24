@@ -5,7 +5,7 @@ FROM node:lts-alpine as build-runner
 WORKDIR /tmp/app
 
 # Move package.json
-COPY package.json .
+COPY package.json ./
 
 # Update npm
 RUN npm install -g npm@latest
@@ -15,7 +15,7 @@ RUN npm install
 
 # Move source files
 COPY src ./src
-COPY tsconfig.json   .
+COPY nest-cli.json tsconfig.build.json tsconfig.json ./
 
 # Build project
 RUN npm run build
@@ -26,8 +26,8 @@ FROM node:lts-alpine as prod-runner
 # Set work directory
 WORKDIR /app
 
-# Copy package.json from build-runner
-COPY --from=build-runner /tmp/app/package.json /app/package.json
+# Copy package.json
+COPY --from=build-runner /tmp/app/package.json ./
 
 # Update npm
 RUN npm install -g npm@latest
@@ -36,7 +36,7 @@ RUN npm install -g npm@latest
 RUN npm install --omit=dev
 
 # Move build files
-COPY --from=build-runner /tmp/app/build /app/build
+COPY --from=build-runner /tmp/app/dist ./dist
 
 # Start bot
-CMD [ "npm", "run", "start" ]
+CMD [ "node", "dist/main.js" ]

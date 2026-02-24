@@ -1,118 +1,106 @@
 # Introduction
 
-My multi-purposes self-use discord bot created with [Discordx](https://discordx.js.org/docs/discordx/getting-started).
+My multi-purposes self-use discord bot, rewritten in **NestJS** and **Necord**.
 
 Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 # Commands
 
 ## MyAnimeList
 
-|   Group   | Feature                                                                                                 | Context menu | Message command |      Slash command      |
-|:---------:|----------------------------------------------------------------------------------------------------------|:------------:|:---------------:|:-----------------------:|
-|   Anime   | Search anime (with `show characters`, `show episodes`, `show staffs`, `show themes` & `show statistics`) |      :x:     |       :x:       |   `/mal anime search`   |
-|   Manga   | Search manga (with `show characters` & `show statistics`)                                                |      :x:     |       :x:       | `/mal manga search`     |
-| Character | Search character                                                                                         |      :x:     |       :x:       | `/mal character search` |
-|   People  | Search people                                                                                            |      :x:     |       :x:       | `/mal people search`    |
+|   Group   | Feature                                                                                                 | Context menu |    Prefix command       |
+|:---------:|----------------------------------------------------------------------------------------------------------|:------------:|:-----------------------:|
+|   Anime   | Search anime (with `show characters`, `show episodes`, `show staffs`, `show themes` & `show statistics`) |      :x:     |   `.mal anime search`   |
+|   Manga   | Search manga (with `show characters` & `show statistics`)                                                |      :x:     | `.mal manga search`     |
+| Character | Search character                                                                                         |      :x:     | `.mal character search` |
+|   People  | Search people                                                                                            |      :x:     | `.mal people search`    |
 
 ## Blue Archive
 
-| Feature                                                                                        | Context menu |    Message command    |       Slash command      |
-|------------------------------------------------------------------------------------------------|:------------:|:---------------------:|:------------------------:|
-| Check server status                                                                            |      :x:     |          :x:          | `/buruaka server-status` |
-| Search student (with `show profile`, `show stats`, `show skills`, `show weapon` & `show gear`) |      :x:     |          :x:          |    `/buruaka student`    |
-| Search raid                                                                                    |      :x:     |          :x:          |      `/buruaka raid`     |
-| SchaleDB update notify                                                                         |      :x:     | `$bant` / `$banotify` |            :x:           |
+| Feature                                                                                        | Context menu |      Prefix command      |
+|------------------------------------------------------------------------------------------------|:------------:|:------------------------:|
+| Check server status                                                                            |      :x:     | `.buruaka server-status` |
+| Search student (with `show profile`, `show stats`, `show skills`, `show weapon` & `show gear`) |      :x:     |    `.buruaka student`    |
+| Search raid                                                                                    |      :x:     |      `.buruaka raid`     |
+| SchaleDB update notify                                                                         |      :x:     |          `.bant`         |
 
 ## NHentai
 
-|     Feature    |     Context menu     |     Message command    |    Slash command   |
-|:--------------:|:--------------------:|:----------------------:|:------------------:|
-| Check nuke     |          :x:         |   `$nh` / `$nhentai`   |  `/nhentai check`  |
-| Search nuke    |  :heavy_check_mark:  |  `$nhs` / `$nhsearch`  |  `/nhentai search` |
-| Random nuke    |          :x:         | `$nhrd` / `$nhrandom`  |  `/nhentai random` |
-| Set autoview   |          :x:         | `$nha` / `$nhautoview` |  `/nhentai random` |
-| Autoview nuke  |          :x:         |          :x:           |         :x:        |
+|     Feature    |     Context menu     |    Prefix command  |
+|:--------------:|:--------------------:|:------------------:|
+| Check nuke     |          :x:         |  `.nhentai check`  |
+| Search nuke    |  :heavy_check_mark:  |  `.nhentai search` |
+| Random nuke    |          :x:         |  `.nhentai random` |
+| Set autoview   |          :x:         |  `.nh-autoview`    |
 
 ## Syosetu
 
-|         Feature        | Context menu |    Message command    |    Slash command   |
-|:----------------------:|:------------:|:---------------------:|:------------------:|
-|     Search novels      |      :x:     |          :x:          |  `/syosetu search` |
-|      List genres       |      :x:     |          :x:          |  `/syosetu genres` |
-| Follow/unfollow novel  |      :x:     |          :x:          |  `/syosetu follow` |
+|         Feature        | Context menu |    Prefix command  |
+|:----------------------:|:------------:|:------------------:|
+|     Search novels      |      :x:     |  `.syosetu search` |
+|      List genres       |      :x:     |  `.syosetu genres` |
+| Follow/unfollow novel  |      :x:     |  `.syosetu follow` |
 
 ## HoYoLAB
 
-|                  Feature                 | Context menu | Message command |       Slash command        |
-|:----------------------------------------:|:------------:|:---------------:|:--------------------------:|
-| My info                                  |      :x:     |       :x:       |       `/hoyolab info`      |
-| Get note (current status)                |      :x:     |       :x:       |       `/hoyolab note`      |
-| Save token (with account selection)      |      :x:     |       :x:       |    `/hoyolab save-token`   |
-| Redeem giftcode                          |      :x:     |       :x:       | `/hoyolab redeem-giftcode` |
-| Delete remark user                       |      :x:     |       :x:       |  `/hoyolab delete-remark`  |
-| Auto claim daily                         |      :x:     |       :x:       |             :x:            |
+|                  Feature                 | Context menu |       Prefix command       |
+|:----------------------------------------:|:------------:|:--------------------------:|
+| My info                                  |      :x:     |       `.hoyolab info`      |
+| Get note (current status)                |      :x:     |       `.hoyolab note`      |
+| Save token (with account selection)      |      :x:     |    `.hoyolab save-token`   |
+| Redeem giftcode                          |      :x:     | `.hoyolab redeem-giftcode` |
+| Delete remark user                       |      :x:     |  `.hoyolab delete-remark`  |
 
 ## Quote
 
-|    Feature    |    Context menu    |      Message command     |   Slash command  |
-|:-------------:|:------------------:|:------------------------:|:----------------:|
-| Create quote  | :heavy_check_mark: |   `$$` / `$createquote`  |  `/quote create` |
-| Get quote     |         :x:        |    `$$$` / `$getquote`   |   `/quote get`   |
-| Edit quote    |         :x:        |   `$eq` / `$editquote`   |   `/quote edit`  |
-| Delete quote  |         :x:        |  `$dq` / `$deletequote`  |  `/quote delete` |
-| List quotes   |         :x:        |   `$lq` / `$listquotes`  |   `/quote list`  |
-| My quotes     |         :x:        |    `$mq` / `$myquotes`   |   `/quote mine`  |
-| Publish quote |         :x:        | `$plq` / `$publishquote` | `/quote publish` |
-| Private quote |         :x:        | `$prq` / `$privatequote` | `/quote private` |
+|    Feature    |    Context menu    |   Prefix command |
+|:-------------:|:------------------:|:----------------:|
+| Create quote  | :heavy_check_mark: |  `.quote create` |
+| Get quote     |         :x:        |   `.quote get`   |
+| Edit quote    |         :x:        |   `.quote edit`  |
+| Delete quote  |         :x:        |  `.quote delete` |
+| List quotes   |         :x:        |   `.quote list`  |
+| My quotes     |         :x:        |   `.quote mine`  |
+| Publish quote |         :x:        | `.quote publish` |
+| Private quote |         :x:        | `.quote private` |
 
 ## Minigames
 
-|                Feature                | Context menu |     Message command     |       Slash command       |
-|:-------------------------------------:|:------------:|:-----------------------:|:-------------------------:|
-| Play jankenpon (rock, scissor, paper) |      :x:     |  `$jkp` / `$jankenpon`  |   `/minigame jankenpon`   |
-
+|                Feature                | Context menu |       Prefix command      |
+|:-------------------------------------:|:------------:|:-------------------------:|
+| Play jankenpon (rock, scissor, paper) |      :x:     |   `.minigame jankenpon`   |
 
 ## Misc
 
-|        Feature        |    Context menu    |     Message command    |     Slash command     |
-|:---------------------:|:------------------:|:----------------------:|:---------------------:|
-| Check user info       | :heavy_check_mark: | `$info` / `$userinfo`  |     `/check-info`     |
-| SauceNAO              | :heavy_check_mark: |  `$sn` / `$saucenao`   |      `/saucenao`      |
-| Math                  |         :x:        |     `$m` / `$math`     |     `/math`           |
-| Currency exchange     |         :x:        |     `$ce` / `$curr`    | `/currency-exchange`  |
-| Pick options          |         :x:        |     `$p` / `$pick`     |          :x:          |
-| Twitter embed support |         :x:        |           :x:          |          :x:          |
-| Tiktok embed support  |         :x:        |           :x:          |          :x:          |
+|        Feature        |    Context menu    |     Prefix command    |
+|:---------------------:|:------------------:|:---------------------:|
+| Check user info       | :heavy_check_mark: |     `.check-info`     |
+| SauceNAO              | :heavy_check_mark: |      `.saucenao`      |
+| Math                  |         :x:        |     `.math`           |
+| Currency exchange     |         :x:        | `.currency-exchange`  |
+| Twitter embed support |         :x:        |          :x:          |
+| Tiktok/Pixiv autoview |         :x:        |          :x:          |
+| Help Menu             |         :x:        |        `.help`        |
 
 # Resources
 
-<!-- - NHentai API by [paukuman/Nhentai-Modules](https://github.com/paukuman/Nhentai-Modules) -->
-- MyAnimeList API by [Jikan](https://github.com/jikan-me/jikan), typings from [@shineiichijo/marika](https://github.com/LuckyYam/Marika)
+- MyAnimeList API by [Jikan](https://github.com/jikan-me/jikan)
 - Blue Archive data from [@lonqie/SchaleDB](https://github.com/lonqie/SchaleDB)
+- Pixiv API integration via HibiAPI
 
 # Dependencies
 
-- [QS](https://github.com/ljharb/qs)
+- [NestJS](https://nestjs.com)
+- [Necord](https://necord.org)
+- [Discord.js](https://discord.js.org)
+- [Mongoose](https://mongoosejs.com)
 - [Axios](https://axios-http.com)
 - [Day.js](https://day.js.org)
-- [Table](https://github.com/gajus/table)
-- [Cheerio](https://cheerio.js.org)
-- [Mongoose](https://mongoosejs.com)
-- [Node-cron](https://github.com/kelektiv/node-cron)
-- [Node-cache](https://github.com/node-cache/node-cache)
-- [Html-Entities](https://github.com/mdevils/html-entities)
-- [Quickchart-JS](https://github.com/typpo/quickchart-js)
 
-# Documentations
-
-- [Discord.js](https://discordx.js.org/docs/discordx/getting-started)
-- [Discordx examples](https://github.com/discordx-ts/discordx/tree/main/packages/discordx/examples)
-
-## License
+# License
 
 MIT License
 
-Copyright (c) 2023 Nguyen Tran Anh Khoa
+Copyright (c) 2023-2026 Nguyen Tran Anh Khoa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -1,5 +1,15 @@
 ## Untagged
 
+- Refactor: [Common] Full rewrite of Mika3K bot to NestJS architecture (v2) ([ee5f83](https://github.com/khoa301020/Mika3K/commit/ee5f83dbb548b52a431b2805902de7d5175ea502))
+- Fix: [MAL] Dep Update ([bee2f7](https://github.com/khoa301020/Mika3K/commit/bee2f712fb7daeade3ff1511975e4215eb5e0219))
+- Fix: [FxTiktok] Revive the FxTiktok ([0e233e](https://github.com/khoa301020/Mika3K/commit/0e233ee4da64a05340e6d2207d7fbb2c432832d8))
+- Fix: [FxTwitter] Upgrade to latest Discord API ([5dc640](https://github.com/khoa301020/Mika3K/commit/5dc64058d56e84c2d36a6e92f7e827aa17dc54c3))
+- Change: [NHentai] Remove NHentai cookie refresh cron ([47f3b0](https://github.com/khoa301020/Mika3K/commit/47f3b0b68486f2eac0a578bb47a8dab2842edd46))
+- Fix: [Common] Cache currency sometimes not works ([31639c](https://github.com/khoa301020/Mika3K/commit/31639cc8d64a7883888cb5e9a4897209526e155f))
+- Update: Add TSA Skill info ([813bb9](https://github.com/khoa301020/Mika3K/commit/813bb91093b81dc95e9c6ba1dba1e3d59e72996d))
+- Fix: [FxTwitter/FxTiktok] Suppress embed if fix found, and only exec 1 url ([7f7a41](https://github.com/khoa301020/Mika3K/commit/7f7a41f485f65bea549a7009b2364c973f0ac415))
+- Feature: [Common] Tiktok video embed support ([6caef3](https://github.com/khoa301020/Mika3K/commit/6caef38106a72cec8744d9a7e0e9a7d6b91a7145))
+- Feature: [Common] Tiktok video embed support ([ca93ac](https://github.com/khoa301020/Mika3K/commit/ca93acfe071499fca0ac8778123dfe79e3e98108))
 - Update: [NHentai] Bypass Cloudflare ([aefd5d](https://github.com/khoa301020/Mika3K/commit/aefd5d038ca2ce8eb63089d781e34793dd711d08))
 - Update: [Common] Support video(s) for Twitter embed ([780059](https://github.com/khoa301020/Mika3K/commit/78005930ebed363da0cea7b8b47db37df1c48fc3))
 - Feature: [Common] Twitter embed support ([d43c62](https://github.com/khoa301020/Mika3K/commit/d43c62bcb8cf5d4b4b4db662ca5a9e8ffadefad3))

@@ -8,6 +8,7 @@ package-lock.json
 # folders
 build
 node_modules
+dist
 
 # yarn
 .yarn/*
@@ -16,4 +17,4 @@ yarn.lock
 yarn-error.log
 
 # bun
-bun.lockb
+bun.lock*

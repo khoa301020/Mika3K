@@ -104,7 +104,7 @@ export class MiscService {
           value: value
             .map(
               (e: string) =>
-                `- [${REGEX_DOMAIN_NAME_ONLY.exec(e)?.[1] ?? 'link'}](${e})`,
+                `- [${e.match(REGEX_DOMAIN_NAME_ONLY)?.[1] ?? 'link'}](${e})`,
             )
             .join('\n'),
         };

@@ -368,39 +368,13 @@ export class BaService implements OnModuleInit {
 
   // --- Skill transformation ---
 
-  static transformStudentSkillStat(
-    skill: StudentSkill | SummonSkill,
+  private static applyBuffLocalization(
+    desc: string | undefined,
     localization?: ILocalization,
   ) {
-    skill.Name = decode(skill.Name).replace(C.REGEX_HTML_TAG, '');
-    skill.Desc = decode(
-      skill.Desc?.replace(
-        C.REGEX_PARAMETERS_REPLACEMENT,
-        (_match: string, key: string) => {
-          let isNumeric = true;
-          let parameters: string[] | undefined;
-          if (skill.SkillType === 'ex')
-            parameters = skill.Parameters?.[parseInt(key) - 1]?.filter(
-              (_: any, idx: number) => idx === 0 || idx === 2 || idx === 4,
-            );
-          else
-            parameters = skill.Parameters?.[parseInt(key) - 1]?.filter(
-              (_: any, idx: number) =>
-                idx === 0 || idx === 3 || idx === 6 || idx === 9,
-            );
-          if (parameters && !parameters[0]) {
-            isNumeric = false;
-            parameters = parameters.map((p: string) =>
-              !p ? 'No effect' : p.trim(),
-            );
-          }
-          return parameters
-            ? isNumeric
-              ? parameters.join('/')
-              : ` + (${parameters.join('/')})`
-            : _match;
-        },
-      )
+    if (!desc) return '';
+    return decode(
+      desc
         .replace(
           C.REGEX_BUFF_REPLACEMENT,
           (_m: string, k: string) => localization?.BuffName['Buff_' + k] ?? _m,
@@ -421,6 +395,41 @@ export class BaService implements OnModuleInit {
         )
         .replace(C.REGEX_HTML_TAG, ''),
     );
+  }
+
+  static transformStudentSkillStat(
+    skill: StudentSkill | SummonSkill,
+    localization?: ILocalization,
+  ) {
+    skill.Name = decode(skill.Name).replace(C.REGEX_HTML_TAG, '');
+    const preProcessed = skill.Desc?.replace(
+      C.REGEX_PARAMETERS_REPLACEMENT,
+      (_match: string, key: string) => {
+        let isNumeric = true;
+        let parameters: string[] | undefined;
+        if (skill.SkillType === 'ex')
+          parameters = skill.Parameters?.[parseInt(key) - 1]?.filter(
+            (_: any, idx: number) => idx === 0 || idx === 2 || idx === 4,
+          );
+        else
+          parameters = skill.Parameters?.[parseInt(key) - 1]?.filter(
+            (_: any, idx: number) =>
+              idx === 0 || idx === 3 || idx === 6 || idx === 9,
+          );
+        if (parameters && !parameters[0]) {
+          isNumeric = false;
+          parameters = parameters.map((p: string) =>
+            !p ? 'No effect' : p.trim(),
+          );
+        }
+        return parameters
+          ? isNumeric
+            ? parameters.join('/')
+            : ` + (${parameters.join('/')})`
+          : _match;
+      },
+    );
+    skill.Desc = this.applyBuffLocalization(preProcessed, localization);
     return skill;
   }
 
@@ -430,32 +439,11 @@ export class BaService implements OnModuleInit {
     localization?: ILocalization,
   ) {
     skill.Name = `[${skill.SkillType}] ${decode(skill.Name).replace(C.REGEX_HTML_TAG, '')}${skill.ATGCost > 0 ? ` \`ATG: ${skill.ATGCost}\`` : ''}`;
-    skill.Desc = decode(
-      skill.Desc?.replace(
-        C.REGEX_PARAMETERS_REPLACEMENT,
-        (_m: string, k: string) =>
-          skill.Parameters![parseInt(k) - 1][difficulty],
-      )
-        .replace(
-          C.REGEX_BUFF_REPLACEMENT,
-          (_m: string, k: string) => localization?.BuffName['Buff_' + k] ?? _m,
-        )
-        .replace(
-          C.REGEX_DEBUFF_REPLACEMENT,
-          (_m: string, k: string) =>
-            localization?.BuffName['Debuff_' + k] ?? _m,
-        )
-        .replace(
-          C.REGEX_SPECIAL_REPLACEMENT,
-          (_m: string, k: string) =>
-            localization?.BuffName['Special_' + k] ?? _m,
-        )
-        .replace(
-          C.REGEX_CC_REPLACEMENT,
-          (_m: string, k: string) => localization?.BuffName['CC_' + k] ?? _m,
-        )
-        .replace(C.REGEX_HTML_TAG, ''),
+    const preProcessed = skill.Desc?.replace(
+      C.REGEX_PARAMETERS_REPLACEMENT,
+      (_m: string, k: string) => skill.Parameters![parseInt(k) - 1][difficulty],
     );
+    skill.Desc = this.applyBuffLocalization(preProcessed, localization);
     return skill;
   }
 }

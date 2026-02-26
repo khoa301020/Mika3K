@@ -12,7 +12,6 @@ import type {
   UserCommandContext,
   MessageCommandContext,
 } from 'necord';
-import type { GuildMember } from 'discord.js';
 import { AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { MiscService } from './misc.service';
 import { MiscEmbeds } from './misc.embeds';
@@ -128,8 +127,8 @@ export class MiscCommands {
     @Options() dto: CheckInfoDto,
   ) {
     const targetUser = dto.user ?? interaction.user;
-    const member = await interaction.guild!.members
-      .fetch(targetUser.id)
+    const member = await interaction
+      .guild!.members.fetch(targetUser.id)
       .catch(() => null);
     if (!member)
       return interaction.reply({
@@ -198,6 +197,48 @@ export class MiscCommands {
 
   // --- SauceNAO ---
 
+  private async handleSaucenaoResult(
+    interaction: any,
+    imageUrl: string,
+    isEphemeral: boolean,
+  ) {
+    const data = await this.miscService.searchSaucenao(imageUrl);
+
+    if (data.header?.status !== 0) {
+      return interaction.editReply({
+        content: `❌ ${data.header?.message ?? 'Search failed'}`,
+      });
+    }
+
+    const results = this.miscService.filterSaucenaoResults(data);
+    if (!results) {
+      return interaction.editReply({
+        content: '❌ No results found or similarity too low.',
+      });
+    }
+
+    if (results.length === 1) {
+      return interaction.editReply({
+        embeds: [this.miscEmbeds.saucenaoResult(interaction.user, results[0])],
+      });
+    }
+
+    const pages = results.map((result: any, i: number) => ({
+      embeds: [
+        this.miscEmbeds.saucenaoResult(
+          interaction.user,
+          result,
+          i + 1,
+          results.length,
+        ),
+      ],
+    }));
+
+    return this.paginationService.paginate(interaction, pages, {
+      ephemeral: isEphemeral,
+    });
+  }
+
   @SlashCommand({ name: 'saucenao', description: 'SauceNAO image search' })
   async saucenao(
     @Context() [interaction]: SlashCommandContext,
@@ -221,41 +262,7 @@ export class MiscCommands {
     });
 
     const imageUrl = dto.url ?? dto.attachment?.url;
-    const data = await this.miscService.searchSaucenao(imageUrl);
-
-    if (data.header?.status !== 0) {
-      return interaction.editReply({
-        content: `❌ ${data.header?.message ?? 'Search failed'}`,
-      });
-    }
-
-    const results = this.miscService.filterSaucenaoResults(data);
-    if (!results) {
-      return interaction.editReply({
-        content: '❌ No results found or similarity too low.',
-      });
-    }
-
-    if (results.length === 1) {
-      return interaction.editReply({
-        embeds: [this.miscEmbeds.saucenaoResult(interaction.user, results[0])],
-      });
-    }
-
-    const pages = results.map((result, i) => ({
-      embeds: [
-        this.miscEmbeds.saucenaoResult(
-          interaction.user,
-          result,
-          i + 1,
-          results.length,
-        ),
-      ],
-    }));
-
-    return this.paginationService.paginate(interaction, pages, {
-      ephemeral: !dto.isPublic,
-    });
+    return this.handleSaucenaoResult(interaction, imageUrl, !dto.isPublic);
   }
 
   @MessageCommand({ name: 'Search SauceNAO' })
@@ -264,7 +271,7 @@ export class MiscCommands {
 
     const message = interaction.targetMessage;
     let imageUrl = message.content;
-    const attachments = message.attachments.map((a) => a.url);
+    const attachments = message.attachments.map((a: any) => a.url);
     if (attachments.length > 0) imageUrl = attachments[0];
 
     if (!imageUrl) {
@@ -273,41 +280,7 @@ export class MiscCommands {
       });
     }
 
-    const data = await this.miscService.searchSaucenao(imageUrl);
-
-    if (data.header?.status !== 0) {
-      return interaction.editReply({
-        content: `❌ ${data.header?.message ?? 'Search failed'}`,
-      });
-    }
-
-    const results = this.miscService.filterSaucenaoResults(data);
-    if (!results) {
-      return interaction.editReply({
-        content: '❌ No results found or similarity too low.',
-      });
-    }
-
-    if (results.length === 1) {
-      return interaction.editReply({
-        embeds: [this.miscEmbeds.saucenaoResult(interaction.user, results[0])],
-      });
-    }
-
-    const pages = results.map((result, i) => ({
-      embeds: [
-        this.miscEmbeds.saucenaoResult(
-          interaction.user,
-          result,
-          i + 1,
-          results.length,
-        ),
-      ],
-    }));
-
-    return this.paginationService.paginate(interaction, pages, {
-      ephemeral: false,
-    });
+    return this.handleSaucenaoResult(interaction, imageUrl, false);
   }
 
   @SlashCommand({ name: 'help', description: 'List all available commands' })

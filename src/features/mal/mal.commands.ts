@@ -161,8 +161,9 @@ export class MalCommands {
 
   // --- Anime Button Handlers ---
 
-  @Button('animeCharacters')
-  async animeCharactersBtn(@Context() [interaction]: [ButtonInteraction]) {
+  private async extractEntityIdFromEmbed(
+    interaction: ButtonInteraction,
+  ): Promise<{ malId: string | undefined; isEphemeral: boolean }> {
     const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
     await interaction.deferReply({
       flags: isEphemeral ? [MessageFlags.Ephemeral] : [],
@@ -170,8 +171,17 @@ export class MalCommands {
     const malId = interaction.message.embeds[0]?.data?.title?.match(
       C.REGEX_GET_ID,
     )?.[1];
-    if (!malId)
-      return interaction.editReply({ content: '❌ Could not extract ID.' });
+    if (!malId) {
+      await interaction.editReply({ content: '❌ Could not extract ID.' });
+    }
+    return { malId, isEphemeral };
+  }
+
+  @Button('animeCharacters')
+  async animeCharactersBtn(@Context() [interaction]: [ButtonInteraction]) {
+    const { malId, isEphemeral } =
+      await this.extractEntityIdFromEmbed(interaction);
+    if (!malId) return;
     try {
       const res = await this.malService.animeCharacters(malId);
       if (!res.data || res.data.length === 0)
@@ -199,15 +209,9 @@ export class MalCommands {
 
   @Button('animeEpisodes')
   async animeEpisodesBtn(@Context() [interaction]: [ButtonInteraction]) {
-    const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
-    await interaction.deferReply({
-      flags: isEphemeral ? [MessageFlags.Ephemeral] : [],
-    });
-    const malId = interaction.message.embeds[0]?.data?.title?.match(
-      C.REGEX_GET_ID,
-    )?.[1];
-    if (!malId)
-      return interaction.editReply({ content: '❌ Could not extract ID.' });
+    const { malId, isEphemeral } =
+      await this.extractEntityIdFromEmbed(interaction);
+    if (!malId) return;
     try {
       const episodes: IAnimeEpisode[] =
         await this.malService.animeEpisodes(malId);
@@ -234,15 +238,8 @@ export class MalCommands {
 
   @Button('animeThemes')
   async animeThemesBtn(@Context() [interaction]: [ButtonInteraction]) {
-    const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
-    await interaction.deferReply({
-      flags: isEphemeral ? [MessageFlags.Ephemeral] : [],
-    });
-    const malId = interaction.message.embeds[0]?.data?.title?.match(
-      C.REGEX_GET_ID,
-    )?.[1];
-    if (!malId)
-      return interaction.editReply({ content: '❌ Could not extract ID.' });
+    const { malId } = await this.extractEntityIdFromEmbed(interaction);
+    if (!malId) return;
     try {
       const res = await this.malService.animeThemes(malId);
       const themes = res.data;
@@ -259,15 +256,9 @@ export class MalCommands {
 
   @Button('animeStaff')
   async animeStaffBtn(@Context() [interaction]: [ButtonInteraction]) {
-    const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
-    await interaction.deferReply({
-      flags: isEphemeral ? [MessageFlags.Ephemeral] : [],
-    });
-    const malId = interaction.message.embeds[0]?.data?.title?.match(
-      C.REGEX_GET_ID,
-    )?.[1];
-    if (!malId)
-      return interaction.editReply({ content: '❌ Could not extract ID.' });
+    const { malId, isEphemeral } =
+      await this.extractEntityIdFromEmbed(interaction);
+    if (!malId) return;
     try {
       const res = await this.malService.animeStaff(malId);
       if (!res.data || res.data.length === 0)
@@ -292,15 +283,8 @@ export class MalCommands {
 
   @Button('animeStatistics')
   async animeStatisticsBtn(@Context() [interaction]: [ButtonInteraction]) {
-    const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
-    await interaction.deferReply({
-      flags: isEphemeral ? [MessageFlags.Ephemeral] : [],
-    });
-    const malId = interaction.message.embeds[0]?.data?.title?.match(
-      C.REGEX_GET_ID,
-    )?.[1];
-    if (!malId)
-      return interaction.editReply({ content: '❌ Could not extract ID.' });
+    const { malId } = await this.extractEntityIdFromEmbed(interaction);
+    if (!malId) return;
     try {
       const res = await this.malService.animeStatistics(malId);
       const stats = res.data;
@@ -409,15 +393,9 @@ export class MalCommands {
 
   @Button('mangaCharacters')
   async mangaCharactersBtn(@Context() [interaction]: [ButtonInteraction]) {
-    const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
-    await interaction.deferReply({
-      flags: isEphemeral ? [MessageFlags.Ephemeral] : [],
-    });
-    const malId = interaction.message.embeds[0]?.data?.title?.match(
-      C.REGEX_GET_ID,
-    )?.[1];
-    if (!malId)
-      return interaction.editReply({ content: '❌ Could not extract ID.' });
+    const { malId, isEphemeral } =
+      await this.extractEntityIdFromEmbed(interaction);
+    if (!malId) return;
     try {
       const res = await this.malService.mangaCharacters(malId);
       if (!res.data || res.data.length === 0)
@@ -442,15 +420,8 @@ export class MalCommands {
 
   @Button('mangaStatistics')
   async mangaStatisticsBtn(@Context() [interaction]: [ButtonInteraction]) {
-    const isEphemeral = interaction.message.flags.has(MessageFlags.Ephemeral);
-    await interaction.deferReply({
-      flags: isEphemeral ? [MessageFlags.Ephemeral] : [],
-    });
-    const malId = interaction.message.embeds[0]?.data?.title?.match(
-      C.REGEX_GET_ID,
-    )?.[1];
-    if (!malId)
-      return interaction.editReply({ content: '❌ Could not extract ID.' });
+    const { malId } = await this.extractEntityIdFromEmbed(interaction);
+    if (!malId) return;
     try {
       const res = await this.malService.mangaStatistics(malId);
       const stats = res.data;

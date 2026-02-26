@@ -273,10 +273,63 @@ export class HoyolabCommands {
         content: '❌ Account data not found, please save the cookie first.',
       });
 
-    const { giftcode1, giftcode2, giftcode3, target } = dto;
+    const {
+      giftcode1,
+      giftcode2,
+      giftcode3,
+      giftcode4,
+      giftcode5,
+      giftcode6,
+      giftcode7,
+      giftcode8,
+      giftcode9,
+      giftcode10,
+      target,
+    } = dto;
     const giftcodes = Array.from(
-      new Set([giftcode1, giftcode2, giftcode3]),
+      new Set([
+        giftcode1,
+        giftcode2,
+        giftcode3,
+        giftcode4,
+        giftcode5,
+        giftcode6,
+        giftcode7,
+        giftcode8,
+        giftcode9,
+        giftcode10,
+      ]),
     ).filter(Boolean) as string[];
+
+    let totalAccounts = 0;
+    if (user.hoyoUsers) {
+      for (const hoyoUser of user.hoyoUsers) {
+        totalAccounts += hoyoUser.gameAccounts.filter(
+          (a: any) => a.game === target,
+        ).length;
+      }
+    }
+
+    if (totalAccounts === 0) {
+      return interaction.editReply({
+        content: '❌ No target game accounts found to redeem codes for.',
+      });
+    }
+
+    const totalOperations = giftcodes.length * totalAccounts;
+    let currentOperation = 0;
+    const progressBlocks: string[] = [];
+
+    const getProgressBar = () => {
+      const empty = totalOperations - progressBlocks.length;
+      return progressBlocks.join('') + '⬜'.repeat(empty);
+    };
+
+    await interaction.editReply({
+      content:
+        `🚀 Starting redemption for **${totalAccounts}** accounts with **${giftcodes.length}** codes...\n\n` +
+        `> ${getProgressBar()} **0/${totalOperations}**`,
+    });
 
     const results: Array<{
       giftcode: string | undefined;
@@ -284,13 +337,42 @@ export class HoyolabCommands {
     }> = [];
 
     for (let i = 0; i < giftcodes.length; i++) {
+      const giftcode = giftcodes[i];
       try {
         const res = await this.hoyolabService.redeemCode(
           user,
           target,
-          giftcodes[i],
+          giftcode,
+          async (account, resultStatus) => {
+            currentOperation++;
+            let statusEmoji = '❌';
+            let blockEmoji = '🟥';
+
+            if (resultStatus.code === 0) {
+              statusEmoji = '✅';
+              blockEmoji = '🟩';
+            } else if (
+              resultStatus.code === -2017 ||
+              resultStatus.code === -5003
+            ) {
+              statusEmoji = '⏺';
+              blockEmoji = '🟨';
+            }
+
+            progressBlocks.push(blockEmoji);
+
+            const content =
+              `🚀 Redeeming codes...\n\n` +
+              `> ${getProgressBar()} **${currentOperation}/${totalOperations}**\n\n` +
+              `> Last: ${statusEmoji} **${account.nickname}** - *${resultStatus.message}*`;
+            try {
+              await interaction.editReply({ content });
+            } catch {
+              // Ignore rate limits or temporary errors during progress update
+            }
+          },
         );
-        results.push({ giftcode: giftcodes[i], result: res });
+        results.push({ giftcode, result: res });
       } catch (err: any) {
         return interaction.editReply({
           content: err.message || '❌ Target not redeemable',
@@ -299,24 +381,9 @@ export class HoyolabCommands {
     }
 
     const embed = this.hoyolabEmbeds.redeemResult(results);
-    await interaction.editReply({ embeds: [embed] });
-
-    // Redeem for all other users (background task)
-    void this.hoyolabService
-      .getAllOtherUsers(interaction.user.id)
-      .then(async (users) => {
-        this.logger.log(`Found ${users.length} other users. Redeeming...`);
-        for (const u of users) {
-          if (!u || !u.hoyoUsers || u.hoyoUsers.length === 0) continue;
-          for (const gc of giftcodes) {
-            try {
-              await this.hoyolabService.redeemCode(u, target, gc);
-            } catch {
-              // Ignore background redeem errors
-            }
-          }
-        }
-        this.logger.log('Done redeeming for all users.');
-      });
+    await interaction.editReply({
+      content: '✅ **Redemption Complete!** Summary below:',
+      embeds: [embed],
+    });
   }
 }

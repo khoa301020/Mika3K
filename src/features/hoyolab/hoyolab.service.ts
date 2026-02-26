@@ -61,21 +61,23 @@ export class HoyolabService {
         userId,
         hoyoUsers: [hoyoUser],
       });
-    } else {
-      const hoyoUsers = user.hoyoUsers;
-      const index = hoyoUsers.findIndex((u) => u.remark === remark);
-      if (index === -1) {
-        hoyoUsers.push(hoyoUser);
-      } else {
-        hoyoUsers.splice(index, 1);
-        hoyoUsers.push(hoyoUser);
-      }
-      return (await this.hoyolabModel.findOneAndUpdate(
-        { userId },
-        { hoyoUsers },
-        { returnDocument: 'after' },
-      )) as HoyolabDocument;
     }
+
+    // Attempt to update existing remark
+    const updatedUser = await this.hoyolabModel.findOneAndUpdate(
+      { userId, 'hoyoUsers.remark': remark },
+      { $set: { 'hoyoUsers.$': hoyoUser } },
+      { returnDocument: 'after' },
+    );
+
+    if (updatedUser) return updatedUser as HoyolabDocument;
+
+    // If remark didn't exist, push new
+    return (await this.hoyolabModel.findOneAndUpdate(
+      { userId },
+      { $push: { hoyoUsers: hoyoUser } },
+      { returnDocument: 'after' },
+    )) as HoyolabDocument;
   }
 
   async getUserInfo(userId: string): Promise<HoyolabDocument | null> {
@@ -94,21 +96,18 @@ export class HoyolabService {
     userId: string,
     remark: string,
   ): Promise<HoyolabDocument> {
-    const user = await this.hoyolabModel.findOne({ userId });
+    const user = await this.hoyolabModel.findOneAndUpdate(
+      { userId, 'hoyoUsers.remark': remark },
+      { $pull: { hoyoUsers: { remark } } },
+      { returnDocument: 'after' },
+    );
+
     if (!user) {
       throw new Error(
-        '❌ User not found. Please save the cookie first or use `/hoyolab info` to see info containing remarks.',
+        '❌ User or remark not found. Please save the cookie first or use `/hoyolab info` to see info containing remarks.',
       );
     }
-    const hoyoUsers = user.hoyoUsers;
-    const index = hoyoUsers.findIndex((u) => u.remark === remark);
-    if (index === -1) throw new Error('❌ Remark not found.');
-    hoyoUsers.splice(index, 1);
-    return (await this.hoyolabModel.findOneAndUpdate(
-      { userId },
-      { hoyoUsers },
-      { returnDocument: 'after' },
-    )) as HoyolabDocument;
+    return user as HoyolabDocument;
   }
 
   async getNote(
@@ -152,6 +151,7 @@ export class HoyolabService {
     user: HoyolabDocument,
     target: THoyoGame,
     code: string,
+    onProgress?: (account: IHoYoLABGameAccount, result: { code: number; message: string }) => void | Promise<void>,
   ): Promise<Array<IRedeemResult>> {
     if (!user || !user.hoyoUsers?.length)
       throw new Error('❌ Account data not found.');
@@ -178,29 +178,33 @@ export class HoyolabService {
           sLangKey: 'en-us',
         }).toString();
 
+        let resultCode = -1;
+        let resultMessage = 'HTTP Error';
+
         try {
           const res = await this.httpService.get(
             `${HoYoLABConstants.REDEEM_CODE_API[target]}?${param}`,
             { headers: { cookie: hoyoUser.cookieString } },
           );
-
-          result[result.length - 1].accounts.push({
-            nickname: account.nickname,
-            uid: account.game_uid,
-            code: res.data?.retcode,
-            message: res.data?.message,
-          });
-
-          // Wait to prevent rate limits
-          await new Promise((r) => setTimeout(r, 5555));
+          resultCode = res.data?.retcode ?? -1;
+          resultMessage = res.data?.message ?? 'Unknown';
         } catch {
-          result[result.length - 1].accounts.push({
-            nickname: account.nickname,
-            uid: account.game_uid,
-            code: -1,
-            message: 'HTTP Error',
-          });
+          // Keep defaults
         }
+
+        result[result.length - 1].accounts.push({
+          nickname: account.nickname,
+          uid: account.game_uid,
+          code: resultCode,
+          message: resultMessage,
+        });
+
+        if (onProgress) {
+          await onProgress(account, { code: resultCode, message: resultMessage });
+        }
+
+        // Wait to prevent rate limits
+        await new Promise((r) => setTimeout(r, 5555));
       }
     }
 

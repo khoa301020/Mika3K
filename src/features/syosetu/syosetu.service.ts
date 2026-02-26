@@ -22,13 +22,15 @@ export class SyosetuService {
   ) {}
 
   private convertToQuery(request: ISyosetuRequest): string {
-    return Object.entries(request).reduce(
-      (acc, [key, value]) =>
-        Array.isArray(value)
-          ? (acc += `${key}=${(value as Array<string | number>).join('-')}&`)
-          : (acc += `${key}=${String(value)}&`),
-      '?',
-    );
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(request)) {
+      if (Array.isArray(value)) {
+        params.append(key, value.join('-'));
+      } else {
+        params.append(key, String(value));
+      }
+    }
+    return `?${params.toString()}`;
   }
 
   async getNovel(request: ISyosetuRequest): Promise<any> {
@@ -114,6 +116,6 @@ export class SyosetuService {
   }
 
   async getAllNovels(): Promise<SyosetuDocument[]> {
-    return await this.syosetuModel.find({}).exec();
+    return await this.syosetuModel.find({});
   }
 }

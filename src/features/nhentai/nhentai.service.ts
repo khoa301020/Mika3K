@@ -81,4 +81,52 @@ export class NHentaiService {
       return null;
     }
   }
+
+  public async searchGallery(
+    query: string,
+    sort: string = 'popular',
+    page: number = 1,
+  ): Promise<{ result: Array<INHentai>; num_pages: number } | null> {
+    const queryString = `${encodeURIComponent(query.toLowerCase())}&sort=${sort}&page=${page}`;
+    const url = `https://nhentai.net/api/galleries/search?query=${queryString}`;
+    try {
+      const response = await this.httpService.get(url, {
+        headers: {
+          Host: 'nhentai.net',
+          'User-Agent':
+            (await this.cacheService.get<string>('user_agent')) ||
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
+          Cookie: `cf_clearance=${(await this.cacheService.get<string>('cf_clearance')) || ''}`,
+        },
+      });
+      return response.data;
+    } catch (err: any) {
+      if (err.response?.status === 404) return null;
+      if (err.response?.status === 403) {
+        if (process.env.FLARESOLVERR_ENDPOINT) {
+          try {
+            const flareRes = await this.httpService.post(
+              process.env.FLARESOLVERR_ENDPOINT,
+              {
+                url: url,
+                cmd: 'request.get',
+                maxTimeout: 60000,
+              },
+            );
+            return JSON.parse(
+              cheerio.load(flareRes.data?.solution?.response)('pre').text(),
+            );
+          } catch (flareErr) {
+            this.logger.error(
+              `FlareSolverr failed for nHentai search ${query}`,
+              flareErr,
+            );
+            return null;
+          }
+        }
+      }
+      this.logger.error(`Failed to fetch nHentai search ${query}`, err);
+      return null;
+    }
+  }
 }

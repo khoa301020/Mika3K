@@ -5,7 +5,12 @@ import { ChannelType, EmbedBuilder, User } from 'discord.js';
 import { NHentaiService, INHentai } from './nhentai.service';
 import { NotifyChannelService, NotifyType } from '../../shared/notify-channel';
 
-export const NHentaiEmbed = (data: INHentai, author: User): EmbedBuilder => {
+export const NHentaiEmbed = (
+  data: INHentai,
+  author: User,
+  page?: number,
+  totalPages?: number,
+): EmbedBuilder => {
   return new EmbedBuilder()
     .setColor(0xed2553)
     .setAuthor({
@@ -87,7 +92,7 @@ export const NHentaiEmbed = (data: INHentai, author: User): EmbedBuilder => {
       },
     )
     .setFooter({
-      text: `${author.username}#${author.discriminator}`,
+      text: `${author.username}#${author.discriminator}${page && totalPages ? ` | Page ${page}/${totalPages}` : ''}`,
       iconURL: author.displayAvatarURL(),
     })
     .setTimestamp(data.upload_date * 1000);

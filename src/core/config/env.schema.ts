@@ -32,12 +32,6 @@ export const envValidationSchema = Joi.object({
   NHENTAI_MAX_ID: Joi.number().optional(),
   FLARESOLVERR_ENDPOINT: Joi.string().optional(),
 
-  // Pixiv
-  PIXIV_CLIENT_ID: Joi.string().optional(),
-  PIXIV_CLIENT_SECRET: Joi.string().optional(),
-  PIXIV_HASH_SECRET: Joi.string().optional(),
-  PIXIV_REFRESH_TOKEN: Joi.string().optional(),
-
   // API
   PORT: Joi.number().default(3000),
   JWT_SECRET: Joi.string().required(),

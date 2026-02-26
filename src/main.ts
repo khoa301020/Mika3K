@@ -1,13 +1,27 @@
 import { NestFactory } from '@nestjs/core';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { setupSwagger } from './api/swagger';
 
+import { AppLoggerService } from './core/logger/logger.service';
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
+
+  // Security Headers
+  app.use(helmet());
+
+  // Use custom logger globally
+  const logger = await app.resolve(AppLoggerService);
+  app.useLogger(logger);
+
   const configService = app.get(ConfigService);
-  const logger = new Logger('Bootstrap');
+  // Tell our logger where we are conceptually
+  logger.setContext('Bootstrap');
 
   // Global validation pipe
   app.useGlobalPipes(

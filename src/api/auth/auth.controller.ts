@@ -7,6 +7,9 @@ import {
   Res,
   UseGuards,
   Req,
+  Logger,
+  InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import type { Response, Request } from 'express';
@@ -16,6 +19,8 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(private readonly authService: AuthService) {}
 
   @Get('discord')
@@ -28,9 +33,18 @@ export class AuthController {
   @Get('discord/callback')
   @ApiOperation({ summary: 'Discord OAuth2 callback' })
   async discordCallback(@Query('code') code: string, @Res() res: Response) {
-    const tokens = await this.authService.exchangeCode(code);
-    // Return tokens as JSON (frontend will store them)
-    return res.json(tokens);
+    try {
+      const tokens = await this.authService.exchangeCode(code);
+      return res.json(tokens);
+    } catch (error: unknown) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      this.logger.error('Discord OAuth2 callback failed', error);
+      throw new InternalServerErrorException(
+        'OAuth2 token exchange failed. Check DISCORD_CLIENT_SECRET in your .env.',
+      );
+    }
   }
 
   @Post('refresh')

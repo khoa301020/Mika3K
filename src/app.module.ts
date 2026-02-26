@@ -19,11 +19,13 @@ import { SyosetuModule } from './features/syosetu/syosetu.module';
 import { SnsEmbedModule } from './features/sns-embed/sns-embed.module';
 import { PixivModule } from './features/pixiv/pixiv.module';
 import { ApiModule } from './api/api.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
     // Core
     AppConfigModule,
+    EventEmitterModule.forRoot(),
     DatabaseModule,
     BotModule,
     LoggerModule,

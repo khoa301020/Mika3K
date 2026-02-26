@@ -1,4 +1,9 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { AppHttpService } from '../../shared/http';
@@ -49,23 +54,37 @@ export class AuthService {
     );
     const redirectUri = this.configService.get<string>('DISCORD_CALLBACK_URL');
 
-    // Exchange code for Discord tokens
-    const tokenRes = await this.httpService.post(
-      'https://discord.com/api/oauth2/token',
-      new URLSearchParams({
-        client_id: clientId!,
-        client_secret: clientSecret!,
-        grant_type: 'authorization_code',
-        code,
-        redirect_uri: redirectUri!,
-      }).toString(),
-      {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      },
-    );
-
-    const discordTokens: DiscordTokenResponse =
-      tokenRes.data as DiscordTokenResponse;
+    let discordTokens: DiscordTokenResponse;
+    try {
+      const tokenRes = await this.httpService.post(
+        'https://discord.com/api/oauth2/token',
+        new URLSearchParams({
+          client_id: clientId!,
+          client_secret: clientSecret!,
+          grant_type: 'authorization_code',
+          code,
+          redirect_uri: redirectUri!,
+        }).toString(),
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        },
+      );
+      discordTokens = tokenRes.data as DiscordTokenResponse;
+    } catch (error: unknown) {
+      const axiosError = error as {
+        response?: { data?: unknown; status?: number };
+      };
+      const discordErr = axiosError?.response?.data as
+        | { error?: string }
+        | undefined;
+      this.logger.error(
+        `Discord token exchange failed (${axiosError?.response?.status}): ${discordErr?.error ?? 'unknown'}`,
+        error,
+      );
+      throw new InternalServerErrorException(
+        `Discord token exchange failed: ${discordErr?.error ?? 'Check DISCORD_CLIENT_SECRET in .env'}`,
+      );
+    }
 
     // Get Discord user info
     const userRes = await this.httpService.get(

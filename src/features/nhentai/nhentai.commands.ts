@@ -21,6 +21,16 @@ export class NHentaiAutoviewDto {
   action: 'on' | 'off';
 }
 
+export class NHentaiSearchDto {
+  @StringOption({ name: 'query', description: 'Search query or 6-digit code', required: true })
+  query: string;
+}
+
+export class NHentaiCheckDto {
+  @StringOption({ name: 'code', description: 'nHentai code to check', required: true })
+  code: string;
+}
+
 @Injectable()
 export class NHentaiCommands {
   private readonly logger = new Logger(NHentaiCommands.name);
@@ -112,7 +122,88 @@ export class NHentaiCommands {
     if (!query) {
       return interaction.editReply({ content: '❌ Text required to search.' });
     }
+    return this.processNHentaiSearch(interaction, query, false);
+  }
 
+  @SlashCommand({ name: 'nh-search', description: 'Search nHentai galleries' })
+  public async searchNHentaiSlash(
+    @Context() [interaction]: SlashCommandContext,
+    @Options() dto: NHentaiSearchDto,
+  ) {
+    if (
+      !interaction.channel?.isTextBased() ||
+      !('nsfw' in interaction.channel) ||
+      !interaction.channel.nsfw
+    ) {
+      return interaction.reply({
+        content: '❌ This command is only available in NSFW channels.',
+        flags: [MessageFlags.Ephemeral],
+      });
+    }
+
+    await interaction.deferReply();
+    return this.processNHentaiSearch(interaction, dto.query, false);
+  }
+
+  @SlashCommand({ name: 'nh-check', description: 'Check if an nHentai code is valid' })
+  public async checkNHentaiSlash(
+    @Context() [interaction]: SlashCommandContext,
+    @Options() dto: NHentaiCheckDto,
+  ) {
+    if (
+      !interaction.channel?.isTextBased() ||
+      !('nsfw' in interaction.channel) ||
+      !interaction.channel.nsfw
+    ) {
+      return interaction.reply({
+        content: '❌ This command is only available in NSFW channels.',
+        flags: [MessageFlags.Ephemeral],
+      });
+    }
+
+    await interaction.deferReply();
+    try {
+      const data = await this.nhentaiService.getGallery(dto.code);
+      if (!data) return interaction.editReply({ content: '❌ Nuked or not found.' });
+      return interaction.editReply({ embeds: [NHentaiEmbed(data, interaction.user)] });
+    } catch {
+      return interaction.editReply({ content: '❌ Error occurred while checking.' });
+    }
+  }
+
+  @SlashCommand({ name: 'nh-random', description: 'Get a random nHentai gallery' })
+  public async randomNHentaiSlash(
+    @Context() [interaction]: SlashCommandContext,
+  ) {
+    if (
+      !interaction.channel?.isTextBased() ||
+      !('nsfw' in interaction.channel) ||
+      !interaction.channel.nsfw
+    ) {
+      return interaction.reply({
+        content: '❌ This command is only available in NSFW channels.',
+        flags: [MessageFlags.Ephemeral],
+      });
+    }
+
+    await interaction.deferReply();
+    
+    // Try up to 5 times to find a valid random gallery
+    for (let i = 0; i < 5; i++) {
+        const randomId = Math.floor(Math.random() * 500000) + 1;
+        try {
+            const data = await this.nhentaiService.getGallery(randomId);
+            if (data) {
+                return interaction.editReply({ embeds: [NHentaiEmbed(data, interaction.user)] });
+            }
+        } catch {
+            // Ignore and retry
+        }
+    }
+    return interaction.editReply({ content: '❌ Could not find a random gallery after several attempts.' });
+  }
+
+  private async processNHentaiSearch(interaction: any, query: string, isEphemeral: boolean) {
     try {
       const codes: Array<string> | null = query.match(/(?<!\d)\d{6}(?!\d)/g);
 
@@ -147,7 +238,7 @@ export class NHentaiCommands {
           });
           return await this.paginationService.paginate(interaction, pages, {
             type: 'button',
-            ephemeral: false,
+            ephemeral: isEphemeral,
           });
         }
       } else {
@@ -176,7 +267,7 @@ export class NHentaiCommands {
 
         return await this.paginationService.paginate(interaction, pages, {
           type: 'button',
-          ephemeral: false,
+          ephemeral: isEphemeral,
         });
       }
     } catch (err: any) {

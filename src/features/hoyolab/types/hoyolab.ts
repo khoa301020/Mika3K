@@ -119,3 +119,11 @@ export interface RecoveryTime {
   Second: number;
   reached: boolean;
 }
+
+export interface IAccountRedeemState {
+  uid: string;
+  nickname: string;
+  game: THoyoGame;
+  blocks: string[];
+  statusText: string;
+}

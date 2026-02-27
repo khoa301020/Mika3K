@@ -21,3 +21,6 @@ bun.lock*
 
 # logs
 *.log
+
+# docs
+docs

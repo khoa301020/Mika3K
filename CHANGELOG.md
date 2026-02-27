@@ -1,6 +1,9 @@
 ## Untagged
 
-- Refactor: [Common] Full rewrite of Mika3K bot to NestJS architecture (v2) ([ee5f83](https://github.com/khoa301020/Mika3K/commit/ee5f83dbb548b52a431b2805902de7d5175ea502))
+- Update: [NHentai] Migrate Search Context Menu from V1 codebase ([5edd23](https://github.com/khoa301020/Mika3K/commit/5edd235f40b0a90abe93cac17cc48e84ea8d5ec6))
+- Update: [HoYoLAB] Enhance HoYoLAB redemption UI and optimize feature services ([80b400](https://github.com/khoa301020/Mika3K/commit/80b4007590d930546081e461343918a40a2dba0e))
+- Update: [Core] Refactor API service layers and enhance logging infrastructure ([6fd4ec](https://github.com/khoa301020/Mika3K/commit/6fd4ecaa1cbeb68913f7b84a05247c70ee4bb89e))
+- Refactor: [Common] Full rewrite of Mika3K bot to NestJS architecture (v2) ([8bb995](https://github.com/khoa301020/Mika3K/commit/8bb995194b9237c6f9a767c73b89b03e8eccf0f9))
 - Fix: [MAL] Dep Update ([bee2f7](https://github.com/khoa301020/Mika3K/commit/bee2f712fb7daeade3ff1511975e4215eb5e0219))
 - Fix: [FxTiktok] Revive the FxTiktok ([0e233e](https://github.com/khoa301020/Mika3K/commit/0e233ee4da64a05340e6d2207d7fbb2c432832d8))
 - Fix: [FxTwitter] Upgrade to latest Discord API ([5dc640](https://github.com/khoa301020/Mika3K/commit/5dc64058d56e84c2d36a6e92f7e827aa17dc54c3))

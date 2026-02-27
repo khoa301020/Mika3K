@@ -5,6 +5,17 @@ import { StringOption } from 'necord';
 import { MessageFlags } from 'discord.js';
 import { SyosetuService } from './syosetu.service';
 import { SyosetuConstants } from './syosetu.constants';
+import { SyosetuEmbeds } from './syosetu.embeds';
+import { PaginationService } from '../../shared/pagination';
+
+export class SyosetuSearchDto {
+  @StringOption({
+    name: 'query',
+    description: 'Novel title or keywords to search',
+    required: true,
+  })
+  query: string;
+}
 
 export class SyosetuFollowDto {
   @StringOption({
@@ -17,7 +28,55 @@ export class SyosetuFollowDto {
 
 @Injectable()
 export class SyosetuCommands {
-  constructor(private readonly syosetuService: SyosetuService) {}
+  constructor(
+    private readonly syosetuService: SyosetuService,
+    private readonly syosetuEmbeds: SyosetuEmbeds,
+    private readonly paginationService: PaginationService,
+  ) {}
+
+  @SlashCommand({
+    name: 'syosetu-search',
+    description: 'Search Syosetu novels',
+  })
+  public async searchNovel(
+    @Context() [interaction]: SlashCommandContext,
+    @Options() dto: SyosetuSearchDto,
+  ) {
+    await interaction.deferReply();
+    try {
+      const data = await this.syosetuService.getNovel({
+        word: dto.query,
+        out: 'json',
+        of: ['t', 'n', 'u', 'w', 's', 'bg', 'g', 'k', 'gf', 'gl', 'ga', 'l', 'ti', 'nt', 'e', 'nu'],
+        lim: 20,
+      });
+      if (!data || data[0].allcount === 0 || data.length < 2) {
+        return interaction.editReply({ content: '❌ No novels found.' });
+      }
+      
+      const novels = data.slice(1);
+      if (novels.length === 1) {
+        return interaction.editReply({ embeds: [this.syosetuEmbeds.novel(novels[0] as any, interaction.user)] });
+      }
+      
+      const pages = novels.map((n: any, idx: number) => ({
+        embeds: [this.syosetuEmbeds.novel(n, interaction.user, idx + 1, novels.length)],
+      }));
+      
+      return this.paginationService.paginate(interaction, pages);
+    } catch (err: any) {
+      return interaction.editReply({ content: `❌ Error: ${err.message}` });
+    }
+  }
+
+  @SlashCommand({
+    name: 'syosetu-genres',
+    description: 'View Syosetu genres',
+  })
+  public async viewGenres(@Context() [interaction]: SlashCommandContext) {
+    await interaction.deferReply();
+    return interaction.editReply({ embeds: [this.syosetuEmbeds.genres(interaction.user)] });
+  }
 
   @SlashCommand({
     name: 'syosetu-follow',

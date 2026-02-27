@@ -5,8 +5,8 @@ import {
   IHoYoLABGameAccount,
   INoteGenshinData,
   INoteHSRData,
-  IRedeemResult,
   THoyoGame,
+  IAccountRedeemState,
 } from './types/hoyolab';
 import { Client } from 'discord.js';
 // removed InjectDiscordClient
@@ -38,49 +38,48 @@ export class HoyolabEmbeds {
       });
   }
 
-  public redeemResult(
-    results: Array<{
-      giftcode: string | undefined;
-      result: Array<IRedeemResult>;
-    }>,
-  ): EmbedBuilder {
-    const fields: Array<APIEmbedField> = [];
+  public redeemProgressEmbeds(
+    states: Array<IAccountRedeemState>,
+    totalCodes: number,
+  ): Array<EmbedBuilder> {
+    const embeds: Array<EmbedBuilder> = [];
 
-    for (const [key, result] of Object.entries(results))
-      fields.push({
-        name: `Giftcode ${parseInt(key) + 1}: ${result.giftcode}`,
-        value: result.result
-          .map((res: IRedeemResult) => {
-            const accounts = res.accounts.map((account) => {
-              if (Number.isInteger(account.code)) {
-                switch (account.code) {
-                  case 0: // Success
-                    return ` - [${account.uid}] ${account.nickname} ✅`;
-                  case -2017: // HSR
-                    return ` - [${account.uid}] ${account.nickname} ⏺`;
-                  case -5003: // Genshin
-                    return ` - [${account.uid}] ${account.nickname} ⏺`;
-                  default:
-                    return ` - [${account.uid}] ${account.nickname} ❌`;
-                }
-              } else {
-                return ` - [${account.uid}] ${account.nickname} - ❌`;
-              }
-            });
-            return `${res.remark}\n${accounts.join('\n')}`;
-          })
-          .join('\n'),
-      });
+    for (const state of states) {
+      const emptyBlocks = totalCodes - state.blocks.length;
+      const progressBlocks =
+        state.blocks.join('') + '⬜'.repeat(Math.max(0, emptyBlocks));
 
-    return new EmbedBuilder()
-      .setColor(0x0099ff)
-      .setTitle(`Redeem result`)
-      .addFields(fields)
-      .setTimestamp()
-      .setFooter({
+      // Choose color based on the last block status if any, else generic blue
+      let color = 0x0099ff;
+      if (state.blocks.length > 0) {
+        const lastBlock = state.blocks[state.blocks.length - 1];
+        if (lastBlock === '🟩')
+          color = 0x00ff00; // Success green
+        else if (lastBlock === '🟨')
+          color = 0xffff00; // Warning yellow
+        else if (lastBlock === '🟥') color = 0xff0000; // Error red
+      }
+
+      const embed = new EmbedBuilder()
+        .setColor(color)
+        .setAuthor({
+          name: `[${(state.game || 'UNKNOWN').toUpperCase()}${state.uid}] ${state.nickname}`,
+        })
+        .setDescription(
+          `> ${progressBlocks} **${state.blocks.length}/${totalCodes}**\n\n> ${state.statusText}`,
+        );
+
+      embeds.push(embed);
+    }
+
+    if (embeds.length > 0) {
+      embeds[embeds.length - 1].setTimestamp().setFooter({
         text: `${this.client.user?.displayName || 'Mika3K'}`,
         iconURL: this.client.user?.displayAvatarURL(),
       });
+    }
+
+    return embeds;
   }
 
   public note(

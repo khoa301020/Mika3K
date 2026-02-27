@@ -9,9 +9,12 @@ import {
   MessageActionRowComponentBuilder,
   MessageFlags,
 } from 'discord.js';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { NotifyChannel, type NotifyChannelDocument } from './ba.schemas';
 import { BaService } from './ba.service';
 import { BaEmbeds } from './ba.embeds';
-import { StudentSearchDto, RaidSearchDto, ServerStatusDto } from './dto';
+import { StudentSearchDto, RaidSearchDto, ServerStatusDto, BaNotifyDto } from './dto';
 import { PaginationService } from '../../shared/pagination';
 import { AppCacheService } from '../../shared/cache';
 import * as C from './ba.constants';
@@ -52,7 +55,46 @@ export class BaCommands {
     private readonly baEmbeds: BaEmbeds,
     private readonly paginationService: PaginationService,
     private readonly cacheService: AppCacheService,
+    @InjectModel(NotifyChannel.name)
+    private readonly notifyModel: Model<NotifyChannelDocument>,
   ) {}
+
+  @SlashCommand({
+    name: 'ba-notify',
+    description: 'Toggle SchaleDB update notifications for this channel',
+  })
+  public async toggleNotify(
+    @Context() [interaction]: SlashCommandContext,
+    @Options() dto: BaNotifyDto,
+  ) {
+    await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
+
+    // Owner-only check
+    if (interaction.user.id !== process.env.OWNER_ID) {
+      return interaction.editReply({
+        content: '❌ Only the bot owner can use this command.',
+      });
+    }
+
+    if (dto.action === 'on') {
+      await this.notifyModel.findOneAndUpdate(
+        { channelId: interaction.channelId, notifyType: C.BA_SCHALEDB_UPDATE },
+        { guildId: interaction.guildId!, channelId: interaction.channelId, notifyType: C.BA_SCHALEDB_UPDATE },
+        { upsert: true },
+      );
+      return interaction.editReply({
+        content: '✅ SchaleDB update notifications **enabled** for this channel.',
+      });
+    } else {
+      await this.notifyModel.findOneAndDelete({
+        channelId: interaction.channelId,
+        notifyType: C.BA_SCHALEDB_UPDATE,
+      });
+      return interaction.editReply({
+        content: '✅ SchaleDB update notifications **disabled** for this channel.',
+      });
+    }
+  }
 
   @SlashCommand({
     name: 'ba-student',

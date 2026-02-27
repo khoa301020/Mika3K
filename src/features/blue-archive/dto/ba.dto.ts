@@ -127,3 +127,16 @@ export class ServerStatusDto {
   })
   regionId: number;
 }
+
+export class BaNotifyDto {
+  @StringOption({
+    name: 'action',
+    description: 'Enable or disable SchaleDB updates for this channel',
+    required: true,
+    choices: [
+      { name: 'Enable', value: 'on' },
+      { name: 'Disable', value: 'off' },
+    ],
+  })
+  action: 'on' | 'off';
+}

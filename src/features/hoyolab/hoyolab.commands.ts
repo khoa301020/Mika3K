@@ -17,7 +17,11 @@ import {
   HoyolabDeleteRemarkDto,
 } from './dto/hoyolab.dto';
 import { HoYoLABConstants } from './hoyolab.constants';
-import { IHoYoLABGameAccount, THoyoGame, IRedeemResult } from './types/hoyolab';
+import {
+  IHoYoLABGameAccount,
+  THoyoGame,
+  IAccountRedeemState,
+} from './types/hoyolab';
 const parseCookies = (cookieString: string) => {
   return cookieString
     .split(';')
@@ -302,11 +306,24 @@ export class HoyolabCommands {
     ).filter(Boolean) as string[];
 
     let totalAccounts = 0;
+    const targetAccounts: Array<{
+      uid: string;
+      nickname: string;
+      game: THoyoGame;
+    }> = [];
     if (user.hoyoUsers) {
       for (const hoyoUser of user.hoyoUsers) {
-        totalAccounts += hoyoUser.gameAccounts.filter(
+        const matchingAccounts = hoyoUser.gameAccounts.filter(
           (a: any) => a.game === target,
-        ).length;
+        );
+        for (const acc of matchingAccounts) {
+          targetAccounts.push({
+            uid: acc.game_uid,
+            nickname: acc.nickname,
+            game: acc.game as THoyoGame,
+          });
+        }
+        totalAccounts += matchingAccounts.length;
       }
     }
 
@@ -316,35 +333,38 @@ export class HoyolabCommands {
       });
     }
 
-    const totalOperations = giftcodes.length * totalAccounts;
-    let currentOperation = 0;
-    const progressBlocks: string[] = [];
+    if (totalAccounts > 10) {
+      return interaction.editReply({
+        content: `❌ Too many accounts (${totalAccounts}). Discord limits restrict rendering to a maximum of 10 embeds. Please remove some accounts to proceed.`,
+      });
+    }
 
-    const getProgressBar = () => {
-      const empty = totalOperations - progressBlocks.length;
-      return progressBlocks.join('') + '⬜'.repeat(empty);
-    };
+    const accountStates: Array<IAccountRedeemState> = targetAccounts.map(
+      (acc) => ({
+        uid: acc.uid,
+        nickname: acc.nickname,
+        game: acc.game,
+        blocks: [],
+        statusText: 'Waiting for redemption to start...',
+      }),
+    );
 
     await interaction.editReply({
-      content:
-        `🚀 Starting redemption for **${totalAccounts}** accounts with **${giftcodes.length}** codes...\n\n` +
-        `> ${getProgressBar()} **0/${totalOperations}**`,
+      content: `🚀 Starting redemption for **${totalAccounts}** accounts with **${giftcodes.length}** codes...`,
+      embeds: this.hoyolabEmbeds.redeemProgressEmbeds(
+        accountStates,
+        giftcodes.length,
+      ),
     });
-
-    const results: Array<{
-      giftcode: string | undefined;
-      result: Array<IRedeemResult>;
-    }> = [];
 
     for (let i = 0; i < giftcodes.length; i++) {
       const giftcode = giftcodes[i];
       try {
-        const res = await this.hoyolabService.redeemCode(
+        await this.hoyolabService.redeemCode(
           user,
           target,
           giftcode,
           async (account, resultStatus) => {
-            currentOperation++;
             let statusEmoji = '❌';
             let blockEmoji = '🟥';
 
@@ -359,20 +379,25 @@ export class HoyolabCommands {
               blockEmoji = '🟨';
             }
 
-            progressBlocks.push(blockEmoji);
+            const state = accountStates.find((s) => s.uid === account.game_uid);
+            if (state) {
+              state.blocks.push(blockEmoji);
+              state.statusText = `${statusEmoji} ${resultStatus.message}`;
+            }
 
-            const content =
-              `🚀 Redeeming codes...\n\n` +
-              `> ${getProgressBar()} **${currentOperation}/${totalOperations}**\n\n` +
-              `> Last: ${statusEmoji} **${account.nickname}** - *${resultStatus.message}*`;
             try {
-              await interaction.editReply({ content });
+              await interaction.editReply({
+                content: `🚀 Redeeming codes... (Processing code **${i + 1}/${giftcodes.length}**)`,
+                embeds: this.hoyolabEmbeds.redeemProgressEmbeds(
+                  accountStates,
+                  giftcodes.length,
+                ),
+              });
             } catch {
               // Ignore rate limits or temporary errors during progress update
             }
           },
         );
-        results.push({ giftcode, result: res });
       } catch (err: any) {
         return interaction.editReply({
           content: err.message || '❌ Target not redeemable',
@@ -380,10 +405,12 @@ export class HoyolabCommands {
       }
     }
 
-    const embed = this.hoyolabEmbeds.redeemResult(results);
     await interaction.editReply({
       content: '✅ **Redemption Complete!** Summary below:',
-      embeds: [embed],
+      embeds: this.hoyolabEmbeds.redeemProgressEmbeds(
+        accountStates,
+        giftcodes.length,
+      ),
     });
   }
 }

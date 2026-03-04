@@ -69,6 +69,20 @@ Default prefix: `$`. Change the prefix in `.env` file, key: `BOT_PREFIX`.
 |:-------------------------------------:|:------------:|:-------------------------:|
 | Play jankenpon (rock, scissor, paper) |      :x:     |   `.minigame jankenpon`   |
 
+## Delivery Tracker
+|                 Feature                 | Slash command |        Prefix command / DM        |
+|:---------------------------------------:|:-------------------:|:---------------------------------:|
+| Track a delivery code                   |  `/delivery track`  | `$track <code> <remark>`          |
+| Track with broadcast users              |  `/delivery track`  | `$track <@user> <ID> <code> <remark>` |
+| Track multiple codes (semicolons)       |         :x:         | `$track <code1> <remark1>; <code2> <remark2>` |
+| Stop tracking a code                    | `/delivery untrack` | `$untrack <code>`                 |
+| Edit tracker (add/remove user, channel) | `/delivery track-edit` | `$track-edit <code> <action> ...` |
+| List active trackers                    | `/delivery track-list` |              :x:               |
+| View tracking history                   | `/delivery track-info` |              :x:               |
+
+> **Supported providers:** SPX (prefix `SPXVN`), J&T (prefix `JNT`). Each provider has its own polling interval.
+> **Broadcast:** Owner can add users (DM invite with accept/reject) or channels. Updates are sent only to approved targets.
+
 ## Misc
 
 |        Feature        |    Context menu    |     Prefix command    |

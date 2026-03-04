@@ -1,27 +1,24 @@
+import { HoyolabCommandDecorator } from './decorators';
 import { Injectable, Logger } from '@nestjs/common';
 import {
-  ActionRowBuilder,
-  StringSelectMenuBuilder,
-  MessageFlags,
+    ActionRowBuilder,
+    MessageFlags,
+    StringSelectMenuBuilder,
 } from 'discord.js';
-import { Context, Options, StringSelect, SlashCommand } from 'necord';
 import type { SlashCommandContext, StringSelectContext } from 'necord';
-import { HoyolabService } from './hoyolab.service';
-import { HoyolabEmbeds } from './hoyolab.embeds';
-import { AppCacheService } from '../../shared/cache';
-import { AppHttpService } from '../../shared/http';
+import { Context, Options, Subcommand, StringSelect } from 'necord';
+import { AppCacheService } from '../../../shared/cache';
+import { AppHttpService } from '../../../shared/http';
 import {
-  HoyolabSaveTokenDto,
-  HoyolabNoteDto,
-  HoyolabRedeemDto,
-  HoyolabDeleteRemarkDto,
-} from './dto/hoyolab.dto';
-import { HoYoLABConstants } from './hoyolab.constants';
-import {
-  IHoYoLABGameAccount,
-  THoyoGame,
-  IAccountRedeemState,
-} from './types/hoyolab';
+    HoyolabDeleteRemarkDto,
+    HoyolabNoteDto,
+    HoyolabSaveTokenDto,
+} from '../dto/hoyolab.dto';
+import { HoYoLABConstants } from '../hoyolab.constants';
+import { HoyolabEmbeds } from '../hoyolab.embeds';
+import { HoyolabService } from '../hoyolab.service';
+import { IHoYoLABGameAccount, THoyoGame } from '../types/hoyolab';
+
 const parseCookies = (cookieString: string) => {
   return cookieString
     .split(';')
@@ -34,8 +31,9 @@ const parseCookies = (cookieString: string) => {
 };
 
 @Injectable()
-export class HoyolabCommands {
-  private readonly logger = new Logger(HoyolabCommands.name);
+@HoyolabCommandDecorator()
+export class HoyolabAccountCommands {
+  private readonly logger = new Logger(HoyolabAccountCommands.name);
 
   constructor(
     private readonly hoyolabService: HoyolabService,
@@ -44,8 +42,7 @@ export class HoyolabCommands {
     private readonly httpService: AppHttpService,
   ) {}
 
-  @SlashCommand({
-    name: 'hoyo-save-token',
+  @Subcommand({ name: 'save',
     description: 'Save Mihoyo cookie token',
   })
   public async saveToken(
@@ -173,7 +170,7 @@ export class HoyolabCommands {
     });
   }
 
-  @SlashCommand({ name: 'hoyo-info', description: 'Get your HoYoLAB info' })
+  @Subcommand({ name: 'info', description: 'Get your HoYoLAB info' })
   public async info(@Context() [interaction]: SlashCommandContext) {
     await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
     const user = await this.hoyolabService.getUserInfo(interaction.user.id);
@@ -186,7 +183,7 @@ export class HoyolabCommands {
     return interaction.editReply({ embeds: [embed] });
   }
 
-  @SlashCommand({ name: 'hoyo-note', description: 'Get HoYoLAB game note' })
+  @Subcommand({ name: 'note', description: 'Get HoYoLAB game note' })
   public async note(
     @Context() [interaction]: SlashCommandContext,
     @Options() dto: HoyolabNoteDto,
@@ -241,8 +238,7 @@ export class HoyolabCommands {
     return interaction.editReply({ embeds });
   }
 
-  @SlashCommand({
-    name: 'hoyo-delete-remark',
+  @Subcommand({ name: 'delete_remark',
     description: 'Delete HoYoLAB user remark',
   })
   public async deleteRemark(
@@ -260,157 +256,5 @@ export class HoyolabCommands {
         content: err.message || '❌ Error deleting remark.',
       });
     }
-  }
-
-  @SlashCommand({
-    name: 'hoyo-redeem-giftcode',
-    description: 'Redeem giftcode',
-  })
-  public async redeemGiftcode(
-    @Context() [interaction]: SlashCommandContext,
-    @Options() dto: HoyolabRedeemDto,
-  ) {
-    await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
-    const user = await this.hoyolabService.getUserInfo(interaction.user.id);
-    if (!user)
-      return interaction.editReply({
-        content: '❌ Account data not found, please save the cookie first.',
-      });
-
-    const {
-      giftcode1,
-      giftcode2,
-      giftcode3,
-      giftcode4,
-      giftcode5,
-      giftcode6,
-      giftcode7,
-      giftcode8,
-      giftcode9,
-      giftcode10,
-      target,
-    } = dto;
-    const giftcodes = Array.from(
-      new Set([
-        giftcode1,
-        giftcode2,
-        giftcode3,
-        giftcode4,
-        giftcode5,
-        giftcode6,
-        giftcode7,
-        giftcode8,
-        giftcode9,
-        giftcode10,
-      ]),
-    ).filter(Boolean) as string[];
-
-    let totalAccounts = 0;
-    const targetAccounts: Array<{
-      uid: string;
-      nickname: string;
-      game: THoyoGame;
-    }> = [];
-    if (user.hoyoUsers) {
-      for (const hoyoUser of user.hoyoUsers) {
-        const matchingAccounts = hoyoUser.gameAccounts.filter(
-          (a: any) => a.game === target,
-        );
-        for (const acc of matchingAccounts) {
-          targetAccounts.push({
-            uid: acc.game_uid,
-            nickname: acc.nickname,
-            game: acc.game as THoyoGame,
-          });
-        }
-        totalAccounts += matchingAccounts.length;
-      }
-    }
-
-    if (totalAccounts === 0) {
-      return interaction.editReply({
-        content: '❌ No target game accounts found to redeem codes for.',
-      });
-    }
-
-    if (totalAccounts > 10) {
-      return interaction.editReply({
-        content: `❌ Too many accounts (${totalAccounts}). Discord limits restrict rendering to a maximum of 10 embeds. Please remove some accounts to proceed.`,
-      });
-    }
-
-    const accountStates: Array<IAccountRedeemState> = targetAccounts.map(
-      (acc) => ({
-        uid: acc.uid,
-        nickname: acc.nickname,
-        game: acc.game,
-        blocks: [],
-        statusText: 'Waiting for redemption to start...',
-      }),
-    );
-
-    await interaction.editReply({
-      content: `🚀 Starting redemption for **${totalAccounts}** accounts with **${giftcodes.length}** codes...`,
-      embeds: this.hoyolabEmbeds.redeemProgressEmbeds(
-        accountStates,
-        giftcodes.length,
-      ),
-    });
-
-    for (let i = 0; i < giftcodes.length; i++) {
-      const giftcode = giftcodes[i];
-      try {
-        await this.hoyolabService.redeemCode(
-          user,
-          target,
-          giftcode,
-          async (account, resultStatus) => {
-            let statusEmoji = '❌';
-            let blockEmoji = '🟥';
-
-            if (resultStatus.code === 0) {
-              statusEmoji = '✅';
-              blockEmoji = '🟩';
-            } else if (
-              resultStatus.code === -2017 ||
-              resultStatus.code === -5003
-            ) {
-              statusEmoji = '⏺';
-              blockEmoji = '🟨';
-            }
-
-            const state = accountStates.find((s) => s.uid === account.game_uid);
-            if (state) {
-              state.blocks.push(blockEmoji);
-              state.statusText = `${statusEmoji} ${resultStatus.message}`;
-            }
-
-            try {
-              await interaction.editReply({
-                content: `🚀 Redeeming codes... (Processing code **${i + 1}/${giftcodes.length}**)`,
-                embeds: this.hoyolabEmbeds.redeemProgressEmbeds(
-                  accountStates,
-                  giftcodes.length,
-                ),
-              });
-            } catch {
-              // Ignore rate limits or temporary errors during progress update
-            }
-          },
-        );
-      } catch (err: any) {
-        return interaction.editReply({
-          content: err.message || '❌ Target not redeemable',
-        });
-      }
-    }
-
-    await interaction.editReply({
-      content: '✅ **Redemption Complete!** Summary below:',
-      embeds: this.hoyolabEmbeds.redeemProgressEmbeds(
-        accountStates,
-        giftcodes.length,
-      ),
-    });
   }
 }

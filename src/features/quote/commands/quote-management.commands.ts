@@ -1,51 +1,35 @@
 import { Injectable } from '@nestjs/common';
+import type { ModalSubmitInteraction } from 'discord.js';
 import {
-  Context,
-  Options,
-  SlashCommand,
-  MessageCommand,
-  Button,
-  Modal,
-} from 'necord';
-import type { SlashCommandContext, MessageCommandContext } from 'necord';
-import {
-  ActionRowBuilder,
-  APIEmbed,
-  ButtonBuilder,
-  ButtonStyle,
-  MessageActionRowComponentBuilder,
-  ModalBuilder,
-  TextInputBuilder,
-  TextInputStyle,
-  MessageFlags,
+    ActionRowBuilder,
+    APIEmbed,
+    MessageFlags,
+    ModalBuilder,
+    TextInputBuilder,
+    TextInputStyle,
 } from 'discord.js';
-import type { ButtonInteraction, ModalSubmitInteraction } from 'discord.js';
-import { QuoteService } from './quote.service';
-import type { QuoteSort } from './quote.service';
-import { QuoteEmbeds } from './quote.embeds';
+import type { MessageCommandContext, SlashCommandContext, TextCommandContext } from 'necord';
 import {
-  CreateQuoteDto,
-  GetQuoteDto,
-  ListQuotesDto,
-  QuoteIdDto,
-  EditQuoteDto,
-} from './dto';
-import { PaginationService } from '../../shared/pagination';
-import { AppCacheService } from '../../shared/cache';
-import { splitToChunks } from '../../shared/utils';
-
-const QUOTES_PER_PAGE = 10;
+    Arguments,
+    Context,
+    MessageCommand,
+    Modal,
+    Options,
+    SlashCommand,
+    TextCommand,
+} from 'necord';
+import { AppCacheService } from '../../../shared/cache';
+import { CreateQuoteDto, EditQuoteDto, QuoteIdDto } from '../dto';
+import { QuoteService } from '../quote.service';
 
 @Injectable()
-export class QuoteCommands {
+export class QuoteManagementCommands {
   constructor(
     private readonly quoteService: QuoteService,
-    private readonly quoteEmbeds: QuoteEmbeds,
-    private readonly paginationService: PaginationService,
     private readonly cacheService: AppCacheService,
   ) {}
 
-  // --- Slash Commands ---
+  // --- Create ---
 
   @SlashCommand({ name: 'quote-create', description: 'Create a new quote' })
   async createQuote(
@@ -81,106 +65,39 @@ export class QuoteCommands {
     }
   }
 
-  @SlashCommand({
-    name: 'quote-get',
-    description: 'Get a quote by keyword or ID',
+  @TextCommand({
+    name: '$',
+    description: 'Create a quote',
+    // aliases: ['createquote'],
   })
-  async getQuote(
-    @Context() [interaction]: SlashCommandContext,
-    @Options() dto: GetQuoteDto,
+  async onCreateText(
+    @Context() [message]: TextCommandContext,
+    @Arguments() args: string[],
   ) {
-    const quote = await this.quoteService.getRandomQuote(
-      dto.keyword,
-      interaction.guildId!,
-      interaction.user.id,
-    );
+    const key = args[0];
+    if (!key) return message.reply('❌ Keyword required.');
 
-    if (!quote)
-      return interaction.reply({
-        content: '❌ No quote found.',
-        flags: [MessageFlags.Ephemeral],
+    const value = args.slice(1).join(' ').trim();
+    const attachments = message.attachments.map((a) => a.url).join(', ');
+
+    if (!value && !attachments) return message.reply('❌ Content required.');
+
+    try {
+      await this.quoteService.create({
+        guild: message.guildId!,
+        user: message.author.id,
+        quote: {
+          key,
+          value: `${value ?? ''} ${attachments ?? ''}`.trim(),
+        },
       });
-    if (quote.private && quote.user !== interaction.user.id) {
-      return interaction.reply({
-        content: '❌ The quote is privated.',
-        flags: [MessageFlags.Ephemeral],
-      });
+      return message.reply('✅ Quote added successfully.');
+    } catch {
+      return message.reply('❌ Error occurred.');
     }
-
-    return interaction.reply({
-      content: quote.quote?.value,
-      embeds: quote.quote?.embeds,
-      allowedMentions: { repliedUser: false },
-    });
   }
 
-  @SlashCommand({ name: 'quote-list', description: 'List server quotes' })
-  async listQuotes(
-    @Context() [interaction]: SlashCommandContext,
-    @Options() dto: ListQuotesDto,
-  ) {
-    const sort = (dto.sort as QuoteSort) || 'key';
-    const order = (dto.order as 1 | -1) || 1;
-    const quotes = await this.quoteService.listQuotes(
-      interaction.guildId!,
-      sort,
-      order,
-    );
-
-    if (!quotes || quotes.length === 0) {
-      return interaction.reply({
-        content: '❌ No quote found.',
-        flags: [MessageFlags.Ephemeral],
-      });
-    }
-
-    const chunks = splitToChunks(quotes, QUOTES_PER_PAGE);
-    const pages = chunks.map((chunk, index) => ({
-      embeds: [
-        this.quoteEmbeds.listQuotes(
-          interaction.user,
-          chunk,
-          index + 1,
-          chunks.length,
-        ),
-      ],
-    }));
-
-    return this.paginationService.paginate(interaction, pages, {
-      ephemeral: false,
-    });
-  }
-
-  @SlashCommand({ name: 'quote-mine', description: 'List your quotes' })
-  async myQuotes(@Context() [interaction]: SlashCommandContext) {
-    const quotes = await this.quoteService.getUserQuotes(
-      interaction.user.id,
-      interaction.guildId!,
-    );
-
-    if (quotes.length === 0) {
-      return interaction.reply({
-        content: '❌ No quote found.',
-        flags: [MessageFlags.Ephemeral],
-      });
-    }
-
-    const chunks = splitToChunks(quotes, QUOTES_PER_PAGE);
-    const pages = chunks.map((chunk, index) => ({
-      embeds: [
-        this.quoteEmbeds.listQuotes(
-          interaction.user,
-          chunk,
-          index + 1,
-          chunks.length,
-        ),
-      ],
-    }));
-
-    return this.paginationService.paginate(interaction, pages, {
-      ephemeral: false,
-    });
-  }
+  // --- Edit ---
 
   @SlashCommand({ name: 'quote-edit', description: 'Edit a quote' })
   async editQuote(
@@ -207,6 +124,72 @@ export class QuoteCommands {
     });
   }
 
+  @TextCommand({
+    name: 'editquote',
+    description: 'Edit a quote',
+    // aliases: ['eq'],
+  })
+  async onEditQuoteText(
+    @Context() [message]: TextCommandContext,
+    @Arguments() args: string[],
+  ) {
+    const id = args[0];
+    if (!id) return message.reply('❌ ID required.');
+
+    const content = args.slice(1).join(' ').trim();
+    const attachments = message.attachments.map((a) => a.url).join(', ');
+
+    if (!content && !attachments) return message.reply('❌ Content required.');
+
+    const response = await this.quoteService.edit(
+      message.author.id,
+      message.guildId!,
+      id,
+      `${content ?? ''} ${attachments ?? ''}`.trim(),
+    );
+    return message.reply(response);
+  }
+
+  // --- Delete ---
+
+  @SlashCommand({ name: 'quote-delete', description: 'Delete a quote' })
+  async deleteQuote(
+    @Context() [interaction]: SlashCommandContext,
+    @Options() dto: QuoteIdDto,
+  ) {
+    const response = await this.quoteService.delete(
+      interaction.user.id,
+      interaction.guildId!,
+      dto.id,
+    );
+    return interaction.reply({
+      content: response,
+      flags: [MessageFlags.Ephemeral],
+    });
+  }
+
+  @TextCommand({
+    name: 'deletequote',
+    description: 'Delete a quote',
+    // aliases: ['dq'],
+  })
+  async onDeleteQuoteText(
+    @Context() [message]: TextCommandContext,
+    @Arguments() args: string[],
+  ) {
+    const id = args[0];
+    if (!id) return message.reply('❌ ID required.');
+
+    const response = await this.quoteService.delete(
+      message.author.id,
+      message.guildId!,
+      id,
+    );
+    return message.reply(response);
+  }
+
+  // --- Publish ---
+
   @SlashCommand({ name: 'quote-publish', description: 'Publish your quote' })
   async publishQuote(
     @Context() [interaction]: SlashCommandContext,
@@ -222,6 +205,28 @@ export class QuoteCommands {
       flags: [MessageFlags.Ephemeral],
     });
   }
+
+  @TextCommand({
+    name: 'publishquote',
+    description: 'Publish a quote',
+    // aliases: ['plq'],
+  })
+  async onPublishQuoteText(
+    @Context() [message]: TextCommandContext,
+    @Arguments() args: string[],
+  ) {
+    const id = args[0];
+    if (!id) return message.reply('❌ ID required.');
+
+    const response = await this.quoteService.publish(
+      message.author.id,
+      message.guildId!,
+      id,
+    );
+    return message.reply(response);
+  }
+
+  // --- Private ---
 
   @SlashCommand({
     name: 'quote-private',
@@ -242,23 +247,27 @@ export class QuoteCommands {
     });
   }
 
-  @SlashCommand({ name: 'quote-delete', description: 'Delete a quote' })
-  async deleteQuote(
-    @Context() [interaction]: SlashCommandContext,
-    @Options() dto: QuoteIdDto,
+  @TextCommand({
+    name: 'privatequote',
+    description: 'Make a quote private',
+    // aliases: ['prq'],
+  })
+  async onPrivateQuoteText(
+    @Context() [message]: TextCommandContext,
+    @Arguments() args: string[],
   ) {
-    const response = await this.quoteService.delete(
-      interaction.user.id,
-      interaction.guildId!,
-      dto.id,
+    const id = args[0];
+    if (!id) return message.reply('❌ ID required.');
+
+    const response = await this.quoteService.setPrivate(
+      message.author.id,
+      message.guildId!,
+      id,
     );
-    return interaction.reply({
-      content: response,
-      flags: [MessageFlags.Ephemeral],
-    });
+    return message.reply(response);
   }
 
-  // --- Context Menu ---
+  // --- Context Menu: Save Quote ---
 
   @MessageCommand({ name: 'Quote this message' })
   async saveQuoteContextMenu(@Context() [interaction]: MessageCommandContext) {
@@ -341,46 +350,5 @@ export class QuoteCommands {
         flags: [MessageFlags.Ephemeral],
       });
     }
-  }
-
-  @Button('refreshQuote')
-  async onRefreshQuote(@Context() [interaction]: [ButtonInteraction]) {
-    const commandMessage = interaction.message.channel?.messages.cache.get(
-      interaction.message.reference?.messageId ?? '',
-    );
-
-    if (!commandMessage || interaction.user.id !== commandMessage.author.id) {
-      return interaction.reply({
-        content: '❌ Only message author can retry.',
-        flags: [MessageFlags.Ephemeral],
-      });
-    }
-
-    await interaction.deferUpdate();
-
-    const keyword = commandMessage.content.split(' ')[1];
-    const quote = await this.quoteService.getRandomQuote(
-      keyword,
-      commandMessage.guildId!,
-      commandMessage.author.id,
-    );
-
-    if (!quote) return;
-
-    const refreshBtn = new ButtonBuilder()
-      .setLabel('🔄')
-      .setStyle(ButtonStyle.Primary)
-      .setCustomId('refreshQuote');
-    const row =
-      new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-        refreshBtn,
-      );
-
-    await interaction.message.edit({
-      content: quote.quote?.value,
-      embeds: quote.quote?.embeds,
-      components: [row],
-      allowedMentions: { repliedUser: false },
-    });
   }
 }

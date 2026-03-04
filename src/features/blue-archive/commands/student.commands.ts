@@ -1,26 +1,22 @@
+import { BuruakaCommandDecorator } from './decorators';
 import { Injectable } from '@nestjs/common';
-import { Context, Options, SlashCommand, Button } from 'necord';
-import type { SlashCommandContext } from 'necord';
 import type { ButtonInteraction } from 'discord.js';
 import {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  MessageActionRowComponentBuilder,
-  MessageFlags,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    MessageActionRowComponentBuilder,
+    MessageFlags,
 } from 'discord.js';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { NotifyChannel, type NotifyChannelDocument } from './ba.schemas';
-import { BaService } from './ba.service';
-import { BaEmbeds } from './ba.embeds';
-import { StudentSearchDto, RaidSearchDto, ServerStatusDto, BaNotifyDto } from './dto';
-import { PaginationService } from '../../shared/pagination';
-import { AppCacheService } from '../../shared/cache';
-import * as C from './ba.constants';
-import type { IStudent } from './types/student';
-import type { IConfig, CurrentGacha, CurrentRaid } from './types/config';
-import { isObjectEmpty } from '../../shared/utils';
+import type { SlashCommandContext } from 'necord';
+import { Button, Context, Options, Subcommand } from 'necord';
+import { PaginationService } from '../../../shared/pagination';
+import { isObjectEmpty } from '../../../shared/utils';
+import * as C from '../ba.constants';
+import { BaEmbeds } from '../ba.embeds';
+import { BaService } from '../ba.service';
+import { StudentSearchDto } from '../dto';
+import type { IStudent } from '../types/student';
 
 function studentRow(hasGear: boolean) {
   return new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
@@ -49,55 +45,15 @@ function studentRow(hasGear: boolean) {
 }
 
 @Injectable()
-export class BaCommands {
+@BuruakaCommandDecorator()
+export class StudentCommands {
   constructor(
     private readonly baService: BaService,
     private readonly baEmbeds: BaEmbeds,
     private readonly paginationService: PaginationService,
-    private readonly cacheService: AppCacheService,
-    @InjectModel(NotifyChannel.name)
-    private readonly notifyModel: Model<NotifyChannelDocument>,
   ) {}
 
-  @SlashCommand({
-    name: 'ba-notify',
-    description: 'Toggle SchaleDB update notifications for this channel',
-  })
-  public async toggleNotify(
-    @Context() [interaction]: SlashCommandContext,
-    @Options() dto: BaNotifyDto,
-  ) {
-    await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
-
-    // Owner-only check
-    if (interaction.user.id !== process.env.OWNER_ID) {
-      return interaction.editReply({
-        content: '❌ Only the bot owner can use this command.',
-      });
-    }
-
-    if (dto.action === 'on') {
-      await this.notifyModel.findOneAndUpdate(
-        { channelId: interaction.channelId, notifyType: C.BA_SCHALEDB_UPDATE },
-        { guildId: interaction.guildId!, channelId: interaction.channelId, notifyType: C.BA_SCHALEDB_UPDATE },
-        { upsert: true },
-      );
-      return interaction.editReply({
-        content: '✅ SchaleDB update notifications **enabled** for this channel.',
-      });
-    } else {
-      await this.notifyModel.findOneAndDelete({
-        channelId: interaction.channelId,
-        notifyType: C.BA_SCHALEDB_UPDATE,
-      });
-      return interaction.editReply({
-        content: '✅ SchaleDB update notifications **disabled** for this channel.',
-      });
-    }
-  }
-
-  @SlashCommand({
-    name: 'ba-student',
+  @Subcommand({ name: 'student',
     description: 'Search Blue Archive students',
   })
   async studentSearch(
@@ -141,99 +97,6 @@ export class BaCommands {
     } catch (err: any) {
       return interaction.editReply({ content: `❌ ${err.message}` });
     }
-  }
-
-  @SlashCommand({ name: 'ba-raid', description: 'Search Blue Archive raid' })
-  async raidSearch(
-    @Context() [interaction]: SlashCommandContext,
-    @Options() dto: RaidSearchDto,
-  ) {
-    await interaction.deferReply({
-      flags: !dto.display ? [MessageFlags.Ephemeral] : [],
-    });
-    try {
-      const raid = await this.baService.getRaidById(dto.raidId);
-      if (!raid)
-        return interaction.editReply({ content: '❌ Raid not found.' });
-      if (C.RAID_DIFFICULTIES[dto.difficulty] > raid.MaxDifficulty[0])
-        return interaction.editReply({
-          content: `❌ Unavailable difficulty **${dto.difficulty}** for **${raid.Name}**.`,
-        });
-      return interaction.editReply({
-        embeds: [
-          await this.baEmbeds.raid(raid, dto.difficulty, interaction.user),
-        ],
-      });
-    } catch (err: any) {
-      return interaction.editReply({ content: `❌ ${err.message}` });
-    }
-  }
-
-  @SlashCommand({
-    name: 'ba-server',
-    description: "Get Blue Archive server's status",
-  })
-  async serverStatus(
-    @Context() [interaction]: SlashCommandContext,
-    @Options() dto: ServerStatusDto,
-  ) {
-    await interaction.deferReply();
-    const config = await this.cacheService.get<IConfig>('BA_Common');
-    if (!config)
-      return interaction.editReply({ content: '❌ Cache not found.' });
-
-    const region = config.Regions[dto.regionId];
-    region.studentsCount = await this.baService.getStudentCount(dto.regionId);
-    region.raidsCount = await this.baService.getRaidCount(dto.regionId);
-    region.eventsCount = region.Events?.length ?? 0;
-    region.rerunEventsCount = (region.Events ?? []).filter((e: number) =>
-      /^10/.test(e.toString()),
-    ).length;
-    region.incomingBirthdayStudents =
-      await this.baService.getStudentHasBirthdayNextWeek(dto.regionId);
-
-    // Populate raid info
-    const raids: Array<CurrentRaid & { info?: any }> = (
-      region.CurrentRaid ?? []
-    ).filter((r: any) => r.raid.toString().length < 4);
-    const timeAttacks: Array<CurrentRaid & { info?: any }> = (
-      region.CurrentRaid ?? []
-    ).filter((r: any) => r.raid.toString().length >= 4);
-    const raidPromises: Promise<any>[] = [];
-    raids.forEach((r, i, arr) =>
-      raidPromises.push(
-        this.baService.getRaidById(r.raid).then((info) => {
-          if (info) arr[i].info = info;
-        }),
-      ),
-    );
-    timeAttacks.forEach((ta, i, arr) =>
-      raidPromises.push(
-        this.baService.getTimeAttackById(ta.raid).then((info) => {
-          if (info) arr[i].info = info;
-        }),
-      ),
-    );
-    await Promise.all(raidPromises);
-
-    // Populate gacha character info
-    const gachaPromises: Promise<any>[] = [];
-    (region.CurrentGacha ?? []).forEach(
-      (gacha: CurrentGacha, i: number, arr: any) => {
-        gachaPromises.push(
-          this.baService
-            .getStudentByIds(gacha.characters as any)
-            .then((students) => {
-              if (students.length > 0) arr[i].characters = students;
-            }),
-        );
-      },
-    );
-    await Promise.all(gachaPromises);
-
-    return interaction.editReply({
-      embeds: [await this.baEmbeds.server(region, interaction.user)],
-    });
   }
 
   // --- Student Button Handlers ---
@@ -338,7 +201,6 @@ export class BaCommands {
           });
         }
       }
-      // Set TSA partner names
       const allTsaIds = student.Skills.reduce((acc, s) => {
         const extras = s.ExtraSkills?.filter((es) => es.TSAId);
         if (extras) acc.push(...extras.map((es) => es.TSAId!));

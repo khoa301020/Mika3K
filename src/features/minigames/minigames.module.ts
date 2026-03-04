@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { MinigamesCommands } from './minigames.commands';
+import { MinigamesCommandProviders } from './commands';
 
 @Module({
-  providers: [MinigamesCommands],
+  providers: [...MinigamesCommandProviders],
 })
 export class MinigamesModule {}

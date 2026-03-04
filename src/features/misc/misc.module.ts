@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { MiscService } from './misc.service';
-import { MiscCommands } from './misc.commands';
+import { MiscCommandProviders } from './commands';
 import { MiscEmbeds } from './misc.embeds';
+import { MiscService } from './misc.service';
 
 @Module({
-  providers: [MiscService, MiscCommands, MiscEmbeds],
+  providers: [MiscService, MiscEmbeds, ...MiscCommandProviders],
   exports: [MiscService],
 })
 export class MiscModule {}

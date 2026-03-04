@@ -1,23 +1,12 @@
+import { NovelCommandDecorator } from './decorators';
 import { Injectable } from '@nestjs/common';
-import { Context, SlashCommand, Options } from 'necord';
-import type { SlashCommandContext } from 'necord';
-import { StringOption } from 'necord';
 import { MessageFlags } from 'discord.js';
-import { SyosetuService } from './syosetu.service';
-import { SyosetuConstants } from './syosetu.constants';
-import { SyosetuEmbeds } from './syosetu.embeds';
-import { PaginationService } from '../../shared/pagination';
+import type { SlashCommandContext } from 'necord';
+import { Context, Options, Subcommand, StringOption } from 'necord';
+import { SyosetuConstants } from '../syosetu.constants';
+import { SyosetuService } from '../syosetu.service';
 
-export class SyosetuSearchDto {
-  @StringOption({
-    name: 'query',
-    description: 'Novel title or keywords to search',
-    required: true,
-  })
-  query: string;
-}
-
-export class SyosetuFollowDto {
+class SyosetuFollowDto {
   @StringOption({
     name: 'ncode',
     description: 'Novel N-code (e.g. n9669bk)',
@@ -27,59 +16,11 @@ export class SyosetuFollowDto {
 }
 
 @Injectable()
-export class SyosetuCommands {
-  constructor(
-    private readonly syosetuService: SyosetuService,
-    private readonly syosetuEmbeds: SyosetuEmbeds,
-    private readonly paginationService: PaginationService,
-  ) {}
+@NovelCommandDecorator({ name: 'syosetu', description: 'Syosetu commands' })
+export class SyosetuFollowCommands {
+  constructor(private readonly syosetuService: SyosetuService) {}
 
-  @SlashCommand({
-    name: 'syosetu-search',
-    description: 'Search Syosetu novels',
-  })
-  public async searchNovel(
-    @Context() [interaction]: SlashCommandContext,
-    @Options() dto: SyosetuSearchDto,
-  ) {
-    await interaction.deferReply();
-    try {
-      const data = await this.syosetuService.getNovel({
-        word: dto.query,
-        out: 'json',
-        of: ['t', 'n', 'u', 'w', 's', 'bg', 'g', 'k', 'gf', 'gl', 'ga', 'l', 'ti', 'nt', 'e', 'nu'],
-        lim: 20,
-      });
-      if (!data || data[0].allcount === 0 || data.length < 2) {
-        return interaction.editReply({ content: '❌ No novels found.' });
-      }
-      
-      const novels = data.slice(1);
-      if (novels.length === 1) {
-        return interaction.editReply({ embeds: [this.syosetuEmbeds.novel(novels[0] as any, interaction.user)] });
-      }
-      
-      const pages = novels.map((n: any, idx: number) => ({
-        embeds: [this.syosetuEmbeds.novel(n, interaction.user, idx + 1, novels.length)],
-      }));
-      
-      return this.paginationService.paginate(interaction, pages);
-    } catch (err: any) {
-      return interaction.editReply({ content: `❌ Error: ${err.message}` });
-    }
-  }
-
-  @SlashCommand({
-    name: 'syosetu-genres',
-    description: 'View Syosetu genres',
-  })
-  public async viewGenres(@Context() [interaction]: SlashCommandContext) {
-    await interaction.deferReply();
-    return interaction.editReply({ embeds: [this.syosetuEmbeds.genres(interaction.user)] });
-  }
-
-  @SlashCommand({
-    name: 'syosetu-follow',
+  @Subcommand({ name: 'follow',
     description: 'Follow a Syosetu novel for update notifications',
   })
   public async followNovel(
@@ -108,8 +49,7 @@ export class SyosetuCommands {
     });
   }
 
-  @SlashCommand({
-    name: 'syosetu-unfollow',
+  @Subcommand({ name: 'unfollow',
     description: 'Unfollow a Syosetu novel',
   })
   public async unfollowNovel(
@@ -131,8 +71,7 @@ export class SyosetuCommands {
     });
   }
 
-  @SlashCommand({
-    name: 'syosetu-follow-channel',
+  @Subcommand({ name: 'follow-channel',
     description: 'Follow a Syosetu novel for this channel',
   })
   public async followNovelChannel(
@@ -165,8 +104,7 @@ export class SyosetuCommands {
     });
   }
 
-  @SlashCommand({
-    name: 'syosetu-unfollow-channel',
+  @Subcommand({ name: 'unfollow-channel',
     description: 'Unfollow a Syosetu novel for this channel',
   })
   public async unfollowNovelChannel(

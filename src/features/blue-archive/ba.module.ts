@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { BaService } from './ba.service';
-import { BaCommands } from './ba.commands';
-import { BaEmbeds } from './ba.embeds';
+import { MongooseModule } from '@nestjs/mongoose';
 import { BaCronService } from './ba.cron';
+import { BaEmbeds } from './ba.embeds';
 import { NotifyChannel, NotifyChannelSchema } from './ba.schemas';
+import { BaService } from './ba.service';
+import { BaCommandProviders } from './commands';
 
 @Module({
   imports: [
@@ -23,7 +23,7 @@ import { NotifyChannel, NotifyChannelSchema } from './ba.schemas';
       { name: NotifyChannel.name, schema: NotifyChannelSchema },
     ]),
   ],
-  providers: [BaService, BaCommands, BaEmbeds, BaCronService],
+  providers: [BaService, BaEmbeds, BaCronService, ...BaCommandProviders],
   exports: [BaService],
 })
 export class BlueArchiveModule {}

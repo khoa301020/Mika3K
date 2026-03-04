@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonInteraction,
-  ButtonStyle,
-  MessageActionRowComponentBuilder,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonInteraction,
+    ButtonStyle,
+    MessageActionRowComponentBuilder,
 } from 'discord.js';
-import { Context, SlashCommand, Button } from 'necord';
-import type { SlashCommandContext, ButtonContext } from 'necord';
+import type { ButtonContext, SlashCommandContext, TextCommandContext } from 'necord';
+import { Button, Context, SlashCommand, TextCommand } from 'necord';
 
 const truthTable = {
   Rock: { Rock: '🗿', Scissor: '🎉', Paper: '🚮' },
@@ -45,7 +45,7 @@ const finishRow =
   );
 
 @Injectable()
-export class MinigamesCommands {
+export class JankenponCommands {
   private randomArray<T>(arr: T[]): T[] {
     return [arr[Math.floor(Math.random() * arr.length)]];
   }
@@ -64,6 +64,24 @@ export class MinigamesCommands {
     setTimeout(() => {
       interaction
         .editReply({ content: 'Rock, Scissor, Paper!', components: [] })
+        .catch(() => {});
+    }, 60 * 1000);
+  }
+
+  @TextCommand({
+    name: 'jankenpon',
+    description: 'Play Rock, Scissor, Paper!',
+    // aliases: ['jkp'],
+  })
+  async onJankenponText(@Context() [message]: TextCommandContext) {
+    const reply = await message.reply({
+      content: 'Rock, Scissor, Paper!',
+      components: [playRow],
+    });
+
+    setTimeout(() => {
+      reply
+        .edit({ content: 'Rock, Scissor, Paper!', components: [] })
         .catch(() => {});
     }, 60 * 1000);
   }

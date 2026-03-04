@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { MalService } from './mal.service';
-import { MalCommands } from './mal.commands';
-import { MalEmbeds } from './mal.embeds';
 import { ChartModule } from '../../shared/chart';
+import { MalCommandProviders } from './commands';
+import { MalEmbeds } from './mal.embeds';
+import { MalService } from './mal.service';
 
 @Module({
   imports: [ChartModule],
-  providers: [MalService, MalCommands, MalEmbeds],
+  providers: [MalService, MalEmbeds, ...MalCommandProviders],
   exports: [MalService],
 })
 export class MalModule {}

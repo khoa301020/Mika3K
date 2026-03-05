@@ -148,8 +148,9 @@ export class DeliveryTrackerCron {
       newStatus,
     );
 
-    // Broadcast each new record to approved targets
-    for (const record of newRecords) {
+    // Broadcast each new record to approved targets (oldest first for chronological order)
+    const chronologicalRecords = [...newRecords].reverse();
+    for (const record of chronologicalRecords) {
       const embed = this.trackerEmbeds.trackingUpdateEmbed(doc, record);
 
       for (const target of doc.broadcastTargets) {
@@ -162,10 +163,13 @@ export class DeliveryTrackerCron {
             );
             if (channel && 'send' in channel) {
               await (channel as any).send({ embeds: [embed] });
+              // 500ms delay to respect Discord 50 req/sec rate limit & ensure order
+              await new Promise((r) => setTimeout(r, 500));
             }
           } else if (target.type === 'dm') {
             const user = await this.client.users.fetch(target.userId);
             await user.send({ embeds: [embed] });
+            await new Promise((r) => setTimeout(r, 500));
           }
         } catch (err) {
           this.logger.warn(

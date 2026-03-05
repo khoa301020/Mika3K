@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Client, EmbedBuilder } from 'discord.js';
 import { EMBED_LIMITS, EmbedService } from '../../shared/embed';
-import { datetimeConverter } from '../../shared/utils';
+import { getTime } from '../../shared/utils';
 import { DeliveryTrackerConstants } from './delivery-tracker.constants';
 import { ITrackingRecord } from './delivery-tracker.types';
 import { DeliveryTrackerDocument } from './schemas/delivery-tracker.schema';
@@ -23,7 +23,7 @@ export class DeliveryTrackerEmbeds {
     const dateStr = this.formatTimestamp(record.timestamp);
 
     const lines = [
-      `📦 ${tracker.trackingCode} (${tracker.remark})`,
+      `📦 \`[${tracker.provider}] ${tracker.trackingCode}\` (${tracker.remark})`,
       '',
     ];
     if (record.code) lines.push(`🧩 Code: ${record.code}`);
@@ -94,8 +94,8 @@ export class DeliveryTrackerEmbeds {
     });
 
     const description = [
-      `${statusEmoji} **${tracker.trackingCode}** (${tracker.remark})`,
-      `Provider: **${tracker.provider}** | Status: **${tracker.lastKnownStatus}**`,
+      `${statusEmoji} \`[${tracker.provider}] ${tracker.trackingCode}\` — **${tracker.remark}**`,
+      `Status: **${tracker.lastKnownStatus}**`,
     ];
 
     if (!isBroadcast) {
@@ -129,9 +129,8 @@ export class DeliveryTrackerEmbeds {
         [
           `**${inviterTag}** wants to share tracking updates with you!`,
           '',
-          `📦 Code: \`${tracker.trackingCode}\``,
+          `📦 Code: \`[${tracker.provider}] ${tracker.trackingCode}\``,
           `📝 Remark: ${tracker.remark}`,
-          `🚚 Provider: ${tracker.provider}`,
           '',
           'Click **Accept** to receive updates or **Reject** to decline.',
         ].join('\n'),
@@ -182,8 +181,7 @@ export class DeliveryTrackerEmbeds {
     recentRecords: ITrackingRecord[],
   ): EmbedBuilder {
     const lines = [
-      `✅ \`${tracker.trackingCode}\` — **${tracker.remark}**`,
-      `🚚 Provider: **${provider}**`,
+      `✅ \`[${provider}] ${tracker.trackingCode}\` — **${tracker.remark}**`,
     ];
 
     if (recentRecords.length) {
@@ -224,7 +222,10 @@ export class DeliveryTrackerEmbeds {
   }
 
   private formatTimestamp(unixSeconds: number): string {
-    const { datetime } = datetimeConverter(unixSeconds * 1000);
-    return datetime;
+    return getTime(
+      new Date(unixSeconds * 1000),
+      DeliveryTrackerConstants.TIMEZONE,
+      'DD/MM/YYYY HH:mm:ss',
+    );
   }
 }

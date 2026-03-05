@@ -340,8 +340,9 @@ export class TrackCommands {
 
       try {
         const owner = await this.client.users.fetch(parsed.ownerId);
+        const remarkText = tracker ? ` (${tracker.remark})` : '';
         await owner.send(
-          `✅ **${interaction.user.tag}** accepted the watchalong for \`${parsed.code}\`.`,
+          `✅ **${interaction.user.tag}** accepted the watchalong for \`[${tracker?.provider || 'Unknown'}] ${parsed.code}\`${remarkText}.`,
         );
       } catch {
         // Owner DM closed
@@ -373,7 +374,7 @@ export class TrackCommands {
 
     try {
       // Remove rejected user from broadcast targets (not stored)
-      await this.trackerService.removeBroadcastTarget(
+      const tracker = await this.trackerService.removeBroadcastTarget(
         parsed.code,
         parsed.ownerId,
         interaction.user.id,
@@ -387,8 +388,10 @@ export class TrackCommands {
       // Notify the owner about the rejection
       try {
         const owner = await this.client.users.fetch(parsed.ownerId);
+        const remarkText = tracker ? ` (${tracker.remark})` : '';
+        const providerName = tracker ? tracker.provider : 'Unknown';
         await owner.send(
-          `❌ **${interaction.user.tag}** declined the watchalong for \`${parsed.code}\`.`,
+          `❌ **${interaction.user.tag}** declined the watchalong for \`[${providerName}] ${parsed.code}\`${remarkText}.`,
         );
       } catch {
         // Owner DM closed

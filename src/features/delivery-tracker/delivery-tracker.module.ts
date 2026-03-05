@@ -10,6 +10,7 @@ import { DeliveryTrackerCron } from './delivery-tracker.cron';
 import { DeliveryTrackerEmbeds } from './delivery-tracker.embeds';
 import { DeliveryTrackerHelper } from './delivery-tracker.helper';
 import { DeliveryTrackerService } from './delivery-tracker.service';
+import { GhnProvider } from './providers/ghn.provider';
 import { JntProvider } from './providers/jnt.provider';
 import { SpxProvider } from './providers/spx.provider';
 import {
@@ -36,6 +37,7 @@ import {
     DeliveryTrackerConstants,
     SpxProvider,
     JntProvider,
+    GhnProvider,
   ],
   exports: [DeliveryTrackerService],
 })

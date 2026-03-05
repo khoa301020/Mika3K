@@ -86,15 +86,21 @@ export class DeliveryTrackerCron {
     provider: ITrackerProvider,
   ): Promise<void> {
     try {
-      // 2. Fetch from provider API once
+      // 2. Get all active tracker docs for this code first to access providerMeta
+      const docs = await this.trackerService.getActiveTrackersByCode(code);
+      if (!docs.length) return;
+      
+      const providerMeta = docs[0].providerMeta;
+
+      // 3. Fetch from provider API once
       const fetchedRecords = await this.trackerHelper.fetchRecords(
         code,
         provider.providerName,
+        providerMeta,
       );
 
       if (!fetchedRecords.length) {
         // Still touch all docs so lastPolledAt updates
-        const docs = await this.trackerService.getActiveTrackersByCode(code);
         for (const doc of docs) {
           await this.trackerService.touchPolled(code, doc.ownerId);
         }
@@ -102,9 +108,6 @@ export class DeliveryTrackerCron {
       }
 
       const newStatus = provider.resolveStatus(fetchedRecords);
-
-      // 3. Get all active tracker docs for this code
-      const docs = await this.trackerService.getActiveTrackersByCode(code);
 
       for (const doc of docs) {
         await this.updateSingleDoc(doc, fetchedRecords, newStatus);

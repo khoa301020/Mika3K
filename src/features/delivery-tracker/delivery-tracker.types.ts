@@ -9,11 +9,13 @@ export enum DeliveryStatus {
 
 export enum DeliveryProvider {
   SPX = 'SPX',
-  JNT = 'JNT',
+  JNT = 'J&T',
+  GHN = 'GHN',
 }
 
 export interface ITrackingRecord {
-  code: string;
+  code?: string;
+  trackingUrl?: string;
   status: string;
   description: string;
   timestamp: number;

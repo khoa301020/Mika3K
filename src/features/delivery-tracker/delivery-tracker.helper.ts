@@ -1,21 +1,22 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle,
-    Client,
-    MessageActionRowComponentBuilder,
-    User,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  Client,
+  MessageActionRowComponentBuilder,
+  User,
 } from 'discord.js';
 import { DeliveryTrackerConstants } from './delivery-tracker.constants';
 import { DeliveryTrackerEmbeds } from './delivery-tracker.embeds';
 import { DeliveryTrackerService } from './delivery-tracker.service';
 import {
-    DeliveryProvider,
-    DeliveryStatus,
-    IBroadcastTarget,
-    ITrackingRecord,
+  DeliveryProvider,
+  DeliveryStatus,
+  IBroadcastTarget,
+  ITrackingRecord,
 } from './delivery-tracker.types';
+import { GhnProvider } from './providers/ghn.provider';
 import { JntProvider } from './providers/jnt.provider';
 import { SpxProvider } from './providers/spx.provider';
 import { ITrackerProvider } from './providers/tracker-provider.interface';
@@ -35,8 +36,9 @@ export class DeliveryTrackerHelper {
     private readonly client: Client,
     private readonly spxProvider: SpxProvider,
     private readonly jntProvider: JntProvider,
+    private readonly ghnProvider: GhnProvider,
   ) {
-    this.providers = [this.spxProvider, this.jntProvider];
+    this.providers = [this.spxProvider, this.jntProvider, this.ghnProvider];
   }
 
   // ─── Provider Utilities ───────────────────────────────────────
@@ -50,9 +52,8 @@ export class DeliveryTrackerHelper {
   }
 
   detectProvider(code: string): DeliveryProvider | null {
-    const upper = code.toUpperCase();
     for (const provider of this.providers) {
-      if (provider.codePrefixes.some((prefix) => upper.startsWith(prefix))) {
+      if (provider.detectProvider(code)) {
         return provider.providerName;
       }
     }
@@ -137,16 +138,28 @@ export class DeliveryTrackerHelper {
       : DeliveryStatus.PENDING;
   }
 
-  /** Diff fetched records against stored records by timestamp */
+  /** Diff fetched records against stored records by timestamp and content signature */
   diffRecords(
     stored: ITrackingRecord[],
     fetched: ITrackingRecord[],
   ): ITrackingRecord[] {
     if (!stored.length) return fetched;
 
+    // Build a set of signatures to strictly filter exact duplicates.
+    // Ensure no older records leak if the provider reorders or mongoose sorting failed.
+    const storedSignatures = new Set(
+      stored.map((r) => `${r.timestamp}|${r.code || ''}|${r.status}`)
+    );
+    
     // stored is sorted newest-first; latest timestamp is stored[0]
     const latestStoredTimestamp = stored[0].timestamp;
-    return fetched.filter((r) => r.timestamp > latestStoredTimestamp);
+    
+    return fetched.filter((r) => {
+      // Allow records with the exact same timestamp if they are genuinely new action codes
+      if (r.timestamp < latestStoredTimestamp) return false;
+      const signature = `${r.timestamp}|${r.code || ''}|${r.status}`;
+      return !storedSignatures.has(signature);
+    });
   }
 
   // ─── Create Flow ──────────────────────────────────────────────
@@ -161,27 +174,59 @@ export class DeliveryTrackerHelper {
     tracker: DeliveryTrackerDocument;
     initialRecords: ITrackingRecord[];
   }> {
+    let cleanCode = code.toUpperCase();
+    let cleanRemark = remark;
+    const providerMeta: Record<string, any> = {};
+
+    if (provider === DeliveryProvider.JNT) {
+      // 1. Try to extract phone suffix from code (e.g. JNT123-5265)
+      const codeMatch = cleanCode.match(/^([A-Z0-9]+)[-:](\d{4})$/);
+      if (codeMatch) {
+        cleanCode = codeMatch[1];
+        providerMeta.phone = codeMatch[2];
+      } 
+      // 2. Try to extract from the beginning of remark if separated by space (e.g. Code JNT123, Remark "5265 Note")
+      else {
+        const remarkMatch = cleanRemark.match(/^(\d{4})(?:\s+(.*))?$/);
+        if (remarkMatch) {
+          providerMeta.phone = remarkMatch[1];
+          cleanRemark = remarkMatch[2] || '';
+        }
+      }
+
+      if (!providerMeta.phone) {
+        throw new Error(
+          `[J&T] Yêu cầu 4 số cuối SĐT nhận/gửi. VD: \`$track ${cleanCode}-1234\``,
+        );
+      }
+    }
+
+    const providerImpl = this.getProvider(provider);
+    const trackingUrl = providerImpl ? providerImpl.getTrackingUrl(cleanCode, providerMeta) : '';
+
     const tracker = await this.trackerService.createTracker(
-      code,
+      cleanCode,
+      trackingUrl,
       provider,
-      remark,
+      cleanRemark,
       ownerId,
       broadcastTargets,
+      providerMeta,
     );
 
-    const initialRecords = await this.fetchRecords(code, provider);
+    const initialRecords = await this.fetchRecords(cleanCode, provider, providerMeta);
 
     if (initialRecords.length) {
       const status = this.resolveStatus(provider, initialRecords);
       await this.trackerService.appendRecords(
-        code,
+        cleanCode,
         ownerId,
         initialRecords,
         status,
       );
 
       if (DeliveryTrackerConstants.TERMINAL_STATUSES.includes(status)) {
-        await this.trackerService.markEnded(code, ownerId);
+        await this.trackerService.markEnded(cleanCode, ownerId);
       }
     }
 

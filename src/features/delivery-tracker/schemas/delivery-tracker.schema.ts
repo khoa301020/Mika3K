@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import {
-    DeliveryProvider,
-    DeliveryStatus,
-    IBroadcastTarget,
-    ITrackingRecord,
+  DeliveryProvider,
+  DeliveryStatus,
+  IBroadcastTarget,
+  ITrackingRecord,
 } from '../delivery-tracker.types';
 
 export type DeliveryTrackerDocument = DeliveryTracker & Document;
@@ -13,6 +13,9 @@ export type DeliveryTrackerDocument = DeliveryTracker & Document;
 export class DeliveryTracker {
   @Prop({ required: true, type: String })
   trackingCode: string;
+
+  @Prop({ required: true, type: String })
+  trackingUrl: string;
 
   @Prop({ required: true, type: String, enum: DeliveryProvider })
   provider: DeliveryProvider;

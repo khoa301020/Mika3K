@@ -1,7 +1,7 @@
 import {
-  DeliveryProvider,
-  DeliveryStatus,
-  ITrackingRecord,
+    DeliveryProvider,
+    DeliveryStatus,
+    ITrackingRecord,
 } from '../delivery-tracker.types';
 
 export interface ITrackerProvider {
@@ -21,6 +21,9 @@ export interface ITrackerProvider {
     code: string,
     meta?: Record<string, any>,
   ): Promise<ITrackingRecord[]>;
+
+  /** Get the public tracking URL for a code */
+  getTrackingUrl(code: string, meta?: Record<string, any>): string;
 
   /** Check if this provider handles the given code */
   detectProvider(code: string): boolean;

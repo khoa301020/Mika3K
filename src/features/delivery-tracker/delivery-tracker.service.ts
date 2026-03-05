@@ -2,14 +2,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
-  DeliveryProvider,
-  DeliveryStatus,
-  IBroadcastTarget,
-  ITrackingRecord,
+    DeliveryProvider,
+    DeliveryStatus,
+    IBroadcastTarget,
+    ITrackingRecord,
 } from './delivery-tracker.types';
 import {
-  DeliveryTracker,
-  DeliveryTrackerDocument,
+    DeliveryTracker,
+    DeliveryTrackerDocument,
 } from './schemas/delivery-tracker.schema';
 
 export interface IParsedTrackInput {
@@ -47,6 +47,7 @@ export class DeliveryTrackerService {
   /** Atomically create a tracker. Throws if active doc already exists for {code, owner}. */
   async createTracker(
     trackingCode: string,
+    trackingUrl: string,
     provider: DeliveryProvider,
     remark: string,
     ownerId: string,
@@ -65,6 +66,7 @@ export class DeliveryTrackerService {
 
     return await this.trackerModel.create({
       trackingCode,
+      trackingUrl,
       provider,
       remark,
       ownerId,

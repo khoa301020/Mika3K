@@ -23,23 +23,23 @@ export class DeliveryTrackerEmbeds {
     const dateStr = this.formatTimestamp(record.timestamp);
 
     const lines = [
-      `📦 \`[${tracker.provider}] ${tracker.trackingCode}\` (${tracker.remark})`,
+      `📦 [\`[${tracker.provider}] ${tracker.trackingCode}\`](<${tracker.trackingUrl}>) - **${tracker.remark}**`,
       '',
     ];
-    if (record.code) lines.push(`🧩 Code: ${record.code}`);
-    lines.push(`📌 Status: ${record.status}`);
-    lines.push(`📝 Description: ${record.description}`);
-    lines.push(`🕒 Date: ${dateStr}`);
-    lines.push(`📍 Location: ${this.embedService.safeFieldValue(record.location)}`);
+    if (record.code) lines.push(`🧩 **Code**: ${record.code}`);
+    lines.push(`📌 **Status**: ${record.status}`);
+    lines.push(`📝 **Description**: ${record.description}`);
+    lines.push(`🕒 **Date**: ${dateStr}`);
+    lines.push(`📍 **Location**: ${this.embedService.safeFieldValue(record.location)}`);
 
     return this.buildEmbed(color)
       .setAuthor({
         name: this.embedService.truncate(
-          `🔔 ${tracker.provider} Update: ${record.description}`,
+          `🔔 ${tracker.provider} Update`,
           EMBED_LIMITS.AUTHOR_NAME,
         ),
       })
-      .setDescription(`━━━━━━━━━━━━━━\n${lines.join('\n')}`);
+      .setDescription(`${lines.join('\n')}`);
   }
 
   trackerListEmbed(
@@ -61,7 +61,7 @@ export class DeliveryTrackerEmbeds {
       const emoji =
         DeliveryTrackerConstants.STATUS_EMOJI[t.lastKnownStatus] ?? '📦';
       const ownerMark = t.ownerId === userId ? ' 👑' : '';
-      return `${emoji} \`[${t.provider}] ${t.trackingCode}\` — **${t.remark}** - ${t.lastKnownStatus}  ${ownerMark}`;
+      return `${emoji} [\`[${t.provider}] ${t.trackingCode}\`](<${t.trackingUrl}>) — **${t.remark}** - ${t.lastKnownStatus}  ${ownerMark}`;
     });
 
     const embed = this.buildEmbed(DeliveryTrackerConstants.DEFAULT_COLOR)
@@ -181,7 +181,7 @@ export class DeliveryTrackerEmbeds {
     recentRecords: ITrackingRecord[],
   ): EmbedBuilder {
     const lines = [
-      `✅ \`[${provider}] ${tracker.trackingCode}\` — **${tracker.remark}**`,
+      `✅ [\`[${provider}] ${tracker.trackingCode}\`](<${tracker.trackingUrl}>) — **${tracker.remark}**`,
     ];
 
     if (recentRecords.length) {

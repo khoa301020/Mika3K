@@ -20,6 +20,8 @@ const SPX_MILESTONE_STATUS: Record<number, DeliveryStatus> = {
 const SPX_API_URL =
   'https://spx.vn/shipment/order/open/order/get_order_info';
 
+const SPX_TRACKING_URL = 'https://spx.vn/track'
+
 @Injectable()
 export class SpxProvider implements ITrackerProvider {
   private readonly logger = new Logger(SpxProvider.name);
@@ -28,6 +30,10 @@ export class SpxProvider implements ITrackerProvider {
   readonly pollingCron = '0 */10 * * * *'; // Every 10 minutes
   readonly pollingDelayMs = 2000;
   readonly codePrefixes = ['SPXVN', 'VN'];
+
+  getTrackingUrl(code: string, _meta?: Record<string, any>): string {
+    return `${SPX_TRACKING_URL}?tracking_number=${code}`;
+  }
 
   constructor(private readonly httpService: AppHttpService) {}
 
@@ -53,7 +59,7 @@ export class SpxProvider implements ITrackerProvider {
       }
 
       return response.data.sls_tracking_info.records.map((record) =>
-        this.mapRecord(record),
+        this.mapRecord(code, record),
       );
     } catch (error) {
       this.logger.error(`Failed to fetch SPX tracking for ${code}:`, error);
@@ -73,9 +79,10 @@ export class SpxProvider implements ITrackerProvider {
     );
   }
 
-  private mapRecord(raw: ISpxRecord): ITrackingRecord {
+  private mapRecord(code: string, raw: ISpxRecord): ITrackingRecord {
     return {
       code: raw.tracking_code,
+      trackingUrl: this.getTrackingUrl(code),
       status: raw.tracking_name,
       description: raw.seller_description,
       timestamp: raw.actual_time,

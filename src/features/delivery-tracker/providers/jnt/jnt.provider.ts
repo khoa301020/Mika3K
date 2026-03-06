@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as cheerio from 'cheerio';
-import { AppHttpService } from '../../../shared/http';
+import { AppHttpService } from '../../../../shared/http';
 import {
   DeliveryProvider,
   DeliveryStatus,
   ITrackingRecord,
-} from '../delivery-tracker.types';
-import { ITrackerProvider } from './tracker-provider.interface';
+} from '../../delivery-tracker.types';
+import { ITrackerProvider } from '../tracker-provider.interface';
 
 @Injectable()
 export class JntProvider implements ITrackerProvider {
@@ -21,7 +21,41 @@ export class JntProvider implements ITrackerProvider {
 
   detectProvider(code: string): boolean {
     const upper = code.toUpperCase();
-    return this.codePrefixes.some((prefix) => upper.startsWith(prefix));
+    const hasPrefix = this.codePrefixes.some((prefix) => upper.startsWith(prefix));
+    const isTiktokFormat = /^\d{12}(?:[-:]\d{4})?$/.test(code);
+    return hasPrefix || isTiktokFormat;
+  }
+
+  parseInput(
+    code: string,
+    remark: string,
+  ): { cleanCode: string; cleanRemark: string; meta?: Record<string, any> } {
+    let cleanCode = code.toUpperCase();
+    let cleanRemark = remark;
+    const providerMeta: Record<string, any> = {};
+
+    // 1. Try to extract phone suffix from code (e.g. JNT123-5265)
+    const codeMatch = cleanCode.match(/^([A-Z0-9]+)[-:](\d{4})$/);
+    if (codeMatch) {
+      cleanCode = codeMatch[1];
+      providerMeta.phone = codeMatch[2];
+    }
+    // 2. Try to extract from the beginning of remark if separated by space (e.g. Code JNT123, Remark "5265 Note")
+    else {
+      const remarkMatch = cleanRemark.match(/^(\d{4})(?:\s+(.*))?$/);
+      if (remarkMatch) {
+        providerMeta.phone = remarkMatch[1];
+        cleanRemark = remarkMatch[2] || '';
+      }
+    }
+
+    if (!providerMeta.phone) {
+      throw new Error(
+        `[J&T] Yêu cầu cung cấp 4 số cuối SĐT nhận/gửi. VD: \`$track ${cleanCode}-1234\``,
+      );
+    }
+
+    return { cleanCode, cleanRemark, meta: providerMeta };
   }
 
   getTrackingUrl(code: string, meta?: Record<string, any>): string {
@@ -85,16 +119,9 @@ export class JntProvider implements ITrackerProvider {
 
   resolveStatus(records: ITrackingRecord[]): DeliveryStatus {
     if (!records.length) return DeliveryStatus.PENDING;
-
-    // Checking if any record indicates delivery completion
-    const isDelivered = records.some((r) =>
-      r.description.toLowerCase().includes('đã ký nhận')
-    );
-
-    if (isDelivered) {
-      return DeliveryStatus.DELIVERED;
-    }
-
+    const descs = records.map((r) => r.description.toLowerCase());
+    if (descs.some((d) => d.includes('đã ký nhận'))) return DeliveryStatus.DELIVERED;
+    if (descs.some((d) => d.includes('đang giao hàng'))) return DeliveryStatus.OUT_FOR_DELIVERY;
     return DeliveryStatus.IN_TRANSIT;
   }
 }

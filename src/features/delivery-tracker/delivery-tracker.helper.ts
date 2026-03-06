@@ -16,9 +16,9 @@ import {
   IBroadcastTarget,
   ITrackingRecord,
 } from './delivery-tracker.types';
-import { GhnProvider } from './providers/ghn.provider';
-import { JntProvider } from './providers/jnt.provider';
-import { SpxProvider } from './providers/spx.provider';
+import { GhnProvider } from './providers/ghn/ghn.provider';
+import { JntProvider } from './providers/jnt/jnt.provider';
+import { SpxProvider } from './providers/spx/spx.provider';
 import { ITrackerProvider } from './providers/tracker-provider.interface';
 import { DeliveryTrackerDocument } from './schemas/delivery-tracker.schema';
 
@@ -174,34 +174,18 @@ export class DeliveryTrackerHelper {
     tracker: DeliveryTrackerDocument;
     initialRecords: ITrackingRecord[];
   }> {
+    const providerImpl = this.getProvider(provider);
     let cleanCode = code.toUpperCase();
     let cleanRemark = remark;
-    const providerMeta: Record<string, any> = {};
+    let providerMeta: Record<string, any> | undefined = {};
 
-    if (provider === DeliveryProvider.JNT) {
-      // 1. Try to extract phone suffix from code (e.g. JNT123-5265)
-      const codeMatch = cleanCode.match(/^([A-Z0-9]+)[-:](\d{4})$/);
-      if (codeMatch) {
-        cleanCode = codeMatch[1];
-        providerMeta.phone = codeMatch[2];
-      } 
-      // 2. Try to extract from the beginning of remark if separated by space (e.g. Code JNT123, Remark "5265 Note")
-      else {
-        const remarkMatch = cleanRemark.match(/^(\d{4})(?:\s+(.*))?$/);
-        if (remarkMatch) {
-          providerMeta.phone = remarkMatch[1];
-          cleanRemark = remarkMatch[2] || '';
-        }
-      }
-
-      if (!providerMeta.phone) {
-        throw new Error(
-          `[J&T] Yêu cầu 4 số cuối SĐT nhận/gửi. VD: \`$track ${cleanCode}-1234\``,
-        );
-      }
+    if (providerImpl && typeof providerImpl.parseInput === 'function') {
+      const parsed = providerImpl.parseInput(code, remark);
+      cleanCode = parsed.cleanCode;
+      cleanRemark = parsed.cleanRemark;
+      providerMeta = parsed.meta;
     }
 
-    const providerImpl = this.getProvider(provider);
     const trackingUrl = providerImpl ? providerImpl.getTrackingUrl(cleanCode, providerMeta) : '';
 
     const tracker = await this.trackerService.createTracker(

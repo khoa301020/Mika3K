@@ -22,6 +22,12 @@ export interface ITrackerProvider {
     meta?: Record<string, any>,
   ): Promise<ITrackingRecord[]>;
 
+  /** Optional: pre-parse and isolate specifics from code/remark input before tracker creation */
+  parseInput?(
+    code: string,
+    remark: string,
+  ): { cleanCode: string; cleanRemark: string; meta?: Record<string, any> };
+
   /** Get the public tracking URL for a code */
   getTrackingUrl(code: string, meta?: Record<string, any>): string;
 

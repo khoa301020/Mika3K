@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AppHttpService } from '../../../shared/http';
+import { AppHttpService } from '../../../../shared/http';
 import {
-  DeliveryProvider,
-  DeliveryStatus,
-  ITrackingRecord,
-} from '../delivery-tracker.types';
+    DeliveryProvider,
+    DeliveryStatus,
+    ITrackingRecord,
+} from '../../delivery-tracker.types';
+import { ITrackerProvider } from '../tracker-provider.interface';
 import { ISpxRecord, ISpxResponse } from './spx.types';
-import { ITrackerProvider } from './tracker-provider.interface';
 
 /** SPX milestone codes → universal DeliveryStatus */
 const SPX_MILESTONE_STATUS: Record<number, DeliveryStatus> = {

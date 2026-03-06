@@ -154,7 +154,7 @@ export class DeliveryTrackerCron {
     // Broadcast each new record to approved targets (oldest first for chronological order)
     const chronologicalRecords = [...newRecords].reverse();
     for (const record of chronologicalRecords) {
-      const embed = this.trackerEmbeds.trackingUpdateEmbed(doc, record);
+      const embed = this.trackerEmbeds.trackingUpdateEmbed(doc, record, newStatus);
 
       for (const target of doc.broadcastTargets) {
         if (target.status !== 'approved') continue;

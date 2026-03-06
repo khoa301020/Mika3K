@@ -3,7 +3,7 @@ import { Client, EmbedBuilder } from 'discord.js';
 import { EMBED_LIMITS, EmbedService } from '../../shared/embed';
 import { getTime } from '../../shared/utils';
 import { DeliveryTrackerConstants } from './delivery-tracker.constants';
-import { ITrackingRecord } from './delivery-tracker.types';
+import { DeliveryStatus, ITrackingRecord } from './delivery-tracker.types';
 import { DeliveryTrackerDocument } from './schemas/delivery-tracker.schema';
 
 @Injectable()
@@ -16,14 +16,16 @@ export class DeliveryTrackerEmbeds {
   trackingUpdateEmbed(
     tracker: DeliveryTrackerDocument,
     record: ITrackingRecord,
+    newStatus?: DeliveryStatus,
   ): EmbedBuilder {
+    const resolvedStatus = newStatus || tracker.lastKnownStatus;
     const color =
-      DeliveryTrackerConstants.STATUS_COLORS[tracker.lastKnownStatus] ??
+      DeliveryTrackerConstants.STATUS_COLORS[resolvedStatus] ??
       DeliveryTrackerConstants.DEFAULT_COLOR;
     const dateStr = this.formatTimestamp(record.timestamp);
 
     const lines = [
-      `📦 [\`[${tracker.provider}] ${tracker.trackingCode}\`](<${tracker.trackingUrl}>) - **${tracker.remark}**`,
+      `📦 [\`[${tracker.provider}]${tracker.trackingCode}\`](<${tracker.trackingUrl}>) - **${tracker.remark}**`,
       '',
     ];
     if (record.code) lines.push(`🧩 **Code**: ${record.code}`);
@@ -61,7 +63,7 @@ export class DeliveryTrackerEmbeds {
       const emoji =
         DeliveryTrackerConstants.STATUS_EMOJI[t.lastKnownStatus] ?? '📦';
       const ownerMark = t.ownerId === userId ? ' 👑' : '';
-      return `${emoji} [\`[${t.provider}] ${t.trackingCode}\`](<${t.trackingUrl}>) — **${t.remark}** - ${t.lastKnownStatus}  ${ownerMark}`;
+      return `${emoji} [\`[${t.provider}]${t.trackingCode}\`](<${t.trackingUrl}>) — **${t.remark}** - ${t.lastKnownStatus}  ${ownerMark}`;
     });
 
     const embed = this.buildEmbed(DeliveryTrackerConstants.DEFAULT_COLOR)
@@ -94,7 +96,7 @@ export class DeliveryTrackerEmbeds {
     });
 
     const description = [
-      `${statusEmoji} \`[${tracker.provider}] ${tracker.trackingCode}\` — **${tracker.remark}**`,
+      `${statusEmoji} \`[${tracker.provider}]${tracker.trackingCode}\` — **${tracker.remark}**`,
       `Status: **${tracker.lastKnownStatus}**`,
     ];
 
@@ -129,7 +131,7 @@ export class DeliveryTrackerEmbeds {
         [
           `**${inviterTag}** wants to share tracking updates with you!`,
           '',
-          `📦 Code: \`[${tracker.provider}] ${tracker.trackingCode}\``,
+          `📦 Code: \`[${tracker.provider}]${tracker.trackingCode}\``,
           `📝 Remark: ${tracker.remark}`,
           '',
           'Click **Accept** to receive updates or **Reject** to decline.',
@@ -181,7 +183,7 @@ export class DeliveryTrackerEmbeds {
     recentRecords: ITrackingRecord[],
   ): EmbedBuilder {
     const lines = [
-      `✅ [\`[${provider}] ${tracker.trackingCode}\`](<${tracker.trackingUrl}>) — **${tracker.remark}**`,
+      `✅ [\`[${provider}]${tracker.trackingCode}\`](<${tracker.trackingUrl}>) — **${tracker.remark}**`,
     ];
 
     if (recentRecords.length) {

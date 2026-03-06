@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AppHttpService } from '../../../shared/http';
+import { AppHttpService } from '../../../../shared/http';
 import {
   DeliveryProvider,
   DeliveryStatus,
   ITrackingRecord,
-} from '../delivery-tracker.types';
+} from '../../delivery-tracker.types';
+import { ITrackerProvider } from '../tracker-provider.interface';
 import { IGhnTrackingLog, IGhnTrackingResponse } from './ghn.types';
-import { ITrackerProvider } from './tracker-provider.interface';
 
 const GHN_API_URL = 'https://fe-online-gateway.ghn.vn/order-tracking/public-api/client/tracking-logs';
 
@@ -72,9 +72,16 @@ export class GhnProvider implements ITrackerProvider {
 
       // The tracking_logs are usually sorted older to newer by default in GHN.
       // We process them and sort them descending (newest first).
+      // When timestamps are identical, the log that appeared later in the JSON array is inherently newer.
       const records = data.data.tracking_logs
-        .map((log) => this.mapRecord(log, code))
-        .sort((a, b) => b.timestamp - a.timestamp);
+        .map((log, index) => ({ record: this.mapRecord(log, code), index }))
+        .sort((a, b) => {
+          if (b.record.timestamp !== a.record.timestamp) {
+            return b.record.timestamp - a.record.timestamp;
+          }
+          return b.index - a.index;
+        })
+        .map((item) => item.record);
 
       return records;
     } catch (error) {
@@ -95,13 +102,20 @@ export class GhnProvider implements ITrackerProvider {
     // cancel: Failed
     // anything else is typically pending or in-transit
     const statusMap: Record<string, DeliveryStatus> = {
+      ready_to_pick: DeliveryStatus.PENDING,
+      picking: DeliveryStatus.PENDING,
+      picked: DeliveryStatus.PENDING,
+      picked_to_storing: DeliveryStatus.PENDING,
+      transporting: DeliveryStatus.IN_TRANSIT,
+      delivering: DeliveryStatus.OUT_FOR_DELIVERY,
       delivered: DeliveryStatus.DELIVERED,
       returned: DeliveryStatus.RETURNED,
       cancel: DeliveryStatus.FAILED,
-      ready_to_pick: DeliveryStatus.PENDING,
     };
 
-    return statusMap[latest.status.toLowerCase()] || DeliveryStatus.IN_TRANSIT;
+    const ghnStatus = latest.rawData?.status?.toLowerCase();
+      
+    return ghnStatus && statusMap[ghnStatus] ? statusMap[ghnStatus] : DeliveryStatus.IN_TRANSIT;
   }
 
   private mapRecord(raw: IGhnTrackingLog, orderCode: string): ITrackingRecord {
@@ -115,6 +129,7 @@ export class GhnProvider implements ITrackerProvider {
       description: raw.location?.address || raw.status_name,
       timestamp: unixSeconds,
       location: this.getExecutor(raw),
+      rawData: raw,
     };
   }
 }

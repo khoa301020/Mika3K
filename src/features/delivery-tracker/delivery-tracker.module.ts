@@ -10,12 +10,12 @@ import { DeliveryTrackerCron } from './delivery-tracker.cron';
 import { DeliveryTrackerEmbeds } from './delivery-tracker.embeds';
 import { DeliveryTrackerHelper } from './delivery-tracker.helper';
 import { DeliveryTrackerService } from './delivery-tracker.service';
-import { GhnProvider } from './providers/ghn.provider';
-import { JntProvider } from './providers/jnt.provider';
-import { SpxProvider } from './providers/spx.provider';
+import { GhnProvider } from './providers/ghn/ghn.provider';
+import { JntProvider } from './providers/jnt/jnt.provider';
+import { SpxProvider } from './providers/spx/spx.provider';
 import {
-    DeliveryTracker,
-    DeliveryTrackerSchema,
+  DeliveryTracker,
+  DeliveryTrackerSchema,
 } from './schemas/delivery-tracker.schema';
 
 @Module({

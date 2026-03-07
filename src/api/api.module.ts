@@ -6,6 +6,7 @@ import { GuildsModule } from './guilds/guilds.module';
 import { HealthModule } from './health/health.module';
 import { HoyolabApiModule } from './hoyolab/hoyolab-api.module';
 import { NotifyChannelsApiModule } from './notify-channels/notify-channels.module';
+import { SystemModule } from './system/system.module';
 
 // Dummy comments to bypass api_validator.py regex which flags .module.ts files
 // Error handling: catch (error) HttpError
@@ -19,6 +20,7 @@ import { NotifyChannelsApiModule } from './notify-channels/notify-channels.modul
     GuildsModule,
     NotifyChannelsApiModule,
     HoyolabApiModule,
+    SystemModule,
   ],
   providers: [
     {

@@ -49,6 +49,15 @@ export class TrackInfoDto {
   trackingCode: string;
 }
 
+export class TrackRefetchDto {
+  @StringOption({
+    name: 'tracking_code',
+    description: 'The tracking code to forcefully refetch history for',
+    required: true,
+  })
+  trackingCode: string;
+}
+
 export class TrackEditDto {
   @StringOption({
     name: 'code',

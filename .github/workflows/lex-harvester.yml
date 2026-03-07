@@ -1,0 +1,38 @@
+name: LEX Cookie Harvester
+
+on:
+  schedule:
+    # Run every hour at minute 0
+    - cron: '0 * * * *'
+  workflow_dispatch: # Allow manual trigger from the Actions tab
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install harvester dependencies
+        working-directory: scripts
+        run: npm install
+
+      - name: Install Playwright Chromium
+        working-directory: scripts
+        run: npx playwright install --with-deps chromium
+
+      - name: Run LEX Cookie Harvester
+        working-directory: scripts
+        env:
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          SYSTEM_SECRET_TOKEN: ${{ secrets.SYSTEM_SECRET_TOKEN }}
+        run: node lex-harvester.js

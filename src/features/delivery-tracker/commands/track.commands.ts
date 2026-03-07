@@ -7,8 +7,8 @@ import { DeliveryTrackerConstants } from '../delivery-tracker.constants';
 import { DeliveryTrackerEmbeds } from '../delivery-tracker.embeds';
 import { DeliveryTrackerHelper } from '../delivery-tracker.helper';
 import { DeliveryTrackerService } from '../delivery-tracker.service';
-import { DeliveryProvider, IBroadcastTarget, ITrackingRecord } from '../delivery-tracker.types';
-import { TrackDto, TrackInfoDto } from '../dto';
+import { DeliveryProvider, DeliveryStatus, IBroadcastTarget, ITrackingRecord } from '../delivery-tracker.types';
+import { TrackDto, TrackInfoDto, TrackRefetchDto } from '../dto';
 import { DeliveryTrackerDocument } from '../schemas/delivery-tracker.schema';
 import { DeliveryCommandDecorator } from './decorators';
 
@@ -224,6 +224,78 @@ export class TrackCommands {
     }
   }
 
+  // ─── Text: $refetch ───────────────────────────────────────────
+
+  @TextCommand({
+    name: 'refetch',
+    description: 'Force an update check for tracked delivery codes',
+  })
+  async onRefetchText(
+    @Context() [message]: TextCommandContext,
+    @Arguments() args: string[],
+  ) {
+    const isDm = message.channel.type === ChannelType.DM;
+    const isGuildText = message.channel.type === ChannelType.GuildText;
+    if (!isDm && !isGuildText) return;
+
+    try {
+      const content = args.join(' ').trim();
+      if (!content) {
+        const prefix = process.env.BOT_PREFIX || '$';
+        return message.reply(`❌ Usage: \`${prefix}refetch <CODE1> <CODE2>...\``);
+      }
+
+      const codes = content.split(/[\s,;]+/).filter(Boolean);
+      const results: string[] = [];
+
+      for (const code of codes) {
+        const tracker = await this.trackerService.getVisibleTrackerByCode(
+          code.trim(),
+          message.author.id,
+        );
+
+        if (!tracker) {
+          results.push(`❌ \`${code}\`: Not found or not visible to you.`);
+          continue;
+        }
+
+        const fetchedRecords = await this.trackerHelper.fetchRecords(
+          tracker.trackingCode,
+          tracker.provider,
+          tracker.providerMeta,
+        );
+
+        const newRecords = this.trackerHelper.diffRecords(tracker.records, fetchedRecords);
+
+        if (newRecords.length > 0) {
+          const status = this.trackerHelper.resolveStatus(tracker.provider, fetchedRecords);
+          const savedTracker = await this.trackerService.appendRecords(
+            tracker.trackingCode,
+            tracker.ownerId,
+            newRecords,
+            status,
+          );
+
+          if (savedTracker) {
+            if (DeliveryTrackerConstants.TERMINAL_STATUSES.includes(status)) {
+              const isFailed = status === DeliveryStatus.FAILED || status === DeliveryStatus.CANCELLED;
+              await this.trackerService.markEnded(tracker.trackingCode, tracker.ownerId, isFailed);
+            }
+          }
+          results.push(`✅ \`${tracker.trackingCode}\`: Fetched **${newRecords.length}** new update(s).`);
+        } else {
+          await this.trackerService.touchPolled(tracker.trackingCode, tracker.ownerId);
+          results.push(`ℹ️ \`${tracker.trackingCode}\`: No new updates.`);
+        }
+      }
+
+      await message.reply(results.join('\n'));
+    } catch (error) {
+      this.logger.error('Error in refetch text command:', error);
+      await message.reply('❌ An error occurred while refetching.');
+    }
+  }
+
   // ─── Slash: /delivery track-list ──────────────────────────────
 
   @Subcommand({
@@ -275,7 +347,7 @@ export class TrackCommands {
 
   @Subcommand({
     name: 'track-info',
-    description: 'View full tracking history for a code',
+    description: 'View full tracking history for a code (tracked or untracked)',
   })
   async trackInfo(
     @Context() [interaction]: SlashCommandContext,
@@ -284,25 +356,147 @@ export class TrackCommands {
     await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
 
     try {
+      const code = dto.trackingCode.trim();
+
+      // First try to find a stored tracker
       const tracker = await this.trackerService.getVisibleTrackerByCode(
-        dto.trackingCode,
+        code,
+        interaction.user.id,
+      );
+
+      if (tracker) {
+        const isBroadcast = tracker.ownerId !== interaction.user.id;
+        await interaction.editReply({
+          embeds: [this.trackerEmbeds.trackerInfoEmbed(tracker, isBroadcast)],
+        });
+        return;
+      }
+
+      // If not stored, try to detect provider and fetch directly
+      const provider = this.trackerHelper.detectProvider(code);
+      if (!provider) {
+        await interaction.editReply(
+          `❌ No tracker found for \`${code}\` and unable to detect provider. Supported prefixes: ${this.trackerHelper.supportedPrefixes}`,
+        );
+        return;
+      }
+
+      // Fetch from provider
+      const records = await this.trackerHelper.fetchRecords(code, provider);
+      
+      if (!records.length) {
+        await interaction.editReply(
+          `❌ No tracker found & no history could be dynamically fetched for \`${code}\` via ${provider}.`,
+        );
+        return;
+      }
+
+      const status = this.trackerHelper.resolveStatus(provider, records);
+      const isFailed = status === DeliveryStatus.FAILED || status === DeliveryStatus.CANCELLED;
+
+      // Create a temporary/in-memory tracker document representation
+      const tempTracker = {
+        trackingCode: code,
+        aliasCodes: [],
+        trackingUrl: '', // Could be fetched but not strictly needed for embed if simple
+        provider,
+        remark: 'Untracked',
+        ownerId: interaction.user.id,
+        broadcastTargets: [],
+        records: records.sort((a, b) => b.timestamp - a.timestamp),
+        lastKnownStatus: status,
+        lastPolledAt: new Date(),
+        lastUpdatedAt: new Date(),
+        isEnded: DeliveryTrackerConstants.TERMINAL_STATUSES.includes(status),
+        isFailed,
+        providerMeta: {}, // no simple way to pass phone number here dynamically unless we add it to DTO
+      } as unknown as DeliveryTrackerDocument;
+
+      const providerImpl = this.trackerHelper.getProvider(provider);
+      if (providerImpl) {
+          tempTracker.trackingUrl = providerImpl.getTrackingUrl(code);
+      }
+
+      await interaction.editReply({
+        content: `💡 **Tip**: This code is currently **untracked**. Use \`/delivery track\` to get automatic notifications!`,
+        embeds: [this.trackerEmbeds.trackerInfoEmbed(tempTracker, false)],
+      });
+    } catch (error) {
+      this.logger.error('Error in /track-info command:', error);
+      await interaction.editReply('❌ An error occurred.');
+    }
+  }
+
+  // ─── Slash: /delivery track-refetch ───────────────────────────
+
+  @Subcommand({
+    name: 'track-refetch',
+    description: 'Force an update check for a tracked delivery code',
+  })
+  async trackRefetch(
+    @Context() [interaction]: SlashCommandContext,
+    @Options() dto: TrackRefetchDto,
+  ) {
+    await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
+
+    try {
+      const code = dto.trackingCode.trim();
+
+      const tracker = await this.trackerService.getVisibleTrackerByCode(
+        code,
         interaction.user.id,
       );
 
       if (!tracker) {
         await interaction.editReply(
-          `❌ No tracker found for \`${dto.trackingCode}\` visible to you.`,
+          `❌ No tracker found for \`${code}\` visible to you.`,
         );
         return;
       }
 
-      const isBroadcast = tracker.ownerId !== interaction.user.id;
-      await interaction.editReply({
-        embeds: [this.trackerEmbeds.trackerInfoEmbed(tracker, isBroadcast)],
-      });
+      const fetchedRecords = await this.trackerHelper.fetchRecords(
+        tracker.trackingCode,
+        tracker.provider,
+        tracker.providerMeta,
+      );
+
+      const newRecords = this.trackerHelper.diffRecords(tracker.records, fetchedRecords);
+      let updatedTracker = tracker;
+
+      if (newRecords.length > 0) {
+        const status = this.trackerHelper.resolveStatus(tracker.provider, fetchedRecords);
+        const savedTracker = await this.trackerService.appendRecords(
+          tracker.trackingCode,
+          tracker.ownerId,
+          newRecords,
+          status,
+        );
+
+        if (savedTracker) {
+          updatedTracker = savedTracker;
+
+          if (DeliveryTrackerConstants.TERMINAL_STATUSES.includes(status)) {
+            const isFailed = status === DeliveryStatus.FAILED || status === DeliveryStatus.CANCELLED;
+            await this.trackerService.markEnded(tracker.trackingCode, tracker.ownerId, isFailed);
+            updatedTracker.isEnded = true;
+            updatedTracker.isFailed = isFailed;
+          }
+        }
+        await interaction.editReply({
+          content: `✅ Successfully fetched **${newRecords.length}** new update(s) for \`${tracker.trackingCode}\`.`,
+          embeds: [this.trackerEmbeds.trackerInfoEmbed(updatedTracker, updatedTracker.ownerId !== interaction.user.id)],
+        });
+      } else {
+        // Just touch the polled time
+        await this.trackerService.touchPolled(tracker.trackingCode, tracker.ownerId);
+        await interaction.editReply({
+          content: `ℹ️ No new updates found for \`${tracker.trackingCode}\`.`,
+          embeds: [this.trackerEmbeds.trackerInfoEmbed(tracker, tracker.ownerId !== interaction.user.id)],
+        });
+      }
     } catch (error) {
-      this.logger.error('Error in /track-info command:', error);
-      await interaction.editReply('❌ An error occurred.');
+      this.logger.error('Error in /track-refetch command:', error);
+      await interaction.editReply('❌ An error occurred while refetching.');
     }
   }
 

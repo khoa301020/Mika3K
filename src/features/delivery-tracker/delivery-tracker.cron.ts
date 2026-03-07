@@ -209,7 +209,8 @@ export class DeliveryTrackerCron {
     // Broadcast each new record to approved targets (oldest first for chronological order)
     const chronologicalRecords = [...newRecords].reverse();
     for (const record of chronologicalRecords) {
-      const embed = this.trackerEmbeds.trackingUpdateEmbed(doc, record, newStatus);
+      const recordStatus = this.trackerHelper.resolveStatus(doc.provider, [record]);
+      const embed = this.trackerEmbeds.trackingUpdateEmbed(doc, record, recordStatus);
       
       let attachments: AttachmentBuilder[] = [];
       const photosField = record.rawData?.photos;

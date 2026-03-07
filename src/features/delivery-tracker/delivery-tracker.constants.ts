@@ -43,28 +43,28 @@ export class DeliveryTrackerConstants {
 
   // ─── Status Visual Mapping (provider-neutral) ─────────────────
   static readonly STATUS_COLORS: Record<DeliveryStatus, number> = {
-    [DeliveryStatus.PENDING]: 0x95a5a6,
-    [DeliveryStatus.INTERNATIONAL_PROCESSING]: 0x9b59b6,
-    [DeliveryStatus.CROSS_BORDER_TRANSIT]: 0x8e44ad,
-    [DeliveryStatus.CUSTOMS_CLEARANCE]: 0xf1c40f,
-    [DeliveryStatus.IN_TRANSIT]: 0x3498db,
-    [DeliveryStatus.OUT_FOR_DELIVERY]: 0xf39c12,
-    [DeliveryStatus.DELIVERED]: 0x2ecc71,
-    [DeliveryStatus.RETURNED]: 0xe74c3c,
-    [DeliveryStatus.CANCELLED]: 0x8b0000,
-    [DeliveryStatus.FAILED]: 0x8b0000,
+    [DeliveryStatus.PENDING]: 0x95A5A6,
+    [DeliveryStatus.INTERNATIONAL_PROCESSING]: 0x9B59B6,
+    [DeliveryStatus.CROSS_BORDER_TRANSIT]: 0xFF69B4,
+    [DeliveryStatus.CUSTOMS_CLEARANCE]: 0x2ECC71,
+    [DeliveryStatus.IN_TRANSIT]: 0x3498DB,
+    [DeliveryStatus.OUT_FOR_DELIVERY]: 0xF1C40F,
+    [DeliveryStatus.DELIVERED]: 0x2ECC71,
+    [DeliveryStatus.RETURNED]: 0x8B4513,
+    [DeliveryStatus.CANCELLED]: 0x010101,
+    [DeliveryStatus.FAILED]: 0xE74C3C,
   };
 
   static readonly STATUS_EMOJI: Record<DeliveryStatus, string> = {
     [DeliveryStatus.PENDING]: '⏳',
-    [DeliveryStatus.INTERNATIONAL_PROCESSING]: '🏭',
+    [DeliveryStatus.INTERNATIONAL_PROCESSING]: '🌐',
     [DeliveryStatus.CROSS_BORDER_TRANSIT]: '✈️',
-    [DeliveryStatus.CUSTOMS_CLEARANCE]: '🏢',
+    [DeliveryStatus.CUSTOMS_CLEARANCE]: '🛂',
     [DeliveryStatus.IN_TRANSIT]: '🚚',
     [DeliveryStatus.OUT_FOR_DELIVERY]: '📦',
     [DeliveryStatus.DELIVERED]: '✅',
     [DeliveryStatus.RETURNED]: '↩️',
-    [DeliveryStatus.CANCELLED]: '❌',
+    [DeliveryStatus.CANCELLED]: '🛑',
     [DeliveryStatus.FAILED]: '❌',
   };
 }

@@ -32,6 +32,9 @@ export const envValidationSchema = Joi.object({
   NHENTAI_MAX_ID: Joi.number().optional(),
   FLARESOLVERR_ENDPOINT: Joi.string().optional(),
 
+  // System
+  SYSTEM_SECRET_TOKEN: Joi.string().optional().default(''),
+
   // API
   PORT: Joi.number().default(3000),
   JWT_SECRET: Joi.string().required(),

@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { AppHttpService } from '../../../../shared/http';
 import {
-  DeliveryProvider,
-  DeliveryStatus,
-  ITrackingRecord,
+    DeliveryProvider,
+    DeliveryStatus,
+    ITrackingRecord,
 } from '../../delivery-tracker.types';
 import { ITrackerProvider } from '../tracker-provider.interface';
 import { ISpxRecord, ISpxResponse } from './spx.types';
@@ -47,28 +47,20 @@ export class SpxProvider implements ITrackerProvider {
   }
 
   async fetchTracking(code: string): Promise<ITrackingRecord[]> {
-    try {
-      const { data: response } = await this.httpService.get<ISpxResponse>(
-        `${SPX_API_URL}?spx_tn=${code}&language_code=vi`,
-      );
+    const { data: response } = await this.httpService.get<ISpxResponse>(
+      `${SPX_API_URL}?spx_tn=${code}&language_code=vi`,
+    );
 
-      if (
-        response.retcode !== 0 ||
-        !response.data?.sls_tracking_info?.records
-      ) {
-        this.logger.warn(
-          `SPX API returned non-success for ${code}: ${response.message}`,
-        );
-        return [];
-      }
-
-      return response.data.sls_tracking_info.records.map((record) =>
-        this.mapRecord(code, record),
-      );
-    } catch (error) {
-      this.logger.error(`Failed to fetch SPX tracking for ${code}:`, error);
-      return [];
+    if (
+      response.retcode !== 0 ||
+      !response.data?.sls_tracking_info?.records
+    ) {
+      throw new Error(response.message || 'Invalid tracking data');
     }
+
+    return response.data.sls_tracking_info.records.map((record) =>
+      this.mapRecord(code, record),
+    );
   }
 
   resolveStatus(records: ITrackingRecord[]): DeliveryStatus {

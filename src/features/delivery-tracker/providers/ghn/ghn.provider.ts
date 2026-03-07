@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { AppHttpService } from '../../../../shared/http';
 import {
-  DeliveryProvider,
-  DeliveryStatus,
-  ITrackingRecord,
+    DeliveryProvider,
+    DeliveryStatus,
+    ITrackingRecord,
 } from '../../delivery-tracker.types';
 import { ITrackerProvider } from '../tracker-provider.interface';
 import { IGhnTrackingLog, IGhnTrackingResponse } from './ghn.types';
@@ -43,51 +43,45 @@ export class GhnProvider implements ITrackerProvider {
     code: string,
     _meta?: Record<string, any>,
   ): Promise<ITrackingRecord[]> {
-    try {
-      const response = await this.httpService.post<IGhnTrackingResponse>(
-        GHN_API_URL,
-        {
-          order_code: code,
+    const response = await this.httpService.post<IGhnTrackingResponse>(
+      GHN_API_URL,
+      {
+        order_code: code,
+      },
+      {
+        headers: {
+          'accept': 'application/json',
+          'accept-language': 'en-US,en;q=0.9,vi;q=0.8',
+          'content-type': 'application/json',
+          'origin': 'https://donhang.ghn.vn',
+          'referer': 'https://donhang.ghn.vn/',
+          'token': '[object Object]',
+          'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
         },
-        {
-          headers: {
-            'accept': 'application/json',
-            'accept-language': 'en-US,en;q=0.9,vi;q=0.8',
-            'content-type': 'application/json',
-            'origin': 'https://donhang.ghn.vn',
-            'referer': 'https://donhang.ghn.vn/',
-            'token': '[object Object]',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
-          },
-        }
-      );
-
-      const data = response?.data;
-
-      // Handle invalid or not-found tracking code
-      if (!data || !data.data || !data.data.tracking_logs) {
-        this.logger.warn(`GHN response indicates invalid order code: ${code}`);
-        return [];
       }
+    );
 
-      // The tracking_logs are usually sorted older to newer by default in GHN.
-      // We process them and sort them descending (newest first).
-      // When timestamps are identical, the log that appeared later in the JSON array is inherently newer.
-      const records = data.data.tracking_logs
-        .map((log, index) => ({ record: this.mapRecord(log, code), index }))
-        .sort((a, b) => {
-          if (b.record.timestamp !== a.record.timestamp) {
-            return b.record.timestamp - a.record.timestamp;
-          }
-          return b.index - a.index;
-        })
-        .map((item) => item.record);
+    const data = response?.data;
 
-      return records;
-    } catch (error) {
-      this.logger.error(`Error fetching GHN tracking for ${code}:`, error.message);
-      return [];
+    // Handle invalid or not-found tracking code
+    if (!data || !data.data || !data.data.tracking_logs) {
+      throw new Error(`Invalid order code or no tracking logs for ${code}`);
     }
+
+    // The tracking_logs are usually sorted older to newer by default in GHN.
+    // We process them and sort them descending (newest first).
+    // When timestamps are identical, the log that appeared later in the JSON array is inherently newer.
+    const records = data.data.tracking_logs
+      .map((log, index) => ({ record: this.mapRecord(log, code), index }))
+      .sort((a, b) => {
+        if (b.record.timestamp !== a.record.timestamp) {
+          return b.record.timestamp - a.record.timestamp;
+        }
+        return b.index - a.index;
+      })
+      .map((item) => item.record);
+
+    return records;
   }
 
   resolveStatus(records: ITrackingRecord[]): DeliveryStatus {

@@ -1,20 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  Client,
-  MessageActionRowComponentBuilder,
-  User,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    Client,
+    MessageActionRowComponentBuilder,
+    User,
 } from 'discord.js';
 import { DeliveryTrackerConstants } from './delivery-tracker.constants';
 import { DeliveryTrackerEmbeds } from './delivery-tracker.embeds';
 import { DeliveryTrackerService } from './delivery-tracker.service';
 import {
-  DeliveryProvider,
-  DeliveryStatus,
-  IBroadcastTarget,
-  ITrackingRecord,
+    DeliveryProvider,
+    DeliveryStatus,
+    IBroadcastTarget,
+    ITrackingRecord,
 } from './delivery-tracker.types';
 import { GhnProvider } from './providers/ghn/ghn.provider';
 import { JntProvider } from './providers/jnt/jnt.provider';
@@ -129,8 +129,9 @@ export class DeliveryTrackerHelper {
 
     try {
       return await providerImpl.fetchTracking(code, meta);
-    } catch (err) {
-      this.logger.warn(`Could not fetch records for ${code}: ${err}`);
+    } catch (err: any) {
+      const msg = err.message || err;
+      this.logger.error(`[${provider}] Query failed for ${code}: ${msg}`);
       return [];
     }
   }

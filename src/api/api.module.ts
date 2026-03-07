@@ -5,6 +5,7 @@ import { AllExceptionsFilter } from './filters/http-exception.filter';
 import { GuildsModule } from './guilds/guilds.module';
 import { HealthModule } from './health/health.module';
 import { HoyolabApiModule } from './hoyolab/hoyolab-api.module';
+import { InternalApiModule } from './internal/internal-api.module';
 import { NotifyChannelsApiModule } from './notify-channels/notify-channels.module';
 
 // Dummy comments to bypass api_validator.py regex which flags .module.ts files
@@ -19,6 +20,7 @@ import { NotifyChannelsApiModule } from './notify-channels/notify-channels.modul
     GuildsModule,
     NotifyChannelsApiModule,
     HoyolabApiModule,
+    InternalApiModule,
   ],
   providers: [
     {

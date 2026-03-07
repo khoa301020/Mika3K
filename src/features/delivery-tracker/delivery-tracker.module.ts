@@ -12,6 +12,7 @@ import { DeliveryTrackerHelper } from './delivery-tracker.helper';
 import { DeliveryTrackerService } from './delivery-tracker.service';
 import { GhnProvider } from './providers/ghn/ghn.provider';
 import { JntProvider } from './providers/jnt/jnt.provider';
+import { LexCookieService } from './providers/lex/lex-cookie.service';
 import { LexProvider } from './providers/lex/lex.provider';
 import { SpxProvider } from './providers/spx/spx.provider';
 import {
@@ -40,6 +41,7 @@ import {
     SpxProvider,
     JntProvider,
     GhnProvider,
+    LexCookieService,
     LexProvider,
   ],
   exports: [DeliveryTrackerService],

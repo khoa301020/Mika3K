@@ -20,8 +20,8 @@ COPY nest-cli.json tsconfig.build.json tsconfig.json ./
 # Build project
 RUN npm run build
 
-## production runner
-FROM node:lts-alpine as prod-runner
+## production runner (Debian slim for Playwright/Chromium glibc compatibility)
+FROM node:lts-slim as prod-runner
 
 # Set work directory
 WORKDIR /app
@@ -40,3 +40,4 @@ COPY --from=build-runner /tmp/app/dist ./dist
 
 # Start bot
 CMD [ "node", "dist/main.js" ]
+

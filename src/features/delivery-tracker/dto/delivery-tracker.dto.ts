@@ -5,6 +5,7 @@ export enum TrackEditAction {
   REMOVE = 'remove',
   ADD_CHANNEL = 'add-channel',
   REMARK = 'remark',
+  ADD_PHONE = 'add-phone',
 }
 
 export class TrackDto {
@@ -65,6 +66,7 @@ export class TrackEditDto {
       { name: 'Remove User', value: TrackEditAction.REMOVE },
       { name: 'Add Channel', value: TrackEditAction.ADD_CHANNEL },
       { name: 'Update Remark', value: TrackEditAction.REMARK },
+      { name: 'Add/Update Phone', value: TrackEditAction.ADD_PHONE },
     ],
   })
   action: TrackEditAction;
@@ -78,7 +80,7 @@ export class TrackEditDto {
 
   @StringOption({
     name: 'value',
-    description: 'New remark text (for remark action)',
+    description: 'New remark text, User ID, or 4-digit phone (depends on action)',
     required: false,
   })
   value?: string;

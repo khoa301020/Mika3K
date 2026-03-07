@@ -12,10 +12,11 @@ import { DeliveryTrackerHelper } from './delivery-tracker.helper';
 import { DeliveryTrackerService } from './delivery-tracker.service';
 import { GhnProvider } from './providers/ghn/ghn.provider';
 import { JntProvider } from './providers/jnt/jnt.provider';
+import { LexProvider } from './providers/lex/lex.provider';
 import { SpxProvider } from './providers/spx/spx.provider';
 import {
-  DeliveryTracker,
-  DeliveryTrackerSchema,
+    DeliveryTracker,
+    DeliveryTrackerSchema,
 } from './schemas/delivery-tracker.schema';
 
 @Module({
@@ -35,9 +36,11 @@ import {
     ...DeliveryTrackerCommandProviders,
     DeliveryTrackerCron,
     DeliveryTrackerConstants,
+    DeliveryTrackerConstants,
     SpxProvider,
     JntProvider,
     GhnProvider,
+    LexProvider,
   ],
   exports: [DeliveryTrackerService],
 })

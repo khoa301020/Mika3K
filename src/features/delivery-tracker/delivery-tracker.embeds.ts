@@ -198,7 +198,11 @@ export class DeliveryTrackerEmbeds {
       lines.push('', '⏳ No tracking updates yet — will poll automatically.');
     }
 
-    return this.buildEmbed(DeliveryTrackerConstants.COLOR_SUCCESS)
+    const color =
+      DeliveryTrackerConstants.STATUS_COLORS[tracker.lastKnownStatus] ??
+      DeliveryTrackerConstants.COLOR_SUCCESS;
+
+    return this.buildEmbed(color)
       .setTitle('📦 Tracker Created')
       .setDescription(lines.join('\n'));
   }

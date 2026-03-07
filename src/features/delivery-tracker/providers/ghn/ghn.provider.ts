@@ -99,7 +99,7 @@ export class GhnProvider implements ITrackerProvider {
     // GHN status mapping
     // delivered: Delivered
     // return: Returned
-    // cancel: Failed
+    // cancel: Cancelled
     // anything else is typically pending or in-transit
     const statusMap: Record<string, DeliveryStatus> = {
       ready_to_pick: DeliveryStatus.PENDING,
@@ -110,7 +110,7 @@ export class GhnProvider implements ITrackerProvider {
       delivering: DeliveryStatus.OUT_FOR_DELIVERY,
       delivered: DeliveryStatus.DELIVERED,
       returned: DeliveryStatus.RETURNED,
-      cancel: DeliveryStatus.FAILED,
+      cancel: DeliveryStatus.CANCELLED,
     };
 
     const ghnStatus = latest.rawData?.status?.toLowerCase();

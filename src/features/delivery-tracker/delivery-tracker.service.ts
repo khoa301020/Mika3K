@@ -2,14 +2,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
-    DeliveryProvider,
-    DeliveryStatus,
-    IBroadcastTarget,
-    ITrackingRecord,
+  DeliveryProvider,
+  DeliveryStatus,
+  IBroadcastTarget,
+  ITrackingRecord,
 } from './delivery-tracker.types';
 import {
-    DeliveryTracker,
-    DeliveryTrackerDocument,
+  DeliveryTracker,
+  DeliveryTrackerDocument,
 } from './schemas/delivery-tracker.schema';
 
 export interface IParsedTrackInput {
@@ -101,12 +101,16 @@ export class DeliveryTrackerService {
     return await this.trackerModel.distinct('trackingCode', filter);
   }
 
-  /** Get all active tracker docs for a specific tracking code */
+  /** Get all active tracker docs for a specific tracking code or alias */
   async getActiveTrackersByCode(
     trackingCode: string,
   ): Promise<DeliveryTrackerDocument[]> {
     return await this.trackerModel
-      .find({ trackingCode, isEnded: false, isFailed: false })
+      .find({
+        $or: [{ trackingCode }, { aliasCodes: trackingCode }],
+        isEnded: false,
+        isFailed: false,
+      })
       .lean();
   }
 
@@ -152,41 +156,50 @@ export class DeliveryTrackerService {
       .lean();
   }
 
-  /** Find a tracker visible to a user (owned or approved broadcast) */
+  /** Find a tracker visible to a user (owned or approved broadcast), including by alias */
   async getVisibleTrackerByCode(
     trackingCode: string,
     userId: string,
   ): Promise<DeliveryTrackerDocument | null> {
     return await this.trackerModel
       .findOne({
-        trackingCode,
-        $or: [
-          { ownerId: userId },
+        $or: [{ trackingCode }, { aliasCodes: trackingCode }],
+        $and: [
           {
-            broadcastTargets: {
-              $elemMatch: { userId, status: 'approved' },
-            },
-          },
-        ],
+            $or: [
+              { ownerId: userId },
+              {
+                broadcastTargets: {
+                  $elemMatch: { userId, status: 'approved' },
+                },
+              },
+            ],
+          }
+        ]
       })
       .lean();
   }
 
-  /** Find a single tracker by code + owner */
+  /** Find a single tracker by code + owner, including by alias */
   async getTrackerByCodeAndOwner(
     trackingCode: string,
     ownerId: string,
   ): Promise<DeliveryTrackerDocument | null> {
     return await this.trackerModel
-      .findOne({ trackingCode, ownerId })
+      .findOne({
+        $or: [{ trackingCode }, { aliasCodes: trackingCode }],
+        ownerId,
+      })
       .lean();
   }
 
-  /** Find a single tracker by code (first match) */
+  /** Find a single tracker by code (first match), including by alias */
   async getTrackerByCode(
     trackingCode: string,
   ): Promise<DeliveryTrackerDocument | null> {
-    return await this.trackerModel.findOne({ trackingCode }).lean();
+    return await this.trackerModel
+      .findOne({ $or: [{ trackingCode }, { aliasCodes: trackingCode }] })
+      .lean();
   }
 
   // ─── Records & Status ────────────────────────────────────────
@@ -226,18 +239,18 @@ export class DeliveryTrackerService {
   }
 
   /** Mark a specific tracker as ended */
-  async markEnded(trackingCode: string, ownerId: string): Promise<void> {
+  async markEnded(trackingCode: string, ownerId: string, isFailed = false): Promise<void> {
     await this.trackerModel.updateOne(
       { trackingCode, ownerId, isEnded: false },
-      { $set: { isEnded: true } },
+      { $set: { isEnded: true, isFailed } },
     );
   }
 
   /** Mark ALL active docs for a code as ended (terminal fan-out) */
-  async markAllEndedByCode(trackingCode: string): Promise<void> {
+  async markAllEndedByCode(trackingCode: string, isFailed = false): Promise<void> {
     await this.trackerModel.updateMany(
       { trackingCode, isEnded: false },
-      { $set: { isEnded: true } },
+      { $set: { isEnded: true, isFailed } },
     );
   }
 
@@ -246,6 +259,22 @@ export class DeliveryTrackerService {
     await this.trackerModel.updateOne(
       { trackingCode, ownerId },
       { $set: { isFailed: true, isEnded: true } },
+    );
+  }
+
+  /** Swap a tracking code (e.g. LXB to LEX), keeping the old code as an alias */
+  async hardSwapTrackingCode(
+    oldCode: string,
+    newCode: string,
+    ownerId: string,
+  ): Promise<DeliveryTrackerDocument | null> {
+    return await this.trackerModel.findOneAndUpdate(
+      { trackingCode: oldCode, ownerId, isEnded: false },
+      {
+        $set: { trackingCode: newCode },
+        $addToSet: { aliasCodes: oldCode },
+      },
+      { returnDocument: 'after' },
     );
   }
 
@@ -348,6 +377,19 @@ export class DeliveryTrackerService {
     return await this.trackerModel.findOneAndUpdate(
       { trackingCode, ownerId, isEnded: false },
       { $set: { remark } },
+      { returnDocument: 'after' },
+    );
+  }
+
+  /** Update providerMeta for a tracker */
+  async updateProviderMeta(
+    trackingCode: string,
+    ownerId: string,
+    providerMeta: Record<string, any>,
+  ): Promise<DeliveryTrackerDocument | null> {
+    return await this.trackerModel.findOneAndUpdate(
+      { trackingCode, ownerId, isEnded: false },
+      { $set: { providerMeta } },
       { returnDocument: 'after' },
     );
   }

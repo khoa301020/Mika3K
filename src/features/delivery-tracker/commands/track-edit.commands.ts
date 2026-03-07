@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ChannelType, MessageFlags, User } from 'discord.js';
+import { ChannelType, MessageFlags } from 'discord.js';
 import type { SlashCommandContext, TextCommandContext } from 'necord';
 import { Arguments, Context, Options, Subcommand, TextCommand } from 'necord';
 import { DeliveryTrackerEmbeds } from '../delivery-tracker.embeds';
@@ -57,15 +57,21 @@ export class TrackEditCommands {
 
       switch (dto.action) {
         case TrackEditAction.ADD: {
-          const user: User | undefined = dto.user;
-          if (!user) {
-            await interaction.editReply('❌ Please specify a user to add.');
+          let targetUserId = dto.user?.id;
+          if (!targetUserId && dto.value && /^\d{17,19}$/.test(dto.value.trim())) {
+             targetUserId = dto.value.trim();
+          }
+          
+          if (!targetUserId) {
+            await interaction.editReply('❌ Please specify a user to add (select `user` option or provide UserID in `value`).');
             return;
           }
 
+          const userTag = dto.user?.tag || `<@${targetUserId}>`;
+
           await this.trackerHelper.sendWatchalongInvites(
             [tracker as any],
-            user.id,
+            targetUserId,
             interaction.user,
             interaction.guildId || '',
           );
@@ -73,7 +79,7 @@ export class TrackEditCommands {
           await interaction.editReply({
             embeds: [
               this.trackerEmbeds.trackEditEmbed(
-                `📩 Sent watchalong invite to **${user.tag}** for \`${code}\`.`,
+                `📩 Sent watchalong invite to **${userTag}** for \`${code}\`.`,
               ),
             ],
           });
@@ -81,15 +87,19 @@ export class TrackEditCommands {
         }
 
         case TrackEditAction.REMOVE: {
-          const user: User | undefined = dto.user;
-          if (!user) {
+          let targetUserId = dto.user?.id;
+          if (!targetUserId && dto.value && /^\d{17,19}$/.test(dto.value.trim())) {
+             targetUserId = dto.value.trim();
+          }
+
+          if (!targetUserId) {
             await interaction.editReply(
-              '❌ Please specify a user to remove.',
+              '❌ Please specify a user to remove (select `user` option or provide UserID in `value`).',
             );
             return;
           }
 
-          if (user.id === ownerId) {
+          if (targetUserId === ownerId) {
             await interaction.editReply(
               '❌ Cannot remove the owner. Use `/delivery untrack` instead.',
             );
@@ -99,13 +109,15 @@ export class TrackEditCommands {
           await this.trackerService.removeBroadcastTarget(
             code,
             ownerId,
-            user.id,
+            targetUserId,
           );
+
+          const userTag = dto.user?.tag || `<@${targetUserId}>`;
 
           await interaction.editReply({
             embeds: [
               this.trackerEmbeds.trackEditEmbed(
-                `🗑️ Removed **${user.tag}** from broadcast list for \`${code}\`.`,
+                `🗑️ Removed **${userTag}** from broadcast list for \`${code}\`.`,
               ),
             ],
           });
@@ -161,6 +173,26 @@ export class TrackEditCommands {
           break;
         }
 
+        case TrackEditAction.ADD_PHONE: {
+          const phone = dto.value?.trim();
+          if (!phone || !/^\d{4}$/.test(phone)) {
+            await interaction.editReply('❌ Please provide the 4-digit phone number in the `value` field.');
+            return;
+          }
+
+          const newMeta = { ...(tracker.providerMeta || {}), phone };
+          await this.trackerService.updateProviderMeta(code, ownerId, newMeta);
+
+          await interaction.editReply({
+            embeds: [
+              this.trackerEmbeds.trackEditEmbed(
+                `📞 Successfully linked phone number \`${phone}\` to \`${code}\`. You will now receive delivery proof photos.`,
+              ),
+            ],
+          });
+          break;
+        }
+
         default:
           await interaction.editReply('❌ Unknown action.');
       }
@@ -192,8 +224,9 @@ export class TrackEditCommands {
             '❌ Usage:',
             `\`${prefix}track-edit <CODE> add <@user1> [userID2]\``,
             `\`${prefix}track-edit <CODE> add-channel\``,
-            `\`${prefix}track-edit <CODE> remove <@user1>\``,
+            `\`${prefix}track-edit <CODE> remove <@user1/userID>\``,
             `\`${prefix}track-edit <CODE> remark <new text>\``,
+            `\`${prefix}track-edit <CODE> add-phone <4-digit-phone>\``,
           ].join('\n'),
         );
       }
@@ -222,7 +255,7 @@ export class TrackEditCommands {
       const guildId = message.guildId || '';
 
       switch (action) {
-        case 'add': {
+        case TrackEditAction.ADD: {
           const userTokens = args.slice(2);
           if (!userTokens.length) {
             return message.reply(
@@ -254,7 +287,7 @@ export class TrackEditCommands {
           });
         }
 
-        case 'add-channel': {
+        case TrackEditAction.ADD_CHANNEL: {
           const { error } = await this.trackerService.addBroadcastTarget(
             code,
             ownerId,
@@ -280,7 +313,7 @@ export class TrackEditCommands {
           });
         }
 
-        case 'remove': {
+        case TrackEditAction.REMOVE: {
           const userTokens = args.slice(2);
           if (!userTokens.length) {
             return message.reply(
@@ -316,7 +349,7 @@ export class TrackEditCommands {
           });
         }
 
-        case 'remark': {
+        case TrackEditAction.REMARK: {
           const newRemark = args.slice(2).join(' ').trim();
           if (!newRemark) {
             return message.reply('❌ Please specify the new remark text.');
@@ -328,6 +361,24 @@ export class TrackEditCommands {
             embeds: [
               this.trackerEmbeds.trackEditEmbed(
                 `📝 Updated remark for \`${code}\` to: **${newRemark}**`,
+              ),
+            ],
+          });
+        }
+
+        case TrackEditAction.ADD_PHONE: {
+          const phone = args[2]?.trim();
+          if (!phone || !/^\d{4}$/.test(phone)) {
+            return message.reply('❌ Please provide a valid 4-digit phone number (e.g. `$track-edit CODE add-phone 1234`).');
+          }
+
+          const newMeta = { ...(tracker.providerMeta || {}), phone };
+          await this.trackerService.updateProviderMeta(code, ownerId, newMeta);
+
+          return message.reply({
+            embeds: [
+              this.trackerEmbeds.trackEditEmbed(
+                `📞 Successfully linked phone number \`${phone}\` to \`${code}\`. You will now receive delivery proof photos.`,
               ),
             ],
           });

@@ -1,11 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
-import { Client } from 'discord.js';
+import { AttachmentBuilder, Client } from 'discord.js';
+import { AppHttpService } from '../../shared/http';
 import { DeliveryTrackerConstants } from './delivery-tracker.constants';
 import { DeliveryTrackerEmbeds } from './delivery-tracker.embeds';
 import { DeliveryTrackerHelper } from './delivery-tracker.helper';
 import { DeliveryTrackerService } from './delivery-tracker.service';
+import { DeliveryStatus } from './delivery-tracker.types';
 import { ITrackerProvider } from './providers/tracker-provider.interface';
 import { DeliveryTrackerDocument } from './schemas/delivery-tracker.schema';
 
@@ -19,6 +21,7 @@ export class DeliveryTrackerCron {
     private readonly trackerHelper: DeliveryTrackerHelper,
     private readonly client: Client,
     private readonly schedulerRegistry: SchedulerRegistry,
+    private readonly httpService: AppHttpService,
   ) {}
 
   /** Register one cron job per provider */
@@ -59,11 +62,62 @@ export class DeliveryTrackerCron {
         return;
       }
 
+      let codesToPoll = codes;
+
+      if (typeof provider.filterActiveCodes === 'function') {
+        const activeTrackers = await this.trackerService.getActiveTrackers(
+          provider.providerName,
+        );
+        const statusMap = new Map<string, string>();
+        for (const doc of activeTrackers) {
+          if (doc.records.length) {
+            statusMap.set(doc.trackingCode, doc.records[0].code || doc.records[0].status);
+          }
+        }
+
+        try {
+          const result = await provider.filterActiveCodes(codes, (c) => statusMap.get(c));
+          
+          // Phase 1: Process detected swaps (e.g. LXB -> LEX)
+          if (result.swaps && Object.keys(result.swaps).length > 0) {
+            for (const [oldCode, newCode] of Object.entries(result.swaps)) {
+              this.logger.log(`Swapping alias tracking code ${oldCode} → ${newCode}`);
+              
+              const docsToSwap = await this.trackerService.getActiveTrackersByCode(oldCode);
+              for (const doc of docsToSwap) {
+                  await this.trackerService.hardSwapTrackingCode(doc.trackingCode, newCode, doc.ownerId);
+                  
+                  // Broadcast the swap event
+                  for (const target of doc.broadcastTargets) {
+                    if (target.status !== 'approved') continue;
+                    try {
+                      const msg = `🔄 **Notice:** Tracking code \`${doc.trackingCode}\` (${doc.remark}) has been updated by the carrier to \`${newCode}\`!`;
+                      if (target.type === 'channel' && target.channelId) {
+                        const channel = await this.client.channels.fetch(target.channelId);
+                        if (channel && 'send' in channel) await (channel as any).send({ content: msg });
+                      } else if (target.type === 'dm') {
+                        const user = await this.client.users.fetch(target.userId);
+                        await user.send(msg);
+                      }
+                    } catch (e) {
+                      this.logger.debug(`Could not broadcast code swap to ${target.userId}`);
+                    }
+                  }
+              }
+            }
+          }
+          
+          codesToPoll = result.codesToPoll;
+        } catch (error) {
+          this.logger.error(`Error in filterActiveCodes for ${provider.providerName}:`, error);
+        }
+      }
+
       this.logger.log(
-        `Polling ${codes.length} unique ${provider.providerName} code(s)...`,
+        `Polling ${codesToPoll.length} unique ${provider.providerName} code(s)...`,
       );
 
-      for (const code of codes) {
+      for (const code of codesToPoll) {
         await this.pollSingleCode(code, provider);
         await new Promise((r) => setTimeout(r, provider.pollingDelayMs));
       }
@@ -115,7 +169,8 @@ export class DeliveryTrackerCron {
 
       // 4. Terminal fan-out — mark ALL docs ended
       if (DeliveryTrackerConstants.TERMINAL_STATUSES.includes(newStatus)) {
-        await this.trackerService.markAllEndedByCode(code);
+        const isFailed = newStatus === DeliveryStatus.FAILED || newStatus === DeliveryStatus.CANCELLED;
+        await this.trackerService.markAllEndedByCode(code, isFailed);
         this.logger.log(
           `All trackers for ${code} marked ended: ${newStatus}`,
         );
@@ -155,6 +210,27 @@ export class DeliveryTrackerCron {
     const chronologicalRecords = [...newRecords].reverse();
     for (const record of chronologicalRecords) {
       const embed = this.trackerEmbeds.trackingUpdateEmbed(doc, record, newStatus);
+      
+      let attachments: AttachmentBuilder[] = [];
+      const photosField = record.rawData?.photos;
+      const firstPhotoUrl = Array.isArray(photosField) ? photosField[0] : (typeof photosField === 'string' ? photosField : null);
+      
+      if (firstPhotoUrl && firstPhotoUrl.startsWith('http')) {
+        try {
+          const res = await this.httpService.get(firstPhotoUrl, { responseType: 'arraybuffer' });
+          const buffer = Buffer.from(res.data);
+          // Safely extract extension or default to jpg
+          let extension = firstPhotoUrl.split('.').pop()?.split('?')[0];
+          if (!extension || extension.length > 5) extension = 'jpg';
+          const filename = `delivered_photo.${extension}`;
+          
+          const attachment = new AttachmentBuilder(buffer, { name: filename });
+          embed.setImage(`attachment://${filename}`);
+          attachments.push(attachment);
+        } catch (e) {
+          this.logger.warn(`Failed to download delivered photo for ${doc.trackingCode}: ${e}`);
+        }
+      }
 
       for (const target of doc.broadcastTargets) {
         if (target.status !== 'approved') continue;
@@ -165,13 +241,13 @@ export class DeliveryTrackerCron {
               target.channelId,
             );
             if (channel && 'send' in channel) {
-              await (channel as any).send({ embeds: [embed] });
+              await (channel as any).send({ embeds: [embed], files: attachments });
               // 500ms delay to respect Discord 50 req/sec rate limit & ensure order
               await new Promise((r) => setTimeout(r, 500));
             }
           } else if (target.type === 'dm') {
             const user = await this.client.users.fetch(target.userId);
-            await user.send({ embeds: [embed] });
+            await user.send({ embeds: [embed], files: attachments });
             await new Promise((r) => setTimeout(r, 500));
           }
         } catch (err) {

@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { AppHttpService } from '../../../../shared/http';
 import {
-    DeliveryProvider,
-    DeliveryStatus,
-    ITrackingRecord,
+  DeliveryProvider,
+  DeliveryStatus,
+  ITrackingRecord,
 } from '../../delivery-tracker.types';
 import { ITrackerProvider } from '../tracker-provider.interface';
 import { ISpxRecord, ISpxResponse } from './spx.types';
@@ -11,9 +11,13 @@ import { ISpxRecord, ISpxResponse } from './spx.types';
 /** SPX milestone codes → universal DeliveryStatus */
 const SPX_MILESTONE_STATUS: Record<number, DeliveryStatus> = {
   1: DeliveryStatus.PENDING,
+  2: DeliveryStatus.INTERNATIONAL_PROCESSING,
+  3: DeliveryStatus.CROSS_BORDER_TRANSIT,
+  4: DeliveryStatus.CUSTOMS_CLEARANCE,
   5: DeliveryStatus.IN_TRANSIT,
   6: DeliveryStatus.OUT_FOR_DELIVERY,
   8: DeliveryStatus.DELIVERED,
+  9: DeliveryStatus.CANCELLED,
   10: DeliveryStatus.RETURNED,
 };
 

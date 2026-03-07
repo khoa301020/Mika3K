@@ -37,25 +37,34 @@ export class DeliveryTrackerConstants {
   static readonly TERMINAL_STATUSES: DeliveryStatus[] = [
     DeliveryStatus.DELIVERED,
     DeliveryStatus.RETURNED,
+    DeliveryStatus.CANCELLED,
     DeliveryStatus.FAILED,
   ];
 
   // ─── Status Visual Mapping (provider-neutral) ─────────────────
   static readonly STATUS_COLORS: Record<DeliveryStatus, number> = {
     [DeliveryStatus.PENDING]: 0x95a5a6,
+    [DeliveryStatus.INTERNATIONAL_PROCESSING]: 0x9b59b6,
+    [DeliveryStatus.CROSS_BORDER_TRANSIT]: 0x8e44ad,
+    [DeliveryStatus.CUSTOMS_CLEARANCE]: 0xf1c40f,
     [DeliveryStatus.IN_TRANSIT]: 0x3498db,
     [DeliveryStatus.OUT_FOR_DELIVERY]: 0xf39c12,
     [DeliveryStatus.DELIVERED]: 0x2ecc71,
     [DeliveryStatus.RETURNED]: 0xe74c3c,
+    [DeliveryStatus.CANCELLED]: 0x8b0000,
     [DeliveryStatus.FAILED]: 0x8b0000,
   };
 
   static readonly STATUS_EMOJI: Record<DeliveryStatus, string> = {
     [DeliveryStatus.PENDING]: '⏳',
+    [DeliveryStatus.INTERNATIONAL_PROCESSING]: '🏭',
+    [DeliveryStatus.CROSS_BORDER_TRANSIT]: '✈️',
+    [DeliveryStatus.CUSTOMS_CLEARANCE]: '🏢',
     [DeliveryStatus.IN_TRANSIT]: '🚚',
     [DeliveryStatus.OUT_FOR_DELIVERY]: '📦',
     [DeliveryStatus.DELIVERED]: '✅',
     [DeliveryStatus.RETURNED]: '↩️',
+    [DeliveryStatus.CANCELLED]: '❌',
     [DeliveryStatus.FAILED]: '❌',
   };
 }

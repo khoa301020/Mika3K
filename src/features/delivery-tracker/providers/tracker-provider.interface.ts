@@ -1,7 +1,7 @@
 import {
-    DeliveryProvider,
-    DeliveryStatus,
-    ITrackingRecord,
+  DeliveryProvider,
+  DeliveryStatus,
+  ITrackingRecord,
 } from '../delivery-tracker.types';
 
 export interface ITrackerProvider {
@@ -36,4 +36,10 @@ export interface ITrackerProvider {
 
   /** Resolve overall status from latest records */
   resolveStatus(records: ITrackingRecord[]): DeliveryStatus;
+
+  /** Optional: bulk-check which codes have new updates (e.g. LEX list API). Returns codes needing detail fetch and any detected code swaps. */
+  filterActiveCodes?(
+    codes: string[],
+    getLatestStatus: (code: string) => string | undefined,
+  ): Promise<{ codesToPoll: string[]; swaps: Record<string, string> }>;
 }

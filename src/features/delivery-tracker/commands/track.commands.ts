@@ -7,7 +7,7 @@ import { DeliveryTrackerConstants } from '../delivery-tracker.constants';
 import { DeliveryTrackerEmbeds } from '../delivery-tracker.embeds';
 import { DeliveryTrackerHelper } from '../delivery-tracker.helper';
 import { DeliveryTrackerService } from '../delivery-tracker.service';
-import { IBroadcastTarget, ITrackingRecord } from '../delivery-tracker.types';
+import { DeliveryProvider, IBroadcastTarget, ITrackingRecord } from '../delivery-tracker.types';
 import { TrackDto, TrackInfoDto } from '../dto';
 import { DeliveryTrackerDocument } from '../schemas/delivery-tracker.schema';
 import { DeliveryCommandDecorator } from './decorators';
@@ -79,7 +79,13 @@ export class TrackCommands {
         0,
         DeliveryTrackerConstants.INITIAL_RECORDS_LIMIT,
       );
+      
+      const content = provider === DeliveryProvider.LEX && !result.tracker.providerMeta?.phone 
+        ? '💡 **Tip:** Add the last 4 digits of the receiver\'s phone number after the code to securely see delivery photos! (e.g. `LEXST...VN 1234`)' 
+        : undefined;
+
       await interaction.editReply({
+        content,
         embeds: [
           this.trackerEmbeds.trackerCreatedWithHistoryEmbed(
             result.tracker,
@@ -190,7 +196,13 @@ export class TrackCommands {
       if (createdResults.length) {
         const embeds =
           this.trackerEmbeds.trackerCreatedEmbed(createdResults);
-        await message.reply({ embeds });
+          
+        const hasLexWithoutPhone = createdResults.some((r) => r.tracker.provider === DeliveryProvider.LEX && !r.tracker.providerMeta?.phone);
+        const content = hasLexWithoutPhone
+          ? '💡 **Tip:** You tracked a LEX package. Add the last 4 digits of the receiver\'s phone number to see the final delivery photo! (e.g. `$track LEXST...VN 1234`)'
+          : undefined;
+
+        await message.reply({ content, embeds });
 
         // Send watchalong invites for all mentioned users across all created trackers
         if (broadcastUserIds.length) {

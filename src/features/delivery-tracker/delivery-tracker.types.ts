@@ -1,9 +1,13 @@
 export enum DeliveryStatus {
   PENDING = 'PENDING',
+  INTERNATIONAL_PROCESSING = 'INTERNATIONAL_PROCESSING',
+  CROSS_BORDER_TRANSIT = 'CROSS_BORDER_TRANSIT',
+  CUSTOMS_CLEARANCE = 'CUSTOMS_CLEARANCE',
   IN_TRANSIT = 'IN_TRANSIT',
   OUT_FOR_DELIVERY = 'OUT_FOR_DELIVERY',
   DELIVERED = 'DELIVERED',
   RETURNED = 'RETURNED',
+  CANCELLED = 'CANCELLED',
   FAILED = 'FAILED',
 }
 
@@ -11,6 +15,7 @@ export enum DeliveryProvider {
   SPX = 'SPX',
   JNT = 'J&T',
   GHN = 'GHN',
+  LEX = 'LEX',
 }
 
 export interface ITrackingRecord {
@@ -48,4 +53,5 @@ export interface IDeliveryTracker {
   isFailed: boolean;
   createdAt: Date;
   providerMeta?: Record<string, any>;
+  aliasCodes?: string[];
 }

@@ -54,6 +54,9 @@ export class DeliveryTracker {
 
   @Prop({ type: Object, default: {} })
   providerMeta: Record<string, any>;
+
+  @Prop({ type: [String], default: [] })
+  aliasCodes: string[];
 }
 
 export const DeliveryTrackerSchema =
@@ -64,3 +67,6 @@ DeliveryTrackerSchema.index({ trackingCode: 1, ownerId: 1 }, { unique: true });
 
 // For cron polling queries
 DeliveryTrackerSchema.index({ isEnded: 1, isFailed: 1, provider: 1 });
+
+// For alias code lookups (LXB → LEX swaps)
+DeliveryTrackerSchema.index({ aliasCodes: 1 });

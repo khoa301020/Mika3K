@@ -18,6 +18,7 @@ import {
 } from './delivery-tracker.types';
 import { GhnProvider } from './providers/ghn/ghn.provider';
 import { JntProvider } from './providers/jnt/jnt.provider';
+import { LexProvider } from './providers/lex/lex.provider';
 import { SpxProvider } from './providers/spx/spx.provider';
 import { ITrackerProvider } from './providers/tracker-provider.interface';
 import { DeliveryTrackerDocument } from './schemas/delivery-tracker.schema';
@@ -37,8 +38,14 @@ export class DeliveryTrackerHelper {
     private readonly spxProvider: SpxProvider,
     private readonly jntProvider: JntProvider,
     private readonly ghnProvider: GhnProvider,
+    private readonly lexProvider: LexProvider,
   ) {
-    this.providers = [this.spxProvider, this.jntProvider, this.ghnProvider];
+    this.providers = [
+      this.spxProvider,
+      this.jntProvider,
+      this.ghnProvider,
+      this.lexProvider,
+    ];
   }
 
   // ─── Provider Utilities ───────────────────────────────────────
@@ -200,21 +207,29 @@ export class DeliveryTrackerHelper {
 
     const initialRecords = await this.fetchRecords(cleanCode, provider, providerMeta);
 
+    let finalTracker = tracker;
+
     if (initialRecords.length) {
       const status = this.resolveStatus(provider, initialRecords);
-      await this.trackerService.appendRecords(
+      const updatedTracker = await this.trackerService.appendRecords(
         cleanCode,
         ownerId,
         initialRecords,
         status,
       );
+      if (updatedTracker) {
+        finalTracker = updatedTracker;
+      }
 
       if (DeliveryTrackerConstants.TERMINAL_STATUSES.includes(status)) {
-        await this.trackerService.markEnded(cleanCode, ownerId);
+        const isFailed = status === DeliveryStatus.FAILED || status === DeliveryStatus.CANCELLED;
+        await this.trackerService.markEnded(cleanCode, ownerId, isFailed);
+        finalTracker.isEnded = true;
+        finalTracker.isFailed = isFailed;
       }
     }
 
-    return { tracker, initialRecords };
+    return { tracker: finalTracker, initialRecords };
   }
 
   // ─── Broadcast Targets ────────────────────────────────────────

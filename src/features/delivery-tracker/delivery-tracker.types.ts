@@ -25,6 +25,10 @@ export interface ITrackingRecord {
   description: string;
   timestamp: number;
   location: string | null;
+  /** Failure or exception reason text (e.g. "package not ready") */
+  reason?: string;
+  /** Provider-normalized delivery proof photo URLs (downloaded as binary, not sent as links) */
+  photoUrls?: string[];
   rawData?: any;
 }
 

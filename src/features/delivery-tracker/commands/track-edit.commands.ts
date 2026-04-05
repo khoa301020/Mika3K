@@ -181,7 +181,7 @@ export class TrackEditCommands {
           }
 
           const newMeta = { ...(tracker.providerMeta || {}), phone };
-          await this.trackerService.updateProviderMeta(code, ownerId, newMeta);
+          await this.trackerService.updateDisplaySwap(code, ownerId, newMeta);
 
           await interaction.editReply({
             embeds: [
@@ -373,7 +373,7 @@ export class TrackEditCommands {
           }
 
           const newMeta = { ...(tracker.providerMeta || {}), phone };
-          await this.trackerService.updateProviderMeta(code, ownerId, newMeta);
+          await this.trackerService.updateDisplaySwap(code, ownerId, newMeta);
 
           return message.reply({
             embeds: [

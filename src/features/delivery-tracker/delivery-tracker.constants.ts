@@ -46,7 +46,7 @@ export class DeliveryTrackerConstants {
     [DeliveryStatus.PENDING]: 0x95A5A6,
     [DeliveryStatus.INTERNATIONAL_PROCESSING]: 0x9B59B6,
     [DeliveryStatus.CROSS_BORDER_TRANSIT]: 0xFF69B4,
-    [DeliveryStatus.CUSTOMS_CLEARANCE]: 0x2ECC71,
+    [DeliveryStatus.CUSTOMS_CLEARANCE]: 0x1A237E,
     [DeliveryStatus.IN_TRANSIT]: 0x3498DB,
     [DeliveryStatus.OUT_FOR_DELIVERY]: 0xF1C40F,
     [DeliveryStatus.DELIVERED]: 0x2ECC71,

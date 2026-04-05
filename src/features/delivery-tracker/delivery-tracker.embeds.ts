@@ -3,7 +3,7 @@ import { Client, EmbedBuilder } from 'discord.js';
 import { EMBED_LIMITS, EmbedService } from '../../shared/embed';
 import { getTime } from '../../shared/utils';
 import { DeliveryTrackerConstants } from './delivery-tracker.constants';
-import { DeliveryStatus, ITrackingRecord } from './delivery-tracker.types';
+import { DeliveryProvider, DeliveryStatus, ITrackingRecord } from './delivery-tracker.types';
 import { DeliveryTrackerDocument } from './schemas/delivery-tracker.schema';
 
 @Injectable()
@@ -24,16 +24,20 @@ export class DeliveryTrackerEmbeds {
       DeliveryTrackerConstants.DEFAULT_COLOR;
     const dateStr = this.formatTimestamp(record.timestamp);
 
+    const displayCode = tracker.providerMeta?.displayCode || tracker.trackingCode;
     const lines = [
-      `📦 [\`[${tracker.provider}]${tracker.trackingCode}\`](<${tracker.trackingUrl}>) - **${tracker.remark}**`,
+      `📦 [\`[${tracker.provider}]${displayCode}\`](<${tracker.trackingUrl}>) - **${tracker.remark}**`,
       '',
     ];
     if (record.code) lines.push(`🧩 **Code**: ${record.code}`);
     lines.push(`📌 **Status**: ${record.status}`);
     lines.push(`📝 **Description**: ${record.description}`);
+    if (record.reason) lines.push(`⚠️ **Reason**: ${record.reason}`);
     lines.push(`🕒 **Date**: ${dateStr}`);
     lines.push(`📍 **Location**: ${this.embedService.safeFieldValue(record.location)}`);
-
+    if (tracker.provider === DeliveryProvider.LEX && record.rawData?.shippingProvider) {
+      lines.push(`🚚 **Carrier**: ${record.rawData.shippingProvider}`);
+    }
     return this.buildEmbed(color)
       .setAuthor({
         name: this.embedService.truncate(
@@ -63,7 +67,12 @@ export class DeliveryTrackerEmbeds {
       const emoji =
         DeliveryTrackerConstants.STATUS_EMOJI[t.lastKnownStatus] ?? '📦';
       const ownerMark = t.ownerId === userId ? ' 👑' : '';
-      return `${emoji} [\`[${t.provider}]${t.trackingCode}\`](<${t.trackingUrl}>) — **${t.remark}** - ${t.lastKnownStatus}  ${ownerMark}`;
+      const displayCode = t.providerMeta?.displayCode || t.trackingCode;
+      
+      const broadcastCount = t.broadcastTargets.filter(b => b.status === 'approved' && b.userId !== userId).length;
+      const broadcastTag = broadcastCount > 0 ? ` 📢${broadcastCount}` : '';
+
+      return `${emoji} [\`[${t.provider}]${displayCode}\`](<${t.trackingUrl}>) — **${t.remark}**${broadcastTag}${ownerMark}`;
     });
 
     const embed = this.buildEmbed(DeliveryTrackerConstants.DEFAULT_COLOR)
@@ -95,15 +104,19 @@ export class DeliveryTrackerEmbeds {
       return `\`${dateStr}\` — **${r.status}**\n> ${r.description}${r.location ? ` @ ${r.location}` : ''}`;
     });
 
+    const displayCode = tracker.providerMeta?.displayCode || tracker.trackingCode;
+    
+    const broadcastCount = tracker.broadcastTargets.filter(
+      (t) => t.status === 'approved',
+    ).length;
+    const broadcastTag = broadcastCount > 0 ? ` 📢${broadcastCount}` : '';
+
     const description = [
-      `${statusEmoji} \`[${tracker.provider}]${tracker.trackingCode}\` — **${tracker.remark}**`,
+      `${statusEmoji} \`[${tracker.provider}]${displayCode}\` — **${tracker.remark}**${broadcastTag}`,
       `Status: **${tracker.lastKnownStatus}**`,
     ];
 
     if (!isBroadcast) {
-      const broadcastCount = tracker.broadcastTargets.filter(
-        (t) => t.status === 'approved',
-      ).length;
       description.push(`Broadcast to: **${broadcastCount}** approved target(s)`);
       description.push(
         `Ended: ${tracker.isEnded ? '✅' : '❌'} | Failed: ${tracker.isFailed ? '✅' : '❌'}`,
@@ -182,8 +195,9 @@ export class DeliveryTrackerEmbeds {
     provider: string,
     recentRecords: ITrackingRecord[],
   ): EmbedBuilder {
+    const displayCode = tracker.providerMeta?.displayCode || tracker.trackingCode;
     const lines = [
-      `✅ [\`[${provider}]${tracker.trackingCode}\`](<${tracker.trackingUrl}>) — **${tracker.remark}**`,
+      `✅ [\`[${provider}]${displayCode}\`](<${tracker.trackingUrl}>) — **${tracker.remark}**`,
     ];
 
     if (recentRecords.length) {

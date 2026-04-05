@@ -7,7 +7,7 @@ import { DeliveryTrackerConstants } from './delivery-tracker.constants';
 import { DeliveryTrackerEmbeds } from './delivery-tracker.embeds';
 import { DeliveryTrackerHelper } from './delivery-tracker.helper';
 import { DeliveryTrackerService } from './delivery-tracker.service';
-import { DeliveryStatus } from './delivery-tracker.types';
+import { DeliveryStatus, ITrackingRecord } from './delivery-tracker.types';
 import { ITrackerProvider } from './providers/tracker-provider.interface';
 import { DeliveryTrackerDocument } from './schemas/delivery-tracker.schema';
 
@@ -27,6 +27,11 @@ export class DeliveryTrackerCron {
   /** Register one cron job per provider */
   onModuleInit() {
     for (const provider of this.trackerHelper.getAllProviders()) {
+      if (!provider.pollingCron) {
+        this.logger.log(`Skipping polling cron for ${provider.providerName} (pollingCron is null)`);
+        continue;
+      }
+
       const jobName = `delivery-tracker-poll-${provider.providerName}`;
 
       const job = new CronJob(
@@ -78,31 +83,12 @@ export class DeliveryTrackerCron {
         try {
           const result = await provider.filterActiveCodes(codes, (c) => statusMap.get(c));
           
-          // Phase 1: Process detected swaps (e.g. LXB -> LEX)
+          // Phase 1: Process detected swaps (displayCode swaps only!)
           if (result.swaps && Object.keys(result.swaps).length > 0) {
             for (const [oldCode, newCode] of Object.entries(result.swaps)) {
-              this.logger.log(`Swapping alias tracking code ${oldCode} → ${newCode}`);
-              
               const docsToSwap = await this.trackerService.getActiveTrackersByCode(oldCode);
               for (const doc of docsToSwap) {
-                  await this.trackerService.hardSwapTrackingCode(doc.trackingCode, newCode, doc.ownerId);
-                  
-                  // Broadcast the swap event
-                  for (const target of doc.broadcastTargets) {
-                    if (target.status !== 'approved') continue;
-                    try {
-                      const msg = `🔄 **Notice:** Tracking code \`${doc.trackingCode}\` (${doc.remark}) has been updated by the carrier to \`${newCode}\`!`;
-                      if (target.type === 'channel' && target.channelId) {
-                        const channel = await this.client.channels.fetch(target.channelId);
-                        if (channel && 'send' in channel) await (channel as any).send({ content: msg });
-                      } else if (target.type === 'dm') {
-                        const user = await this.client.users.fetch(target.userId);
-                        await user.send(msg);
-                      }
-                    } catch (e) {
-                      this.logger.debug(`Could not broadcast code swap to ${target.userId}`);
-                    }
-                  }
+                  await this.handleDisplaySwap(doc, newCode);
               }
             }
           }
@@ -180,6 +166,84 @@ export class DeliveryTrackerCron {
     }
   }
 
+  public async handleDisplaySwap(
+    doc: DeliveryTrackerDocument,
+    newDisplayCode: string,
+  ): Promise<void> {
+    if (doc.providerMeta?.displayCode === newDisplayCode) return;
+
+    this.logger.log(`Soft swapping display code for ${doc.trackingCode} → ${newDisplayCode}`);
+    
+    let newUrl = doc.trackingUrl;
+    const newProviderName = this.trackerHelper.detectProvider(newDisplayCode);
+    if (newProviderName) {
+      const newProviderImpl = this.trackerHelper.getProvider(newProviderName);
+      if (newProviderImpl) {
+        newUrl = newProviderImpl.getTrackingUrl(newDisplayCode);
+      }
+    }
+
+    const providerMeta = { ...doc.providerMeta, displayCode: newDisplayCode };
+    
+    doc.providerMeta = providerMeta;
+    doc.trackingUrl = newUrl;
+
+    await this.trackerService.updateDisplaySwap(doc.trackingCode, doc.ownerId, providerMeta, newUrl);
+
+    for (const target of doc.broadcastTargets) {
+      if (target.status !== 'approved') continue;
+      try {
+        const msg = `🔄 **Notice:** Tracking code \`${doc.trackingCode}\` (${doc.remark}) is now tracked as \`${newDisplayCode}\`!`;
+        if (target.type === 'channel' && target.channelId) {
+          const channel = await this.client.channels.fetch(target.channelId);
+          if (channel && 'send' in channel) await (channel as any).send({ content: msg });
+        } else if (target.type === 'dm') {
+          const user = await this.client.users.fetch(target.userId);
+          await user.send(msg);
+        }
+      } catch (e) {
+        this.logger.debug(`Could not broadcast code swap to ${target.userId}`);
+      }
+    }
+  }
+
+  public async processWebhookSync(
+    code: string,
+    displayCode: string | undefined,
+    fetchedRecords: ITrackingRecord[],
+    provider: ITrackerProvider,
+  ): Promise<void> {
+    const docs = await this.trackerService.getActiveTrackersByCode(code);
+    if (!docs.length) return;
+
+    for (const doc of docs) {
+      if (displayCode && doc.providerMeta?.displayCode !== displayCode) {
+        await this.handleDisplaySwap(doc, displayCode);
+        doc.providerMeta = { ...doc.providerMeta, displayCode }; // Patch memory for updateSingleDoc
+      }
+    }
+
+    if (!fetchedRecords.length) {
+      for (const doc of docs) {
+        await this.trackerService.touchPolled(code, doc.ownerId);
+      }
+      return;
+    }
+
+    const newStatus = provider.resolveStatus(fetchedRecords);
+
+    for (const doc of docs) {
+      await this.updateSingleDoc(doc, fetchedRecords, newStatus);
+    }
+
+    // Terminal fan-out — mark ALL docs ended
+    if (DeliveryTrackerConstants.TERMINAL_STATUSES.includes(newStatus)) {
+      const isFailed = newStatus === DeliveryStatus.FAILED || newStatus === DeliveryStatus.CANCELLED;
+      await this.trackerService.markAllEndedByCode(code, isFailed);
+      this.logger.log(`All trackers for ${code} marked ended: ${newStatus}`);
+    }
+  }
+
   /** Diff & update a single tracker doc, broadcast new records */
   private async updateSingleDoc(
     doc: DeliveryTrackerDocument,
@@ -213,23 +277,22 @@ export class DeliveryTrackerCron {
       const embed = this.trackerEmbeds.trackingUpdateEmbed(doc, record, recordStatus);
       
       let attachments: AttachmentBuilder[] = [];
-      const photosField = record.rawData?.photos;
-      const firstPhotoUrl = Array.isArray(photosField) ? photosField[0] : (typeof photosField === 'string' ? photosField : null);
-      
-      if (firstPhotoUrl && firstPhotoUrl.startsWith('http')) {
-        try {
-          const res = await this.httpService.get(firstPhotoUrl, { responseType: 'arraybuffer' });
-          const buffer = Buffer.from(res.data);
-          // Safely extract extension or default to jpg
-          let extension = firstPhotoUrl.split('.').pop()?.split('?')[0];
-          if (!extension || extension.length > 5) extension = 'jpg';
-          const filename = `delivered_photo.${extension}`;
-          
-          const attachment = new AttachmentBuilder(buffer, { name: filename });
-          embed.setImage(`attachment://${filename}`);
-          attachments.push(attachment);
-        } catch (e) {
-          this.logger.warn(`Failed to download delivered photo for ${doc.trackingCode}: ${e}`);
+      if (record.photoUrls?.length) {
+        for (let i = 0; i < record.photoUrls.length; i++) {
+          const url = record.photoUrls[i];
+          if (!url?.startsWith('http')) continue;
+          try {
+            const res = await this.httpService.get(url, { responseType: 'arraybuffer' });
+            const buffer = Buffer.from(res.data);
+            let extension = url.split('.').pop()?.split('?')[0];
+            if (!extension || extension.length > 5) extension = 'jpg';
+            const filename = `delivered_${i + 1}.${extension}`;
+            const attachment = new AttachmentBuilder(buffer, { name: filename });
+            if (i === 0) embed.setImage(`attachment://${filename}`);
+            attachments.push(attachment);
+          } catch (e) {
+            this.logger.warn(`Failed to download photo[${i}] for ${doc.trackingCode}: ${e}`);
+          }
         }
       }
 

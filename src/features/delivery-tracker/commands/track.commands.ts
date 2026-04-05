@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ChannelType, Client, MessageFlags, User } from 'discord.js';
+import { AttachmentBuilder, ChannelType, Client, MessageFlags, User } from 'discord.js';
 import type { ButtonContext, SlashCommandContext, TextCommandContext } from 'necord';
 import { Arguments, Button, Context, Options, Subcommand, TextCommand } from 'necord';
+import { AppHttpService } from '../../../shared/http';
 import { PaginationPage, PaginationService } from '../../../shared/pagination';
 import { DeliveryTrackerConstants } from '../delivery-tracker.constants';
 import { DeliveryTrackerEmbeds } from '../delivery-tracker.embeds';
@@ -23,6 +24,7 @@ export class TrackCommands {
     private readonly trackerHelper: DeliveryTrackerHelper,
     private readonly paginationService: PaginationService,
     private readonly client: Client,
+    private readonly httpService: AppHttpService,
   ) {}
 
   // ─── Slash: /delivery track ───────────────────────────────────
@@ -381,12 +383,31 @@ export class TrackCommands {
         return;
       }
 
-      // Fetch from provider
-      const records = await this.trackerHelper.fetchRecords(code, provider);
-      
+      // Run parseInput to extract phone suffix (e.g. LEXST...VN-3699 → phone=3699)
+      const providerImpl = this.trackerHelper.getProvider(provider);
+      let cleanCode = code;
+      let meta: Record<string, any> | undefined;
+
+      if (providerImpl && typeof providerImpl.parseInput === 'function') {
+        try {
+          const parsed = providerImpl.parseInput(code, '');
+          cleanCode = parsed.cleanCode;
+          meta = parsed.meta;
+        } catch {
+          // parseInput may throw for optional fields — ignore and proceed without meta
+        }
+      }
+
+      // Fetch from provider with meta (phone number enables photo access)
+      const records = await this.trackerHelper.fetchRecords(cleanCode, provider, meta);
+
       if (!records.length) {
+        // LEX returns {success:true} with no data when phone is wrong
+        const wrongPhoneHint = meta?.phone
+          ? `\n💡 If you provided a phone suffix, it may be incorrect. Try without it or with the correct last 4 digits.`
+          : '';
         await interaction.editReply(
-          `❌ No tracker found & no history could be dynamically fetched for \`${code}\` via ${provider}.`,
+          `❌ No history could be fetched for \`${cleanCode}\` via ${provider}.${wrongPhoneHint}`,
         );
         return;
       }
@@ -394,11 +415,10 @@ export class TrackCommands {
       const status = this.trackerHelper.resolveStatus(provider, records);
       const isFailed = status === DeliveryStatus.FAILED || status === DeliveryStatus.CANCELLED;
 
-      // Create a temporary/in-memory tracker document representation
       const tempTracker = {
-        trackingCode: code,
+        trackingCode: cleanCode,
         aliasCodes: [],
-        trackingUrl: '', // Could be fetched but not strictly needed for embed if simple
+        trackingUrl: providerImpl ? providerImpl.getTrackingUrl(cleanCode, meta) : '',
         provider,
         remark: 'Untracked',
         ownerId: interaction.user.id,
@@ -409,17 +429,36 @@ export class TrackCommands {
         lastUpdatedAt: new Date(),
         isEnded: DeliveryTrackerConstants.TERMINAL_STATUSES.includes(status),
         isFailed,
-        providerMeta: {}, // no simple way to pass phone number here dynamically unless we add it to DTO
+        providerMeta: meta || {},
       } as unknown as DeliveryTrackerDocument;
 
-      const providerImpl = this.trackerHelper.getProvider(provider);
-      if (providerImpl) {
-          tempTracker.trackingUrl = providerImpl.getTrackingUrl(code);
+      const embed = this.trackerEmbeds.trackerInfoEmbed(tempTracker, false);
+
+      // Download delivered photos as binary attachments (TTL URLs)
+      const attachments: AttachmentBuilder[] = [];
+      const latestRecord = tempTracker.records[0];
+      if (latestRecord?.photoUrls?.length) {
+        for (let i = 0; i < latestRecord.photoUrls.length; i++) {
+          const url = latestRecord.photoUrls[i];
+          if (!url?.startsWith('http')) continue;
+          try {
+            const res = await this.httpService.get(url, { responseType: 'arraybuffer' });
+            const buffer = Buffer.from(res.data);
+            let ext = url.split('.').pop()?.split('?')[0];
+            if (!ext || ext.length > 5) ext = 'jpg';
+            const filename = `delivered_${i + 1}.${ext}`;
+            attachments.push(new AttachmentBuilder(buffer, { name: filename }));
+            if (i === 0) embed.setImage(`attachment://${filename}`);
+          } catch (e) {
+            this.logger.warn(`Failed to download photo[${i}] for ${cleanCode}: ${e}`);
+          }
+        }
       }
 
       await interaction.editReply({
         content: `💡 **Tip**: This code is currently **untracked**. Use \`/delivery track\` to get automatic notifications!`,
-        embeds: [this.trackerEmbeds.trackerInfoEmbed(tempTracker, false)],
+        embeds: [embed],
+        files: attachments,
       });
     } catch (error) {
       this.logger.error('Error in /track-info command:', error);

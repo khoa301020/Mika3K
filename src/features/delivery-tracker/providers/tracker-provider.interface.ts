@@ -1,14 +1,14 @@
 import {
-  DeliveryProvider,
-  DeliveryStatus,
-  ITrackingRecord,
+    DeliveryProvider,
+    DeliveryStatus,
+    ITrackingRecord,
 } from '../delivery-tracker.types';
 
 export interface ITrackerProvider {
   readonly providerName: DeliveryProvider;
 
   /** Cron expression for this provider's polling interval */
-  readonly pollingCron: string;
+  readonly pollingCron: string | null;
 
   /** Delay (ms) between API calls during a polling cycle */
   readonly pollingDelayMs: number;

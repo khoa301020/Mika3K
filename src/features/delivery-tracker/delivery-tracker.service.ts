@@ -56,7 +56,7 @@ export class DeliveryTrackerService {
   ): Promise<DeliveryTrackerDocument> {
     const existing = await this.trackerModel
       .findOne({ trackingCode, ownerId, isEnded: false, isFailed: false })
-      .lean();
+      .lean() as any;
 
     if (existing) {
       throw new Error(
@@ -98,7 +98,7 @@ export class DeliveryTrackerService {
   ): Promise<string[]> {
     const filter: any = { isEnded: false, isFailed: false };
     if (provider) filter.provider = provider;
-    return await this.trackerModel.distinct('trackingCode', filter);
+    return await this.trackerModel.distinct('trackingCode', filter) as any;
   }
 
   /** Get all active tracker docs for a specific tracking code or alias */
@@ -111,7 +111,7 @@ export class DeliveryTrackerService {
         isEnded: false,
         isFailed: false,
       })
-      .lean();
+      .lean() as any;
   }
 
   /** Get all active trackers, optionally filtered by provider */
@@ -120,7 +120,7 @@ export class DeliveryTrackerService {
   ): Promise<DeliveryTrackerDocument[]> {
     const filter: any = { isEnded: false, isFailed: false };
     if (provider) filter.provider = provider;
-    return await this.trackerModel.find(filter).lean();
+    return await this.trackerModel.find(filter).lean() as any;
   }
 
   /** Get trackers owned by a user */
@@ -133,7 +133,7 @@ export class DeliveryTrackerService {
       filter.isEnded = false;
       filter.isFailed = false;
     }
-    return await this.trackerModel.find(filter).lean();
+    return await this.trackerModel.find(filter).lean() as any;
   }
 
   /** Get all trackers visible to a user (owned + approved broadcast) */
@@ -153,7 +153,7 @@ export class DeliveryTrackerService {
           },
         ],
       })
-      .lean();
+      .lean() as any;
   }
 
   /** Find a tracker visible to a user (owned or approved broadcast), including by alias */
@@ -177,7 +177,7 @@ export class DeliveryTrackerService {
           }
         ]
       })
-      .lean();
+      .lean() as any;
   }
 
   /** Find a single tracker by code + owner, including by alias */
@@ -190,7 +190,7 @@ export class DeliveryTrackerService {
         $or: [{ trackingCode }, { aliasCodes: trackingCode }],
         ownerId,
       })
-      .lean();
+      .lean() as any;
   }
 
   /** Find a single tracker by code (first match), including by alias */
@@ -199,7 +199,7 @@ export class DeliveryTrackerService {
   ): Promise<DeliveryTrackerDocument | null> {
     return await this.trackerModel
       .findOne({ $or: [{ trackingCode }, { aliasCodes: trackingCode }] })
-      .lean();
+      .lean() as any;
   }
 
   // ─── Records & Status ────────────────────────────────────────
@@ -288,14 +288,14 @@ export class DeliveryTrackerService {
   ): Promise<{ doc: DeliveryTrackerDocument | null; error?: string }> {
     const tracker = await this.trackerModel
       .findOne({ trackingCode, ownerId, isEnded: false })
-      .lean();
+      .lean() as any;
 
     if (!tracker) {
       return { doc: null, error: `No active tracker found for \`${trackingCode}\`.` };
     }
 
-    const existing = tracker.broadcastTargets.find(
-      (t) =>
+    const existing = (tracker.broadcastTargets as IBroadcastTarget[]).find(
+      (t: IBroadcastTarget) =>
         t.userId === target.userId &&
         t.type === target.type &&
         (t.type === 'dm' || t.channelId === target.channelId),
@@ -381,15 +381,19 @@ export class DeliveryTrackerService {
     );
   }
 
-  /** Update providerMeta for a tracker */
-  async updateProviderMeta(
+  /** Update providerMeta and optionally trackingUrl for a tracker */
+  async updateDisplaySwap(
     trackingCode: string,
     ownerId: string,
     providerMeta: Record<string, any>,
+    trackingUrl?: string,
   ): Promise<DeliveryTrackerDocument | null> {
+    const $set: any = { providerMeta };
+    if (trackingUrl) $set.trackingUrl = trackingUrl;
+
     return await this.trackerModel.findOneAndUpdate(
       { trackingCode, ownerId, isEnded: false },
-      { $set: { providerMeta } },
+      { $set },
       { returnDocument: 'after' },
     );
   }
@@ -408,6 +412,6 @@ export class DeliveryTrackerService {
         isFailed: false,
         lastUpdatedAt: { $lt: cutoff },
       })
-      .lean();
+      .lean() as any;
   }
 }

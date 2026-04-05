@@ -2,9 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as cheerio from 'cheerio';
 import { AppHttpService } from '../../../../shared/http';
 import {
-    DeliveryProvider,
-    DeliveryStatus,
-    ITrackingRecord,
+  DeliveryProvider,
+  DeliveryStatus,
+  ITrackingRecord,
 } from '../../delivery-tracker.types';
 import { ITrackerProvider } from '../tracker-provider.interface';
 
@@ -17,13 +17,11 @@ export class JntProvider implements ITrackerProvider {
   readonly providerName = DeliveryProvider.JNT;
   readonly pollingCron = '0 */30 * * * *'; // Every 30 minutes
   readonly pollingDelayMs = 2000;
-  readonly codePrefixes = ['JNT'];
+  readonly codePrefixes = [];
 
   detectProvider(code: string): boolean {
-    const upper = code.toUpperCase();
-    const hasPrefix = this.codePrefixes.some((prefix) => upper.startsWith(prefix));
-    const isTiktokFormat = /^\d{12}(?:[-:]\d{4})?$/.test(code);
-    return hasPrefix || isTiktokFormat;
+    // J&T standalone: only TikTok 12-digit format (e.g. 123456789012 or 123456789012-3699)
+    return /^\d{12}(?:[-:]\d{4})?$/.test(code);
   }
 
   parseInput(

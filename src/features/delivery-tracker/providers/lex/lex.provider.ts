@@ -29,9 +29,17 @@ const LEX_STATUS_MAP: Record<string, DeliveryStatus> = {
   cb_ib_success_in_sort_center: DeliveryStatus.INTERNATIONAL_PROCESSING,
   cb_ob_success_in_sort_center: DeliveryStatus.INTERNATIONAL_PROCESSING,
   cb_handover: DeliveryStatus.CUSTOMS_CLEARANCE,
+  cb_ex_customs_clearance_success: DeliveryStatus.CUSTOMS_CLEARANCE,
   cb_uplifted: DeliveryStatus.CROSS_BORDER_TRANSIT,
   cb_linehaul_arrival_success: DeliveryStatus.CUSTOMS_CLEARANCE,
+  cb_submit_to_customs: DeliveryStatus.CUSTOMS_CLEARANCE,
+  cb_customs_clearance_success: DeliveryStatus.CUSTOMS_CLEARANCE,
+  cb_released_from_custom_broker: DeliveryStatus.IN_TRANSIT,
+  cb_handover_to_last_mile: DeliveryStatus.IN_TRANSIT,
   // Domestic (VN)
+  domestic_sc_sign_in_success: DeliveryStatus.IN_TRANSIT,
+  'domestic_pickup/sign_in_success': DeliveryStatus.IN_TRANSIT,
+  'domestic_pickup/sign_in_failure': DeliveryStatus.IN_TRANSIT,
   domestic_ib_success_in_sort_center: DeliveryStatus.IN_TRANSIT,
   domestic_linehaul_packed: DeliveryStatus.IN_TRANSIT,
   domestic_pkg_outbound_attendance: DeliveryStatus.IN_TRANSIT,
@@ -43,6 +51,7 @@ const LEX_STATUS_MAP: Record<string, DeliveryStatus> = {
   domestic_delivered: DeliveryStatus.DELIVERED,
   domestic_return: DeliveryStatus.RETURNED,
   domestic_returned: DeliveryStatus.RETURNED,
+  package_cancelled: DeliveryStatus.CANCELLED,
 };
 
 const LEX_BASE_HEADERS: Record<string, string> = {
@@ -80,12 +89,16 @@ export class LexProvider implements ITrackerProvider {
   readonly pollingCron = '0 0 * * * *'; // Every hour at minute 0
   readonly pollingDelayMs = 2000;
   readonly codePrefixes = ['LEX', 'LXB'];
+  /** Lazada sub-carrier prefixes (domestic shipments fulfilled by partner carriers) */
+  readonly subCarrierPrefixes = ['JNTXB', 'JNTMP', 'JNTRT', 'BESTMP'];
 
   detectProvider(code: string): boolean {
     const upper = code.toUpperCase();
     // Standard LEX/LXB prefix
     if (this.codePrefixes.some((p) => upper.startsWith(p))) return true;
-    // Pre-import format: digits_alphanumeric (e.g. 521413287071885_SF3264471265749 or 526015723983484_JT3155412299645-3699)
+    // Lazada sub-carrier domestic codes (e.g. JNTXB1008613222, BESTMP0052402477VNA)
+    if (this.subCarrierPrefixes.some((p) => upper.startsWith(p))) return true;
+    // Cross-border pre-import format: digits_alphanumeric (e.g. 521413287071885_SF3264471265749-3699)
     if (/^\d+_[A-Z0-9]+(?:[-:]\d{4})?$/i.test(code)) return true;
     return false;
   }
@@ -223,12 +236,19 @@ export class LexProvider implements ITrackerProvider {
     const unixSeconds = Math.floor(raw.processTime / 1000);
     const label = LEX_STATUS_LABELS[raw.status] || raw.status;
 
+    // Collect proof-of-delivery photos — epod can be call log text on failures, so URL-check it
+    const photoUrls: string[] = [];
+    if (raw.photos && typeof raw.photos === 'string' && raw.photos.startsWith('http')) photoUrls.push(raw.photos);
+    if (raw.epod && typeof raw.epod === 'string' && raw.epod.startsWith('http')) photoUrls.push(raw.epod);
+
     return {
       trackingUrl: this.getTrackingUrl(trackingCode),
       status: raw.status.toUpperCase(),
       description: label,
       timestamp: unixSeconds,
       location: raw.location || null,
+      ...(raw.reasonCode ? { reason: raw.reasonCode } : {}),
+      ...(photoUrls.length ? { photoUrls } : {}),
       rawData: raw,
     };
   }

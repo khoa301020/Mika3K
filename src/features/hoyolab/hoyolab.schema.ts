@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { IHoYoLABUser } from './types/hoyolab';
+import type { IHoYoLABUser } from './types/hoyolab';
 
 export type HoyolabDocument = Hoyolab & Document;
 

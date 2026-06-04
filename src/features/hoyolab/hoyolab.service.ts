@@ -5,7 +5,7 @@ import { AppHttpService } from '../../shared/http';
 import { AppCacheService } from '../../shared/cache';
 import { Hoyolab, HoyolabDocument } from './hoyolab.schema';
 import { HoYoLABConstants } from './hoyolab.constants';
-import {
+import type {
   IHoYoLABUser,
   IHoYoLABGameAccount,
   THoyoGame,

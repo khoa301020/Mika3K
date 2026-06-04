@@ -1,5 +1,6 @@
 ## Untagged
 
+- Refactor: [BlueArchive] Natively adapt SchaleDB object format and fix skill rendering regressions ([53391f](https://github.com/khoa301020/Mika3K/commit/53391fa59ca5f6b3961706d05d5ff93ef8f6635d))
 - Update: [DeliveryTracker] Implement universal delivery photo support and refine LEX sub-carrier mapping ([7413f7](https://github.com/khoa301020/Mika3K/commit/7413f784978bbb878e699bab4c177c11c7a223ae))
 - Feature: [DeliveryTracker] Implement LEX provider and tracking enhancements ([5ed9ed](https://github.com/khoa301020/Mika3K/commit/5ed9edd81874d03395154b6e51718770fdbe4bac))
 - Feature: [DeliveryTracker] Implement LEX provider and tracking enhancements ([f9f6fb](https://github.com/khoa301020/Mika3K/commit/f9f6fbfc23a6c56701f502368c0a75d8a6b73e2f))

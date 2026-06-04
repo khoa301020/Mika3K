@@ -13,6 +13,8 @@ import { DeliveryTrackerService } from './delivery-tracker.service';
 import {
     DeliveryProvider,
     DeliveryStatus,
+} from './delivery-tracker.types';
+import type {
     IBroadcastTarget,
     ITrackingRecord,
 } from './delivery-tracker.types';

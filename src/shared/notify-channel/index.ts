@@ -3,6 +3,6 @@ export { NotifyChannelService } from './notify-channel.service';
 export {
   NotifyChannel,
   NotifyChannelSchema,
-  NotifyType,
 } from './notify-channel.schema';
+export { NotifyType } from './notify-channel.enum';
 export type { NotifyChannelDocument } from './notify-channel.schema';

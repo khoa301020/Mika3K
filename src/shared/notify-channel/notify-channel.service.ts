@@ -4,8 +4,8 @@ import { Model } from 'mongoose';
 import {
   NotifyChannel,
   NotifyChannelDocument,
-  NotifyType,
 } from './notify-channel.schema';
+import { NotifyType } from './notify-channel.enum';
 
 @Injectable()
 export class NotifyChannelService {

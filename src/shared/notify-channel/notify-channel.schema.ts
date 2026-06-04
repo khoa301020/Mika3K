@@ -3,11 +3,7 @@ import { HydratedDocument } from 'mongoose';
 
 export type NotifyChannelDocument = HydratedDocument<NotifyChannel>;
 
-export enum NotifyType {
-  NHENTAI_AUTOVIEW = 'NHentai Autoview',
-  BA_SCHALEDB_UPDATE = 'SchaleDB Update',
-}
-
+import { NotifyType } from './notify-channel.enum';
 @Schema({ collection: 'NotifyChannels', toJSON: { virtuals: true } })
 export class NotifyChannel {
   @Prop()

@@ -9,7 +9,8 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { NotifyChannelService, NotifyType } from '../../shared/notify-channel';
+import { NotifyType } from '../../shared/notify-channel/notify-channel.enum';
+import { NotifyChannelService } from '../../shared/notify-channel/notify-channel.service';
 
 @ApiTags('NotifyChannels')
 @Controller('notify-channels')
@@ -30,12 +31,12 @@ export class NotifyChannelsController {
   async enable(
     @Body('guildId') guildId: string,
     @Body('channelId') channelId: string,
-    @Body('notifyType') notifyType: NotifyType,
+    @Body('notifyType') notifyType: string,
   ) {
     return this.notifyChannelService.enableChannel(
       guildId,
       channelId,
-      notifyType,
+      notifyType as NotifyType,
     );
   }
 
@@ -43,9 +44,9 @@ export class NotifyChannelsController {
   @ApiOperation({ summary: 'Disable feature for a channel' })
   async disable(
     @Param('channelId') channelId: string,
-    @Param('notifyType') notifyType: NotifyType,
+    @Param('notifyType') notifyType: string,
   ) {
-    await this.notifyChannelService.disableChannel(channelId, notifyType);
+    await this.notifyChannelService.disableChannel(channelId, notifyType as NotifyType);
     return { message: 'Disabled' };
   }
 }

@@ -42,7 +42,7 @@ export class AppHttpService {
     try {
       const response = await this.head(url);
       const contentLength = response.headers['content-length'];
-      return contentLength ? parseInt(contentLength, 10) : 0;
+      return contentLength ? parseInt(String(contentLength), 10) : 0;
     } catch {
       return 0;
     }

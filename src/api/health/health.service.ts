@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Client } from 'discord.js';
-import { Connection } from 'mongoose';
+import type { Connection } from 'mongoose';
 import { InjectConnection } from '@nestjs/mongoose';
 
 @Injectable()

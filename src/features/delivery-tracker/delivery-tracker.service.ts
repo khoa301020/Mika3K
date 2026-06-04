@@ -4,6 +4,8 @@ import { Model } from 'mongoose';
 import {
   DeliveryProvider,
   DeliveryStatus,
+} from './delivery-tracker.types';
+import type {
   IBroadcastTarget,
   ITrackingRecord,
 } from './delivery-tracker.types';

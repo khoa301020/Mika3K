@@ -277,11 +277,12 @@ export class BaEmbeds {
   async studentSkills(student: IStudent, author: User): Promise<EmbedBuilder> {
     const loc = await this.getLocalization();
     const fields: APIEmbedField[] = [];
-    const skillOrder = ['ex', 'normal', 'passive', 'sub'];
-    const skills = student.Skills.filter((s: Skill) =>
-      skillOrder.includes(s.SkillType),
-    )
-      .map((s: Skill) => BaService.transformStudentSkillStat(s, loc))
+    const skillOrder = ['Ex', 'Public', 'Passive', 'ExtraPassive'];
+    const skills = Object.entries(student.Skills || {})
+      .filter(([key]) => skillOrder.includes(key))
+      .map(([key, s]: [string, any]) =>
+        BaService.transformStudentSkillStat({ ...s, SkillType: key }, loc),
+      )
       .sort(
         (a: Skill, b: Skill) =>
           skillOrder.indexOf(a.SkillType) - skillOrder.indexOf(b.SkillType),
@@ -311,7 +312,7 @@ export class BaEmbeds {
           }
         });
       });
-      if (skill.SkillType === 'ex')
+      if (skill.SkillType === 'Ex')
         title += ` \`(COST: ${skill.Cost?.join('->')})\``;
       fields.push({ name: title, value: `\`\`\`${skill.Desc}\`\`\`` });
       fields.push(...summonFields);
@@ -342,7 +343,7 @@ export class BaEmbeds {
   async studentWeapon(student: IStudent, author: User): Promise<EmbedBuilder> {
     const loc = await this.getLocalization();
     const passiveSkill = BaService.transformStudentSkillStat(
-      student.Skills.find((s: Skill) => s.SkillType === 'weaponpassive')!,
+      { ...student.Skills.WeaponPassive, SkillType: 'WeaponPassive' as any },
       loc,
     );
     const ws = BaService.getWeaponStats(student);
@@ -377,7 +378,7 @@ export class BaEmbeds {
   async studentGear(student: IStudent, author: User): Promise<EmbedBuilder> {
     const loc = await this.getLocalization();
     const normalSkill = BaService.transformStudentSkillStat(
-      student.Skills.find((s: Skill) => s.SkillType === 'gearnormal')!,
+      { ...student.Skills.GearPublic, SkillType: 'GearPublic' as any },
       loc,
     );
     return new EmbedBuilder()

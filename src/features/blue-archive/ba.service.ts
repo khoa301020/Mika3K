@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectConnection } from '@nestjs/mongoose';
-import { Connection, Model, Schema } from 'mongoose';
+import { Schema, type Connection, type Model } from 'mongoose';
 import { decode } from 'html-entities';
 import { AppHttpService } from '../../shared/http';
 import { AppCacheService } from '../../shared/cache';
@@ -79,6 +79,7 @@ export class BaService implements OnModuleInit {
     const response = await this.httpService.get(url);
     let items = response.data;
     if (dataPath) items = items[dataPath];
+    if (!Array.isArray(items)) items = Object.values(items);
     const model = this.models[modelName];
     const promises = items.map((item: any) =>
       model.findOneAndUpdate({ Id: item.Id }, item, {
@@ -377,21 +378,35 @@ export class BaService implements OnModuleInit {
       desc
         .replace(
           C.REGEX_BUFF_REPLACEMENT,
-          (_m: string, k: string) => localization?.BuffName['Buff_' + k] ?? _m,
+          (_m: string, k: string) => {
+            const p = k.split('=');
+            if (p.length > 1) return p[1].replace(/['"]/g, '');
+            return localization?.BuffName['Buff_' + k] ?? _m;
+          },
         )
         .replace(
           C.REGEX_DEBUFF_REPLACEMENT,
-          (_m: string, k: string) =>
-            localization?.BuffName['Debuff_' + k] ?? _m,
+          (_m: string, k: string) => {
+            const p = k.split('=');
+            if (p.length > 1) return p[1].replace(/['"]/g, '');
+            return localization?.BuffName['Debuff_' + k] ?? _m;
+          },
         )
         .replace(
           C.REGEX_SPECIAL_REPLACEMENT,
-          (_m: string, k: string) =>
-            localization?.BuffName['Special_' + k] ?? _m,
+          (_m: string, k: string) => {
+            const p = k.split('=');
+            if (p.length > 1) return p[1].replace(/['"]/g, '');
+            return localization?.BuffName['Special_' + k] ?? _m;
+          },
         )
         .replace(
           C.REGEX_CC_REPLACEMENT,
-          (_m: string, k: string) => localization?.BuffName['CC_' + k] ?? _m,
+          (_m: string, k: string) => {
+            const p = k.split('=');
+            if (p.length > 1) return p[1].replace(/['"]/g, '');
+            return localization?.BuffName['CC_' + k] ?? _m;
+          },
         )
         .replace(C.REGEX_HTML_TAG, ''),
     );
@@ -407,7 +422,7 @@ export class BaService implements OnModuleInit {
       (_match: string, key: string) => {
         let isNumeric = true;
         let parameters: string[] | undefined;
-        if (skill.SkillType === 'ex')
+        if (skill.SkillType === 'Ex')
           parameters = skill.Parameters?.[parseInt(key) - 1]?.filter(
             (_: any, idx: number) => idx === 0 || idx === 2 || idx === 4,
           );

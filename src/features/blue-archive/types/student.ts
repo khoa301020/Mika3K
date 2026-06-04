@@ -57,7 +57,7 @@ export interface IStudent {
   AmmoCost: number;
   Range: number;
   RegenCost: number;
-  Skills: Skill[];
+  Skills: Record<string, Skill>;
   FavorStatType: FavorStatType[];
   FavorStatValue: Array<number[]>;
   FavorAlts: number[];
@@ -254,13 +254,13 @@ export interface Frames {
 }
 
 export type SkillType =
-  | 'ex'
-  | 'normal'
-  | 'autoattack'
-  | 'gearnormal'
-  | 'passive'
-  | 'weaponpassive'
-  | 'sub';
+  | 'Ex'
+  | 'Normal'
+  | 'GearPublic'
+  | 'Passive'
+  | 'WeaponPassive'
+  | 'Public'
+  | 'ExtraPassive';
 
 export interface Restriction {
   Property: Property;

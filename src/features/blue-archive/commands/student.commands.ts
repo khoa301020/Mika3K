@@ -184,13 +184,13 @@ export class StudentCommands {
       }
       if (student.TSAId) {
         const tsaStudent = await this.baService.getStudentById(student.TSAId);
-        const tsaSkills = tsaStudent?.Skills.filter((s) =>
-          s.ExtraSkills?.find((es) => es.TSAId === student.Id),
-        );
+        const tsaSkills = Object.entries(tsaStudent?.Skills || {})
+          .map(([key, s]) => ({ ...s, SkillType: key }))
+          .filter((s) => s.ExtraSkills?.find((es) => es.TSAId === student.Id));
         if (tsaSkills?.length) {
-          student.Skills.forEach((skill) => {
+          Object.entries(student.Skills || {}).forEach(([key, skill]) => {
             const extra = tsaSkills
-              .find((ts) => ts.SkillType === skill.SkillType)
+              .find((ts) => ts.SkillType === key || ts.SkillType?.toLowerCase() === key.toLowerCase())
               ?.ExtraSkills?.find((es) => es.TSAId === student.Id);
             if (extra) {
               extra.TSAId = tsaStudent?.Id;
@@ -201,14 +201,14 @@ export class StudentCommands {
           });
         }
       }
-      const allTsaIds = student.Skills.reduce((acc, s) => {
+      const allTsaIds = Object.values(student.Skills || {}).reduce((acc, s) => {
         const extras = s.ExtraSkills?.filter((es) => es.TSAId);
         if (extras) acc.push(...extras.map((es) => es.TSAId!));
         return acc;
       }, [] as number[]);
       if (allTsaIds.length > 0) {
         const partners = await this.baService.getStudentByIds(allTsaIds);
-        student.Skills.forEach((s) => {
+        Object.values(student.Skills || {}).forEach((s) => {
           s.ExtraSkills?.forEach((es) => {
             const p = partners.find((p2) => p2.Id === es.TSAId);
             if (p) es.TSAName = p.Name;

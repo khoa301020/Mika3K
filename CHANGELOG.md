@@ -1,5 +1,15 @@
 ## Untagged
 
+- Update: [DeliveryTracker] Implement universal delivery photo support and refine LEX sub-carrier mapping ([7413f7](https://github.com/khoa301020/Mika3K/commit/7413f784978bbb878e699bab4c177c11c7a223ae))
+- Feature: [DeliveryTracker] Implement LEX provider and tracking enhancements ([5ed9ed](https://github.com/khoa301020/Mika3K/commit/5ed9edd81874d03395154b6e51718770fdbe4bac))
+- Feature: [DeliveryTracker] Implement LEX provider and tracking enhancements ([f9f6fb](https://github.com/khoa301020/Mika3K/commit/f9f6fbfc23a6c56701f502368c0a75d8a6b73e2f))
+- Refactor: [Delivery] Restructure tracker providers into dedicated modules ([c48843](https://github.com/khoa301020/Mika3K/commit/c48843913f0b912707029d78204eb4bc88babafb))
+- Feature: [Delivery-Tracker] Implement J&T and GHN providers and robust polling deduplication ([8fad4d](https://github.com/khoa301020/Mika3K/commit/8fad4d6d87ed1895f7611a2f992e3f005ea0dd51))
+- Update: [DeliveryTracker] Enhanced pagination, rate-limiting, and UI formatting ([a81db1](https://github.com/khoa301020/Mika3K/commit/a81db16abd5f7d67f1fa383a6bcbca880839425f))
+- Feature: [DeliveryTracker] Redesign data model and implement v2 broadcast system ([e9025a](https://github.com/khoa301020/Mika3K/commit/e9025aa426d4ee0d7668918c4f7a702ba5946230))
+- Refactor: [Core] Migrate legacy commands to Necord V2 and folder architecture ([879267](https://github.com/khoa301020/Mika3K/commit/879267fa819766c94e37b5ac03e50ed87a6001df))
+- Update: [BlueArchive] Add updated type definitions from SchaleDB ([4a105d](https://github.com/khoa301020/Mika3K/commit/4a105de48287d14c82ad3fec6a09c6a7ad65cf12))
+- Update: [Multi-Feature] Enhance Syosetu, HoYoLAB, NHentai, and Blue Archive commands ([74a642](https://github.com/khoa301020/Mika3K/commit/74a642e70df89321cb42ad834b26e43cfbada80f))
 - Update: [NHentai] Migrate Search Context Menu from V1 codebase ([5edd23](https://github.com/khoa301020/Mika3K/commit/5edd235f40b0a90abe93cac17cc48e84ea8d5ec6))
 - Update: [HoYoLAB] Enhance HoYoLAB redemption UI and optimize feature services ([80b400](https://github.com/khoa301020/Mika3K/commit/80b4007590d930546081e461343918a40a2dba0e))
 - Update: [Core] Refactor API service layers and enhance logging infrastructure ([6fd4ec](https://github.com/khoa301020/Mika3K/commit/6fd4ecaa1cbeb68913f7b84a05247c70ee4bb89e))

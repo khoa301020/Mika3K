@@ -30,73 +30,73 @@ export const TRANSCENDENCE: Record<string, number[]> = {
 
 // URLs
 export const SCHALE_GG_LOGO =
-  'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/schale.png';
+  'https://schaledb.com/images/schale.png';
 export const SCHALE_GG_ARONA =
   'https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/ui/Image_Char_Arona2.png';
 export const SCHALE_STUDENT_PORTRAIT_URL = (id: number) =>
-  `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/student/portrait/${id}.webp`;
+  `https://schaledb.com/images/student/portrait/${id}.webp`;
 export const SCHALE_STUDENT_ICON_URL = (id: number) =>
-  `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/student/icon/${id}.webp`;
+  `https://schaledb.com/images/student/icon/${id}.webp`;
 export const SCHALE_STUDENT_LOBBY_URL = (id: number) =>
-  `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/student/lobby/${id}.webp`;
+  `https://schaledb.com/images/student/lobby/${id}.webp`;
 export const SCHALE_STUDENT_WEAPON_URL = (weaponImg: string) =>
-  `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/weapon/${weaponImg}.webp`;
+  `https://schaledb.com/images/weapon/${weaponImg}.webp`;
 export const SCHALE_STUDENT_GEAR_URL = (id: number) =>
-  `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/gear/icon/${id}.webp`;
+  `https://schaledb.com/images/gear/icon/${id}.webp`;
 export const SCHALE_RAID_ICON_URL = (pathName: string, isInsane: boolean) =>
-  `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/icon/Icon_${pathName}${isInsane ? '_Insane' : ''}.png`;
+  `https://schaledb.com/images/raid/icon/Icon_${pathName}${isInsane ? '_Insane' : ''}.png`;
 export const SCHALE_RAID_PORTRAIT_URL = (pathName: string, isInsane: boolean) =>
-  `https://raw.githubusercontent.com/lonqie/SchaleDB/main/images/raid/Boss_Portrait_${pathName}${isInsane ? '_Insane' : ''}_Lobby.png`;
+  `https://schaledb.com/images/raid/Boss_Portrait_${pathName}${isInsane ? '_Insane' : ''}_Lobby.png`;
 
 export const CURRENCY_DATA_URL =
-  'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/currency.json';
+  'https://schaledb.com/data/en/currency.min.json';
 export const ENEMIES_DATA_URL =
-  'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/enemies.json';
+  'https://schaledb.com/data/en/enemies.min.json';
 export const EQUIPMENT_DATA_URL =
-  'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/equipment.json';
+  'https://schaledb.com/data/en/equipment.min.json';
 export const FURNITURE_DATA_URL =
-  'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/furniture.json';
+  'https://schaledb.com/data/en/furniture.min.json';
 export const ITEMS_DATA_URL =
-  'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/items.json';
+  'https://schaledb.com/data/en/items.min.json';
 export const LOCALIZATION_DATA_URL =
-  'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/localization.json';
+  'https://schaledb.com/data/en/localization.min.json';
 export const RAIDS_DATA_URL =
-  'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/raids.json';
+  'https://schaledb.com/data/en/raids.min.json';
 export const STUDENTS_DATA_URL =
-  'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/students.json';
+  'https://schaledb.com/data/en/students.min.json';
 export const SUMMONS_DATA_URL =
-  'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/en/summons.json';
+  'https://schaledb.com/data/en/summons.min.json';
 export const CONFIG_DATA_URL =
-  'https://raw.githubusercontent.com/lonqie/SchaleDB/main/data/config.json';
+  'https://schaledb.com/data/config.min.json';
 
 // Icons
 export const COMMON_ROLE_ICON: Record<string, string> = {
   DamageDealer:
-    'https://github.com/lonqie/SchaleDB/raw/main/images/ui/Role_DamageDealer.png',
+    'https://schaledb.com/data/images/ui/Role_DamageDealer.png',
   Tanker:
-    'https://github.com/lonqie/SchaleDB/raw/main/images/ui/Role_Tanker.png',
+    'https://schaledb.com/data/images/ui/Role_Tanker.png',
   Supporter:
-    'https://github.com/lonqie/SchaleDB/raw/main/images/ui/Role_Supporter.png',
+    'https://schaledb.com/data/images/ui/Role_Supporter.png',
   Healer:
-    'https://github.com/lonqie/SchaleDB/raw/main/images/ui/Role_Healer.png',
+    'https://schaledb.com/data/images/ui/Role_Healer.png',
   Vehicle:
-    'https://github.com/lonqie/SchaleDB/raw/main/images/ui/Role_Vehicle.png',
+    'https://schaledb.com/data/images/ui/Role_Vehicle.png',
 };
 export const STUDENT_SCHOOL_LOGO: Record<string, string> = {
-  Abydos: 'https://schale.gg/images/schoolicon/School_Icon_ABYDOS_W.png',
-  Arius: 'https://schale.gg/images/schoolicon/School_Icon_ARIUS_W.png',
-  ETC: 'https://schale.gg/images/schoolicon/School_Icon_ETC_W.png',
-  Gehenna: 'https://schale.gg/images/schoolicon/School_Icon_GEHENNA_W.png',
+  Abydos: 'https://schaledb.com/images/schoolicon/School_Icon_ABYDOS_W.png',
+  Arius: 'https://schaledb.com/images/schoolicon/School_Icon_ARIUS_W.png',
+  ETC: 'https://schaledb.com/images/schoolicon/School_Icon_ETC_W.png',
+  Gehenna: 'https://schaledb.com/images/schoolicon/School_Icon_GEHENNA_W.png',
   Hyakkiyako:
-    'https://schale.gg/images/schoolicon/School_Icon_HYAKKIYAKO_W.png',
+    'https://schaledb.com/images/schoolicon/School_Icon_HYAKKIYAKO_W.png',
   Millennium:
-    'https://schale.gg/images/schoolicon/School_Icon_MILLENNIUM_W.png',
-  RedWinter: 'https://schale.gg/images/schoolicon/School_Icon_REDWINTER_W.png',
+    'https://schaledb.com/images/schoolicon/School_Icon_MILLENNIUM_W.png',
+  RedWinter: 'https://schaledb.com/images/schoolicon/School_Icon_REDWINTER_W.png',
   Shanghaijin:
-    'https://schale.gg/images/schoolicon/School_Icon_SHANHAIJING_W.png',
-  SRT: 'https://schale.gg/images/schoolicon/School_Icon_SRT_W.png',
-  Trinity: 'https://schale.gg/images/schoolicon/School_Icon_TRINITY_W.png',
-  Valkyrie: 'https://schale.gg/images/schoolicon/School_Icon_VALKYRIE_W.png',
+    'https://schaledb.com/images/schoolicon/School_Icon_SHANHAIJING_W.png',
+  SRT: 'https://schaledb.com/images/schoolicon/School_Icon_SRT_W.png',
+  Trinity: 'https://schaledb.com/images/schoolicon/School_Icon_TRINITY_W.png',
+  Valkyrie: 'https://schaledb.com/images/schoolicon/School_Icon_VALKYRIE_W.png',
 };
 
 // Student
@@ -218,13 +218,13 @@ export const ADAPTATION_RANK: Record<number, string> = {
 export const CC_POWER = 100;
 export const CC_RESISTANCE = 100;
 export const SKILL_MAP: Record<SkillType, string> = {
-  ex: 'EX',
-  normal: 'Normal',
-  autoattack: 'Auto Attack',
-  gearnormal: 'Gear',
-  passive: 'Passive',
-  weaponpassive: 'Weapon Passive',
-  sub: 'Sub',
+  Ex: 'EX',
+  Normal: 'Auto Attack',
+  GearPublic: 'Gear',
+  Passive: 'Passive',
+  WeaponPassive: 'Weapon Passive',
+  Public: 'Normal',
+  ExtraPassive: 'Sub',
 };
 
 // Raid
